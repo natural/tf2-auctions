@@ -1,0 +1,22 @@
+application: tf2bay
+version: 1
+runtime: python
+api_version: 1
+
+
+handlers:
+
+- url: /login
+  script:  userdata.py
+
+- url: /userdata
+  script:  userdata.py
+  login: required
+
+- url: /favicon.ico
+  static_files: htdocs/favicon.ico
+  upload: htdocs/favicon.ico
+
+- url: /
+  static_files: htdocs/index.html
+  upload: htdocs/index.html
