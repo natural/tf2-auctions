@@ -1,0 +1,487 @@
+@import url("base.css") all;
+
+
+body {
+background-color:#393431;
+color:green; /* make default text stand out cause it should be styled elsewhere  */
+font-family:"TF2";
+font-size:1em;
+min-height:70em;
+min-width:38em;
+overflow-x:hidden;
+}
+
+
+a {
+color:#ece3cb;
+text-decoration:none;
+}
+
+
+h1 {
+color:#ebe2ca;
+font-family:"TF2Build";
+font-size:135%;
+}
+
+
+h2 {
+color:#827868;
+font-family:"TF2Build";
+font-size:110%;
+}
+
+
+hr.character, hr.unplaced, hr.footer {
+border:none;
+border-top:0.25em solid #84756b;
+}
+
+
+img.equipped {
+margin-top:-8px;
+}
+
+img.equipped-133 {
+margin-top:0;
+}
+
+img.equipped-183 {
+margin-top:0;
+}
+
+img.unequipped-133 {
+padding-top:0.5em;
+}
+
+
+span.equipped {
+background-color:black;
+border-radius:0.5em;
+bottom:1.3em;
+color:#c8503c;
+font-family:"TF2secondary";
+left:0.7em;
+padding:0.25em 0.4em 0.25em 0.4em;
+position:relative;
+font-size:0.85em;
+}
+
+span.quantity {
+background-color:black;
+border-radius:0.5em;
+top:0.5em;
+color:#c8503c;
+font-family:"TF2secondary";
+left:0.5em;
+padding:0.2em 0.5em 0.2em 0.5em;
+position:relative;
+font-size:0.85em;
+}
+
+
+span.hilite {
+color:#c8503c;
+}
+
+
+span.hilite:before {
+content:">>";
+}
+
+
+span.nonav, span.nav a, #controls a, #unknownProfile a, #stats table.stats a {
+background-color:#766b5e;
+border-bottom:none !important;
+border-radius:0.25em;
+color:#ece3cb;
+height:1.5em;
+line-height:1.5em;
+padding:0.5em 0.75em 0.5em 0.75em;
+text-align:center;
+vertical-align:middle;
+}
+
+#controls a {
+}
+
+span.nonav {
+color:#2a2725;
+}
+
+
+span.nav a:hover,  #controls a:hover, #unknownProfile a:hover, #stats table.stats a:hover {
+background-color:#924738;
+color:#ece3cb;
+}
+
+span.nav a:active,  #controls a:active, #unknownProfile a:active, #stats table.stats a:active {
+color:#2a2725 !important;
+}
+
+
+table.unplaced td, table.backpack td {
+max-height:4em !important
+min-height:4em !important
+width:5.15em !important;
+max-width:5.15em !important;
+min-width:5.15em !important;
+
+}
+
+table.unplaced td div, table.backpack td div {
+width:4em !important;
+height:4em !important;
+}
+
+table.unplaced img, table.backpack img {
+margin-left:0.575em;
+height:4em !important
+}
+
+
+img[src='icons/133.png'] {
+margin-top:6px; /* gunboats image is too high from center */
+}
+
+
+table.backpack td {
+border-radius:0.75em;
+border:0.25em solid #2E2B2A !important;
+background-color:#3c352e;
+}
+
+
+/* the second selector is for only unplaced table cells w/o an image child */
+table.backpack td:hover, .itemHover {
+border:0.25em solid #847668 !important;
+}
+
+
+table.backpack td.selected {
+background-color:#ece3cb !important;
+border:0.25em solid #ece3cb !important;
+}
+
+
+table.unplaced td {
+border:0.25em solid #393431;
+border-radius:0.75em;
+}
+
+
+.centered {
+margin:0 auto 0 auto;
+}
+
+
+.null {
+display:none;
+}
+
+
+#avatar {
+text-align:right;
+right:0.5em;
+margin:0.5em;
+position:absolute;
+top:0;
+}
+
+#avatar img {
+background-color:#84756b;
+border:0.25em solid #84756b;
+height:4em;
+width:4em;
+vertical-align:top;
+}
+
+
+#backpack, #character, #unplaced, #footer {
+font-family:"TF2Build";
+padding:1em 2em 1em 1em;
+}
+
+
+#backpack {
+background-color:#2e2b2a;
+padding-bottom:1.5em; /* matches toolbar padding top */
+}
+
+
+#footer {
+color:#827868;
+}
+
+
+#footer .links {
+line-height:1.5em;
+font-size:80%;
+margin-left:1em;
+}
+
+
+#footer a {
+color:#c8bba2;
+}
+
+
+#footer a:hover {
+border-bottom:0.125em solid #c8bba2;
+}
+
+
+#character {
+background-image:url('../media/header_bg.png');
+background-repeat:repeat-x;
+line-height:200%;
+}
+
+
+#nav {
+text-align:right;
+whitespace:nowrap !important;
+}
+
+
+#pages {
+color:#c8503c;
+display:inline-block;
+text-align:center;
+width:2em;
+font-size:135%;
+vertical-align:middle;
+}
+
+
+#steamID {
+color:#c8bba1
+}
+
+
+#steamID a {
+color:#c8bba2;
+}
+
+
+#steamID a:hover {
+border-bottom:0.125em solid #c8bba2;
+}
+
+
+
+#tooltip {
+background:#000;
+border-top:1px solid #786B5C;
+border-bottom:1px solid #1B1815;
+border-left:1px solid #453F36;
+border-right:1px solid #453F36;
+background: -webkit-gradient(linear, left top, left bottom, from(#38332D), to(#221E1A));
+border-radius:3px;
+padding:0;
+position:absolute;
+text-align:center;
+z-index:9002;
+overflow:hidden;
+}
+
+
+#tooltip-top-shim {
+padding-left:4px;
+padding-right:4px;
+border-top:1px solid #24201C;
+}
+
+#tooltip-inner {
+padding:1em;
+}
+
+
+#tooltip h4 {
+//color:#ffd700;
+font-family:"TF2Build";
+margin-bottom:1em;
+white-space:nowrap;
+font-size:12pt;
+}
+
+#tooltip h4.valve {
+color:#aa00aa;
+}
+
+
+#tooltip h4.community {
+color:#00aa00;
+}
+
+#tooltip .level, #tooltip .alt, #tooltip .positive, #tooltip .negative {
+font-family:"TF2secondary";
+font-size:11pt;
+}
+
+/*
+from the tf2 wiki:
+
+Colour Rarity Name
+B2B2B2 Standard
+476291 Vintage
+FFD800 Unique
+70B04A Community
+A50F79 Developer
+874FAD Unusual
+
+*/
+.quality-0  { color:#B2B2B2; } /* normal */
+.quality-1  { color:#B2B2B2; } /* common */
+.quality-2  { color:#B2B2B2; } /* rare */
+.quality-3  {color: #476291; } /* vintage */
+.quality-5  {color: #874FAD; } /* unusual */
+.quality-6  {color: #FFD800; } /* unique */
+.quality-7  {color: #70B04A; } /* community */
+.quality-8  {color: #A50F79; } /* developer */
+.quality-9  {color: #70B04A; } /* self-made */
+.quality-10 {color: #70B04A; } /* custom */
+
+#tooltip .level {
+color:#756b5e;
+}
+
+#tooltip .vintage {
+color:#476291;
+}
+
+#tooltip .alt {
+color:#e4dbc4;
+}
+
+
+#tooltip .positive {
+color:#8dbceb;
+}
+
+
+#tooltip .negative {
+color:#eb3b3b;
+}
+
+
+#unknownProfile {
+color:#c8bba2;
+display:none;
+font-family:"TF2Build";
+text-align:center;
+width:80%;
+}
+
+
+#unknownProfile input[type="text"] {
+color:black;
+font-family:"TF2secondary";
+font-size:14pt;
+padding:0.25em;
+margin:1em auto 0.5em auto;
+}
+
+
+#unknownProfile h1 {
+margin:1em auto 1em auto;
+}
+
+#unknownProfile div:last-child {
+margin-top:1em;
+}
+
+
+
+#toolbar {
+margin:1em auto 1em auto;
+}
+
+
+#controls {
+float:left;
+}
+
+// what?
+#refresh a:hover {
+border-bottom:0.125em solid #c8bba2;
+}
+
+#stats {
+color:#827868;
+margin:1em auto 1em auto;
+}
+
+#stats table.stats {
+padding-top:1em;
+width:100%;
+}
+
+table.stats td {
+}
+
+table.stats span, table.stats div {
+color:#ebe2ca;
+}
+
+table.stats div {
+margin-left:1em;
+}
+
+.messages div {
+border-radius:0.75em;
+margin-right:5em;
+opacity:0.9;
+text-align:center;
+color:#fff;
+}
+
+#error {
+background-color:rgba(157, 48, 47, 0.15);
+border:0.25em solid rgba(189, 58, 58, 0.75);
+}
+
+#warning {
+background-color:rgba(239, 152, 73, 0.35);
+border:0.25em solid rgba(241, 129, 73, 0.75);
+}
+
+
+#information {
+background-color:rgba(56, 92, 120, 0.5);
+border:0.25em solid rgba(91, 122, 140, 0.5);
+}
+
+:lang(ru) {
+display:none;
+}
+
+:lang(pt) {
+display:none;
+}
+
+:lang(nl) {
+display:none;
+}
+
+
+div.backpack-header {
+padding-bottom:0.125em;
+padding-top:0.125em;
+}
+
+div.backpack-header h1 {
+display:inline
+}
+
+
+span.showstock {
+color:#ebe2ca;
+font-size:110%;
+padding-left:5em;
+}
+
+#showstock {
+vertical-align:middle;
+cursor:pointer;
+}

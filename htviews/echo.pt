@@ -1,0 +1,24 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">Request Environment</title>
+</head>
+<body>
+    <metal:fill fill-slot="main">
+	<h1 class="message">Request Environment</h1>
+	<table>
+	    <thead>
+		<tr><th>Key</th><th>Value</th></tr>
+	    </thead>
+	    <tbody tal:define="empties ('', {}, (), [])">
+		<tr tal:repeat="(key, value) sorted(environ.items())">
+		    <td><b><code tal:content="key" /></b></td>
+		    <td><code tal:condition="value not in empties"
+			      tal:content="unicode(value)" />
+			<i tal:condition="value in empties">empty</i>
+		    </td>
+		</tr>
+	    </tbody>
+	</table>
+    </metal:fill>
+</body>
+</html>

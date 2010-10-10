@@ -1,0 +1,10 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">404 not found</title>
+</head>
+<body>
+    <metal:fill fill-slot="main">
+	<h1 class="message">404 not found!</h1>
+    </metal:fill>
+</body>
+</html>

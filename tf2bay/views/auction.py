@@ -1,0 +1,2 @@
+class AuctionView:
+    pass

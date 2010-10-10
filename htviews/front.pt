@@ -1,0 +1,16 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">tf2bay.com</title>
+</head>
+<body>
+    <metal:fill fill-slot="main">
+	tf2bay.com
+	<br />
+	welcome!
+
+	<br />
+	<a href="/login">login here</a>
+
+    </metal:fill>
+</body>
+</html>

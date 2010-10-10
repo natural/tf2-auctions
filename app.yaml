@@ -6,17 +6,24 @@ api_version: 1
 
 handlers:
 
-- url: /login
-  script:  userdata.py
-
-- url: /userdata
-  script:  userdata.py
-  login: required
+- url: /media/(.*\.(css|js|png|ttf))
+  static_files: media/\1
+  expiration: "1d 1h"
+  upload: media/(.*\.(css|js|png|ttf))
 
 - url: /favicon.ico
-  static_files: htdocs/favicon.ico
-  upload: htdocs/favicon.ico
+  static_files: media/favicon.ico
+  upload: media/favicon.ico
+
+- url: /(auction|profile)
+  login: required
+  script: main.py
+
+- url: /(login|echo|browse|search)
+  script: main.py
 
 - url: /
-  static_files: htdocs/index.html
-  upload: htdocs/index.html
+  script: main.py
+
+- url: /(.*)
+  script: main.py

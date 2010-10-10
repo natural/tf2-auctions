@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
 from google.appengine.ext.webapp.util import run_wsgi_app
-from google.appengine.api import users
 
-
-login_url = users.create_login_url(dest_url='/userdata',
-				   federated_identity='steamcommunity.com/openid')
-
-login_icon_url = 'http://steamcommunity.com/public/images/signinthroughsteam/sits_large_border.png'
+from tf2bay.views import login_url, login_icon_url, users
 
 
 class LoginApp(RequestHandler):
-
     def get(self):
 	data = ['<html><body>', ]
 	data.append('<a href="%s"><img src="%s" /></a>' % (login_url, login_icon_url))
@@ -19,11 +13,14 @@ class LoginApp(RequestHandler):
 	data = '\n'.join(data)
 	self.response.out.write(data)
 
+
+scr = 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'
+
 class UserDataApp(RequestHandler):
     def get(self):
 	user = users.get_current_user()
 
-	data = ['<html><body>', ]
+	data = ['<html><head><script src="%s" type="text/javascript"></script><body>' % scr, ]
 	data.append('<br>nickname: %s' % user.nickname())
 	data.append('<br>email: %s' % user.email())
 	data.append('<br>user_id: %s' % user.user_id())

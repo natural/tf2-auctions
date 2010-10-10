@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"
+      metal:define-macro="layout">
+    <head metal:define-slot="head">
+	<metal:slot define-slot="title" />
+	<metal:slot define-slot="meta" />
+	<metal:slot define-slot="style" />
+	<metal:slot define-slot="script" />
+    </head>
+    <body metal:define-slot="body">
+	<div metal:define-slot="header_prime">
+	    <div metal:define-slot="header" />
+	</div>
+	<div metal:define-slot="menu_prime">
+	    <div metal:define-slot="menu" />
+	</div>
+	<div metal:define-slot="main_prime">
+	    <div metal:define-slot="main" />
+	</div>
+	<div metal:define-slot="footer_prime">
+	    <div metal:define-slot="footer" />
+	</div>
+    </body>
+</html>

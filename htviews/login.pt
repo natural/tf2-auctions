@@ -1,0 +1,10 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">login</title>
+</head>
+<body>
+    <metal:fill fill-slot="main">
+	<h1 class="message">login</h1>
+    </metal:fill>
+</body>
+</html>

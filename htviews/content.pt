@@ -1,0 +1,51 @@
+<html metal:extend-macro="context.base.macros.layout" metal:define-macro="layout">
+<head>
+    <metal:slot fill-slot="meta">
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    </metal:slot>
+    <metal:slot fill-slot="style">
+        <link rel="media" href="/media/screen.css" type="text/css" media="screen, projection" />
+        <link rel="stylesheet" href="/media/site.css" type="text/css" media="screen, projection" />
+        <link rel="stylesheet" href="/media/print.css" type="text/css" media="print" />
+        <!--[if lt IE 8]><link rel="stylesheet" href="/media/ie.css" type="text/css" media="screen, projection"><![endif]-->
+        <metal:slot define-slot="style" />
+    </metal:slot>
+    <metal:slot fill-slot="script">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="/media/content.js"></script>
+        <metal:slot define-slot="script" />
+	<script type="text/javascript">
+	</script>
+    </metal:slot>
+</head>
+<body metal:fill-slot="body">
+	<div id="header" metal:fill-slot="header">
+	    <metal:define define-slot="header" />
+	</div>
+
+	<div id="menu" metal:fill-slot="menu">
+	    <h3><a href="/">tf2bay.com</a></h3>
+	    <div>
+		<b>main</b> menu
+	    </div>
+	    <metal:slot define-slot="menu" />
+	</div>
+
+	<div id="content">
+	    <div id="message"></div>
+	    <metal:slot metal:fill-slot="main">
+		<metal:slot define-slot="main" />
+	    </metal:slot>
+	</div>
+
+	<div id="footer" metal:fill-slot="footer">
+	    <div><a href="#">about</a> |
+		 <a href="#">faq</a> |
+		 <a href="#">terms of service</a> | etc...
+	    </div>
+	    <metal:slot define-slot="footer" />
+	</div>
+
+
+</body>
+</html>
