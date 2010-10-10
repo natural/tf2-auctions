@@ -3,14 +3,20 @@
     <title metal:fill-slot="title">tf2bay.com</title>
 </head>
 <body>
+
+    <metal:fill fill-slot="header">
+	<span style="white-space:nowrap; margin-left:25%;">
+	<span class="button"><a href="/login">browse</a></span>
+	<span class="button"><a href="/login">search</a></span>
+	<span class="button login_button"><a href="/login">login</a></span>
+	</span>
+
+    </metal:fill>
+
     <metal:fill fill-slot="main">
-	tf2bay.com
-	<br />
-	welcome!
-
-	<br />
-	<a href="/login">login here</a>
-
+	<div style="width:90%; margin:1em auto 1em auto">
+	    <h1>Hey there, pardner!  Get tradin' yer stuff for better stuff.</h1>
+	</div>
     </metal:fill>
 </body>
 </html>

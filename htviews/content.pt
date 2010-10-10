@@ -19,16 +19,12 @@
     </metal:slot>
 </head>
 <body metal:fill-slot="body">
-	<div id="header" metal:fill-slot="header">
-	    <metal:define define-slot="header" />
-	</div>
+    <div id="header" metal:fill-slot="header">
+	<img src="/media/img/tf2bay-logo.png" style="vertical-align:bottom" />
+	<metal:define define-slot="header" />
+    </div>
 
 	<div id="menu" metal:fill-slot="menu">
-	    <h3><a href="/">tf2bay.com</a></h3>
-	    <div>
-		<b>main</b> menu
-	    </div>
-	    <metal:slot define-slot="menu" />
 	</div>
 
 	<div id="content">
