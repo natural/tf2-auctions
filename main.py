@@ -8,8 +8,9 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from tf2bay.utils import environ_extras_middleware
 from tf2bay.views import simple
 from tf2bay.views.auction import AuctionView
+from tf2bay.views.browse import BrowseView
 from tf2bay.views.profile import ProfileView
-
+from tf2bay import models
 
 
 routes = (
@@ -17,6 +18,7 @@ routes = (
     (r'/echo', simple.EchoView),
     (r'/profile', ProfileView),
     (r'/auction/(?P<auction>.{1,32})', AuctionView),
+    (r'/browse', BrowseView),
     (r'/', simple.FrontView),
     (r'/(.*)', simple.NotFound),
 )

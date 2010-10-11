@@ -4,11 +4,10 @@
 body {
 background-color:#393431;
 color:#ebe2ca;
-font-family:"TF2";
+font-family:"TF2secondary";
 font-size:1em;
-min-height:70em;
-min-width:38em;
-overflow-x:hidden;
+min-width:1024px;
+
 }
 
 
@@ -17,7 +16,7 @@ color:#ece3cb;
 text-decoration:none;
 }
 
-a:hover {
+#content a:hover {
 border-bottom:1px solid #ece3cb;
 }
 
@@ -26,6 +25,7 @@ h1 {
 color:#ebe2ca;
 font-family:"TF2Build";
 font-size:135%;
+font-weight:bold;
 }
 
 
@@ -89,7 +89,7 @@ color:#c8503c;
 
 
 span.hilite:before {
-content:">>";
+content:">> ";
 }
 
 
@@ -116,14 +116,26 @@ color:#2a2725;
 
 .button a:hover, span.nav a:hover,  #controls a:hover, #unknownProfile a:hover, #stats table.stats a:hover
 {
-background-color:#924738;
+background-color:#5b7a8c;
 color:#ece3cb;
 }
 
 .login_button a {
-background-color:#5b7a8c;
+background-color:#385c78;
 color:#ece3cb;
 }
+
+#login {
+margin:1em auto 1em auto;
+width:50%;
+}
+
+#login p { margin-top:1em; }
+#login .login_link {
+margin:1em auto 1em auto;
+width:50%;
+}
+
 
 span.nav a:active,  #controls a:active, #unknownProfile a:active, #stats table.stats a:active {
 color:#2a2725 !important;
@@ -207,7 +219,7 @@ vertical-align:top;
 }
 
 
-#backpack, #character, #unplaced, #footer {
+#backpack, #character, #unplaced {
 font-family:"TF2Build";
 a-padding:1em 2em 1em 1em;
 }
@@ -221,6 +233,11 @@ padding-bottom:1.5em; /* matches toolbar padding top */
 
 #footer {
 color:#827868;
+width:70%;
+margin:0 auto 0 auto;
+border:1px solid yellow;
+position:relative;
+top:50%;
 }
 
 
@@ -240,15 +257,62 @@ color:#c8bba2;
 border-bottom:0.125em solid #c8bba2;
 }
 
-
-#header {
+#header_wrapper {
 background-image:url('/media/img/header_bg.png');
 background-repeat:repeat-x;
-line-height:200%;
-padding:1em 1em 0.25em 1em;
 border-bottom:0.25em solid #84756b;
+border:1px solid blue;
 }
 
+#header {
+line-height:200%;
+margin:0 auto 0 auto;
+padding:1em 0 1em 0;
+width:70%;
+border:1px solid green;
+}
+
+#content {
+border:2px solid #84756b;
+margin: 1em auto 0 auto;
+width:70%;
+padding:0.25em;
+}
+
+#main_button_wrapper {
+position:relative;
+right:-25%;
+white-space:nowrap;
+border:1px solid orange;
+}
+
+#main_button_wrapper img {
+vertical-align:middle;
+}
+
+#profile_buton_wrapper {
+width:70%;
+a-margin:0.5em auto 0.5em auto;
+margin:0 auto 0 auto;
+padding-top:1em;
+}
+
+#profile_buton_wrapper a {
+background-color:#385c78;
+}
+
+#profile_buton_wrapper a:hover {
+background-color:#5b7a8c;
+}
+
+
+.text-centered {
+text-align:center;
+}
+
+.centered {
+margin:0 auto 0 auto;
+}
 
 #nav {
 text-align:right;

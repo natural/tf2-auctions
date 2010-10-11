@@ -1,0 +1,23 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">tf2bay.com - browse listings</title>
+</head>
+<body>
+
+    <metal:fill fill-slot="header">
+    </metal:fill>
+
+    <metal:fill fill-slot="main">
+	<div style="width:90%; margin:1em auto 1em auto">
+		    <h1 class="message"><span class="hilite"></span>Browse Listings</h1>
+
+	    <metal:if tal:define="id64 controller.steam_id">
+	    </metal:if>
+	</div>
+
+	<h3>yo dawg, i heard you like browsers so i put a browser in your browser so you can browse while you're browsin!</h3>
+
+
+    </metal:fill>
+</body>
+</html>

@@ -2,13 +2,13 @@
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from tf2bay.views import login_url, login_icon_url, users
+from tf2bay.views import login_url, users
 
 
 class LoginApp(RequestHandler):
     def get(self):
 	data = ['<html><body>', ]
-	data.append('<a href="%s"><img src="%s" /></a>' % (login_url, login_icon_url))
+	data.append('<a href="%s">login</a>' % (login_url, ))
 	data.append('</body></html>')
 	data = '\n'.join(data)
 	self.response.out.write(data)

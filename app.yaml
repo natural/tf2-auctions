@@ -1,5 +1,5 @@
 application: tf2bay
-version: 1
+version: 3
 runtime: python
 api_version: 1
 
@@ -19,7 +19,11 @@ handlers:
   login: required
   script: main.py
 
-- url: /(login|echo|browse|search)
+- url: /echo
+  login: admin
+  script: main.py
+
+- url: /(login|browse|search)
   script: main.py
 
 - url: /

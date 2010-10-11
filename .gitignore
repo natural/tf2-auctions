@@ -1,4 +1,6 @@
 *.pyc
 *~
 *.nodist
+tmp
+
 

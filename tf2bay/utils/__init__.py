@@ -22,3 +22,5 @@ def is_devel(environ):
 
 def is_prod(environ):
     return not is_devel(environ)
+
+

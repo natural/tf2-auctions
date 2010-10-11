@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import re
+from logging import warn
+
 from google.appengine.api import users
 from google.appengine.ext.webapp import RequestHandler, Request, Response
 from chameleon.zpt.loader import TemplateLoader
@@ -7,13 +10,9 @@ from tf2bay.utils import is_devel
 
 
 login_url = users.create_login_url(
-    dest_url='/userdata',
+    dest_url='/',
     federated_identity='steamcommunity.com/openid'
 )
-
-
-login_icon_url = \
-    'http://steamcommunity.com/public/images/signinthroughsteam/sits_large_border.png'
 
 
 class ContextLoader(object):
@@ -52,6 +51,16 @@ class LocalRequestHandler(RequestHandler):
 
     def req_get(self, key, default=''):
 	return self.request.get(key, default)
+
+    @property
+    def steam_id(self):
+	try:
+	    nick = self.user.nickname().strip()
+	    m = re.match('\d{17}$', nick)
+	    return nick[m.start():m.end()]
+	except (Exception, ), exc:
+	    #warn('%s', exc)
+	    pass
 
 
 class PageHandler(LocalRequestHandler):

@@ -5,17 +5,26 @@
 <body>
 
     <metal:fill fill-slot="header">
-	<span style="white-space:nowrap; margin-left:25%;">
-	<span class="button"><a href="/login">browse</a></span>
-	<span class="button"><a href="/login">search</a></span>
-	<span class="button login_button"><a href="/login">login</a></span>
-	</span>
-
     </metal:fill>
 
     <metal:fill fill-slot="main">
 	<div style="width:90%; margin:1em auto 1em auto">
-	    <h1>Hey there, pardner!  Get tradin' yer stuff for better stuff.</h1>
+	    <metal:if tal:define="id64 controller.steam_id">
+
+		<div tal:condition="not id64">
+		    <h1>Lookin to Trade?</h1>
+		    <p>You've gotta log in to bid or place an auction.</p>
+		</div>
+		<div tal:condition="id64">
+		    <h1>Howdy there, pardner!</h1>
+		    <div>Get to tradin' yer stuff for other stuff!</div>
+		    <script type="text/javascript">
+			$(document).ready(function() { loadProfile('${id64}'); loadBackpack('${id64}') })
+		    </script>
+		    <h3 id="load-profile-msg">Loading your profile...</h3>
+		    <h3 id="load-backpack-msg">Loading your backpack...</h3>
+		</div>
+	    </metal:if>
 	</div>
     </metal:fill>
 </body>
