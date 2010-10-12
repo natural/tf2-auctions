@@ -1,31 +1,26 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
-    <title metal:fill-slot="title">tf2bay.com</title>
+    <title metal:fill-slot="title">TF2Bay.com -- All of the eBay&reg; Suck and None of the TF2 Goodness!</title>
 </head>
 <body>
+    <metal:fill fill-slot="main" tal:define="id64 controller.steam_id">
 
-    <metal:fill fill-slot="header">
-    </metal:fill>
-
-    <metal:fill fill-slot="main">
-	<div style="width:90%; margin:1em auto 1em auto">
-	    <metal:if tal:define="id64 controller.steam_id">
-
-		<div tal:condition="not id64">
-		    <h1>Lookin to Trade?</h1>
-		    <p>You've gotta log in to bid or place an auction.</p>
-		</div>
-		<div tal:condition="id64">
-		    <h1>Howdy there, pardner!</h1>
-		    <div>Get to tradin' yer stuff for other stuff!</div>
-		    <script type="text/javascript">
-			$(document).ready(function() { loadProfile('${id64}'); loadBackpack('${id64}') })
-		    </script>
-		    <h3 id="load-profile-msg">Loading your profile...</h3>
-		    <h3 id="load-backpack-msg">Loading your backpack...</h3>
-		</div>
-	    </metal:if>
+	<div tal:condition="not id64">
+	    <h1>Lookin to Trade?</h1>
+	    <div>You've gotta log in to bid or place an auction.</div>
 	</div>
+
+	<div tal:condition="id64">
+	    <h1>Howdy there, pardner!</h1>
+	    <div>Get to tradin' yer stuff for other stuff!</div>
+	    <script type="text/javascript">
+		$(document).ready(function() { loadProfile('${id64}'); loadBackpack('${id64}') })
+	    </script>
+	    <h3 id="load-profile-msg">Loading your profile...</h3>
+	    <h3 id="load-backpack-msg">Loading your backpack...</h3>
+	</div>
+
+
     </metal:fill>
 </body>
 </html>

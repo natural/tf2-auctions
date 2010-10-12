@@ -8,16 +8,35 @@
     </metal:fill>
 
     <metal:fill fill-slot="main">
-	<div style="width:90%; margin:1em auto 1em auto">
+
 		    <h1 class="message"><span class="hilite"></span>Browse Listings</h1>
 
-	    <metal:if tal:define="id64 controller.steam_id">
+		    <table tal:condition="listings" width="100%">
+			<tbody tal:repeat="listing listings">
+			    <tr>
+				<td><img src="${listing.owner_profile.avatar}" height="32" width="32" />
+				    &nbsp; ${listing.owner_profile.personaname}
+				    <b>${listing.description}</b></td>
+			    </tr>
+			    <tr>
+				<td>
+				    <metal:loop tal:repeat="i listing.items">
+					${i.defindex}
+					<span class="defindex_replace"><metal:item tal:replace="i.uniqueid" /></span>
+			            </metal:loop>
+				</td>
+				<td><span class="button"><a href="/profile?placebid">Place Bid</a></span></td>
+			    </tr>
+			</tbody>
+		    </table>
+
+	    <metal:if tal:condition="controller.steam_id">
+		<h3>yo dawg, i heard you like browsers so i put a browser in your browser so you can browse while you're browsin!</h3>
 	    </metal:if>
-	</div>
-
-	<h3>yo dawg, i heard you like browsers so i put a browser in your browser so you can browse while you're browsin!</h3>
-
-
     </metal:fill>
+
+    <metal:fill fill-slot="footer">
+    </metal:fill>
+
 </body>
 </html>

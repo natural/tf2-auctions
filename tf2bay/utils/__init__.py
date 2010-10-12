@@ -24,3 +24,11 @@ def is_prod(environ):
     return not is_devel(environ)
 
 
+
+def user_steam_id(user):
+    try:
+	nick = user.nickname().strip()
+	m = re.match('\d{17}$', nick)
+	return nick[m.start():m.end()]
+    except (Exception, ), exc:
+	pass

@@ -12,10 +12,9 @@
     </metal:slot>
     <metal:slot fill-slot="script">
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="/media/scr/hacks.js"></script>
 	<script type="text/javascript" src="/media/scr/content.js"></script>
         <metal:slot define-slot="script" />
-	<script type="text/javascript">
-	</script>
     </metal:slot>
 </head>
 
@@ -26,31 +25,29 @@
 	<metal:login tal:define="auth controller.is_authen()">
 	<div id="header" metal:fill-slot="header">
 	    <a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
-	    <span id="main_button_wrapper">
+	    <div id="header_button_wrapper">
 		    <span class="button"><a href="/browse">Browse</a></span>
 		    <span class="button"><a href="/search">Search</a></span>
 		    <span tal:condition="not auth" class="button login_button"><a href="/login">Login</a></span>
 		    <span tal:condition="auth" class="button logout_button"><a href="${controller.logout_url}">Logout</a></span>
-	    </span>
+	    </div>
 	    <metal:define define-slot="header" />
 	</div>
 	</metal:login>
     </div>
 
-	<div id="menu" metal:fill-slot="menu">
+    <div id="profile-menu" metal:fill-slot="menu">
+	<div id="profile-buttons" tal:condition="controller.is_authen()">
+	    <span class="profile-button"><a href="/profile#bids">My Bids</a></span>
+	    <span class="profile-button"><a href="/profile#listings">My Listings</a></span>
+	    <span><metal:slot define-slot="profile-buttons-next" /></span>
 	</div>
-
-	    <metal:login tal:define="auth controller.is_authen()">
-		<div id="profile_buton_wrapper">
-		    <span tal:condition="auth" class="button"><a href="/listings">My Listings</a></span>
-		    <span tal:condition="auth" class="button"><a href="/bids">My Bids</a></span>
-		</div>
-	    </metal:login>
+	<metal:slot define-slot="menu" />
+    </div>
 
 
 	<div id="content">
 	    <div id="message"></div>
-
 	    <metal:slot metal:fill-slot="main">
 		<metal:slot define-slot="main" />
 	    </metal:slot>

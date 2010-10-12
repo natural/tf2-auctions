@@ -1,0 +1,93 @@
+<div metal:define-macro="backpack_a">
+    <div metal:define-slot="name">
+
+	<!-- new items container and table -->
+        <div id="unplaced-a" class="null">
+	    <h2><span class="hilite">&nbsp;</span><span class="its_msg_8">New Items</span></h2>
+            <table class="unplaced centered">
+		<tbody>
+		    <tr><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td></tr>
+		</tbody>
+	    </table>
+        </div>
+	<hr class="unplaced null" />
+
+
+	<!-- old items container and table -->
+        <div id="backpack-a">
+	    <div id="backpack-header-a"><h3>Your Backpack</h3><div></div></div>
+            <table class="backpack centered">
+		<!-- ids to make placement easy -->
+		<tbody class="backpackPage-1">
+                    <tr><td id="a1"><div></div></td><td id="a2"><div></div></td><td id="a3"><div></div></td><td id="a4"><div></div></td><td id="a5"><div></div></td></tr>
+                    <tr><td id="a11"><div></div></td><td id="a12"><div></div></td><td id="a13"><div></div></td><td id="a14"><div></div></td><td id="a15"><div></div></td></tr>
+                    <tr><td id="a21"><div></div></td><td id="a22"><div></div></td><td id="a23"><div></div></td><td id="a24"><div></div></td><td id="a25"><div></div></td></tr>
+                    <tr><td id="a31"><div></div></td><td id="a32"><div></div></td><td id="a33"><div></div></td><td id="a34"><div></div></td><td id="a35"><div></div></td></tr>
+                    <tr><td id="a41"><div></div></td><td id="a42"><div></div></td><td id="a43"><div></div></td><td id="a44"><div></div></td><td id="a45"><div></div></td></tr>
+		</tbody>
+		<tbody class="backpackPage-2 null">
+                    <tr><td id="a6" ><div></div></td><td id="a7" ><div></div></td><td id="a8" ><div></div></td><td id="a9" ><div></div></td><td id="a10"><div></div></td></tr>
+                    <tr><td id="a16"><div></div></td><td id="a17"><div></div></td><td id="a18"><div></div></td><td id="a19"><div></div></td><td id="a20"><div></div></td></tr>
+                    <tr><td id="a26"><div></div></td><td id="a27"><div></div></td><td id="a28"><div></div></td><td id="a29"><div></div></td><td id="a30"><div></div></td></tr>
+                    <tr><td id="a36"><div></div></td><td id="a37"><div></div></td><td id="a38"><div></div></td><td id="a39"><div></div></td><td id="a40"><div></div></td></tr>
+                    <tr><td id="a46"><div></div></td><td id="a47"><div></div></td><td id="a48"><div></div></td><td id="a49"><div></div></td><td id="a50"><div></div></td></tr>
+		</tbody>
+		<tbody class="backpackPage-3 null">
+                    <tr><td id="a51"><div></div></td><td id="a52"><div></div></td><td id="a53"><div></div></td><td id="a54"><div></div></td><td id="a55"><div></div></td></tr>
+                    <tr><td id="a61"><div></div></td><td id="a62"><div></div></td><td id="a63"><div></div></td><td id="a64"><div></div></td><td id="a65"><div></div></td></tr>
+                    <tr><td id="a71"><div></div></td><td id="a72"><div></div></td><td id="a73"><div></div></td><td id="a74"><div></div></td><td id="a75"><div></div></td></tr>
+                    <tr><td id="a81"><div></div></td><td id="a82"><div></div></td><td id="a83"><div></div></td><td id="a84"><div></div></td><td id="a85"><div></div></td></tr>
+                    <tr><td id="a91"><div></div></td><td id="a92"><div></div></td><td id="a93"><div></div></td><td id="a94"><div></div></td><td id="a95"><div></div></td></tr>
+		</tbody>
+		<tbody class="backpackPage-4 null">
+                    <tr><td id="a56"><div></div></td><td id="a57"><div></div></td><td id="a58"><div></div></td><td id="a59"><div></div></td><td id="a60"><div></div></td></tr>
+                    <tr><td id="a66"><div></div></td><td id="a67"><div></div></td><td id="a68"><div></div></td><td id="a69"><div></div></td><td id="a70"><div></div></td></tr>
+                    <tr><td id="a76"><div></div></td><td id="a77"><div></div></td><td id="a78"><div></div></td><td id="a79"><div></div></td><td id="a80"><div></div></td></tr>
+                    <tr><td id="a86"><div></div></td><td id="a87"><div></div></td><td id="a88"><div></div></td><td id="a89"><div></div></td><td id="a90"><div></div></td></tr>
+                    <tr><td id="a96"><div></div></td><td id="a97"><div></div></td><td id="a98"><div></div></td><td id="a99"><div></div></td><td id="a100"><div></div></td></tr>
+		</tbody>
+		<tbody class="backpackPage-5 null">
+                    <tr><td id="a101"><div></div></td><td id="a102"><div></div></td><td id="a103"><div></div></td><td id="a104"><div></div></td><td id="a105"><div></div></td></tr>
+                    <tr><td id="a111"><div></div></td><td id="a112"><div></div></td><td id="a113"><div></div></td><td id="a114"><div></div></td><td id="a115"><div></div></td></tr>
+                    <tr><td id="a121"><div></div></td><td id="a122"><div></div></td><td id="a123"><div></div></td><td id="a124"><div></div></td><td id="a125"><div></div></td></tr>
+                    <tr><td id="a131"><div></div></td><td id="a132"><div></div></td><td id="a133"><div></div></td><td id="a134"><div></div></td><td id="a135"><div></div></td></tr>
+                    <tr><td id="a141"><div></div></td><td id="a142"><div></div></td><td id="a143"><div></div></td><td id="a144"><div></div></td><td id="a145"><div></div></td></tr>
+		</tbody>
+		<tbody class="backpackPage-6 null">
+                    <tr><td id="a106"><div></div></td><td id="a107"><div></div></td><td id="a108"><div></div></td><td id="a109"><div></div></td><td id="a110"><div></div></td></tr>
+                    <tr><td id="a116"><div></div></td><td id="a117"><div></div></td><td id="a118"><div></div></td><td id="a119"><div></div></td><td id="a120"><div></div></td></tr>
+                    <tr><td id="a126"><div></div></td><td id="a127"><div></div></td><td id="a128"><div></div></td><td id="a129"><div></div></td><td id="a130"><div></div></td></tr>
+                    <tr><td id="a136"><div></div></td><td id="a137"><div></div></td><td id="a138"><div></div></td><td id="a139"><div></div></td><td id="a140"><div></div></td></tr>
+                    <tr><td id="a146"><div></div></td><td id="a147"><div></div></td><td id="a148"><div></div></td><td id="a149"><div></div></td><td id="a150"><div></div></td></tr>
+		</tbody>
+		<tbody class="backpackPage-7 null">
+                    <tr><td id="a151"><div></div></td><td id="a152"><div></div></td><td id="a153"><div></div></td><td id="a154"><div></div></td><td id="a155"><div></div></td></tr>
+                    <tr><td id="a161"><div></div></td><td id="a162"><div></div></td><td id="a163"><div></div></td><td id="a164"><div></div></td><td id="a165"><div></div></td></tr>
+                    <tr><td id="a171"><div></div></td><td id="a172"><div></div></td><td id="a173"><div></div></td><td id="a174"><div></div></td><td id="a175"><div></div></td></tr>
+                    <tr><td id="a181"><div></div></td><td id="a182"><div></div></td><td id="a183"><div></div></td><td id="a184"><div></div></td><td id="a185"><div></div></td></tr>
+                    <tr><td id="a191"><div></div></td><td id="a192"><div></div></td><td id="a193"><div></div></td><td id="a194"><div></div></td><td id="a195"><div></div></td></tr>
+		</tbody>
+		<tbody class="backpackPage-8 null">
+                    <tr><td id="a156"><div></div></td><td id="a157"><div></div></td><td id="a158"><div></div></td><td id="a159"><div></div></td><td id="a160"><div></div></td></tr>
+                    <tr><td id="a166"><div></div></td><td id="a167"><div></div></td><td id="a168"><div></div></td><td id="a169"><div></div></td><td id="a170"><div></div></td></tr>
+                    <tr><td id="a176"><div></div></td><td id="a177"><div></div></td><td id="a178"><div></div></td><td id="a179"><div></div></td><td id="a180"><div></div></td></tr>
+                    <tr><td id="a186"><div></div></td><td id="a187"><div></div></td><td id="a188"><div></div></td><td id="a189"><div></div></td><td id="a190"><div></div></td></tr>
+                    <tr><td id="a196"><div></div></td><td id="a197"><div></div></td><td id="a198"><div></div></td><td id="a199"><div></div></td><td id="a200"><div></div></td></tr>
+		</tbody>
+            </table>
+
+	    <div id="toolbar-a">
+		<div id="nav-a">
+		    <span class="nonav">&lt;</span>
+		    <span class="nav"><a href="#foo">&lt;</a></span>
+		    <span id="pages-a">1/4</span>
+		    <span class="nonav">&gt;</span>
+		    <span class="nav"><a href="#bar">&gt;</a></span>
+		</div>
+	    </div>
+
+	    <div metal:define-slot="backpack-next"></div>
+	</div>
+</div>
+
+</div>
