@@ -14,7 +14,7 @@
 		    <td><b><code tal:content="key" /></b></td>
 		    <td><code tal:condition="value not in empties"
 			      tal:content="unicode(value)" />
-			<i tal:condition="value in empties">empty</i>
+			<code tal:condition="value in empties">&lt;empty&gt;</code>
 		    </td>
 		</tr>
 	    </tbody>

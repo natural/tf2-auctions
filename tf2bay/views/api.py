@@ -27,7 +27,7 @@ class PublicApi(PageHandler):
     def get_listings(self, **kwds):
 	q = Listing.all()
 	listings = q.fetch(limit=10)
-	return json.dumps([listing.native_repr() for listing in listings], indent=4)
+	return json.dumps([n.encode_builtin() for n in listings], indent=4)
 
     def search_listings(self, **kwds):
 	pass

@@ -6,35 +6,42 @@ api_version: 1
 
 handlers:
 
+
 - url: /media/(.*\.(css|js|png|ttf))
   static_files: media/\1
   expiration: "1d 1h"
   upload: media/(.*\.(css|js|png|ttf))
 
+
+# lol
 - url: /favicon.ico
   static_files: media/favicon.ico
   upload: media/favicon.ico
 
-- url: /(auction|profile)
+
+# private profile view; displays profile of current user
+- url: /(profile)
   login: required
   script: main.py
 
+
+# for testing
 - url: /echo
   login: admin
   script: main.py
 
+
+# private api for listing and bid create, update and delete
 - url: /api/v1/(add-listing|cancel-listing|add-bid)
   script: main.py
   login: required
 
+
+# public api for listing and bid reads
 - url: /api/v1/(get-listings|search-listings)
   script: main.py
 
-- url: /(login|browse|search)
-  script: main.py
 
-- url: /
-  script: main.py
-
-- url: /(.*)
+# public pages
+- url: (/|/login|/browse|/search|/(.*))
   script: main.py
