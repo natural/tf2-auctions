@@ -6,22 +6,31 @@
 </head>
 <body>
     <metal:fill fill-slot="profile-buttons-next">
-	<span id="load-backpack-msg">Loading your backpack...</span>
     </metal:fill>
+
+
     <metal:fill fill-slot="main" tal:define="id64 controller.steam_id">
+
+	<form action="/api/v1/add-listing" method="post" tal:condition="False">
+	    <input type="submit" value="Test" />
+	</form>
 
 
 	<div tal:condition="id64">
 	    <h1 id="load-profile-msg">Loading your profile...</h1>
 
 	    <script type="text/javascript">
-		$(document).ready(function() { loadProfile('${id64}'); loadBackpack('${id64}') })
+		$(document).ready(function() {
+                    ProfileLoader.init('${id64}')
+                    BackpackLoader.init('${id64}')
+                })
 	    </script>
 
 	    <h1 class="message m-top-1"><span class="hilite"></span><a name="bids">My Bids</a></h1>
 	    <div>lorim ipsum</div>
+
 	    <h1 class="message m-top-1"><span class="hilite"></span><a name="listings">My Listings</a></h1>
-	    <div>lorim ipsum</div>
+	    <div id="load-backpack-msg">Loading your backpack...</div>
 
 	    <div id="show-new-listing-backpack-wrapper" class="null">
 		<h1 class="message m-top-1"><span class="hilite"></span>Post a New Listing</h1>

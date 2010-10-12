@@ -13,11 +13,6 @@
 	<div tal:condition="id64">
 	    <h1>Howdy there, pardner!</h1>
 	    <div>Get to tradin' yer stuff for other stuff!</div>
-	    <script type="text/javascript">
-		$(document).ready(function() { loadProfile('${id64}'); loadBackpack('${id64}') })
-	    </script>
-	    <h3 id="load-profile-msg">Loading your profile...</h3>
-	    <h3 id="load-backpack-msg">Loading your backpack...</h3>
 	</div>
 
 

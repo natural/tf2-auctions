@@ -9,8 +9,16 @@ class BrowseView(PageHandler):
     template_name = 'browse.pt'
 
 
-    def get(self, **kwds):
+    def __get(self, **kwds):
 	q = Listing.all()
 	listings = q.fetch(limit=10)
 	self.render(listings=listings)
 
+
+    def filters(self):
+	return (
+	    ('ending-soon', 'Ending Soon'),
+	    ('popular', 'Popular'),
+	    ('hats', 'Hats'),
+	    ('weapons', 'Weapons'),
+	)

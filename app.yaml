@@ -23,6 +23,13 @@ handlers:
   login: admin
   script: main.py
 
+- url: /api/v1/(add-listing|cancel-listing|add-bid)
+  script: main.py
+  login: required
+
+- url: /api/v1/(get-listings|search-listings)
+  script: main.py
+
 - url: /(login|browse|search)
   script: main.py
 

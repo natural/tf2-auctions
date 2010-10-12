@@ -1,12 +1,3 @@
-//var unplacedItemSelector = '#unplaced table.unplaced td img'
-//var placedItemSelector = '#backpack table.backpack td img'
-//var equippedItemSelector = 'span.equipped'
-//var itemContentSelector = [unplacedItemSelector, placedItemSelector, equippedItemSelector].join(', ')
-
-var itemContentSelector = function(slug) {
-    return '#unplaced-' + slug + ' table.unplaced td img, #backpack-' + slug + ' table.backpack td img, span.equipped'
-}
-
 var SchemaTool = {
     itemDefs: null,
 
@@ -15,7 +6,6 @@ var SchemaTool = {
 	self.schema = source['result']
 	// a way to lazily compute these would be nice
         self.itemDefs = {}, self.attributesByName = {}, self.attributesById = {}
-
 	$.each(self.schema['items']['item'], function(idx, def) {
 	    self.itemDefs[def['defindex']] = def
 	})
@@ -46,7 +36,6 @@ var SchemaTool = {
     uncraftable: function() {
 	return this.select('craft_class', function(v) { return (v==undefined) })
     },
-
     qualityMap: function() {
 	var map = {}, names = this.schema['qualityNames']
 	$.each(this.schema['qualities'], function(name, key) { map[key] = names[name] })
@@ -77,7 +66,6 @@ var BackpackItemsTool = {
 		var img = $('img:last', ele) // .data('node', item)
 		var def = item['defindex']
 		if (self.itemEquipped(item)) {
-		    //console.log('item equiped', item)
 		    img.addClass('equipped equipped-'+def).after(self.equippedTag)
 		    img.removeClass('unequipped-'+def)
 		} else {
@@ -100,21 +88,15 @@ var BackpackItemsTool = {
 	    }
 	})
 	$('#unplaced-' + slug + ', hr.unplaced').toggle(newIdx > -1)
-	$(itemContentSelector(slug)).fadeIn(750)
+	$(self.itemContentSelector(slug)).fadeIn(750)
 	$('#backpack-listing').fadeIn()
     },
 
+    itemContentSelector: function(slug) {
+	return '#unplaced-' + slug + ' table.unplaced td img, #backpack-' + slug + ' table.backpack td img, span.equipped'
+    }
 
 }
-
-/*
-    itemClicked: function(event) {
-	if (!event.ctrlKey) {
-	    $('table.backpack td').removeClass('selected')
-	}
-	$(this).addClass('selected')
-    },
-*/
 
 
 var BackpackView = function(slug) {
@@ -176,180 +158,165 @@ var ItemsTool = {
 	    var defs = schemaCall()
 	    return this.items.filter(function(item) { return item['defindex'] in defs })
 	}
+    }
+}
+
+
+
+
+var ProfileLoader = {
+    init: function(id64) {
+	console.log('load profile', id64)
+	$.ajax({url: 'http://tf2apiproxy.appspot.com/api/v1/profile/'+id64,
+		dataType: 'jsonp',
+		jsonpCallback:'tf2bayProfileLoader',
+		cache: true,
+		success: ProfileLoader.okay,
+		error: ProfileLoader.error
+	   })
     },
-}
 
+    okay: function(profile) {
+	$('#avatar').after("<img src='" + profile['avatar'] + "' />")
+	//    $("#load-profile-msg").after("<img src='" + profile['avatar'] + "' />")
+	$('#load-profile-msg').text('Profile loaded. Welcome, ' + profile['personaname'] + '!')
+	$('#show-new-listing-backpack-wrapper').fadeIn().slideDown();
+    },
 
-
-
-
-
-loadProfile = function(id64) {
-    console.log('load profile', id64)
-    $.ajax({url: 'http://tf2apiproxy.appspot.com/api/v1/profile/'+id64,
-	    dataType: 'jsonp',
-	    jsonpCallback:'tf2bayProfileLoader',
-	    cache: true,
-	    success: onProfileLoaded,
-	    //error: onProfileError
-	   })
-}
-
-loadBackpack = function(id64) {
-    console.log('load backpack', id64)
-    $.ajax({url: 'http://tf2apiproxy.appspot.com/api/v1/items/'+id64,
-	    dataType: 'jsonp',
-	    jsonpCallback:'tf2bayBackpackLoader',
-	    cache: true,
-	    success: onBackpackLoaded,
-	    //error: onBackpackError
-	   })
-}
-
-onProfileLoaded = function(profile) {
-    $("#load-profile-msg").after("<img src='" + profile['avatar'] + "' />")
-    $("#load-profile-msg").text("Profile loaded. Welcome, " + profile['personaname'] + '!')
-    $("#show-new-listing-backpack-wrapper").fadeIn().slideDown();
-}
-
-
-onBackpackLoaded = function(backpack) {
-    var count = backpack.length
-    // count - count_untradable_items - count_my_listing_items
-    if (count>0) {
-	var msg = "You've got " + count + " item" + (count==1?'':'s') + " to auction."
-    } else {
-	var msg = "You don't have anything to trade.  How can this be?  Go play!"
+    error: function(err) {
+	console.log(err)
     }
-    ItemsTool.init(backpack)
-    $("#load-backpack-msg").text(msg)
-    //console.log(backpack)
 }
 
 
+var NewListingTool = {
+    show: function() {
+	$('#show-new-listing-backpack').fadeOut()
+	$('#show-new-listing-backpack-wrapper div').first().fadeOut()
+	$('#new-listing-backpack').slideDown().fadeIn()
+	$('#backpack-header-a h3').first().html('Your Backpack')
+	$('#backpack-header-a div').first().html('Drag items from your backpack into the Listing Items area below.');
+	$('#toolbar-a').width( $('#backpack-a tbody').width())
 
-setupListingDrag = function() {
-    var updateCount = function() {
-	var len = $("#backpack-listing img").length
-	var txt = '(' + len + ' ' + (len > 1 ? 'items' : 'item') + ')'
-	$("#listing-title-extra").text( txt )
-    }
-    var placeListingItem = function(source, target) {
-	$(target).append( $('div img', source))
-	updateCount();
-    }
+	$('#toolbar-a').width( $('#backpack-a tbody').width())
+	$('#listing-fields').width( $('#backpack-a tbody').width())
 
-    var unplaceListingItem = function(source, target) {
-	$(target).append( $('div img', source))
-	updateCount();
-    }
+	$('html body').animate({scrollTop: $('#show-new-listing-backpack-wrapper').position().top - 10})
 
-    $('#backpack-a table.backpack td').draggable({
-        revert: 'invalid',
-        containment: '#new-listing-backpack',
-        helper: 'clone',
-        cursor: 'move',
-	start: function(event, ui) { ui.helper.addClass('selected') },
-    })
-
-    $('#backpack-listing td div:empty').droppable({
-        accept: '#backpack-a td',
-        drop: function(event, ui) {
-	    if ($(this).children().length > 0) {
-		return false;
-	    }
-	    placeListingItem(ui.draggable, $(this))
-	},
-    })
-
-    $('#backpack-listing td').draggable({
-        containment: '#new-listing-backpack',
-        helper: 'clone',
-        cursor: 'move',
-	start: function(event, ui) { ui.helper.addClass('selected') },
-    })
-
-    $('#backpack-a table.backpack td div:empty').droppable({
-        accept: '#backpack-listing td',
-        drop: function(event, ui) {
-	    if ($(this).children().length > 0) {
-		return false;
-	    }
-	    unplaceListingItem(ui.draggable, $(this))
-	},
-    })
-
-
-}
-
-
-
-onShowNewListingBackpack = function() {
-    $("#show-new-listing-backpack").fadeOut()
-    $("#show-new-listing-backpack-wrapper div").first().fadeOut()
-    $("#new-listing-backpack").slideDown().fadeIn()
-    $("#backpack-header-a h3").first().html("Your Backpack")
-    $("#backpack-header-a div").first().html("Drag items from your backpack into the Listing Items area below.");
-    $("#toolbar-a").width( $("#backpack-a tbody").width())
-
-    $("#toolbar-a").width( $("#backpack-a tbody").width())
-    $("#listing-fields").width( $("#backpack-a tbody").width())
-
-    $('html body').animate({scrollTop: $("#show-new-listing-backpack-wrapper").position().top - 10})
-
-    setupListingDrag()
-
-    if (false) {
-	$('#backpack-a table.backpack td').click(function(event) {
-            if (!event.ctrlKey) {
-		$('#backpack-a table.backpack td').removeClass('selected')
-            }
-            $(this).addClass('selected')
-	})
-    }
-
-
-    var bp = new BackpackView('a')
-    bp.navChanged()
-    BackpackItemsTool.placeItems('a', ItemsTool.items)
-
-    $("#new-listing-backpack-cancel").click(function() {
-	// reset backpack
-	$("#new-listing-backpack").fadeOut()
-	$("#show-new-listing-backpack").fadeIn()
-	$("#show-new-listing-backpack-wrapper div").first().fadeIn()
+	var bp = new BackpackView('a')
+	bp.navChanged()
+	BackpackItemsTool.placeItems('a', ItemsTool.items)
+	NewListingTool.initDrag()
 	return false
-    })
+    },
+
+    cancel: function() {
+	// TODO: reset backpack
+	$('#new-listing-backpack').fadeOut()
+	$('#show-new-listing-backpack').fadeIn()
+	$('#show-new-listing-backpack-wrapper div').first().fadeIn()
+	return false
+    },
+
+    initDrag: function() {
+	var updateCount = function() {
+	    var len = $('#backpack-listing img').length
+	    var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
+	    $('#listing-title-extra').text(txt)
+	}
+	var dropItem = function(event, ui) {
+	    if ($(this).children().length > 0) { return false }
+	    $(this).parent().removeClass('itemHover')
+	    $(this).append( $('div img', ui.draggable))
+	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
+	    window.setTimeout(updateCount, 150) // delay for accurate counting
+	}
+	var dragShow = function(event, ui) { ui.helper.addClass('selected') }
+	var dropOver = function(event, ui) { $(this).parent().addClass('itemHover') }
+	var dropOut = function(event, ui) { $(this).parent().removeClass('itemHover') }
+	$('#backpack-a table.backpack td').draggable({
+            containment: '#new-listing-backpack', helper: 'clone', cursor: 'move',
+	    start: dragShow})
+	$('#backpack-listing td').draggable({
+            containment: '#new-listing-backpack', helper: 'clone', cursor: 'move',
+	    start: dragShow})
+	$('#backpack-listing td div').droppable(
+	    {accept: '#backpack-a td', drop: dropItem, over: dropOver, out: dropOut})
+	$('#backpack-a table.backpack td div').droppable(
+	    {accept: '#backpack-listing td', drop: dropItem, over: dropOver, out: dropOut})
+    }
+
 }
 
 
-onSchemaLoad = function(schema) {
-    SchemaTool.init(schema)
-    $(".defindex_replace").each(function(index, tag) {
-	var id = $(tag).text()
-	var item = SchemaTool.itemDefs[id]
-	$(tag).html("<img src='" + item['image_url'] + "' height=48 width=48 />").fadeIn()
-    })
-    console.log(schema)
+var BackpackLoader = {
+    init: function(id64) {
+	console.log('load backpack', id64)
+	$.ajax({url: 'http://tf2apiproxy.appspot.com/api/v1/items/'+id64,
+		dataType: 'jsonp',
+		jsonpCallback:'tf2bayBackpackLoader',
+		cache: true,
+		success: BackpackLoader.okay,
+		error: BackpackLoader.error
+	   })
+    },
+
+    okay: function(backpack) {
+	var count = backpack.length
+	// count - count_untradable_items - count_my_listing_items
+	if (count>0) {
+	    var msg = "You've got " + count + " item" + (count==1?'':'s') + " to auction."
+	} else {
+	    var msg = "You don't have anything to trade.  How can this be?  Go play!"
+	}
+	ItemsTool.init(backpack)
+	$('#load-backpack-msg').text(msg)
+	//console.log(backpack)
+    },
+
+    error: function(err) {
+	console.log(err)
+    }
 }
 
+var SchemaLoader = {
+    okay: function(schema) {
+	SchemaTool.init(schema)
+	SchemaLoader.setImages()
+    },
 
-onSchemaError = function(err) {
-    console.error(err)
+    error: function(err) {
+	console.error(err)
+    },
+
+    setImages: function() {
+	// replace any items on screen with the "schema definition
+	// index replace" class
+	$('.defindex-lazy').each(function(index, tag) {
+	    var item = SchemaTool.itemDefs[$(tag).text()]
+	    if (!item) { return }
+	    $(tag).html("<img src='" + item['image_url'] + "' height=48 width=48 />").fadeIn()
+	})
+    },
+
 }
 
+tf2baySchemaLoader = SchemaLoader.okay
 
 $(document).ready(function() {
-    $('body').mousedown(function(){return false}) //disable text selection
-    $("#show-new-listing-backpack").click(onShowNewListingBackpack)
+    $('body').mousedown(function() { return false }) //disable text selection
+
+    $('#show-new-listing-backpack').click(NewListingTool.show)
+    $('#new-listing-backpack-cancel').click(NewListingTool.cancel)
+
+    // this combination of parameters allows the client to fetch the
+    // schema from another site and lets the browser cache it.
     $.ajax({url: 'http://tf2apiproxy.appspot.com/api/v1/schema',
 	    dataType: 'jsonp',
 	    jsonpCallback:'tf2baySchemaLoader',
 	    cache: true,
-	    success: onSchemaLoad,
-	    error: onSchemaError
+	    success: SchemaLoader.okay,
+	    error: SchemaLoader.error
 	   })
     console.log('document ready')
-
-
 })

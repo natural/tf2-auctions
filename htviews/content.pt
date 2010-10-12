@@ -6,14 +6,13 @@
     <metal:slot fill-slot="style">
         <link rel="media" href="/media/screen.css" type="text/css" media="screen, projection" />
         <link rel="stylesheet" href="/media/site.css" type="text/css" media="screen, projection" />
-        <link rel="stylesheet" href="/media/print.css" type="text/css" media="print" />
         <!--[if lt IE 8]><link rel="stylesheet" href="/media/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <metal:slot define-slot="style" />
     </metal:slot>
     <metal:slot fill-slot="script">
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 	<script type="text/javascript" src="/media/scr/hacks.js"></script>
-	<script type="text/javascript" src="/media/scr/content.js"></script>
+	<script type="text/javascript" src="/media/scr/tools.js"></script>
         <metal:slot define-slot="script" />
     </metal:slot>
 </head>
@@ -30,6 +29,7 @@
 		    <span class="button"><a href="/search">Search</a></span>
 		    <span tal:condition="not auth" class="button login_button"><a href="/login">Login</a></span>
 		    <span tal:condition="auth" class="button logout_button"><a href="${controller.logout_url}">Logout</a></span>
+		    <span id="avatar"></span>
 	    </div>
 	    <metal:define define-slot="header" />
 	</div>

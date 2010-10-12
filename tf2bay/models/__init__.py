@@ -20,6 +20,9 @@ class PlayerItem(polymodel.PolyModel):
     def __str__(self):
 	return '<PlayerItem uniqueid=%s, defindex=%s>' % (self.uniqueid, self.defindex)
 
+    def native_repr(self):
+	return {'uniqueid': self.uniqueid, 'defindex': self.defindex}
+
     @classmethod
     def get_by_uid(cls, uniqueid):
 	query = cls.all()
@@ -43,9 +46,7 @@ class PlayerProfile(db.Expando):
     ## entries.
     owner = db.UserProperty(required=True, indexed=True)
     id64 = db.StringProperty('Steam ID', required=True, indexed=True)
-    #personaname = db.StringProperty('Persona Name', indexed=True)
-    #avatar = db.LinkProperty('Avatar URL')
-    #profileurl = db.LinkProperty('Steam Community URL')
+    keys = db.StringListProperty('Profile Keys')
     backpack = db.TextProperty('Backpack Items')
 
     def __str__(self):
@@ -55,6 +56,12 @@ class PlayerProfile(db.Expando):
     def get_by_id64(cls, id64):
 	query = cls.all()
 	query.filter('id64 = ', id64)
+	return query.get()
+
+    @classmethod
+    def get_by_user(cls, user):
+	query = cls.all()
+	query.filter('owner =', user)
 	return query.get()
 
     @classmethod
@@ -85,11 +92,18 @@ class PlayerProfile(db.Expando):
 	else:
 	    for key in steam_profile:
 		setattr(self, key, steam_profile[key])
+	    self.keys = [k for k in steam_profile]
 	try:
 	    self.backpack = get_items(self.id64)
 	except:
 	    exception('PlayerProfile.refresh(): %s %s', self, exc)
 	return self
+
+    def native_repr(self):
+	res = {'id64':self.id64}
+	for key in self.keys:
+	    res[key] = getattr(self, key)
+	return res
 
 
 def future_expires(value):
@@ -160,11 +174,23 @@ class Listing(db.Model):
     def owner_profile(self):
 	return PlayerProfile.get_by_id64(self.owner.nickname())
 
+    def native_repr(self):
+	return {
+	    'owner': PlayerProfile.get_by_user(self.owner).native_repr(),
+	    'created': str(self.created),
+	    'expires': str(self.expires),
+	    'description': self.description,
+	    'bid_count': self.bid_count,
+	    'items': [i.native_repr() for i in self.items],
+	}
+
+
 class ListingItem(PlayerItem):
     listing = db.ReferenceProperty(Listing, required=True, indexed=True)
 
     def __str__(self):
 	return '<ListingItem listing=%s, uniqueid=%s, defindex=%s>' % (self.listing, self.uniqueid, self.defindex)
+
 
 
 class Bid(db.Model):

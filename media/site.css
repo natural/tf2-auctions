@@ -1,14 +1,20 @@
 @import url("base.css") all;
 
-
 body {
 background-color:#393431;
 color:#ebe2ca;
 font-family:"TF2secondary";
 font-size:1em;
 min-width:1024px;
-
 }
+
+
+.defindex-lazy {
+display:none;
+}
+
+
+/* mark.  check remaining selectors */
 
 
 a {
@@ -42,37 +48,41 @@ border:none;
 
 
 img.equipped {
-margin-top:-8px;
+//margin-top:-8px;
 }
 
 img.equipped-133 {
-margin-top:0;
+//margin-top:0;
 }
 
 img.equipped-183 {
-margin-top:0;
+//margin-top:0;
 }
 
 img.unequipped-133 {
-padding-top:0.5em;
+//padding-top:0.5em;
 }
 
 
 span.equipped {
 background-color:black;
 border-radius:0.5em;
-bottom:1.3em;
+-moz-border-radius:0.5em;
 color:#c8503c;
 font-family:"TF2secondary";
-left:0.7em;
+font-size:0.85em;
 padding:0.25em 0.4em 0.25em 0.4em;
 position:relative;
-font-size:0.85em;
+display:block;
+bottom:1.5em;
+left:0.75em;
+width:4.25em;
 }
 
 span.quantity {
 background-color:black;
 border-radius:0.5em;
+-moz-border-radius:0.5em;
 top:0.5em;
 color:#c8503c;
 font-family:"TF2secondary";
@@ -98,6 +108,7 @@ font-family:"TF2Build";
 background-color:#766b5e;
 border-bottom:none !important;
 border-radius:0.25em;
+-moz-border-radius:0.25em;
 color:#ece3cb;
 height:1.5em;
 line-height:1.5em;
@@ -118,8 +129,10 @@ padding-top:1em;
 .profile-button {
 background-color:#9a8b6b;
 background: -webkit-gradient(linear, left top, left bottom, from(#dcd2ba), to(#9a8b6b));
+background: -moz-linear-gradient(top, #dcd2ba, #9a8b6b);
 font-family:"TF2Build";
 border-radius:0.25em;
+-moz-border-radius:0.25em;
 height:1.5em;
 line-height:1.5em;
 padding:0.5em 0.75em 0.5em 0.75em;
@@ -135,7 +148,9 @@ color:#2e2b2a;
 .profile-button:hover {
 background-color:#512a20;
 background: -webkit-gradient(linear, left top, left bottom, from(#995040), to(#512a20));
+background: -moz-linear-gradient(top, #995040, #512a20);
 }
+
 
 .profile-button:hover a {
 color:#ebe2ca;
@@ -207,7 +222,8 @@ margin-top:6px; /* gunboats image is too high from center */
 
 table.backpack td, table.backpack-listing td {
 border-radius:0.75em;
-border:0.25em solid #2E2B2A !important;
+-moz-border-radius:0.75em;
+border:0.25em solid #2E2B2A;
 background-color:#3c352e;
 }
 
@@ -218,15 +234,16 @@ border:0.25em solid #847668 !important;
 }
 
 
-.selected, table.backpack td.selected, table.backpack-listing td.selected {
+.selected, table.backpack td.selected, table.backpack-listing td.selected, .itemSelected {
 background-color:#ece3cb !important;
-border:0.25em solid #ece3cb !important;
+border:0.25em solid #ece3cb;
 }
 
 
 table.unplaced td {
 border:0.25em solid #393431;
 border-radius:0.75em;
+-moz-border-radius:0.75em;
 }
 
 
@@ -266,6 +283,7 @@ a-padding:1em 2em 1em 1em;
 #backpack, #backpack-a, #backpack-listing {
 background-color:#2e2b2a;
 border-radius:1em;
+-moz-border-radius:1em;
 border:3px solid #2e2b2a;
 padding-bottom:1.5em; /* matches toolbar padding top */
 }
@@ -333,6 +351,10 @@ right:0;
 bottom:1em;
 }
 
+#header_button_wrapper img {
+vertical-align:bottom;
+}
+
 #header img {
 }
 
@@ -384,6 +406,7 @@ border-left:1px solid #453F36;
 border-right:1px solid #453F36;
 background: -webkit-gradient(linear, left top, left bottom, from(#38332D), to(#221E1A));
 border-radius:3px;
+-moz-border-radius:3px;
 padding:0;
 position:absolute;
 text-align:center;
@@ -536,6 +559,7 @@ margin-left:1em;
 
 .messages div {
 border-radius:0.75em;
+-moz-border-radius:0.75em;
 margin-right:5em;
 opacity:0.9;
 text-align:center;
@@ -593,9 +617,6 @@ cursor:pointer;
 }
 
 
-.defindex_replace {
-display:none;
-}
 
 
 .p-top-05 {
@@ -606,3 +627,27 @@ padding-top:0.5em;
 margin-top:1em;
 }
 
+
+#filters {
+font-family:"TF2Build";
+margin:0.5em auto 0.5em auto;
+width:60%;
+}
+
+#filters a {
+border-bottom:1px solid;
+}
+
+#filters a:hover {
+color:#c8503c;
+border-bottom:none;
+}
+
+#listings-browser {
+width:100%;
+
+}
+
+#listings-browser tbody tr td {
+border:1px dotted red;
+}
