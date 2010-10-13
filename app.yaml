@@ -19,8 +19,9 @@ handlers:
   upload: media/favicon.ico
 
 
-# private profile view; displays profile of current user
-- url: /(profile)
+# private profile view: displays profile of current user
+# private add listing view:  displays form for creating new listing
+- url: /(profile|add-listing)
   login: required
   script: main.py
 
@@ -31,14 +32,19 @@ handlers:
   script: main.py
 
 
-# private api for listing and bid create, update and delete
+# private apis for listing and bid create, update and delete
 - url: /api/v1/(add-listing|cancel-listing|add-bid)
   script: main.py
   login: required
 
 
+# public apis for a players listings and bids
+- url: /api/v1/(listings|bids)/(\d{17})
+  script: main.py
+
+
 # public api for listing and bid reads
-- url: /api/v1/(get-listings|search-listings)
+- url: /api/v1/(browse-listings|search-listings)
   script: main.py
 
 

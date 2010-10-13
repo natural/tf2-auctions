@@ -1,75 +1,28 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
     <title metal:fill-slot="title">tf2bay.com</title>
-    <script metal:fill-slot="script" type="text/javascript"
-	    src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
+    <script metal:fill-slot="script" type="text/javascript" src="/media/scr/profile.js"></script>
 </head>
 <body>
-    <metal:fill fill-slot="profile-buttons-next">
-    </metal:fill>
-
-
     <metal:fill fill-slot="main" tal:define="id64 controller.steam_id">
-
 	<form action="/api/v1/add-listing" method="post" tal:condition="False">
 	    <input type="submit" value="Test" />
 	</form>
-
-
 	<div tal:condition="id64">
 	    <h1 id="load-profile-msg">Loading your profile...</h1>
-
-	    <script type="text/javascript">
-		$(document).ready(function() {
-                    ProfileLoader.init('${id64}')
-                    BackpackLoader.init('${id64}')
-                })
-	    </script>
+	    <script type="text/javascript">var __id64__ = '${id64}'</script>
 
 	    <h1 class="message m-top-1"><span class="hilite"></span><a name="bids">My Bids</a></h1>
-	    <div>lorim ipsum</div>
+	    <div><div id="load-own-bids-msg"></div></div>
 
 	    <h1 class="message m-top-1"><span class="hilite"></span><a name="listings">My Listings</a></h1>
-	    <div id="load-backpack-msg">Loading your backpack...</div>
 
-	    <div id="show-new-listing-backpack-wrapper" class="null">
-		<h1 class="message m-top-1"><span class="hilite"></span>Post a New Listing</h1>
-		<div>Click the button to display your backpack and build a listing:</div>
-		<p class="centered text-centered p-top-05">
-		    <span class="button">
-			<a href="#" id="show-new-listing-backpack">Show Backpack</a>
-		    </span>
-		</p>
-	    </div>
-
-	    <div class="null" id="new-listing-backpack">
-		<metal:include metal:use-macro="context.backpack_a.macros.backpack_a">
-		    <metal:backpack metal:fill-slot="backpack-next">
-			<h3 id="listing-title">Your Listing <span id="listing-title-extra">(0 items)</span></h3>
-			<table class="backpack-listing centered" id="backpack-listing">
-			    <!-- ids to make placement easy -->
-			    <tbody class="">
-				<tr><td id="f1"><div></div></td><td id="f2"><div></div></td><td id="f3"><div></div></td><td id="f4"><div></div></td><td id="f5"><div></div></td></tr>
-				<tr><td id="f11"><div></div></td><td id="f12"><div></div></td><td id="f13"><div></div></td><td id="f14"><div></div></td><td id="f15"><div></div></td></tr>
-			    </tbody>
-			</table>
-			<div class="centered" id="listing-fields">
-			    <label for="desc">Description:</label><br />
-			    <textarea>enter a description here</textarea>
-			</div>
-			<p class="centered text-centered p-top-05">
-			    <span class="profile-button"><a href="#" id="new-listing-backpack-ok">OK, Post It!</a></span>
-			    <span class="profile-button"><a href="#" id="new-listing-backpack-cancel">Nah, Cancel!</a></span>
-			</p>
-		    </metal:backpack>
-		</metal:include>
-	    </div>
-
-
+	    <metal:wrapper tal:define="tid 'own-listings'">
+                <metal:include use-macro="context.listing_parts.macros.listing_large" />
+            </metal:wrapper>
+	    <div><div id="load-own-listings-msg"></div></div>
 
 	</div>
-
-
     </metal:fill>
 </body>
 </html>

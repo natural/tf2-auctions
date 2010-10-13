@@ -219,6 +219,7 @@ class Listing(db.Model):
 	    'description':self.description,
 	    'bid_count':self.bid_count,
 	    'items':[i.encode_builtin() for i in self.items],
+	    'key_name':self.key().name(),
 	}
 
 

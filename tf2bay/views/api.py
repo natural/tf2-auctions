@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from logging import warn
-from tf2bay.models import Listing, ListingItem
+from google.appengine.api import users
+from tf2bay.models import Bid, Listing, ListingItem
 from tf2bay.utils import json
 from tf2bay.views import PageHandler
 
 
 class PublicApi(PageHandler):
     methods = {
-	'get-listings' : 'get_listings',
+	'browse-listings' : 'get_listings',
         'search-listings' : 'search_listings',
     }
 
@@ -61,3 +62,18 @@ class AuctionApi(PageHandler):
 
     def add_bid(self):
 	pass
+
+
+class PublicQueryApi(PageHandler):
+    def get(self, kind, id64):
+	q = None
+	if kind == 'listings':
+	    q = Listing.all()
+	elif kind == 'bids':
+	    q = Bid.all()
+	if q is not None:
+	    q.filter('owner = ', users.User(id64))
+	    rs = [r.encode_builtin() for r in q.fetch(limit=100)]
+	else:
+	    rs = ()
+	self.response.out.write(json.dumps(rs, indent=4))

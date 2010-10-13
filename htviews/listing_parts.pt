@@ -1,0 +1,21 @@
+<metal:x>
+    <metal:y define-macro="listing_large">
+        <table id="${tid}" class="listings-large null">
+            <tbody class="null prototype">
+	        <tr>
+	            <td>Description:<br /><strong class="-listing-description"></strong></td>
+		    <td>Created: <span class="-listing-created"></span></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+			Items:<br />
+			<span class="-listing-items"></span>
+		    </td>
+		</tr>
+            </tbody>
+        </table>
+    </metal:y>
+
+
+
+</metal:x>

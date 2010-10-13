@@ -17,8 +17,10 @@ class BrowseView(PageHandler):
 
     def filters(self):
 	return (
+	    ('new', 'New'),
 	    ('ending-soon', 'Ending Soon'),
 	    ('popular', 'Popular'),
 	    ('hats', 'Hats'),
 	    ('weapons', 'Weapons'),
+	    ('tools', 'Tools'),
 	)

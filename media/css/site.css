@@ -121,7 +121,6 @@ white-space:nowrap !important;
 
 #profile-buttons {
 width:70%;
-a-margin:0.5em auto 0.5em auto;
 margin:0 auto 0 auto;
 padding-top:1em;
 }
@@ -164,9 +163,14 @@ color:#2a2725;
 }
 
 
-.button a:hover, span.nav a:hover,  #controls a:hover, #unknownProfile a:hover, #stats table.stats a:hover
+.button a:hover, #controls a:hover, #unknownProfile a:hover, #stats table.stats a:hover
 {
 background-color:#5b7a8c;
+color:#ece3cb;
+}
+
+span.nav a:hover {
+background-color:#924738;
 color:#ece3cb;
 }
 
@@ -258,19 +262,12 @@ display:none;
 
 
 #avatar {
-text-align:right;
-right:0.5em;
-margin:0.5em;
-position:absolute;
-top:0;
 }
 
 #avatar img {
-background-color:#84756b;
-border:0.25em solid #84756b;
-height:4em;
-width:4em;
-vertical-align:top;
+border:0.125em solid #847668 !important;
+border-radius:0.125em;
+margin-bottom:-0.125em;
 }
 
 
@@ -631,7 +628,7 @@ margin-top:1em;
 #filters {
 font-family:"TF2Build";
 margin:0.5em auto 0.5em auto;
-width:60%;
+width:90%;
 }
 
 #filters a {
@@ -643,11 +640,39 @@ color:#c8503c;
 border-bottom:none;
 }
 
-#listings-browser {
-width:100%;
 
+.listings-large {
+width:100%;
 }
 
-#listings-browser tbody tr td {
+.listings-large tbody tr td {
 border:1px dotted red;
+}
+
+#listing-duration-slider {
+margin:0.5em 0 1em 0;
+width:60%;
+border:1px solid blue;
+float:left;
+}
+
+#listing-duration {
+width:35%;
+float:right;
+padding-top:2%;
+}
+
+#listing-fields textarea {
+margin-bottom:1em;
+}
+
+.clear {
+clear:both;
+}
+
+
+caption {
+text-align:left;
+padding:0;
+margin:0
 }

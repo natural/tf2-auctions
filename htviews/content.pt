@@ -4,8 +4,8 @@
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     </metal:slot>
     <metal:slot fill-slot="style">
-        <link rel="media" href="/media/screen.css" type="text/css" media="screen, projection" />
-        <link rel="stylesheet" href="/media/site.css" type="text/css" media="screen, projection" />
+        <link rel="media" href="/media/css/screen.css" type="text/css" media="screen, projection" />
+        <link rel="stylesheet" href="/media/css/site.css" type="text/css" media="screen, projection" />
         <!--[if lt IE 8]><link rel="stylesheet" href="/media/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <metal:slot define-slot="style" />
     </metal:slot>
@@ -40,6 +40,7 @@
 	<div id="profile-buttons" tal:condition="controller.is_authen()">
 	    <span class="profile-button"><a href="/profile#bids">My Bids</a></span>
 	    <span class="profile-button"><a href="/profile#listings">My Listings</a></span>
+	    <span class="profile-button"><a href="/add-listing">Add Listing</a></span>
 	    <span><metal:slot define-slot="profile-buttons-next" /></span>
 	</div>
 	<metal:slot define-slot="menu" />
