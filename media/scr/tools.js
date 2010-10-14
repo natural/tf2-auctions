@@ -40,7 +40,8 @@ var SchemaTool = {
     select: function(key, match) {
         var res = {}
         var matchf = (typeof(match) == typeof('')) ? function(v) { return v == match } : match
-	$.each(this.itemDefs(), function(idx, def) { if (matchf(def[key])) {res[idx] = def }})
+	$.each(this.itemDefs(), function(idx, def) {
+	    if (matchf(def[key])) {res[def.defindex] = def }})
         return res
     },
 
@@ -53,7 +54,9 @@ var SchemaTool = {
     tools:   function() {return this.select('craft_class', 'tool')},
     weapons: function() {return this.select('craft_class', 'weapon')},
     stock:   function() {
-	return this.select('defindex', function(v) { return (v>190 && v<213) })
+	return this.select('defindex', function(v) {
+	    return (v>190 && v<213) || (v>=0 && v<31)
+	})
     },
     uncraftable: function() {
 	return this.select('craft_class', function(v) { return (v==undefined) })
@@ -63,7 +66,26 @@ var SchemaTool = {
 	$.each(this.schema['qualities'], function(name, key) { map[key] = names[name] })
 	return map
     },
+
+    tradable: function() {
+	var can = {}, stock = this.stock()
+	$.each(this.itemDefs(), function(idx, def) {
+	    try {
+		$.each(def.attributes.attribute, function(i, a) {
+		    if (!(a['class'] == 'cannot_trade' && a['value'] == 1)) {
+			if (!(idx in stock)) { can[idx] = def }
+		    }
+		})
+	    } catch (e) {
+		if (!(idx in stock)) { can[idx] = def }
+	    }
+	})
+        return can
+    }
+
+
 }
+
 
 
 var BackpackItemsTool = {
@@ -77,7 +99,7 @@ var BackpackItemsTool = {
     },
     itemInv: function(item) { return item['inventory']  },
     itemPos: function(item) { return item['inventory'] & 0xFFFF },
-
+    itemCanTrade: function(item) { return !(item['flag_cannot_trade']) },
     placeItems: function(slug, items) {
 	var newIdx = -1, self = this
 	var toolDefs = SchemaTool.tools(), actionDefs = SchemaTool.actions()
@@ -85,7 +107,7 @@ var BackpackItemsTool = {
 	    var pos = self.itemPos(item)
 	    if (pos > 0) {
 		var ele = $('#' + slug + pos + ' div').append(self.itemImg(item))
-		var img = $('img:last', ele) // .data('node', item)
+		var img = $('img:last', ele).data('node', item)
 		var def = item['defindex']
 		if (self.itemEquipped(item)) {
 		    img.addClass('equipped equipped-'+def).after(self.equippedTag)
@@ -94,6 +116,13 @@ var BackpackItemsTool = {
 		    img.addClass('unequipped-'+def)
 		    img.removeClass('equipped equipped-'+def)
 		}
+		if (self.itemCanTrade(item)) {
+		    ele.parent().removeClass('cannot-trade')
+		} else {
+		    ele.parent().addClass('cannot-trade')
+		}
+
+
 	    } else {
 		newIdx += 1
 		if ($('#unplaced-' + slug + ' table.unplaced td:not(:has(img))').length == 0) {
@@ -127,8 +156,8 @@ var BackpackView = function(slug) {
     this.slug = slug
     this.count = $('#backpack-' + slug + ' table.backpack tbody').length
     var self = this
-    $('#nav-' + slug + ' .nav:first a').click(function (e) {return self.nav(e, -1)})
-    $('#nav-' + slug + ' .nav:last a').click(function (e) {return self.nav(e, 1)})
+    $('#backpack-nav-' + slug + ' .nav:first a').click(function (e) {return self.nav(e, -1)})
+    $('#backpack-nav-' + slug + ' .nav:last a').click(function (e) {return self.nav(e, 1)})
 
     this.nav = function(event, offset) {
 	if (event.detail != 1) { return false }
@@ -144,20 +173,20 @@ var BackpackView = function(slug) {
 
     this.navChanged = function () {
 	var current = this.current, count = this.count
-	$('#pages-' + slug).text(current + '/' + count)
+	$('#backpack-pagecount-' + slug).text(current + '/' + count)
 	if (this.current == 1) {
-	    $('#nav-' + slug + ' .nonav:first').show()
-	    $('#nav-' + slug + ' .nav:first').hide()
+	    $('#backpack-nav-' + slug + ' .nonav:first').show()
+	    $('#backpack-nav-' + slug + ' .nav:first').hide()
 	} else {
-	    $('#nav-' + slug + ' .nonav:first').hide()
-	    $('#nav-' + slug + ' .nav:first').show()
+	    $('#backpack-nav-' + slug + ' .nonav:first').hide()
+	    $('#backpack-nav-' + slug + ' .nav:first').show()
 	}
 	if (this.current == this.count) {
-	    $('#nav-' + slug + ' .nonav:last').show()
-	    $('#nav-' + slug + ' .nav:last').hide()
+	    $('#backpack-nav-' + slug + ' .nonav:last').show()
+	    $('#backpack-nav-' + slug + ' .nav:last').hide()
 	} else {
-	    $('#nav-' + slug + ' .nonav:last').hide()
-	    $('#nav-' + slug + ' .nav:last').show()
+	    $('#backpack-nav-' + slug + ' .nonav:last').hide()
+	    $('#backpack-nav-' + slug + ' .nav:last').show()
 	}
     }
 }

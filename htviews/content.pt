@@ -14,12 +14,14 @@
 	<script type="text/javascript" src="/media/scr/hacks.js"></script>
 	<script type="text/javascript" src="/media/scr/tools.js"></script>
         <metal:slot define-slot="script" />
+	<metal:assoc tal:define="ajs controller.assoc_js()">
+	    <script type="text/javascript" src="${ajs}" tal:condition="ajs"></script>
+	</metal:assoc>
     </metal:slot>
 </head>
 
 
 <body metal:fill-slot="body">
-
     <div id="header_wrapper">
 	<metal:login tal:define="auth controller.is_authen()">
 	<div id="header" metal:fill-slot="header">
@@ -38,9 +40,9 @@
 
     <div id="profile-menu" metal:fill-slot="menu">
 	<div id="profile-buttons" tal:condition="controller.is_authen()">
-	    <span class="profile-button"><a href="/profile#bids">My Bids</a></span>
-	    <span class="profile-button"><a href="/profile#listings">My Listings</a></span>
-	    <span class="profile-button"><a href="/add-listing">Add Listing</a></span>
+	    <span class="big-button"><a href="/profile#bids">My Bids</a></span>
+	    <span class="big-button"><a href="/profile#listings">My Listings</a></span>
+	    <span class="big-button"><a href="/add-listing">Add Listing</a></span>
 	    <span><metal:slot define-slot="profile-buttons-next" /></span>
 	</div>
 	<metal:slot define-slot="menu" />

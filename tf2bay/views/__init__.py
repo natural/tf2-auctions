@@ -56,8 +56,16 @@ class LocalRequestHandler(RequestHandler):
 
 
 class PageHandler(LocalRequestHandler):
-    template_loader = TemplateLoader('htviews/', auto_reload=True)
+
+    template_prefix = 'htviews/'
+    template_loader = TemplateLoader(template_prefix, auto_reload=True)
     context_loader = ContextLoader(template_loader)
+
+    assoc_js_fs = '/media/scr%s.js'
+    def assoc_js(self, default=None):
+	path = self.request.environ['PATH_INFO']
+	path = path if path != '/' else '/index.js'
+	return self.assoc_js_fs % (path, ) if path else default
 
     def default_context(self):
 	return [
@@ -75,11 +83,11 @@ class PageHandler(LocalRequestHandler):
 	self.render()
 
     def render(self, template=None, **kwds):
+	template = self.template() if template is None else template
 	params = {}
 	params.update(self.default_context())
 	params.update(self.extra_context())
 	params.update(kwds)
-	template = self.template() if template is None else template
 	self.response.out.write(template.render(**params))
 
     def template(self):
@@ -94,3 +102,6 @@ class PageHandler(LocalRequestHandler):
 	self.response.clear()
         tb = traceback.format_exc() if self.is_dev() else None
 	self.render(self.template_loader.load('500.pt'), traceback=tb, stack='')
+
+
+

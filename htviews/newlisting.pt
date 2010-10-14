@@ -1,68 +1,81 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
     <title metal:fill-slot="title">tf2bay.com</title>
-    <metal:scripts fill-slot="script">
-	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
-	<script type="text/javascript"
-		src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
-	<script type="text/javascript"
-	    src="/media/scr/newlisting.js"></script>
-    </metal:scripts>
+    <metal:css fill-slot="style">
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
+	      rel="stylesheet" type="text/css" />
+        <metal:slot define-slot="style" />
+    </metal:css>
+    <metal:js fill-slot="script">
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"
+		type="text/javascript"></script>
+        <metal:slot define-slot="script" />
+    </metal:js>
 </head>
 <body>
-    <metal:fill fill-slot="main" tal:define="id64 controller.steam_id">
+    <metal:main fill-slot="main" tal:define="id64 controller.steam_id">
         <script type="text/javascript">var __id64__ = '${id64}'</script>
-	<div id="load-own-profile-msg"></div>
-        <div id="load-own-backpack-msg"></div>
 
-	    <div id="show-new-listing-backpack-wrapper" class="null">
-		<h1 class="message m-top-1"><span class="hilite"></span>Add a New Listing</h1>
+	<h1 class="m-top-1 m-bot-05"><span class="hilite"></span>Add a New Listing</h1>
+	<div id="add-listing-intro">
+  	    <div id="load-own-msg-profile"></div>
+            <div id="load-own-msg-backpack"></div>
+	    <div id="add-listing-help" class="null">
 		<div>Click the button to display your backpack and start building a new listing:</div>
-		<p class="centered text-centered p-top-05">
-		    <span class="button">
-			<a href="#" id="show-new-listing-backpack">Show Backpack</a>
+		<div class="centered text-centered m-top-1">
+		    <span class="button"><a href="#" id="add-listing-get-started">Get Started!</a></span>
+		</div>
+	    </div>
+        </div>
+
+	<div class="organizer-view null" id="add-listing-own-backpack">
+	    <metal:settings tal:define="include_unplaced True; slug 'a'">
+		<metal:include use-macro="context.organizer_parts.macros.backpack" />
+	    </metal:settings>
+
+	    <h3 id="add-listing-title">
+		Your Listing <span id="add-listing-title-extra">(0 items)</span>
+	    </h3>
+	    <metal:settings tal:define="rows 2; slug 'add-listing-item'">
+		<metal:include use-macro="context.organizer_parts.macros.item_chooser" />
+	    </metal:settings>
+
+
+	    <div id="add-listing-fields" class="centered">
+		<label for="add-listing-fields">Description:</label>
+		<textarea id="add-listing-description" name="add-listing-description"
+			  onfocus="this.value=''; return false"></textarea>
+		<label for="add-listing-duration">Duration:</label>
+		<div class="centered">
+		    <div id="add-listing-duration">30 days</div>
+		    <div id="add-listing-duration-slider" name="duration"></div>
+		    <div class="clear"></div>
+		</div>
+		<label for="add-listing-minbid">Minimum Bid (Optional):</label>
+
+		<div class="centered text-centered m-1">
+		    <span class="" id="add-listing-minbid-show">
+			<a href="#">Show Items (Warning:  Big Table Ahead!)</a>
 		    </span>
-		</p>
-	    </div>
-
-	    <div class="null" id="new-listing-backpack">
-		<metal:settings tal:define="include_unplaced True; slug 'a'">
-		<metal:include use-macro="context.backpack_a.macros.backpack_a">
-
-		    <metal:backpack metal:fill-slot="backpack-next">
-			<h3 id="listing-title">Your Listing <span id="listing-title-extra">(0 items)</span></h3>
-
-			<table class="backpack-listing centered" id="backpack-listing">
-			    <!-- ids to make placement easy -->
-			    <tbody class="">
-				<tr><td id="f1"><div></div></td><td id="f2"><div></div></td><td id="f3"><div></div></td><td id="f4"><div></div></td><td id="f5"><div></div></td></tr>
-				<tr><td id="f11"><div></div></td><td id="f12"><div></div></td><td id="f13"><div></div></td><td id="f14"><div></div></td><td id="f15"><div></div></td></tr>
-			    </tbody>
-			</table>
-
-			<div class="centered" id="listing-fields">
-			    <label for="desc">Description:</label><br />
-			    <textarea name="desc" onfocus="this.value=''; return false">Enter a description here.</textarea>
-
-			    <label for="duration">Duration:</label><br />
-			    <div class="centered" style="padding-left:0.5em">
-				<div id="listing-duration-slider" name="duration"></div>
-				<div id="listing-duration">30 days</div>
-				<div class="clear"></div>
-			    </div>
-
-			</div>
-
-			<p class="centered text-centered p-top-05">
-			    <span class="profile-button"><a href="#" id="new-listing-backpack-ok">OK, Post It!</a></span>
-			    <span class="profile-button"><a href="#" id="new-listing-backpack-cancel">Nah, Cancel!</a></span>
-			</p>
-
-		    </metal:backpack>
-		</metal:include>
+		</div>
+		<div class="null" id="add-listing-minbid-wrapper">
+		<metal:settings tal:define="rows 37; slug 'add-listing-minbid'">
+		    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
 		</metal:settings>
+		</div>
 	    </div>
 
-    </metal:fill>
+
+	    <div class="centered text-centered">
+		<span class="big-button m-right-05">
+		    <a href="#" id="add-listing-submit">OK, Post It!</a>
+		</span>
+		<span class="big-button">
+		    <a href="#" id="add-listing-cancel">Nah, Cancel!</a>
+		</span>
+	    </div>
+	</div>
+
+    </metal:main>
 </body>
 </html>

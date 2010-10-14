@@ -1,57 +1,27 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
     <title metal:fill-slot="title">tf2bay.com - browse listings</title>
-    <script metal:fill-slot="script" type="text/javascript" src="/media/scr/browse.js"></script>
 </head>
 <body>
-
-    <metal:fill fill-slot="header">
-    </metal:fill>
-
     <metal:fill fill-slot="main">
+        <h1 class="message"><span class="hilite"></span>Browse Listings</h1>
 
-		    <h1 class="message"><span class="hilite"></span>Browse Listings</h1>
-
-		    <div id="filters">
-			Filter by category:&nbsp;&nbsp;
-			<metal:filter tal:repeat="filt controller.filters()">
-			    <a href="/browse?f=${filt[0]}">${filt[1]}</a>
-			    <metal:comma tal:replace="' &middot; '" tal:condition="not repeat.filt.end" />
-			</metal:filter>
-		    </div>
-
-		    <metal:wrapper tal:define="tid 'browse-listings'">
-			<metal:include use-macro="context.listing_parts.macros.listing_large" />
-		    </metal:wrapper>
+	<div id="filters">
+	Filter by category:&nbsp;&nbsp;
+	    <metal:filter tal:repeat="filt controller.filters()">
+	        <a href="/browse?f=${filt[0]}">${filt[1]}</a>
+		<metal:comma tal:replace="' &middot; '" tal:condition="not repeat.filt.end" />
+	    </metal:filter>
+	</div>
+	<metal:wrapper tal:define="tid 'browse-listings'">
+	    <metal:include use-macro="context.listing_parts.macros.listing_large" />
+	</metal:wrapper>
 
 
-		    <table tal:condition="False" id="listings-browser">
-			<tbody tal:repeat="listing ()">
-			    <tr>
-				<td><img src="${listing.owner_profile.avatar}" height="32" width="32" />
-				    &nbsp; ${listing.owner_profile.personaname}
-				    <b>${listing.description}</b></td>
-			    </tr>
-			    <tr>
-				<td>
-				    <metal:loop tal:repeat="i listing.items">
-					<span class="defindex-lazy" tal:content="i.uniqueid"></span>
-			            </metal:loop>
-				</td>
-				<td><span class="button"><a href="/profile?placebid">Place Bid</a></span></td>
-			    </tr>
-			</tbody>
-		    </table>
-
-		    <div tal:condition="controller.steam_id" class="centered text-centered">
-		    Yo dawg, I heard you like browsers so I put a
-		    browser in your browser so you can browse while
-		    you're browsin!
-                </div>
+        <div tal:condition="controller.steam_id" class="centered text-centered">
+        Yo dawg, I heard you like browsers so I put a browser in your
+        browser so you can browse while you're browsin!
+        </div>
     </metal:fill>
-
-    <metal:fill fill-slot="footer">
-    </metal:fill>
-
 </body>
 </html>

@@ -1,3 +1,4 @@
+// TODO:  replace .filter calls w/ $.filter.  duh.
 if (!Array.prototype.filter) {
     Array.prototype.filter = function(fun /*, thisp */) {
 	"use strict"
@@ -19,17 +20,17 @@ if (!Array.prototype.filter) {
 
 if (false) { //(!Object.prototype.keys) {
     Object.prototype.keys = function(skipFunction)  {
-        var result = []
-        for (var p in this) {
-            if ( ! this.hasOwnProperty(p) ) {
-                continue
-            }
-            if ( skipFunction && 'function' == typeof this[p] ) {
-                continue
-            }
-            result.push(p)
-        }
-        return result
+	var result = []
+	for (var p in this) {
+	    if ( ! this.hasOwnProperty(p) ) {
+		continue
+	    }
+	    if ( skipFunction && 'function' == typeof this[p] ) {
+		continue
+	    }
+	    result.push(p)
+	}
+	return result
     }
 }
 
@@ -54,3 +55,9 @@ function Lazy(def) {
 	return (i in cache) ? cache[i] : (cache[i] = def.call(arguments.callee, i))
     }
 }
+
+
+(function($) {
+    $.fn.fadeAway = function() { return this.each(function() { $(this).fadeTo(750, 0) }) }
+    $.fn.fadeBack = function() { return this.each(function() { $(this).fadeTo(750, 100) }) }
+})(jQuery)

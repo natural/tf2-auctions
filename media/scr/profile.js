@@ -17,10 +17,10 @@ var listingsOkay = function(listings) {
     var proto = $("#own-listings tbody.prototype")
 
     if (llen > 0) {
-	$('#load-own-listings-msg').text('Success! Showing your ' + llen + ' listing' + (llen==1?'':'s') + '.').fadeOut(5000)
+	$('#load-own-msg-listings').text('Success! Showing your ' + llen + ' listing' + (llen==1?'':'s') + '.').fadeOut(5000)
 	ltable.removeClass("null")
     } else {
-	$('#load-own-listings-msg').text("You haven't listed any items yet.")
+	$('#load-own-msg-listings').text("You haven't listed any items yet.")
 	// show add listing helper message
     }
     $.each(listings, function(index, listing) {
@@ -41,7 +41,7 @@ var listingsOkay = function(listings) {
 
 
 var bidsOkay = function(bids) {
-    $('#load-own-bids-msg').text('Success! Your bids: ' + bids.length)
+    $('#load-own-msg-bids').text('Success! Your bids: ' + bids.length)
 }
 
 
@@ -65,8 +65,8 @@ var schemaReady = function(s) {
 
 
 $(document).ready(function() {
-    $('#load-own-bids-msg').text('Loading your bids...')
-    $('#load-own-listings-msg').text('Loading your listings...')
+    $('#load-own-msg-bids').text('Loading your bids...')
+    $('#load-own-msg-listings').text('Loading your listings...')
     new SchemaLoader({success: schemaReady})
 })
 

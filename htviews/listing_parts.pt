@@ -1,5 +1,5 @@
-<metal:x>
-    <metal:y define-macro="listing_large">
+<metal:parts>
+    <metal:macro define-macro="listing_large">
         <table id="${tid}" class="listings-large null">
             <tbody class="null prototype">
 	        <tr>
@@ -14,8 +14,5 @@
 		</tr>
             </tbody>
         </table>
-    </metal:y>
-
-
-
-</metal:x>
+    </metal:macro>
+</metal:parts>
