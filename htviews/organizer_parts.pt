@@ -4,39 +4,41 @@
 <div metal:define-macro="item_chooser">
     <table class="centered chooser" id="chooser-${slug}">
         <tbody>
+	    <metal:define tal:define="rows rows | 2; cols cols | 5">
 	    <metal:loop tal:repeat="row range(rows)">
     		<tr>
-		    <td id="${slug}-${(row*5)+1}"><div></div></td>
-		    <td id="${slug}-${(row*5)+2}"><div></div></td>
-		    <td id="${slug}-${(row*5)+3}"><div></div></td>
-		    <td id="${slug}-${(row*5)+4}"><div></div></td>
-		    <td id="${slug}-${(row*5)+5}"><div></div></td>
+		    <metal:loop tal:repeat="col range(cols)">
+			<td id="${slug}-${(row*cols)+col+1}"><div></div></td>
+		    </metal:loop>
 		</tr>
 	    </metal:loop>
+	    </metal:define>
 	</tbody>
     </table>
 </div>
 
 
 <div metal:define-macro="backpack">
+
+    <div id="backpack-header-${slug}">
+        <h3></h3>
+	<div></div>
+    </div>
+
     <metal:if tal:condition="include_unplaced">
         <div id="unplaced-backpack-${slug}" class="null">
-	    <h3><span class="hilite">&nbsp;</span><span>New Items</span></h3>
+	    <label class="centered m-top-1">New Items:</label>
             <table class="unplaced centered">
 		<tbody>
 		    <tr><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td></tr>
 		</tbody>
 	    </table>
         </div>
-	<hr class="unplaced null" />
     </metal:if>
 
 
     <div id="backpack-${slug}">
-        <div id="backpack-header-${slug}">
-	    <h3></h3>
-	    <div></div>
-        </div>
+	<label class="centered null">Existing Items:</label>
         <table class="backpack centered">
             <tbody class="backpackPage-1">
                 <tr><td id="${slug}1"><div></div></td><td id="${slug}2"><div></div></td><td id="${slug}3"><div></div></td><td id="${slug}4"><div></div></td><td id="${slug}5"><div></div></td></tr>

@@ -21,7 +21,7 @@ handlers:
 
 # private profile view: displays profile of current user
 # private add listing view:  displays form for creating new listing
-- url: /(profile|add-listing)
+- url: /(profile|/listings/add)
   login: required
   script: main.py
 
@@ -33,7 +33,7 @@ handlers:
 
 
 # private apis for listing and bid create, update and delete
-- url: /api/v1/(add-listing|cancel-listing|add-bid)
+- url: /api/v1/(add-listing|cancel-listing|add-bid|own-profile)
   script: main.py
   login: required
 
@@ -49,5 +49,5 @@ handlers:
 
 
 # public pages
-- url: (/|/login|/browse|/search|/(.*))
+- url: (/|/login|/listings|/listings/search|/(.*))
   script: main.py

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from tf2bay.views import PageHandler
+from tf2bay.apps import PageHandler
 
 
 class FrontView(PageHandler):
@@ -9,6 +9,8 @@ class FrontView(PageHandler):
 
 class LoginView(PageHandler):
     template_name = 'login.pt'
+    related_css = ('login.css', )
+    related_js = ('login.js', )
 
 
 class EchoView(PageHandler):

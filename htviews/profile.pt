@@ -9,8 +9,6 @@
 	</form>
 	<div tal:condition="id64">
 	    <h1 id="load-profile-msg">Loading your profile...</h1>
-	    <script type="text/javascript">var __id64__ = '${id64}'</script>
-
 	    <h1 class="message m-top-1"><span class="hilite"></span><a name="bids">My Bids</a></h1>
 	    <div><div id="load-own-msg-bids"></div></div>
 

@@ -1,12 +1,9 @@
-var NewListingTool = function(backpack) {
+var AddListingTool = function(backpack) {
     var self = this
     var bp = new BackpackView('a')
     self.backpack = backpack
-    ItemsTool.init(backpack) // TODO:  fix this with an instance somewhere else
     bp.navChanged()
-    BackpackItemsTool.placeItems('a', ItemsTool.items)
-
-
+    BackpackItemsTool.placeItems('a', backpack)
 
     this.show = function() {
 	$('#add-listing-intro').fadeAway().slideUp(750)
@@ -17,6 +14,8 @@ var NewListingTool = function(backpack) {
 
 	var width = $('#backpack-a tbody').width()
 	$('#backpack-tools-a').width(width)
+	$('#backpack-a label').width(width)
+	$('#unplaced-backpack-a label').width(width)
 	$('#add-listing-fields textarea').width(width).height(width/4).text('Enter a description.')
 	$('#add-listing-fields').width( $('#backpack-a tbody').width())
 
@@ -72,17 +71,18 @@ var NewListingTool = function(backpack) {
 	var dropOver = function(event, ui) { $(this).parent().addClass('outline') }
 	var dropOut = function(event, ui) { $(this).parent().removeClass('outline') }
 
-	$('#backpack-a table.backpack td').draggable({
+	$('#backpack-a td, #unplaced-backpack-a td').draggable({
             containment: '#add-listing-own-backpack', helper: 'clone', cursor: 'move',
 	    drag: dragFromBackpack, start: dragShow})
-	$('#backpack-a table.backpack td div').droppable(
+	$('#backpack-a td div, #unplaced-backpack-a td div').droppable(
 	    {accept: '#chooser-add-listing-item td', drop: dropItem, over: dropOver, out: dropOut})
 
 	$('#chooser-add-listing-item td').draggable({
             containment: '#add-listing-own-backpack', helper: 'clone', cursor: 'move',
 	    start: dragShow})
 	$('#chooser-add-listing-item td div').droppable(
-	    {accept: '#backpack-a td', drop: dropItem, over: dropOver, out: dropOut})
+	    {accept: '#backpack-a td, #unplaced-backpack-a td',
+	     drop: dropItem, over: dropOver, out: dropOut})
 
     }
 }
@@ -98,8 +98,8 @@ var backpackReady = function(backpack) {
     }
     $('#load-own-msg-backpack').text(msg)
     $('#add-listing-help').fadeIn()
-    var nlt = new NewListingTool(backpack)
-    $('#add-listing-get-started').click(nlt.show)
+    var tool = new AddListingTool(backpack)
+    $('#add-listing-get-started').click(tool.show)
 }
 
 
@@ -107,23 +107,24 @@ var profileReady = function(profile) {
     $('#avatar:empty').html(makeImg({src: profile.avatar}))
     $('#load-own-msg-profile').text('Profile loaded.  Welcome back, ' + profile['personaname'] + '1')
     console.log('profile ready', profile)
-    new BackpackLoader({success: backpackReady, id64: __id64__})
+    new BackpackLoader({success: backpackReady, id64: profile.steamid})
 }
 
 
 var schemaReady = function(schema) {
     SchemaTool.init(schema)
-    new ProfileLoader({success: profileReady, id64: __id64__})
+    new ProfileLoader({success: profileReady})
 }
 
 var showAndPopMinBid = function() {
-    $('#add-listing-minbid-wrapper').slideDown(750)
     $('#add-listing-minbid-show').slideUp(750)
+    $('#add-listing-minbid-wrapper').fadeIn('slow')
     var c = 0, p = '#add-listing-minbid-'
     $.each(SchemaTool.tradable(), function(idx, item) {
 	$(p+c + ' div').html( makeImg({src:item.image_url, height:64, width:64, }) )
 	c += 1
     })
+    //$('#add-listing-minbid-label').html('Minimum Bid (Optional):')
     return false
 }
 
@@ -133,6 +134,7 @@ $(document).ready(function() {
     $('#load-own-msg-profile').text('Loading your profile...')
     $('#load-own-msg-backpack').text('Loading your backpack...')
     new SchemaLoader({success: schemaReady})
+    $('#add-listing-minbid-show a').click(showAndPopMinBid)
 
     $('div.organizer-view td').live('mouseover', function() {
 	try {
@@ -151,5 +153,11 @@ $(document).ready(function() {
 	}
     })
 
-    $('#add-listing-minbid-show a').click(showAndPopMinBid)
+
+    $('div.organizer-view td').mouseup(
+	function() {
+	    var selected = $('#chooser-add-listing-minbid td[class="selected"]')
+	    GSEL = selected
+	    console.log('selected items for minbid:', selected)
+	})
 })

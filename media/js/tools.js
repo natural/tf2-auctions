@@ -121,16 +121,14 @@ var BackpackItemsTool = {
 		} else {
 		    ele.parent().addClass('cannot-trade')
 		}
-
-
 	    } else {
 		newIdx += 1
-		if ($('#unplaced-' + slug + ' table.unplaced td:not(:has(img))').length == 0) {
+		if ($('#unplaced-backpack-' + slug + ' table.unplaced td:not(:has(img))').length == 0) {
 		    var cells = new Array(5+1).join('<td><div></div></td>')
-		    $('#unplaced-' + slug + ' table.unplaced').append('<tbody><tr>' + cells + '</tr></tbody>')
+		    $('#unplaced-backpack-' + slug + ' table.unplaced').append('<tbody><tr>' + cells + '</tr></tbody>')
 		}
-		$('#unplaced-' + slug + 'table.unplaced td:eq('+newIdx+') div').append(self.itemImg(item))
-		$('#unplaced-' + slug + 'table.unplaced td img:last').data('node', item)
+		$('#unplaced-backpack-' + slug + ' table.unplaced td:eq('+newIdx+') div').append(self.itemImg(item))
+		$('#unplaced-backpack-' + slug + ' table.unplaced td img:last').data('node', item)
 	    }
 	    // add the dohicky for item quanity
 	    if ((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) {
@@ -138,13 +136,13 @@ var BackpackItemsTool = {
 		img.css('margin-top', '-1em')
 	    }
 	})
-	$('#unplaced-' + slug + ', hr.unplaced').toggle(newIdx > -1)
+	$('#unplaced-backpack-' + slug + ', #backpack-' + slug + ' label.null').toggle(newIdx > -1)
 	$(self.itemContentSelector(slug)).fadeIn(750)
 	$('#backpack-listing').fadeIn()
     },
 
     itemContentSelector: function(slug) {
-	return '#unplaced-' + slug + ' table.unplaced td img, #backpack-' + slug + ' table.backpack td img, span.equipped'
+	return '#unplaced-backpack-' + slug + ' table.unplaced td img, #backpack-' + slug + ' table.backpack td img, span.equipped'
     }
 
 }
@@ -192,32 +190,9 @@ var BackpackView = function(slug) {
 }
 
 
-var ItemsTool = {
-    items: null,
-
-    init: function(source) {
-        this.items = source
-	// can't call the schema tool directly because it might not be
-	// ready, so we supply small wrappers.
-	this.hats = this.makeFilter(function() { return SchemaTool.hats() })
-	this.metal = this.makeFilter(function() { return SchemaTool.metal() })
-	this.misc = this.makeFilter(function() { return SchemaTool.misc() })
-    },
-
-    makeFilter: function(schemaCall) {
-	return function() {
-	    var defs = schemaCall()
-	    return this.items.filter(function(item) { return item['defindex'] in defs })
-	}
-    }
-}
-
-
-
-
 var ProfileLoader = function(options) {
     options = options || {}
-    var id64 = options.id64
+    //var id64 = options.id64
     var self = this
     var okay = function(profile) {
 	ProfileLoader.cache = self.profile = profile
@@ -231,8 +206,8 @@ var ProfileLoader = function(options) {
     }
     if (!ProfileLoader.cache) {
 	console.log('fetching profile')
-	$.ajax({url: 'http://tf2apiproxy.appspot.com/api/v1/profile/'+id64,
-		dataType: 'jsonp',
+	$.ajax({url: '/api/v1/own-profile', //'http://tf2apiproxy.appspot.com/api/v1/profile/'+id64,
+		dataType: 'json',
 		jsonpCallback:'tf2bayProfileLoader',
 		cache: true,
 		success: okay,

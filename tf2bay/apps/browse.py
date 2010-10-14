@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from tf2bay.apps import PageHandler
 from tf2bay.models import Listing, ListingItem
-from tf2bay.views import PageHandler
+
 
 
 
 class BrowseView(PageHandler):
     template_name = 'browse.pt'
-
+    related_js = ('browse.js', )
 
     def __get(self, **kwds):
 	q = Listing.all()

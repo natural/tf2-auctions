@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 from logging import warn
 from google.appengine.api import users
+
+from tf2bay.apps import PageHandler
 from tf2bay.models import Bid, Listing, ListingItem
 from tf2bay.utils import json
-from tf2bay.views import PageHandler
+
 
 
 class PublicApi(PageHandler):

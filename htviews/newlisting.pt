@@ -14,13 +14,12 @@
 </head>
 <body>
     <metal:main fill-slot="main" tal:define="id64 controller.steam_id">
-        <script type="text/javascript">var __id64__ = '${id64}'</script>
-
 	<h1 class="m-top-1 m-bot-05"><span class="hilite"></span>Add a New Listing</h1>
 	<div id="add-listing-intro">
   	    <div id="load-own-msg-profile"></div>
             <div id="load-own-msg-backpack"></div>
-	    <div id="add-listing-help" class="null">
+
+	    <div id="add-listing-help" class="null m-top-1">
 		<div>Click the button to display your backpack and start building a new listing:</div>
 		<div class="centered text-centered m-top-1">
 		    <span class="button"><a href="#" id="add-listing-get-started">Get Started!</a></span>
@@ -36,7 +35,7 @@
 	    <h3 id="add-listing-title">
 		Your Listing <span id="add-listing-title-extra">(0 items)</span>
 	    </h3>
-	    <metal:settings tal:define="rows 2; slug 'add-listing-item'">
+	    <metal:settings tal:define="slug 'add-listing-item'">
 		<metal:include use-macro="context.organizer_parts.macros.item_chooser" />
 	    </metal:settings>
 
@@ -51,27 +50,35 @@
 		    <div id="add-listing-duration-slider" name="duration"></div>
 		    <div class="clear"></div>
 		</div>
-		<label for="add-listing-minbid">Minimum Bid (Optional):</label>
 
-		<div class="centered text-centered m-1">
-		    <span class="" id="add-listing-minbid-show">
-			<a href="#">Show Items (Warning:  Big Table Ahead!)</a>
-		    </span>
+		<div class="centered">
+                    <label for="add-listing-minbid" id="add-listing-minbid-label">
+			Minimum Bid (Optional):
+		    </label>
+                </div>
+		<div class="centered text-centered">
+		    <label id="add-listing-minbid-show">
+			<a href="#">Click to Show Items</a>
+		    </label>
 		</div>
+
 		<div class="null" id="add-listing-minbid-wrapper">
-		<metal:settings tal:define="rows 37; slug 'add-listing-minbid'">
-		    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
-		</metal:settings>
+		    <div>
+			Select the minimum items you will consider for
+			a trade. You can select up to 10 items.
+		    </div>
+		    <metal:settings tal:define="rows 37; slug 'add-listing-minbid'">
+			<metal:include use-macro="context.organizer_parts.macros.item_chooser" />
+		    </metal:settings>
 		</div>
 	    </div>
 
-
-	    <div class="centered text-centered">
-		<span class="big-button m-right-05">
-		    <a href="#" id="add-listing-submit">OK, Post It!</a>
+	    <div class="centered text-centered m-1">
+		<span class="submit button m-right-05">
+		    <a href="#" id="add-listing-submit">OK, Post It</a>
 		</span>
-		<span class="big-button">
-		    <a href="#" id="add-listing-cancel">Nah, Cancel!</a>
+		<span class="cancel button">
+		    <a href="#" id="add-listing-cancel">Nah, Cancel</a>
 		</span>
 	    </div>
 	</div>

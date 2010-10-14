@@ -7,16 +7,16 @@
 	<metal:slot define-slot="script" />
     </head>
     <body metal:define-slot="body">
-	<div metal:define-slot="header_prime">
+	<div metal:define-slot="header-prime">
 	    <div metal:define-slot="header" />
 	</div>
-	<div metal:define-slot="menu_prime">
+	<div metal:define-slot="menu-prime">
 	    <div metal:define-slot="menu" />
 	</div>
-	<div metal:define-slot="main_prime">
+	<div metal:define-slot="main-prime">
 	    <div metal:define-slot="main" />
 	</div>
-	<div metal:define-slot="footer_prime">
+	<div metal:define-slot="footer-prime">
 	    <div metal:define-slot="footer" />
 	</div>
     </body>

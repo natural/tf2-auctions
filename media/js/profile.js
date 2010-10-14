@@ -60,7 +60,7 @@ var profileReady = function(profile) {
 
 var schemaReady = function(s) {
     SchemaTool.init(s)
-    new ProfileLoader({success: profileReady, id64: __id64__})
+    new ProfileLoader({success: profileReady})
 }
 
 

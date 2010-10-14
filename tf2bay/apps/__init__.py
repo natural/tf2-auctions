@@ -56,16 +56,10 @@ class LocalRequestHandler(RequestHandler):
 
 
 class PageHandler(LocalRequestHandler):
-
+    related_css = related_js = ()
     template_prefix = 'htviews/'
     template_loader = TemplateLoader(template_prefix, auto_reload=True)
     context_loader = ContextLoader(template_loader)
-
-    assoc_js_fs = '/media/scr%s.js'
-    def assoc_js(self, default=None):
-	path = self.request.environ['PATH_INFO']
-	path = path if path != '/' else '/index.js'
-	return self.assoc_js_fs % (path, ) if path else default
 
     def default_context(self):
 	return [
