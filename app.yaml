@@ -6,17 +6,23 @@ api_version: 1
 
 handlers:
 
+- url: /media/ttf/(.*\.ttf)
+  static_files: media/ttf/\1
+  expiration: "1d 1h"
+  mime_type: font/ttf
+  upload: media/ttf/(.*\.ttf)
 
-- url: /media/(.*\.(css|js|png|ttf))
+
+- url: /media/(.*\.(css|js|png))
   static_files: media/\1
   expiration: "1d 1h"
-  upload: media/(.*\.(css|js|png|ttf))
+  upload: media/(.*\.(css|js|png))
 
 
 # lol
 - url: /favicon.ico
-  static_files: media/favicon.ico
-  upload: media/favicon.ico
+  static_files: media/img/favicon.ico
+  upload: media/img/favicon.ico
 
 
 # private profile view: displays profile of current user
@@ -25,6 +31,11 @@ handlers:
   login: required
   script: main.py
 
+
+# worker url for expiration task queue
+- url: /api/v1/expire-listing
+  login: admin
+  script: main.py
 
 # for testing
 - url: /echo

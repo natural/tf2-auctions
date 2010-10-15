@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from logging import exception, info
 
 from google.appengine.api import users
+from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
@@ -20,6 +21,7 @@ class PlayerItem(polymodel.PolyModel):
 
     The 'uniqueid' is the integer decoded key name.
     """
+    uniqueid = db.IntegerProperty('Item uniqueid', required=True, indexed=True)
     defindex = db.IntegerProperty('Item defindex', required=True, indexed=True)
     source = db.StringProperty('Item source data (JSON decodable)')
 
@@ -31,22 +33,17 @@ class PlayerItem(polymodel.PolyModel):
 	""" Encode this instance using only built-in types. """
 	return {'uniqueid':self.uniqueid, 'defindex':self.defindex}
 
-    @property
-    def uniqueid(self):
-	try:
-	    return int(self.key().name())
-	except (AttributeError, db.NotSavedError, ):
-	    return 0
-
     @classmethod
     def get_by_uid(cls, uniqueid):
 	""" Returns an item by uniqueid. """
-	return cls.get_by_key_name(str(uniqueid))
+	query = cls.all()
+	query.filter('uniqueid =', uniqueid)
+	return query.get()
 
     @classmethod
     def build(cls, uniqueid, defindex, **kwds):
 	""" Returns an item by uniqueid. """
-	return cls.get_or_insert(str(uniqueid), defindex=defindex, **kwds)
+	return cls.get_or_insert(uniqueid=uniqueid, defindex=defindex, **kwds)
 
 
 class PlayerProfile(db.Expando):
@@ -147,49 +144,91 @@ class Listing(db.Model):
     owner = db.UserProperty('Owner', required=True, indexed=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
     expires = db.DateTimeProperty('Expires', required=True, validator=future_expires)
-    min_bid = db.ListProperty(int, 'Minimum Bid')
+    minbid = db.ListProperty(long, 'Minimum Bid')
     description = db.StringProperty('Description', default='', multiline=True)
 
     ## non-normalized:  sequence uniqueids for the items in this listing
-    uniqueids = db.ListProperty(long, 'Unique IDs', indexed=True)
-
+    # TODO: is this needed now that there's a 'status' property on ListingItem??
+    #uniqueids = db.ListProperty(long, 'Unique IDs', indexed=True)
     ## non-normalized:  sequence defindexes for the items in this listing
-    defindexes = db.ListProperty(long, 'Def Index', indexed=True)
+    #defindexes = db.ListProperty(long, 'Def Index', indexed=True)
 
     ## non-normalized:  listing status and reason
-    status = db.CategoryProperty('Status', required=True, default=db.Category('new'))
+    status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
-
-    ## non-normalized: list of categories from the items
-    categories = db.ListProperty(db.Category, 'Categories')
+    def set_status(self, status):
+	# TODO: set the status and status of all ListingItem records
+	# with this as their parent.
+	pass
 
     ## non-normalized: bid counter
     bid_count = db.IntegerProperty('Bid Count', default=0)
 
+    valid_days = range(1, 31) # 1-30
+
     @classmethod
-    def build(cls, expires, items, min_build=None, description=''):
+    def build(cls, item_ids, desc, days, minbid=None):
 	## 0.  verify the owner, duration and description before
 	## we do anything else (to prevent needless expensive checks)
 	owner = users.get_current_user()
 	if not owner:
-	    return
+	    raise ValueError('No owner specified.')
 
 	## 1.  check the user, get their backpack and verify the
 	## inidicated items belong to them.
 	profile = PlayerProfile.get_by_id64(user_steam_id(owner))
-	if not profile.owns_all(item['id'] for item in items):
-	    return
+	if not profile.owns_all(uid for uid, item in item_ids):
+	    ## TODO: re-fetch backpack.  will probably need to move
+	    ## backpack feed into this site for that to work.
+	    raise ValueError('Incorrect ownership.')
 
-	## 2.  check that the given ids are not already up for
-	## auction.
+	## 2. check the date
+	if days not in cls.valid_days:
+	    raise ValueError('Invalid number of days until expiration.')
+	expires = datetime.now() + timedelta(days=days)
 
-	## 3.  extract and create categories for the items.  we'll
-	## need the english schema for this.
+	## 3.  extract and create categories for the ListingItem
+	## item types and for the minbid defindex checks.
+	schema = json.loads(fetch.schema())
 
-	## 4.  explicitly set the bid count, created, and expired tags (not!
-	## defaults are better).
+	## 4. verify the minbid values are present in the schema.
+	minbid = minbid or []
+	minbid_defs = set(minbid)
+        valid_defs = set(i['defindex'] for i in schema['result']['items']['item'])
+	if not (minbid_defs & valid_defs == minbid_defs):
+	    raise TypeError('Invalid minimum bid items.')
+
+	## 4.  create
+	listing = cls(
+	    parent=profile,
+	    owner=owner,
+	    expires=expires,
+	    minbid=minbid,
+	    description=desc)
+	key = listing.put()
+
+	# 5. assign the items
+	item_types = dict((i['defindex'], i['item_type_name'])
+			  for i in schema['result']['items']['item'])
+	for uid, item in item_ids:
+	    listing_item = ListingItem(
+		parent=listing,
+		uniqueid=uid,
+		defindex=item['defindex'],
+		source=json.dumps(item),
+		item_type_name=item_types[item['defindex']],
+		listing=listing)
+	    listing_item.put()
 
 	## 5.  submit an item to the expiration task queue.
+	taskqueue.add(
+	    url='/api/v1/expire-listing',
+	    transactional=True,
+	    queue_name='listing-expiration',
+	    eta=expires,
+	    params={'key':key},
+	)
+	return key, listing
 
     def time_left(self):
 	return self.expires - datetime.now()
@@ -228,6 +267,10 @@ class ListingItem(PlayerItem):
 
     """
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True, indexed=True)
+    ## non-normalized:
+    status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
+    ## non-normalized:
+    item_type_name = db.StringProperty('Item type name (schema value)', required=True, indexed=True)
 
     def __str__(self):
 	args = (self.listing, self.uniqueid, self.defindex, )
@@ -271,3 +314,14 @@ class Rating(db.Model):
 	## sum of rating properties for user div. count of ratings for user
 	## return dict {'bidder' :bidder_rating, 'lister' :lister_rating}
 	pass
+
+
+def build_listing(**kwds):
+    ## this check has to be performed outside of the transaction
+    ## because its against items outside the new listing ancestry:
+    item_ids = kwds['item_ids']
+    for uid, item in item_ids:
+	q = ListingItem.all(keys_only=True)
+	if q.filter('uniqueid', uid).filter('status', 'active').get():
+	    raise TypeError('Item already in an active auction.')
+    return db.run_in_transaction(Listing.build, **kwds)

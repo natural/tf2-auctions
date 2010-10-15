@@ -5,9 +5,9 @@ load-own-msg-X - loading message areas
 
 TODO 1.0
 --------
-listing submit
 disable items from drag and drop if present in active auction
 tooltips
+fix paintcan images
 
 TODO 1.1
 --------
@@ -17,3 +17,6 @@ blog
 forums
 email notifications
 backpack view
+badges for online/offline, etc.  e.g.:
+http://steamprofile.com/profile/simple/steam/76561198031408075.png
+http://steamprofile.com/profile/extended/steam/76561197992805111.png

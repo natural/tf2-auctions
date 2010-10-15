@@ -42,8 +42,7 @@
 
 	    <div id="add-listing-fields" class="centered">
 		<label for="add-listing-fields">Description:</label>
-		<textarea id="add-listing-description" name="add-listing-description"
-			  onfocus="this.value=''; return false"></textarea>
+		<textarea id="add-listing-description" name="add-listing-description"></textarea>
 		<label for="add-listing-duration">Duration:</label>
 		<div class="centered">
 		    <div id="add-listing-duration">30 days</div>

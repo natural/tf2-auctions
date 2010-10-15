@@ -14,9 +14,7 @@
     </metal:slot>
     <metal:slot fill-slot="script">
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-	<script type="text/javascript" src="/media/js/hacks.js"></script>
-	<script type="text/javascript" src="/media/js/tools.js"></script>
-	<metal:assoc tal:repeat="link controller.related_js">
+	<metal:assoc tal:repeat="link controller.default_js + controller.related_js">
 	    <script type="text/javascript" src="/media/js/${link}"></script>
 	</metal:assoc>
         <metal:slot define-slot="script" />

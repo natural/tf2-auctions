@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from google.appengine.api import memcache
 from google.appengine.ext import db
+import functools
 import random
 
 ## copied from http://code.google.com/appengine/articles/sharding_counters.html
@@ -30,19 +31,23 @@ def get_count(name):
     return total
 
 
-def increment(name):
-    """ Increment the value for a given sharded counter. """
+def add(name, value):
+    """ Add a value to the given sharded counter. """
     config = CounterConfig.get_or_insert(name, name=name)
     def txn():
         index = random.randint(0, config.num_shards - 1)
-        shard_name = name + str(index)
+        shard_name = '%s%s' % (name, index)
         counter = Counter.get_by_key_name(shard_name)
         if counter is None:
             counter = Counter(key_name=shard_name, name=name)
-        counter.count += 1
+        counter.count += value
         counter.put()
     db.run_in_transaction(txn)
     memcache.incr(name)
+
+
+inc = functools.partial(add, value=1)
+dec = functools.partial(add, value=-1)
 
 
 def increase_shards(name, num):

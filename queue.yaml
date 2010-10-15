@@ -1,0 +1,3 @@
+queue:
+- name: listing-expiration
+  rate: 1/m

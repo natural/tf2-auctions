@@ -48,8 +48,7 @@ var bidsOkay = function(bids) {
 var profileReady = function(profile) {
     var listingsError = function(err) { console.error(err) }
     var bidsError = function(err) { console.error(err) }
-
-    $('#avatar:empty').html(makeImg({src: profile.avatar}))
+    showProfile(profile)
     $('#load-profile-msg').text('Profile loaded. Welcome, ' + profile['personaname'] + '!')
     $.ajax({url: '/api/v1/bids/'+profile.steamid, dataType: 'json', cache: true,
 	    success: bidsOkay, error: bidsError})

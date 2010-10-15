@@ -56,6 +56,11 @@ class LocalRequestHandler(RequestHandler):
 
 
 class PageHandler(LocalRequestHandler):
+    default_js = (
+	'jquery.json-2.2.js',
+	'hacks.js',
+	'tools.js',
+    )
     related_css = related_js = ()
     template_prefix = 'htviews/'
     template_loader = TemplateLoader(template_prefix, auto_reload=True)

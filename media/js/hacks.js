@@ -1,4 +1,11 @@
 // TODO:  replace .filter calls w/ $.filter.  duh.
+// TODO:  check for console and define if necessary
+
+if (typeof(console) == 'undefined') {
+    var console = {}
+    console.log = console.error = function() {}
+}
+
 if (!Array.prototype.filter) {
     Array.prototype.filter = function(fun /*, thisp */) {
 	"use strict"
@@ -49,7 +56,12 @@ var makeImg = function(options) {
 }
 
 
-function Lazy(def) {
+var showProfile = function(p) {
+    $('#avatar:empty').html(makeImg({src: p.avatar}))
+}
+
+
+var Lazy = function(def) {
     var cache = []
     return function(i) {
 	return (i in cache) ? cache[i] : (cache[i] = def.call(arguments.callee, i))
@@ -57,7 +69,8 @@ function Lazy(def) {
 }
 
 
-(function($) {
-    $.fn.fadeAway = function() { return this.each(function() { $(this).fadeTo(750, 0) }) }
-    $.fn.fadeBack = function() { return this.each(function() { $(this).fadeTo(750, 100) }) }
-})(jQuery)
+var initExtensions = function(jq) {
+    jq.fn.fadeAway = function() { return this.each(function() { jq(this).fadeTo(750, 0) }) }
+    jq.fn.fadeBack = function() { return this.each(function() { jq(this).fadeTo(750, 100) }) }
+}
+initExtensions(jQuery)

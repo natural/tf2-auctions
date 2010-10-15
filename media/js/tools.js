@@ -87,6 +87,15 @@ var SchemaTool = {
 }
 
 
+var listingsUids = function() {
+    var ll = new ListingsLoader(), uids = {}
+    $.each(ll.listings, function(idx, listing) {
+	$.each(listing.items, function(i, item) {
+	    uids[item.uniqueid] = item
+	})
+	    })
+    return uids
+}
 
 var BackpackItemsTool = {
     equippedTag: '<span style="display:none" class="equipped">Equipped</span>',
@@ -99,11 +108,13 @@ var BackpackItemsTool = {
     },
     itemInv: function(item) { return item['inventory']  },
     itemPos: function(item) { return item['inventory'] & 0xFFFF },
-    itemCanTrade: function(item) { return !(item['flag_cannot_trade']) },
+    itemCanTrade: function(item) { return !(item.flag_cannot_trade) && !(item.flag_active_listing) },
     placeItems: function(slug, items) {
 	var newIdx = -1, self = this
 	var toolDefs = SchemaTool.tools(), actionDefs = SchemaTool.actions()
+	var uids = listingsUids()
 	$.each(items, function(index, item) {
+	    item.flag_active_listing = (item.id in uids)
 	    var pos = self.itemPos(item)
 	    if (pos > 0) {
 		var ele = $('#' + slug + pos + ' div').append(self.itemImg(item))
@@ -192,7 +203,6 @@ var BackpackView = function(slug) {
 
 var ProfileLoader = function(options) {
     options = options || {}
-    //var id64 = options.id64
     var self = this
     var okay = function(profile) {
 	ProfileLoader.cache = self.profile = profile
@@ -293,3 +303,34 @@ $(document).ready(function() {
     //$('body').mousedown(function() { return false }) //disable text selection
     console.log('tools.js document ready')
 })
+
+
+
+var ListingsLoader = function(options) {
+    options = options || {}
+    var self = this
+    var id64 = options.id64
+    var okay = function(listings) {
+	ListingsLoader.cache = self.listings = listings
+	var cb = options.success ? options.success : ident
+	cb(listings)
+    }
+    var error = function(err) {
+	console.error(err)
+	var cb = options.error ? options.error : ident
+	cb(schema)
+    }
+    if (!ListingsLoader.cache) {
+	console.log('fetching listings')
+	$.ajax({url: '/api/v1/listings/'+id64, // status=active, orderby=created, etc.
+		dataType: 'json',
+		cache: true,
+		success: okay,
+		error: error
+	       })
+    } else {
+	console.log('using cached profile:', ListingsLoader.cache)
+	okay(ListingsLoader.cache)
+    }
+}
+ListingsLoader.cache = null
