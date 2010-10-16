@@ -1,4 +1,23 @@
-@import url("base.css") all;
+* {
+margin:0;
+padding:0;
+}
+
+@font-face {
+font-family:"TF2";
+src:url("/media/ttf/TF2.ttf");
+}
+
+@font-face {
+font-family:"TF2Build";
+src:url("/media/ttf/TF2Build.ttf");
+}
+
+@font-face {
+font-family:"TF2secondary";
+src:url("/media/ttf/TF2secondary.ttf");
+}
+
 
 body {
 background-color:#393431;
@@ -12,6 +31,7 @@ a { color:#ece3cb; text-decoration:none; }
 h1, h2, h3, h4 { font-family:"TF2Build"; }
 h1 { color:#ebe2ca; font-size:135%; font-weight:bold; }
 h2 { color:#827868; font-size:110%; }
+img { border:none; }
 label { display:block; font-family:"TF2Build"; }
 
 .centered { margin:0 auto 0 auto; }
@@ -119,6 +139,12 @@ height:4em !important;
 
 div.organizer-view .cannot-trade {
 background-color:#252221 !important;
+border-radius:0.75em; -moz-border-radius:0.75em;
+border:0.25em solid #2E2B2A !important;
+}
+
+div.organizer-view .active-listing {
+background-color:#1a1a1a !important;
 border-radius:0.75em; -moz-border-radius:0.75em;
 border:0.25em solid #2E2B2A !important;
 }
@@ -743,4 +769,8 @@ border:1px dotted red;
 .cannot-trade img {
 filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
 opacity:0.5; /* TODO: add opacity to parent selectors, too */
+}
+
+div.organizer-view .active-listing img {
+opacity:0.33;
 }

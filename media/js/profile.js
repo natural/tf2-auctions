@@ -27,7 +27,7 @@ var listingsOkay = function(listings) {
 	var c = proto.clone()
 	c.removeClass("null prototype")
 	GL = listing
-	$.each(Object.keys(listing), function(index, key) {
+	$.each(keys(listing), function(index, key) {
 	    var loc = '.-listing-' + key
             var val = (listingFormats[key] || listingFormats.any)(listing[key])
 	    $(loc, c).html(val)
@@ -50,9 +50,9 @@ var profileReady = function(profile) {
     var bidsError = function(err) { console.error(err) }
     showProfile(profile)
     $('#load-profile-msg').text('Profile loaded. Welcome, ' + profile['personaname'] + '!')
-    $.ajax({url: '/api/v1/bids/'+profile.steamid, dataType: 'json', cache: true,
+    $.ajax({url: '/api/v1/player-bids/'+profile.steamid, dataType: 'json', cache: true,
 	    success: bidsOkay, error: bidsError})
-    $.ajax({url: '/api/v1/listings/'+profile.steamid, dataType: 'json', cache: true,
+    $.ajax({url: '/api/v1/player-listings/'+profile.steamid, dataType: 'json', cache: true,
 	    success: listingsOkay, error: listingsError})
 }
 

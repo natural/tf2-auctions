@@ -5,11 +5,11 @@ from logging import exception
 
 from google.appengine.api import users
 
-from tf2bay.apps import PageHandler
+from tf2bay.apps import View
 from tf2bay.models import Listing, ListingItem, PlayerProfile
 
 
-class AddListingView(PageHandler):
+class AddListingView(View):
     template_name = 'newlisting.pt'
     related_js = ('add-listing.js', )
 
@@ -17,7 +17,7 @@ class AddListingView(PageHandler):
 	self.render()
 
 
-class ListingsBrowserView(PageHandler):
+class ListingsBrowserView(View):
     template_name = 'browse.pt'
     related_js = ('browse.js', )
 
@@ -25,7 +25,6 @@ class ListingsBrowserView(PageHandler):
 	q = Listing.all()
 	listings = q.fetch(limit=10)
 	self.render(listings=listings)
-
 
     def filters(self):
 	return (
@@ -36,3 +35,13 @@ class ListingsBrowserView(PageHandler):
 	    ('weapons', 'Weapons'),
 	    ('tools', 'Tools'),
 	)
+
+
+class ListingDetailView(View):
+    template_name = 'listing_detail.pt'
+
+    def get(self, listing_id):
+	listing = Listing.all().filter('listing_id', int(listing_id)).get()
+	self.render(listing=listing)
+
+

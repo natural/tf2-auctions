@@ -3,14 +3,14 @@
     <title metal:fill-slot="title">TF2Bay.com -- All of the eBay&reg; Suck and None of the TF2 Goodness!</title>
 </head>
 <body>
-    <metal:fill fill-slot="main" tal:define="id64 controller.steam_id">
+    <metal:fill fill-slot="main">
 
-	<div tal:condition="not id64">
+	<div tal:condition="not user">
 	    <h1>Lookin to Trade?</h1>
 	    <div>You've gotta log in to bid or place an auction.</div>
 	</div>
 
-	<div tal:condition="id64">
+	<div tal:condition="user">
 	    <h1>Howdy there, pardner!</h1>
 	    <div>Get to tradin' yer stuff for other stuff!</div>
 	</div>

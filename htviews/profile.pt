@@ -3,16 +3,18 @@
     <title metal:fill-slot="title">tf2bay.com - profile</title>
 </head>
 <body>
-    <metal:fill fill-slot="main" tal:define="id64 controller.steam_id">
+    <metal:fill fill-slot="main">
 	<form action="/api/v1/add-listing" method="post" tal:condition="False">
 	    <input type="submit" value="Test" />
 	</form>
-	<div tal:condition="id64">
+	<div tal:condition="user">
 	    <h1 id="load-profile-msg">Loading your profile...</h1>
 	    <h1 class="message m-top-1"><span class="hilite"></span><a name="bids">My Bids</a></h1>
 	    <div><div id="load-own-msg-bids"></div></div>
 
-	    <h1 class="message m-top-1"><span class="hilite"></span><a name="listings">My Listings</a></h1>
+	    <h1 class="message m-top-1">
+		<span class="hilite"></span><a name="listings">My Listings</a>
+	    </h1>
 
 	    <metal:wrapper tal:define="tid 'own-listings'">
                 <metal:include use-macro="context.listing_parts.macros.listing_large" />

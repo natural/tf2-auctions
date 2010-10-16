@@ -13,7 +13,7 @@
     </metal:js>
 </head>
 <body>
-    <metal:main fill-slot="main" tal:define="id64 controller.steam_id">
+    <metal:main fill-slot="main">
 	<h1 class="m-top-1 m-bot-05"><span class="hilite"></span>Add a New Listing</h1>
 	<div id="add-listing-intro">
   	    <div id="load-own-msg-profile"></div>
@@ -72,7 +72,7 @@
 		</div>
 	    </div>
 
-	    <div class="centered text-centered m-1">
+	    <div id="add-listing-buttons" class="centered text-centered m-1">
 		<span class="submit button m-right-05">
 		    <a href="#" id="add-listing-submit">OK, Post It</a>
 		</span>
@@ -80,6 +80,18 @@
 		    <a href="#" id="add-listing-cancel">Nah, Cancel</a>
 		</span>
 	    </div>
+
+	    <div id="add-listing-response" class="centered text-centered">
+		<div id="add-listing-working" class="m-1 null"></div>
+		<div id="add-listing-success" class="m-1 null">
+		    <span class="button m-right-05">
+			<a href="#" id="add-listing-success-view">View Listing</a>
+		    </span>
+		</div>
+		<div id="add-listing-error" class="m-1 null"></div>
+            </div>
+
+
 	</div>
 
     </metal:main>

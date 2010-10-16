@@ -1,48 +1,16 @@
-// TODO:  replace .filter calls w/ $.filter.  duh.
-// TODO:  check for console and define if necessary
-
 if (typeof(console) == 'undefined') {
     var console = {}
     console.log = console.error = function() {}
 }
 
-if (!Array.prototype.filter) {
-    Array.prototype.filter = function(fun /*, thisp */) {
-	"use strict"
-	if (this === void 0 || this === null) { throw new TypeError() }
-	var t = Object(this)
-	var len = t.length >>> 0
-	if (typeof fun !== "function") { throw new TypeError() }
-	var res = []
-	var thisp = arguments[1]
-	for (var i = 0; i < len; i++) {
-	    if (i in t) {
-		var val = t[i] // in case fun mutates this
-		if (fun.call(thisp, val, i, t)) { res.push(val) }
-	    }
-	}
-	return res
+var keys = function(obj) {
+    var ks = []
+    for (var k in obj) {
+	ks.push(k)
     }
+    return ks
 }
 
-if (false) { //(!Object.prototype.keys) {
-    Object.prototype.keys = function(skipFunction)  {
-	var result = []
-	for (var p in this) {
-	    if ( ! this.hasOwnProperty(p) ) {
-		continue
-	    }
-	    if ( skipFunction && 'function' == typeof this[p] ) {
-		continue
-	    }
-	    result.push(p)
-	}
-	return result
-    }
-}
-
-
-var gt = function(a, b) { return a > b }
 var ident = function(a) { return a }
 
 var makeImg = function(options) {

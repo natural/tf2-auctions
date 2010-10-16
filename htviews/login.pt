@@ -13,8 +13,8 @@
 	    least from us.
 
 	    </p>
-	    <div  class="login_link">
-	    <a href="${controller.login_url}">
+	    <div  class="login-link">
+	    <a href="${controller.login_url()}">
 		<img src="http://steamcommunity.com/public/images/signinthroughsteam/sits_small.png" />
 	    </a>
 	    </div>

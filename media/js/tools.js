@@ -322,7 +322,7 @@ var ListingsLoader = function(options) {
     }
     if (!ListingsLoader.cache) {
 	console.log('fetching listings')
-	$.ajax({url: '/api/v1/listings/'+id64, // status=active, orderby=created, etc.
+	$.ajax({url: '/api/v1/player-listings/'+id64, // status=active, orderby=created, etc.
 		dataType: 'json',
 		cache: true,
 		success: okay,

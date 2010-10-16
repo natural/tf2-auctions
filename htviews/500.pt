@@ -1,3 +1,25 @@
-<html>
-500?
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">Boom!  Internal Error</title>
+</head>
+<body>
+    <metal:fill fill-slot="main">
+	<h1 class="error">Internal Error</h1>
+	<div tal:condition="traceback">
+	    <h2>Boom! Here's the Traceback:</h2>
+	    <pre tal:content="traceback" />
+	    <div tal:condition="stack">
+		<hr />
+		<h3>Here's the Stack:</h3>
+		<pre tal:content="stack" />
+	    </div>
+	</div>
+	<h2>Consider</h2>
+	<ul>
+	    <li>Sometimes things just don't go the way you planned</li>
+	    <li>It's probably not your fault</li>
+	    <li>You probably didn't break anything</li>
+	</ul>
+    </metal:fill>
+</body>
 </html>

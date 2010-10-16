@@ -146,6 +146,7 @@ class Listing(db.Model):
     expires = db.DateTimeProperty('Expires', required=True, validator=future_expires)
     minbid = db.ListProperty(long, 'Minimum Bid')
     description = db.StringProperty('Description', default='', multiline=True)
+    listing_id = db.IntegerProperty('Alternate listing id', indexed=True)
 
     ## non-normalized:  sequence uniqueids for the items in this listing
     # TODO: is this needed now that there's a 'status' property on ListingItem??
@@ -167,7 +168,18 @@ class Listing(db.Model):
     valid_days = range(1, 31) # 1-30
 
     @classmethod
-    def build(cls, item_ids, desc, days, minbid=None):
+    def build(cls, **kwds):
+	## this check has to be performed outside of the transaction
+	## because its against items outside the new listing ancestry:
+	item_ids = kwds['item_ids']
+	for uid, item in item_ids:
+	    q = ListingItem.all(keys_only=True)
+	    if q.filter('uniqueid', uid).filter('status', 'active').get():
+		raise TypeError('Item already in an active auction.')
+	return db.run_in_transaction(cls.build_transaction, **kwds)
+
+    @classmethod
+    def build_transaction(cls, item_ids, desc, days, minbid=None):
 	## 0.  verify the owner, duration and description before
 	## we do anything else (to prevent needless expensive checks)
 	owner = users.get_current_user()
@@ -205,7 +217,10 @@ class Listing(db.Model):
 	    expires=expires,
 	    minbid=minbid,
 	    description=desc)
+
 	key = listing.put()
+	listing.listing_id = key.id()
+	listing.put()
 
 	# 5. assign the items
 	item_types = dict((i['defindex'], i['item_type_name'])
@@ -228,7 +243,7 @@ class Listing(db.Model):
 	    eta=expires,
 	    params={'key':key},
 	)
-	return key, listing
+	return key
 
     def time_left(self):
 	return self.expires - datetime.now()
@@ -298,8 +313,8 @@ class BidItem(PlayerItem):
 	return '<BidItem listing=%s, uniqueid=%s, defindex=%s>' % (self.bid, self.uniqueid, self.defindex)
 
 
-class Rating(db.Model):
-    """ Rating -> a record of one users rating of another.
+class Feedback(db.Model):
+    """ Feedback -> a record of one users rating of another.
 
     """
     source = db.UserProperty('Source user (the one rating)', required=True)
@@ -316,12 +331,3 @@ class Rating(db.Model):
 	pass
 
 
-def build_listing(**kwds):
-    ## this check has to be performed outside of the transaction
-    ## because its against items outside the new listing ancestry:
-    item_ids = kwds['item_ids']
-    for uid, item in item_ids:
-	q = ListingItem.all(keys_only=True)
-	if q.filter('uniqueid', uid).filter('status', 'active').get():
-	    raise TypeError('Item already in an active auction.')
-    return db.run_in_transaction(Listing.build, **kwds)

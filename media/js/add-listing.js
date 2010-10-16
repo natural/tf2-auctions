@@ -46,10 +46,15 @@ var AddListingTool = function(backpack) {
 
     this.postOkay = function(data, status, req) {
 	console.log('post okay:', data, status, req)
+	$('#add-listing-working').text('Complete.  Click the link to view your listing.')
+	$('#add-listing-success a').attr('href', '/listings/'+data.key)
+	$('#add-listing-success').fadeIn()
     }
 
     this.postError = function(req, status, err) {
 	console.error('post error:', req, status, err)
+	$('#add-listing-working').text('Something went wrong.  Check the error below.').fadeIn()
+	$('#add-listing-error').text(err).fadeIn()
     }
     this.addListing = function(input) {
 	var output = {}
@@ -64,6 +69,7 @@ var AddListingTool = function(backpack) {
 	$.ajax({
 	    url: '/api/v1/add-listing',
 	    type: 'POST',
+	    dataType:'json',
 	    data: $.toJSON(output),
 	    success: this.postOkay,
 	    error: this.postError
@@ -108,6 +114,8 @@ var AddListingTool = function(backpack) {
 	if (errs.length) {
 	    self.showErrors(errs)
 	} else {
+	    $('#add-listing-buttons').slideUp('slow')
+	    $('#add-listing-working').removeClass('null').text('Working...').fadeIn('fast')
 	    self.addListing({items: items, desc: desc, days: days, minbid: minbid})
 	}
 	return false
@@ -164,7 +172,7 @@ var showMinBid = function() {
     var c = 0, p = '#add-listing-minbid-'
     // TODO:  tradable() returns a few non-tradable items
     $.each(SchemaTool.tradable(), function(idx, item) {
-	$(p+c + ' div').html( makeImg({src:item.image_url, height:64, width:64, }) )
+	$(''+p+''+c + ' div').html(makeImg({src:item.image_url, height:64, width:64}))
 	$('img:last', $(p+c+' div')).data('node', item)
 	c += 1
 

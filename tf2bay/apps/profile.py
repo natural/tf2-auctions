@@ -5,13 +5,13 @@ from logging import exception
 
 from google.appengine.api import users
 
-from tf2bay.apps import PageHandler
+from tf2bay.apps import View
 from tf2bay.models import PlayerProfile
 from tf2bay.utils import json
 
 
 
-class ProfileView(PageHandler):
+class ProfileView(View):
     template_name = 'profile.pt'
     related_js = ('profile.js', )
 
@@ -27,7 +27,7 @@ class ProfileView(PageHandler):
 	self.render()
 
 
-class ProfileApi(PageHandler):
+class ProfileApi(View):
     def get(self):
 	try:
 	    profile = PlayerProfile.get_by_user(users.get_current_user())

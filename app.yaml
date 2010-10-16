@@ -3,62 +3,65 @@ version: 3
 runtime: python
 api_version: 1
 
-
 handlers:
 
-- url: /media/ttf/(.*\.ttf)
+  ## (static files) ##
+
+- url: /media/ttf/(.*\.(ttf|eot))
   static_files: media/ttf/\1
   expiration: "1d 1h"
   mime_type: font/ttf
-  upload: media/ttf/(.*\.ttf)
-
+  upload: media/ttf/(.*\.(ttf|eot))
 
 - url: /media/(.*\.(css|js|png))
   static_files: media/\1
   expiration: "1d 1h"
   upload: media/(.*\.(css|js|png))
 
-
-# lol
 - url: /favicon.ico
   static_files: media/img/favicon.ico
   upload: media/img/favicon.ico
 
 
-# private profile view: displays profile of current user
-# private add listing view:  displays form for creating new listing
-- url: /(profile|/listings/add)
-  login: required
-  script: main.py
+  ## (api methods) ##
 
-
-# worker url for expiration task queue
 - url: /api/v1/expire-listing
   login: admin
   script: main.py
+  # description: worker url for expiration task queue
 
-# for testing
-- url: /echo
-  login: admin
-  script: main.py
-
-
-# private apis for listing and bid create, update and delete
 - url: /api/v1/(add-listing|cancel-listing|add-bid|own-profile)
   script: main.py
   login: required
+  # description: private apis for listing and bid create, update and delete
 
-
-# public apis for a players listings and bids
-- url: /api/v1/(listings|bids)/(\d{17})
+- url: /api/v1/(player-listings|player-bids)/(\d{17})
   script: main.py
+  # description: public apis for a players listings and bids
 
 
-# public api for listing and bid reads
 - url: /api/v1/(browse-listings|search-listings)
   script: main.py
+  # description: public api for listing and bid reads
 
 
-# public pages
+  ## (user interface) ##
+
+- url: /(profile|/listings/add)
+  login: required
+  script: main.py
+  # description: private profile view: displays profile of current user,
+  # private add listing view:  displays form for creating new listing
+
+- url: /echo
+  login: admin
+  script: main.py
+  # description:  admin url that echos the request environment
+
+- url: /listings/(\d{1,20})
+  script: main.py
+  # description: listing detail
+
 - url: (/|/login|/listings|/listings/search|/(.*))
   script: main.py
+  # description:  public pages, including a 404 handler

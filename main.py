@@ -5,26 +5,31 @@ add_local_paths()
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from tf2bay.apps import simple
-from tf2bay.apps.api import AuctionApi, PublicApi, PublicQueryApi
-from tf2bay.apps.listing import AddListingView, ListingsBrowserView
+from tf2bay.apps.api import ListingApi, PublicApi, PublicQueryApi, ExpireApi
+from tf2bay.apps.basic import basicView, NotFound
+from tf2bay.apps.listing import AddListingView, ListingsBrowserView, ListingDetailView
 from tf2bay.apps.profile import ProfileView, ProfileApi
 from tf2bay.utils import environ_extras_middleware
 
 
 routes = (
-    (r'/api/v1/(listings|bids)/(\d{17})', PublicQueryApi),
-    (r'/api/v1/(browse-listings|search-listings)', PublicApi),
+    (r'/api/v1/expire-listing', ExpireApi),
+    (r'/api/v1/(add-listing|cancel-listing|add-bid)', ListingApi),
     (r'/api/v1/own-profile', ProfileApi),
-    (r'/api/v1/(add-listing|cancel-listing|add-bid)', AuctionApi),
-    (r'/login', simple.LoginView),
-    (r'/echo', simple.EchoView),
+
+    (r'/api/v1/(player-listings|player-bids)/(\d{17})', PublicQueryApi),
+    (r'/api/v1/(browse-listings|search-listings)', PublicApi),
+
     (r'/profile', ProfileView),
     (r'/listings/add', AddListingView),
-    (r'/listings/search', simple.EchoView),
+    (r'/listings/search', NotFound),
+    (r'/listings/(\d{1,20})', ListingDetailView),
     (r'/listings', ListingsBrowserView),
-    (r'/', simple.FrontView),
-    (r'/(.*)', simple.NotFound),
+
+    (r'/login', basicView('login.pt', 'login.css', 'login.js')),
+    (r'/echo', basicView('echo.pt')),
+    (r'/', basicView('front.pt')),
+    (r'/(.*)', NotFound),
 )
 
 

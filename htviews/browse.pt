@@ -18,7 +18,7 @@
 	</metal:wrapper>
 
 
-        <div tal:condition="controller.steam_id" class="centered text-centered">
+        <div tal:condition="user" class="centered text-centered">
         Yo dawg, I heard you like browsers so I put a browser in your
         browser so you can browse while you're browsin!
         </div>

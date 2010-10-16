@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from tf2bay.apps import PageHandler
+from tf2bay.apps import View
 from tf2bay.models import Listing, ListingItem
 
 
 
 
-class BrowseView(PageHandler):
+class BrowseView(View):
     template_name = 'browse.pt'
     related_js = ('browse.js', )
 

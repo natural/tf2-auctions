@@ -3,13 +3,13 @@
 from logging import warn
 from google.appengine.api import users
 
-from tf2bay.apps import PageHandler
-from tf2bay.models import Bid, Listing, ListingItem, build_listing
+from tf2bay.apps import View
+from tf2bay.models import Bid, Listing, ListingItem
 from tf2bay.utils import json
 
 
 
-class PublicApi(PageHandler):
+class PublicApi(View):
     methods = {
 	'browse-listings' : 'get_listings',
         'search-listings' : 'search_listings',
@@ -37,7 +37,7 @@ class PublicApi(PageHandler):
 
 
 
-class AuctionApi(PageHandler):
+class ListingApi(View):
     methods = {
 	'add-bid' : 'add_bid',
 	'add-listing' : 'add_listing',
@@ -68,14 +68,12 @@ class AuctionApi(PageHandler):
 	    if days < 0 or days > 30:
 		raise TypeError('Invalid duration.')
 	    minbid = [b+0 for b in listing['minbid']] # again, force an exception
-	    key, listing = build_listing(item_ids=item_ids, desc=desc, days=days, minbid=minbid)
+	    key = Listing.build(item_ids=item_ids, desc=desc, days=days, minbid=minbid)
 	except (Exception, ), exc:
 	    self.error(500)
-	    raise
 	    exc = exc.message if hasattr(exc, 'message') else str(exc)
 	    result = {'msg':'error', 'description':exc}
 	else:
-	    warn('add listing: \n%s\n', json.dumps(listing.encode_builtin(), indent=4))
 	    result = {'msg':'success', 'key':key.id_or_name(), }
 	return json.dumps(result)
 
@@ -86,12 +84,12 @@ class AuctionApi(PageHandler):
 	pass
 
 
-class PublicQueryApi(PageHandler):
+class PublicQueryApi(View):
     def get(self, kind, id64):
 	q = None
-	if kind == 'listings':
+	if kind == 'player-listings':
 	    q = Listing.all()
-	elif kind == 'bids':
+	elif kind == 'player-bids':
 	    q = Bid.all()
 	if q is not None:
 	    q.filter('owner = ', users.User(id64))
@@ -99,3 +97,7 @@ class PublicQueryApi(PageHandler):
 	else:
 	    rs = ()
 	self.response.out.write(json.dumps(rs, indent=4))
+
+
+class ExpireApi(View):
+    pass

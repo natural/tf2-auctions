@@ -1,15 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from logging import warn
-
 from google.appengine.api import users
-from google.appengine.ext.webapp import RequestHandler, Request, Response
+from google.appengine.ext.webapp import RequestHandler
 from chameleon.zpt.loader import TemplateLoader
-from tf2bay.utils import is_devel, user_steam_id
-
-
-login_url = users.create_login_url(dest_url='/profile?ref=steam',
-				   federated_identity='steamcommunity.com/openid')
+from tf2bay.utils import is_devel
 
 
 class ContextLoader(object):
@@ -17,69 +11,48 @@ class ContextLoader(object):
 	self.load = loader.load
 
     def __getitem__(self, key):
-	#print '### context loader:', key
 	return self.load(key + '.pt')
 
-
-class LocalRequestHandler(RequestHandler):
-    has_rss = False
-
-    @property
-    def login_url(self):
-	return login_url
-
-    @property
-    def logout_url(self):
-	return users.create_logout_url(self.request.uri)
-
-    @property
-    def user(self):
-	return users.get_current_user()
-
-    def is_authen(self):
-	user = users.get_current_user()
-	return bool(user)
-
-    @staticmethod
-    def long_date(date):
-	return date.strftime('%A %d-%b-%Y %H:%M %p')
-
-    def is_dev(self):
-	return is_devel(self.request.environ)
-
-    def req_get(self, key, default=''):
-	return self.request.get(key, default)
-
-    @property
-    def steam_id(self):
-	return user_steam_id(self.user)
+    @classmethod
+    def build(cls, template_prefix, auto_reload=True):
+	tpl = TemplateLoader(template_prefix, auto_reload=auto_reload)
+	return cls(tpl), tpl
 
 
-class PageHandler(LocalRequestHandler):
-    default_js = (
-	'jquery.json-2.2.js',
-	'hacks.js',
-	'tools.js',
-    )
-    related_css = related_js = ()
-    template_prefix = 'htviews/'
-    template_loader = TemplateLoader(template_prefix, auto_reload=True)
-    context_loader = ContextLoader(template_loader)
+class View(RequestHandler):
+    context_loader, template_loader = ContextLoader.build('htviews/')
+    default_js = ('jquery.json-2.2.js', 'fixes.js', 'tools.js')
+    related_css = ()
+    related_js = ()
 
     def default_context(self):
-	return [
+	return (
 	    ('context', self.context_loader),
 	    ('controller', self),
 	    ('environ', self.request.environ),
 	    ('errors', {}),
-	    ('user', self.user),
-	]
+	    ('user', users.get_current_user()),
+	)
 
     def extra_context(self):
 	return ()
 
     def get(self):
 	self.render()
+
+    def handle_exception(self, exc, debug):
+	import logging, traceback
+	logging.exception(exc)
+	self.error(500)
+	self.response.clear()
+        tb = traceback.format_exc() if is_devel(self.request.environ) else None
+	self.render(self.template_loader.load('500.pt'), traceback=tb, stack='')
+
+    def login_url(self, dest='/profile?ref=steam', provider='steamcommunity.com/openid'):
+	return users.create_login_url(dest_url=dest, federated_identity=provider)
+
+    def logout_url(self):
+	return users.create_logout_url(self.request.uri)
 
     def render(self, template=None, **kwds):
 	template = self.template() if template is None else template
@@ -91,16 +64,3 @@ class PageHandler(LocalRequestHandler):
 
     def template(self):
 	return self.template_loader.load(self.template_name)
-
-    # overrides RequestHandler.handle_exception to display a nice and
-    # friendly error page.
-    def handle_exception(self, exc, debug):
-	import logging, traceback
-	logging.exception(exc)
-	self.error(500)
-	self.response.clear()
-        tb = traceback.format_exc() if self.is_dev() else None
-	self.render(self.template_loader.load('500.pt'), traceback=tb, stack='')
-
-
-

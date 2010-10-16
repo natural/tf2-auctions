@@ -1,0 +1,12 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">Listing Detail -- </title>
+</head>
+<body>
+    <metal:main fill-slot="main">
+	<div class="centered text-centered">
+	    <h1>Listing: ${listing.listing_id}</h1>
+	 </div>
+    </metal:main>
+</body>
+</html>
