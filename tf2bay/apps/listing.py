@@ -41,7 +41,7 @@ class ListingDetailView(View):
     template_name = 'listing_detail.pt'
 
     def get(self, listing_id):
-	listing = Listing.all().filter('listing_id', int(listing_id)).get()
+	listing = Listing.get_by_id(int(listing_id))
 	self.render(listing=listing)
 
 

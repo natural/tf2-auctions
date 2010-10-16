@@ -146,7 +146,6 @@ class Listing(db.Model):
     expires = db.DateTimeProperty('Expires', required=True, validator=future_expires)
     minbid = db.ListProperty(long, 'Minimum Bid')
     description = db.StringProperty('Description', default='', multiline=True)
-    listing_id = db.IntegerProperty('Alternate listing id', indexed=True)
 
     ## non-normalized:  sequence uniqueids for the items in this listing
     # TODO: is this needed now that there's a 'status' property on ListingItem??
@@ -169,26 +168,32 @@ class Listing(db.Model):
 
     @classmethod
     def build(cls, **kwds):
+	## 0.  verify the owner, duration and description before
+	## we do anything else (to prevent needless expensive checks).
+        ## like the listing item, we need to get the profile before
+	## we run the transaction.
+	owner = users.get_current_user()
+	if not owner:
+	    raise ValueError('No owner specified.')
+	kwds['owner'] = owner
+	kwds['profile'] = PlayerProfile.get_by_id64(user_steam_id(owner))
+
 	## this check has to be performed outside of the transaction
 	## because its against items outside the new listing ancestry:
+
 	item_ids = kwds['item_ids']
 	for uid, item in item_ids:
 	    q = ListingItem.all(keys_only=True)
 	    if q.filter('uniqueid', uid).filter('status', 'active').get():
 		raise TypeError('Item already in an active auction.')
+
+
 	return db.run_in_transaction(cls.build_transaction, **kwds)
 
     @classmethod
-    def build_transaction(cls, item_ids, desc, days, minbid=None):
-	## 0.  verify the owner, duration and description before
-	## we do anything else (to prevent needless expensive checks)
-	owner = users.get_current_user()
-	if not owner:
-	    raise ValueError('No owner specified.')
-
+    def build_transaction(cls, owner, profile, item_ids, desc, days, minbid=None):
 	## 1.  check the user, get their backpack and verify the
 	## inidicated items belong to them.
-	profile = PlayerProfile.get_by_id64(user_steam_id(owner))
 	if not profile.owns_all(uid for uid, item in item_ids):
 	    ## TODO: re-fetch backpack.  will probably need to move
 	    ## backpack feed into this site for that to work.
@@ -210,17 +215,14 @@ class Listing(db.Model):
 	if not (minbid_defs & valid_defs == minbid_defs):
 	    raise TypeError('Invalid minimum bid items.')
 
-	## 4.  create
+	## 4.  create.  note that we're not setting a parent entity so
+	## that we can query for the listing by id.
 	listing = cls(
-	    parent=profile,
 	    owner=owner,
 	    expires=expires,
 	    minbid=minbid,
 	    description=desc)
-
 	key = listing.put()
-	listing.listing_id = key.id()
-	listing.put()
 
 	# 5. assign the items
 	item_types = dict((i['defindex'], i['item_type_name'])
@@ -235,14 +237,13 @@ class Listing(db.Model):
 		listing=listing)
 	    listing_item.put()
 
-	## 5.  submit an item to the expiration task queue.
+	## 6.  submit an item to the expiration task queue.
 	taskqueue.add(
 	    url='/api/v1/expire-listing',
 	    transactional=True,
 	    queue_name='listing-expiration',
 	    eta=expires,
-	    params={'key':key},
-	)
+	    params={'key':key})
 	return key
 
     def time_left(self):
