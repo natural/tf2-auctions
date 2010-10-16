@@ -62,5 +62,5 @@ class View(RequestHandler):
 	params.update(kwds)
 	self.response.out.write(template.render(**params))
 
-    def template(self):
-	return self.template_loader.load(self.template_name)
+    def template(self, name=None):
+	return self.template_loader.load(self.template_name if name is None else name)

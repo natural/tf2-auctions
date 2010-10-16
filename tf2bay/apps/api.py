@@ -36,6 +36,14 @@ class PublicApi(View):
 	pass
 
 
+class ListingDetailsApi(View):
+    def get(self, listing_id):
+	listing_id = int(listing_id)
+	listing = Listing.get_by_id(listing_id)
+	if not listing:
+	    self.error(404)
+	    return
+	self.response.out.write( json.dumps(listing.encode_builtin(), indent=4))
 
 class ListingApi(View):
     methods = {

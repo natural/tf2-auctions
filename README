@@ -5,11 +5,13 @@ load-own-msg-X - loading message areas
 
 TODO 1.0
 --------
-disable items from drag and drop if present in active auction
+disable (and recolor) unplaced items from drag and drop if present in active auction
 tooltips
 fix paintcan images
 add distinctive class to items in active auction (on new listing page)
-disable non-placed seletion of items in active auction
+move /profile to /profiles/<steamid> (and watch for ownership checks)
+s/minbid/min_bid/
+in urls: s/listings/listing/
 
 TODO 1.1
 --------
@@ -19,6 +21,10 @@ blog
 forums
 email notifications
 backpack view
-badges for online/offline, etc.  e.g.:
-http://steamprofile.com/profile/simple/steam/76561198031408075.png
-http://steamprofile.com/profile/extended/steam/76561197992805111.png
+badges for online/offline, etc.  see proxyutils.fetch class
+
+
+when dragging (returning) an item with quant/equipped from #chooser-add-listing-item to 
+backpack, restore quant/equipped dohicky.
+
+add separate badge for "active listing" to backpack views

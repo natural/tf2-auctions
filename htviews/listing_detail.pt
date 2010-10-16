@@ -4,8 +4,27 @@
 </head>
 <body>
     <metal:main fill-slot="main">
-	<div class="centered text-centered">
-	    <h1>Listing: ${ listing.key().id() }</h1>
+	<h1 class="m-top-1">
+	    <span class="hilite"></span>
+	    <span id="listing-detail-title">Listing</span>
+	</h1>
+	<span id="listing-details-load" class="centered">Loading...</span>
+
+	<div id="listing-details-main" class="centered m-top-1 null">
+	    <div><label>Description:</label><div><strong id="listing-detail-description"></strong></div></div>
+	    <div><label>Items:</label><div id="listing-detail-items"></div></div>
+	    <div><label>Status:</label><div><strong id="listing-detail-status"></strong></div></div>
+	    <div><label>Expires:</label><div><strong id="listing-detail-expires"></strong></div></div>
+	    <div><label>Minium Bid:</label><div><strong id="listing-detail-minbid"></strong></div></div>
+
+	    <div><label>Created:</label><div><strong id="listing-detail-created"></strong></div></div>
+	    <div><label>Owner:</label><div><strong id="listing-detail-owner"></strong></div></div>
+
+	    <div>
+		<label>Bids: <span id="listing-detail-bidcount"></span></label>
+		<div id="listing-detail-bids"></div>
+	    </div>
+
 	 </div>
     </metal:main>
 </body>

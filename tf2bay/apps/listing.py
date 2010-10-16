@@ -6,7 +6,7 @@ from logging import exception
 from google.appengine.api import users
 
 from tf2bay.apps import View
-from tf2bay.models import Listing, ListingItem, PlayerProfile
+from tf2bay.models import Listing, ListingItem, PlayerProfile, db
 
 
 class AddListingView(View):
@@ -39,9 +39,16 @@ class ListingsBrowserView(View):
 
 class ListingDetailView(View):
     template_name = 'listing_detail.pt'
+    related_js = ('display-listing.js', )
 
     def get(self, listing_id):
-	listing = Listing.get_by_id(int(listing_id))
-	self.render(listing=listing)
+        key = db.Key.from_path('Listing', int(listing_id))
+	exists = Listing.all(keys_only=True).filter('__key__', key).get()
+	if exists:
+	    self.render()
+	else:
+	    self.error(404)
+	    self.render(self.template('404.pt'))
+
 
 

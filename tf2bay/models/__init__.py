@@ -31,7 +31,10 @@ class PlayerItem(polymodel.PolyModel):
 
     def encode_builtin(self):
 	""" Encode this instance using only built-in types. """
-	return {'uniqueid':self.uniqueid, 'defindex':self.defindex}
+	item = json.loads(self.source)
+	this = {'uniqueid':self.uniqueid, 'defindex':self.defindex}
+	this.update((k, item.get(k, None)) for k in ('level', 'quantity', 'quality'))
+	return this
 
     @classmethod
     def get_by_uid(cls, uniqueid):
@@ -273,8 +276,10 @@ class Listing(db.Model):
 	    'expires':str(self.expires),
 	    'description':self.description,
 	    'bid_count':self.bid_count,
+	    'minbid':self.minbid,
 	    'items':[i.encode_builtin() for i in self.items],
-	    'key_name':self.key().name(),
+	    'status':self.status,
+	    'status_reason':self.status_reason,
 	}
 
 

@@ -68,18 +68,19 @@ var SchemaTool = {
     },
 
     tradable: function() {
-	var can = {}, stock = this.stock()
-	$.each(this.itemDefs(), function(idx, def) {
-	    try {
-		$.each(def.attributes.attribute, function(i, a) {
-		    if (!(a['class'] == 'cannot_trade' && a['value'] == 1)) {
-			if (!(idx in stock)) { can[idx] = def }
-		    }
-		})
-	    } catch (e) {
-		if (!(idx in stock)) { can[idx] = def }
-	    }
+	var stock = SchemaTool.stock(), can = {}, cannot = {}
+	$.each(SchemaTool.itemDefs(), function(idx, def) {
+	    $.each(   ((def.attributes || {} ).attribute || []), function(i, a) {
+		if (a['class']=='cannot_trade' && a['value'] == 1) {
+		    cannot[idx] = def
+		}
+	    })
 	})
+	    $.each(SchemaTool.itemDefs(), function(idx, def) {
+		if (!(def.defindex in cannot) && !(def.defindex in stock)) {
+		    can[def.defindex] = def
+		}
+	    })
         return can
     }
 
@@ -128,9 +129,12 @@ var BackpackItemsTool = {
 		    img.removeClass('equipped equipped-'+def)
 		}
 		if (self.itemCanTrade(item)) {
-		    ele.parent().removeClass('cannot-trade')
+		    ele.parent().removeClass('cannot-trade active-listing')
 		} else {
 		    ele.parent().addClass('cannot-trade')
+		    if (item.flag_active_listing) {
+			ele.parent().addClass('active-listing')
+		    }
 		}
 	    } else {
 		newIdx += 1
@@ -233,7 +237,7 @@ ProfileLoader.cache = null
 
 
 
-
+// all of these loaders need a closure.
 var BackpackLoader = function(options) {
     options = options || {}
     var id64 = options.id64

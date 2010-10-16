@@ -144,7 +144,7 @@ border:0.25em solid #2E2B2A !important;
 }
 
 div.organizer-view .active-listing {
-background-color:#1a1a1a !important;
+background-color:#1c201c !important;
 border-radius:0.75em; -moz-border-radius:0.75em;
 border:0.25em solid #2E2B2A !important;
 }
@@ -773,4 +773,12 @@ opacity:0.5; /* TODO: add opacity to parent selectors, too */
 
 div.organizer-view .active-listing img {
 opacity:0.33;
+}
+
+/* also need moved into distinct css */
+
+
+#listing-details-main > div div {
+margin-bottom:0.75em;
+margin-left:0.75em;
 }

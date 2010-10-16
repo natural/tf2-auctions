@@ -65,7 +65,6 @@ var AddListingTool = function(backpack) {
 	var minbid = output.minbid = []
         $.each(input.minbid, function(idx, img) { minbid.push( $(img).data('node').defindex ) })
         console.log('submit new listing:', input, output)
-	GOUTPUT = output
 	$.ajax({
 	    url: '/api/v1/add-listing',
 	    type: 'POST',
@@ -123,7 +122,7 @@ var AddListingTool = function(backpack) {
 
     this.initDrag = function() {
 	var updateCount = function() {
-	    var len = $('#backpack-listing img').length
+	    var len = $('#chooser-add-listing-item img').length
 	    var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
 	    $('#add-listing-title-extra').text(txt)
 	}
@@ -131,6 +130,7 @@ var AddListingTool = function(backpack) {
 	    if ($(this).children().length > 0) { return false }
 	    $(this).parent().removeClass('selected')
 	    $(this).append( $('div img', ui.draggable))
+	    $('img', this).css('margin-top', '0')
 	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
 	    window.setTimeout(updateCount, 150) // delay for accurate counting
 	}
@@ -145,7 +145,9 @@ var AddListingTool = function(backpack) {
 	    ui.helper.addClass('selected')
 	}
 	var dropOver = function(event, ui) { $(this).parent().addClass('outline') }
-	var dropOut = function(event, ui) { $(this).parent().removeClass('outline') }
+	var dropOut = function(event, ui) {
+	    $(this).parent().removeClass('outline')
+	}
 
 	$('#backpack-a td, #unplaced-backpack-a td').draggable({
             containment: '#add-listing-own-backpack', helper: 'clone', cursor: 'move',
@@ -202,6 +204,18 @@ var selectItem = function() {
     }
 }
 
+
+var maybeDeselectLast = function() {
+    var self = $(this)
+    var maybeDeselect = function() {
+	if ($('#chooser-add-listing-minbid td.selected').length > 10) {
+	    self.removeClass('selected')
+	}
+    }
+    window.setTimeout(maybeDeselect, 150)
+}
+
+
 var backpackReady = function(backpack) {
     var count = backpack.length
     // count - count_untradable_items - count_my_listing_items
@@ -249,6 +263,7 @@ $(document).ready(function() {
     $('div.organizer-view td').live('mouseover', hoverItem)
     $('div.organizer-view td').live('mouseout', unhoverItem)
     $('div.organizer-view td').live('click', selectItem)
+    $('#chooser-add-listing-minbid td').live('click', maybeDeselectLast)
     $('#load-own-msg-profile').text('Loading item schema...')
     new SchemaLoader({success: schemaReady})
 })

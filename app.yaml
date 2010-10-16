@@ -39,10 +39,14 @@ handlers:
   script: main.py
   # description: public apis for a players listings and bids
 
+- url: /api/v1/listings/(\d{17})
+  script: main.py
+  # description: public apis for listing details
+
 
 - url: /api/v1/(browse-listings|search-listings)
   script: main.py
-  # description: public api for listing and bid reads
+  # description: public api for listing and bid gets
 
 
   ## (user interface) ##

@@ -5,7 +5,7 @@ add_local_paths()
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from tf2bay.apps.api import ListingApi, PublicApi, PublicQueryApi, ExpireApi
+from tf2bay.apps.api import ListingApi, PublicApi, PublicQueryApi, ExpireApi, ListingDetailsApi
 from tf2bay.apps.basic import basicView, NotFound
 from tf2bay.apps.listing import AddListingView, ListingsBrowserView, ListingDetailView
 from tf2bay.apps.profile import ProfileView, ProfileApi
@@ -18,6 +18,7 @@ routes = (
     (r'/api/v1/own-profile', ProfileApi),
 
     (r'/api/v1/(player-listings|player-bids)/(\d{17})', PublicQueryApi),
+    (r'/api/v1/listings/(\d{1,20})', ListingDetailsApi),
     (r'/api/v1/(browse-listings|search-listings)', PublicApi),
 
     (r'/profile', ProfileView),
