@@ -51,22 +51,22 @@
 		</div>
 
 		<div class="centered">
-                    <label for="add-listing-minbid" id="add-listing-minbid-label">
+                    <label for="add-listing-min-bid" id="add-listing-min-bid-label">
 			Minimum Bid (Optional):
 		    </label>
                 </div>
 		<div class="centered text-centered">
-		    <label id="add-listing-minbid-show">
+		    <label id="add-listing-min-bid-show">
 			<a href="#">Click to Show Items</a>
 		    </label>
 		</div>
 
-		<div class="null" id="add-listing-minbid-wrapper">
+		<div class="null" id="add-listing-min-bid-wrapper">
 		    <div>
 			Select the minimum items you will consider for
 			a trade. You can select up to 10 items.
 		    </div>
-		    <metal:settings tal:define="rows 35; slug 'add-listing-minbid'">
+		    <metal:settings tal:define="rows 35; slug 'add-listing-min-bid'">
 			<metal:include use-macro="context.organizer_parts.macros.item_chooser" />
 		    </metal:settings>
 		</div>

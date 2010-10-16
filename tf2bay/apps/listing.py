@@ -17,7 +17,7 @@ class AddListingView(View):
 	self.render()
 
 
-class ListingsBrowserView(View):
+class ListingBrowserView(View):
     template_name = 'browse.pt'
     related_js = ('browse.js', )
 

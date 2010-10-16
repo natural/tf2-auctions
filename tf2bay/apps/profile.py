@@ -27,11 +27,3 @@ class ProfileView(View):
 	self.render()
 
 
-class ProfileApi(View):
-    def get(self):
-	try:
-	    profile = PlayerProfile.get_by_user(users.get_current_user())
-	    self.response.out.write(json.dumps(profile.encode_builtin()))
-	except (Exception, ), exc:
-	    self.error(500)
-	    self.response.out.write(json.dumps({'exception':str(exc)}))

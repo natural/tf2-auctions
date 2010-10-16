@@ -1,3 +1,6 @@
+var $$ = function(suffix, next) { return $('#listing-detail-'+suffix, next) } // slug defined in browse.pt
+
+
 var ListingLoader = function(options) {
     options = options || {}
     var id = options.id
@@ -14,7 +17,7 @@ var ListingLoader = function(options) {
     }
     if (!ListingLoader.cache) {
 	console.log('fetching listing')
-	$.ajax({url: '/api/v1/listings/'+id,
+	$.ajax({url: '/api/v1/listing/'+id,
 		dataType: 'json',
 		cache: true,
 		success: okay,
@@ -32,41 +35,39 @@ ListingLoader.cache = null
 
 var listingReady = function(id, listing) {
     console.log('have listing', id, listing)
-    $('#listing-detail-title').text( $('#listing-detail-title').text() + ' ' + id)
+    $$('title').text( $$('title').text() + ' ' + id)
 
     $.each(['description', 'created', 'expires', 'bid_count', 'status'], function(idx, name) {
-	$('#listing-detail-'+name).text( listing[name])
+	$$(name).text(listing[name])
     })
-    if (listing.minbid.length) {
-        $.each(listing.minbid, function(idx, defindex) {
-	    $('#listing-detail-minbid').append('<span class="defindex-lazy">' + defindex + '</span>')
+    if (listing.min_bid.length) {
+        $.each(listing.min_bid, function(idx, defindex) {
+	    $$('min-bid table tr').append('<td><div class="defindex-lazy">' + defindex + '</div></td>')
         })
     } else {
-        $('#listing-detail-minbid').html('No minimum.')
+        $$('min-bid').html('No minimum.')
     }
 
     $.each(listing.items, function(idx, item) {
-        $('#listing-detail-items').append('<span class="defindex-lazy">' + item.defindex + '</span>')
+        $$('items table tr').append('<td><div class="defindex-lazy">' + item.defindex + '</div></td>')
     })
     SchemaTool.setImages()
-    $('#listing-details-load').fadeAway('slow')
-    $('#listing-details-main').fadeIn('slow')
-    // items ( quantity, level, quality, uniqueid, defindex )
+    $$('load').fadeAway('slow')
+    $$('main').fadeIn('slow')
+
     // bid_count
     // owner (steam id, personaname, avatar (+full, +medium), profile url, id64)
-
+    // bids
 }
+
 
 var schemaReady = function(schema) {
     SchemaTool.init(schema)
-    var listingId = window.location.pathname.split('/').pop()
-    new ListingLoader({id:listingId, success:listingReady})
+    var id = window.location.pathname.split('/').pop()
+    new ListingLoader({id:id, success:listingReady})
 }
 
 $(document).ready(function() {
     console.log('display-listing.js ready')
-    // set loading msg...
     new SchemaLoader({success: schemaReady})
-
 })
-

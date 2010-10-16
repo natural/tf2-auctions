@@ -8,12 +8,12 @@
 
 	<div id="filters">
 	Filter by category:&nbsp;&nbsp;
-	    <metal:filter tal:repeat="filt controller.filters()">
-	        <a href="/browse?f=${filt[0]}">${filt[1]}</a>
-		<metal:comma tal:replace="' &middot; '" tal:condition="not repeat.filt.end" />
-	    </metal:filter>
+	    <metal:filters tal:repeat="filt controller.filters()">
+	        <a href="#${filt[0]}">${filt[1]}</a>
+		<metal:dot tal:replace="' &middot; '" tal:condition="not repeat.filt.end" />
+	    </metal:filters>
 	</div>
-	<metal:wrapper tal:define="tid 'browse-listings'">
+	<metal:wrapper tal:define="slug 'browse'">
 	    <metal:include use-macro="context.listing_parts.macros.listing_large" />
 	</metal:wrapper>
 

@@ -30,10 +30,11 @@ var SchemaTool = {
         // replace any items on the page that have the "schema
         // definition index replace" class with the url of the item
         // specified in the content.
+        var img = function(url) { return makeImg({src:url, width:64, height:64}) }
         $('.defindex-lazy').each(function(index, tag) {
 	    var item = SchemaTool.itemDefs()[$(tag).text()]
             if (!item) { return }
-	        $(tag).html("<img src='" + item['image_url'] + "' height=48 width=48 />").fadeIn()
+	        $(tag).html(img(item['image_url'])).fadeIn()
 	})
     },
 

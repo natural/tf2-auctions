@@ -3,20 +3,27 @@
     <title metal:fill-slot="title">Listing Detail -- </title>
 </head>
 <body>
-    <metal:main fill-slot="main">
-	<h1 class="m-top-1">
+    <div metal:fill-slot="main" class="detail-view">
+	<h1>
 	    <span class="hilite"></span>
 	    <span id="listing-detail-title">Listing</span>
 	</h1>
-	<span id="listing-details-load" class="centered">Loading...</span>
+	<span id="listing-detail-load" class="centered">Loading...</span>
 
-	<div id="listing-details-main" class="centered m-top-1 null">
+	<div id="listing-detail-main" class="centered m-top-1 null">
 	    <div><label>Description:</label><div><strong id="listing-detail-description"></strong></div></div>
-	    <div><label>Items:</label><div id="listing-detail-items"></div></div>
+	    <div><label>Items:</label>
+		<div class="items-view" id="listing-detail-items">
+		    <table><tr></tr></table>
+		</div>
+	    </div>
 	    <div><label>Status:</label><div><strong id="listing-detail-status"></strong></div></div>
 	    <div><label>Expires:</label><div><strong id="listing-detail-expires"></strong></div></div>
-	    <div><label>Minium Bid:</label><div><strong id="listing-detail-minbid"></strong></div></div>
-
+	    <div><label>Minium Bid:</label>
+		<div class="items-view" id="listing-detail-min-bid">
+		    <table><tr></tr></table>
+		</div>
+	    </div>
 	    <div><label>Created:</label><div><strong id="listing-detail-created"></strong></div></div>
 	    <div><label>Owner:</label><div><strong id="listing-detail-owner"></strong></div></div>
 
@@ -26,6 +33,6 @@
 	    </div>
 
 	 </div>
-    </metal:main>
+    </div>
 </body>
 </html>

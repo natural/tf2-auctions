@@ -4,39 +4,13 @@ from logging import warn
 from google.appengine.api import users
 
 from tf2bay.apps import View
-from tf2bay.models import Bid, Listing, ListingItem
+from tf2bay.models import Bid, Listing, ListingItem, PlayerProfile
 from tf2bay.utils import json
 
 
 
-class PublicApi(View):
-    methods = {
-	'browse-listings' : 'get_listings',
-        'search-listings' : 'search_listings',
-    }
 
-    def get(self, method=None, **kwds):
-	method = self.methods.get(method)
-	if not method:
-	    self.error(404)
-	    return
-	method = getattr(self, method)
-	warn('PublicApi %s', method)
-	self.response.out.write(method(**kwds))
-
-    def post(self, *args, **kwds):
-	self.error(404)
-
-    def get_listings(self, **kwds):
-	q = Listing.all()
-	listings = q.fetch(limit=10)
-	return json.dumps([n.encode_builtin() for n in listings], indent=4)
-
-    def search_listings(self, **kwds):
-	pass
-
-
-class ListingDetailsApi(View):
+class ListingDetail(View):
     def get(self, listing_id):
 	listing_id = int(listing_id)
 	listing = Listing.get_by_id(listing_id)
@@ -45,7 +19,8 @@ class ListingDetailsApi(View):
 	    return
 	self.response.out.write( json.dumps(listing.encode_builtin(), indent=4))
 
-class ListingApi(View):
+
+class ListingEditor(View):
     methods = {
 	'add-bid' : 'add_bid',
 	'add-listing' : 'add_listing',
@@ -75,8 +50,8 @@ class ListingApi(View):
 	    days = listing['days'] + 0 # force exception
 	    if days < 0 or days > 30:
 		raise TypeError('Invalid duration.')
-	    minbid = [b+0 for b in listing['minbid']] # again, force an exception
-	    key = Listing.build(item_ids=item_ids, desc=desc, days=days, minbid=minbid)
+	    min_bid = [b+0 for b in listing['min_bid']] # again, force an exception
+	    key = Listing.build(item_ids=item_ids, desc=desc, days=days, min_bid=min_bid)
 	except (Exception, ), exc:
 	    self.error(500)
 	    exc = exc.message if hasattr(exc, 'message') else str(exc)
@@ -92,7 +67,7 @@ class ListingApi(View):
 	pass
 
 
-class PublicQueryApi(View):
+class PublicQ(View):
     def get(self, kind, id64):
 	q = None
 	if kind == 'player-listings':
@@ -107,5 +82,29 @@ class PublicQueryApi(View):
 	self.response.out.write(json.dumps(rs, indent=4))
 
 
-class ExpireApi(View):
+class Expire(View):
     pass
+
+
+
+class Profile(View):
+    def get(self):
+	try:
+	    profile = PlayerProfile.get_by_user(users.get_current_user())
+	    self.response.out.write(json.dumps(profile.encode_builtin()))
+	except (Exception, ), exc:
+	    self.error(500)
+	    self.response.out.write(json.dumps({'exception':str(exc)}))
+
+
+
+class Search(View):
+    def get(self):
+	from logging import warn
+	q = Listing.all()
+	warn('%s', q)
+	listings = q.fetch(limit=10)
+	warn('%s', listings)
+	self.response.out.write(json.dumps([n.encode_builtin() for n in listings], indent=4))
+
+

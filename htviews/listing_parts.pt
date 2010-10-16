@@ -1,18 +1,24 @@
 <metal:parts>
     <metal:macro define-macro="listing_large">
-        <table id="${tid}" class="listings-large null">
+
+
+        <table id="${slug}-listings" class="listings-large null">
             <tbody class="null prototype">
 	        <tr>
-	            <td>Description:<br /><strong class="-listing-description"></strong></td>
-		    <td>Created: <span class="-listing-created"></span></td>
+	            <td>Description:<br /><strong id="${slug}-listing-description"></strong></td>
+		    <td>Created: <span id="${slug}-listing-created"></span></td>
                 </tr>
                 <tr>
-                    <td colspan="2">
-			Items:<br />
-			<span class="-listing-items"></span>
-		    </td>
+                    <td colspan="2">Items:</td>
+		</tr>
+		<tr>
+		    <td colspan="2"><span id="${slug}-listing-items"></span></td>
 		</tr>
             </tbody>
+
+
         </table>
+
+
     </metal:macro>
 </metal:parts>

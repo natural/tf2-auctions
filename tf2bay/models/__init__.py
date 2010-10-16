@@ -147,7 +147,7 @@ class Listing(db.Model):
     owner = db.UserProperty('Owner', required=True, indexed=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
     expires = db.DateTimeProperty('Expires', required=True, validator=future_expires)
-    minbid = db.ListProperty(long, 'Minimum Bid')
+    min_bid = db.ListProperty(long, 'Minimum Bid')
     description = db.StringProperty('Description', default='', multiline=True)
 
     ## non-normalized:  sequence uniqueids for the items in this listing
@@ -194,7 +194,7 @@ class Listing(db.Model):
 	return db.run_in_transaction(cls.build_transaction, **kwds)
 
     @classmethod
-    def build_transaction(cls, owner, profile, item_ids, desc, days, minbid=None):
+    def build_transaction(cls, owner, profile, item_ids, desc, days, min_bid=None):
 	## 1.  check the user, get their backpack and verify the
 	## inidicated items belong to them.
 	if not profile.owns_all(uid for uid, item in item_ids):
@@ -208,14 +208,14 @@ class Listing(db.Model):
 	expires = datetime.now() + timedelta(days=days)
 
 	## 3.  extract and create categories for the ListingItem
-	## item types and for the minbid defindex checks.
+	## item types and for the min_bid defindex checks.
 	schema = json.loads(fetch.schema())
 
-	## 4. verify the minbid values are present in the schema.
-	minbid = minbid or []
-	minbid_defs = set(minbid)
+	## 4. verify the min_bid values are present in the schema.
+	min_bid = min_bid or []
+	min_bid_defs = set(min_bid)
         valid_defs = set(i['defindex'] for i in schema['result']['items']['item'])
-	if not (minbid_defs & valid_defs == minbid_defs):
+	if not (min_bid_defs & valid_defs == min_bid_defs):
 	    raise TypeError('Invalid minimum bid items.')
 
 	## 4.  create.  note that we're not setting a parent entity so
@@ -223,7 +223,7 @@ class Listing(db.Model):
 	listing = cls(
 	    owner=owner,
 	    expires=expires,
-	    minbid=minbid,
+	    min_bid=min_bid,
 	    description=desc)
 	key = listing.put()
 
@@ -276,7 +276,7 @@ class Listing(db.Model):
 	    'expires':str(self.expires),
 	    'description':self.description,
 	    'bid_count':self.bid_count,
-	    'minbid':self.minbid,
+	    'min_bid':self.min_bid,
 	    'items':[i.encode_builtin() for i in self.items],
 	    'status':self.status,
 	    'status_reason':self.status_reason,

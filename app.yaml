@@ -39,19 +39,19 @@ handlers:
   script: main.py
   # description: public apis for a players listings and bids
 
-- url: /api/v1/listings/(\d{17})
+- url: /api/v1/listing/(\d{17})
   script: main.py
   # description: public apis for listing details
 
 
-- url: /api/v1/(browse-listings|search-listings)
+- url: /api/v1/listing/search
   script: main.py
-  # description: public api for listing and bid gets
+  # description: public api for listing search
 
 
   ## (user interface) ##
 
-- url: /(profile|/listings/add)
+- url: /(profile|/listing/add)
   login: required
   script: main.py
   # description: private profile view: displays profile of current user,
@@ -62,10 +62,10 @@ handlers:
   script: main.py
   # description:  admin url that echos the request environment
 
-- url: /listings/(\d{1,20})
+- url: /listing/(\d{1,20})
   script: main.py
   # description: listing detail
 
-- url: (/|/login|/listings|/listings/search|/(.*))
+- url: (/|/login|/browse|/(.*))
   script: main.py
   # description:  public pages, including a 404 handler

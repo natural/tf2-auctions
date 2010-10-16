@@ -47,7 +47,7 @@ var AddListingTool = function(backpack) {
     this.postOkay = function(data, status, req) {
 	console.log('post okay:', data, status, req)
 	$('#add-listing-working').text('Complete.  Click the link to view your listing.')
-	$('#add-listing-success a').attr('href', '/listings/'+data.key)
+	$('#add-listing-success a').attr('href', '/listing/'+data.key)
 	$('#add-listing-success').fadeIn()
     }
 
@@ -62,8 +62,8 @@ var AddListingTool = function(backpack) {
 	output.desc = input.desc
 	var items = output.items = []
 	$.each(input.items, function(idx, img) { items.push( $(img).data('node')) })
-	var minbid = output.minbid = []
-        $.each(input.minbid, function(idx, img) { minbid.push( $(img).data('node').defindex ) })
+	var min_bid = output.min_bid = []
+        $.each(input.min_bid, function(idx, img) { min_bid.push( $(img).data('node').defindex ) })
         console.log('submit new listing:', input, output)
 	$.ajax({
 	    url: '/api/v1/add-listing',
@@ -105,9 +105,9 @@ var AddListingTool = function(backpack) {
 		       msg:'Invalid duration.  Select 1-30 days.'})
 	}
         // 4.  min bid items: defindexes
-	var minbid = $('#chooser-add-listing-minbid td.selected img')
-	if (minbid.length > 10) {
-            errs.push({id:'#chooser-add-listing-minbid',
+	var min_bid = $('#chooser-add-listing-min-bid td.selected img')
+	if (min_bid.length > 10) {
+            errs.push({id:'#chooser-add-listing-min-bid',
 		       msg:'Too many items. Select 0-10 items as a minimum bid.'})
 	}
 	if (errs.length) {
@@ -115,7 +115,7 @@ var AddListingTool = function(backpack) {
 	} else {
 	    $('#add-listing-buttons').slideUp('slow')
 	    $('#add-listing-working').removeClass('null').text('Working...').fadeIn('fast')
-	    self.addListing({items: items, desc: desc, days: days, minbid: minbid})
+	    self.addListing({items: items, desc: desc, days: days, min_bid: min_bid})
 	}
 	return false
     }
@@ -169,9 +169,9 @@ var AddListingTool = function(backpack) {
 
 
 var showMinBid = function() {
-    $('#add-listing-minbid-show').slideUp(750)
-    $('#add-listing-minbid-wrapper').fadeIn('slow')
-    var c = 0, p = '#add-listing-minbid-'
+    $('#add-listing-min-bid-show').slideUp(750)
+    $('#add-listing-min-bid-wrapper').fadeIn('slow')
+    var c = 0, p = '#add-listing-min-bid-'
     // TODO:  tradable() returns a few non-tradable items
     $.each(SchemaTool.tradable(), function(idx, item) {
 	$(''+p+''+c + ' div').html(makeImg({src:item.image_url, height:64, width:64}))
@@ -208,7 +208,7 @@ var selectItem = function() {
 var maybeDeselectLast = function() {
     var self = $(this)
     var maybeDeselect = function() {
-	if ($('#chooser-add-listing-minbid td.selected').length > 10) {
+	if ($('#chooser-add-listing-min-bid td.selected').length > 10) {
 	    self.removeClass('selected')
 	}
     }
@@ -259,11 +259,11 @@ var schemaReady = function(schema) {
 
 $(document).ready(function() {
     $("#profile-buttons a[href='/add-listing']").parent().fadeAway()
-    $('#add-listing-minbid-show a').click(showMinBid)
+    $('#add-listing-min-bid-show a').click(showMinBid)
     $('div.organizer-view td').live('mouseover', hoverItem)
     $('div.organizer-view td').live('mouseout', unhoverItem)
     $('div.organizer-view td').live('click', selectItem)
-    $('#chooser-add-listing-minbid td').live('click', maybeDeselectLast)
+    $('#chooser-add-listing-min-bid td').live('click', maybeDeselectLast)
     $('#load-own-msg-profile').text('Loading item schema...')
     new SchemaLoader({success: schemaReady})
 })

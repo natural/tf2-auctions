@@ -31,8 +31,7 @@
 	<div id="header" metal:fill-slot="header">
 	    <a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
 	    <div id="header-buttons">
-		    <span class="button"><a href="/listings">Browse</a></span>
-		    <span class="button"><a href="/listings/search">Search</a></span>
+		    <span class="button"><a href="/browse">Browse</a></span>
 		    <span tal:condition="not user" class="button login-button">
 			<a href="/login">Login</a>
 		    </span>
@@ -50,7 +49,7 @@
 	<div id="profile-buttons" tal:condition="user">
 	    <span class="big-button"><a href="/profile#bids">My Bids</a></span>
 	    <span class="big-button"><a href="/profile#listings">My Listings</a></span>
-	    <span class="big-button"><a href="/listings/add">Add Listing</a></span>
+	    <span class="big-button"><a href="/listing/add">Add Listing</a></span>
 	    <span><metal:slot define-slot="profile-buttons-next" /></span>
 	</div>
 	<metal:slot define-slot="menu" />
