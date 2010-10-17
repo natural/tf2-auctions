@@ -1,8 +1,3 @@
-* {
-margin:0;
-padding:0;
-}
-
 @font-face {
 font-family:"TF2";
 src:url("/media/ttf/TF2.ttf");
@@ -18,6 +13,10 @@ font-family:"TF2secondary";
 src:url("/media/ttf/TF2secondary.ttf");
 }
 
+* {
+margin:0;
+padding:0;
+}
 
 body {
 background-color:#393431;
@@ -54,6 +53,7 @@ text-align:center;
 vertical-align:middle;
 white-space:nowrap !important;
 }
+
 .button a:hover {
 background-color:#5b7a8c;
 color:#ece3cb;
@@ -74,14 +74,17 @@ text-align:center;
 vertical-align:middle;
 white-space:nowrap !important;
 }
+
 .big-button a {
 color:#2e2b2a;
 }
+
 .big-button:hover {
 background-color:#512a20;
 background: -webkit-gradient(linear, left top, left bottom, from(#995040), to(#512a20));
 background: -moz-linear-gradient(top, #995040, #512a20);
 }
+
 .big-button:hover a {
 color:#ebe2ca;
 }
@@ -113,11 +116,9 @@ height:4em !important;
 div.items-view table td,
 div.organizer-view table.chooser td,
 div.organizer-view table.backpack td,
-div.organizer-view table.unplaced td
-{
--moz-border-radius:0.75em;
+div.organizer-view table.unplaced td {
 background-color:#3c352e;
-border-radius:0.75em;
+border-radius:0.75em; -moz-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
 height:4em !important;
 max-height:4em !important
@@ -134,12 +135,10 @@ background-color:#2E2B2A
 div.items-view table td div,
 div.organizer-view table.chooser td div,
 div.organizer-view table.backpack td div,
-div.organizer-view table.unplaced td div
-{
+div.organizer-view table.unplaced td div {
 width:4em !important;
 height:4em !important;
 }
-
 
 div.organizer-view .cannot-trade {
 background-color:#252221 !important;
@@ -153,7 +152,6 @@ border-radius:0.75em; -moz-border-radius:0.75em;
 border:0.25em solid #2E2B2A !important;
 }
 
-
 div.organizer-view div.tools {
 margin:1em auto 1em auto;
 }
@@ -163,7 +161,9 @@ text-align:right;
 whitespace:nowrap !important;
 font-family:"TF2Build";
 }
-div.organizer-view div.tools div.navs span.nonav, div.organizer-view div.tools div.navs span.nav a {
+
+div.organizer-view div.tools div.navs span.nonav,
+div.organizer-view div.tools div.navs span.nav a {
 background-color:#766b5e;
 border-bottom:none !important;
 border-radius:0.25em;
@@ -178,16 +178,20 @@ vertical-align:middle;
 div.organizer-view div.tools div.navs span.nonav {
 color:#2a2725;
 }
+
 div.organizer-view div.tools div.navs span.nav a {
 color:#ece3cb;
 }
+
 div.organizer-view div.tools div.navs span.nav a:hover {
 background-color:#924738;
 color:#ece3cb;
 }
+
 div.organizer-view div.tools div.navs span.nav a:active  {
 color:#2a2725 !important;
 }
+
 div.organizer-view div.tools div.navs span.pagecount {
 color:#c8503c;
 display:inline-block;
@@ -216,6 +220,7 @@ background-image:url('/media/img/header_bg.png');
 background-repeat:repeat-x;
 border-bottom:0.25em solid #84756b;
 }
+
 #header {
 line-height:200%;
 margin:0 auto 0 auto;
@@ -223,12 +228,14 @@ padding:1em 0 1em 0;
 width:70%;
 position:relative;
 }
+
 #header-buttons {
 white-space:nowrap;
 position:absolute;
 right:0;
 bottom:1em;
 }
+
 #header-buttons img {
 vertical-align:bottom;
 }
@@ -323,125 +330,12 @@ font-size:0.85em;
 }
 
 
-
-/*
-.button a, span.nonav, span.nav a, #controls a, #unknownProfile a, #stats table.stats a {
-font-family:"TF2Build";
-background-color:#766b5e;
-border-bottom:none !important;
-border-radius:0.25em;
--moz-border-radius:0.25em;
-color:#ece3cb;
-height:1.5em;
-line-height:1.5em;
-padding:0.5em 0.75em 0.5em 0.75em;
-text-align:center;
-vertical-align:middle;
-white-space:nowrap !important;
-}
-*/
-
-
-
-
-
-
-
-
-/*
-table.unplaced td, table.backpack td, table.backpack-listing td {
-max-height:4em !important
-min-height:4em !important
-width:5.15em !important;
-max-width:5.15em !important;
-min-width:5.15em !important;
-
-
-table.unplaced td div, table.backpack td div, table.backpack-listing td div {
-width:4em !important;
-height:4em !important;
-}
-
-table.backpack-listing img, table.unplaced img, table.backpack img {
-margin-left:0.575em;
-height:4em !important
-}
-
-*/
-/* gunboats image is too high from center */
-/*
-img[src='icons/133.png'] {
-margin-top:6px; 
-}
-
-
-table.a-backpack td, table.b-backpack-listing td {
-border-radius:0.75em;
--moz-border-radius:0.75em;
-border:0.25em solid #2E2B2A;
-background-color:#3c352e;
-}
-
-*/
-
-/* the second selector is for only unplaced table cells w/o an image child */
-/*
-table.backpack td:hover, table.backpack-listing td:hover, .itemHover {
-a-border:0.25em solid #847668;
-}
-
-
-}
-
-.selected, table.backpack td.selected, table.backpack-listing td.selected, .itemSelected {
-background-color:#ece3cb !important;
-border:0.25em solid #ece3cb;
-}
-
-
-table.unplaced td {
-border:0.25em solid #393431;
-border-radius:0.75em;
--moz-border-radius:0.75em;
-}
-
-*/
-
-
-#avatar {
-}
-
 #avatar img {
 border:0.125em solid #847668 !important;
 border-radius:0.125em;
 margin-bottom:-0.125em;
 }
 
-/*
-
-#backpack, #character, #unplaced, #backpack-a, #backpack-listing, #unplaced-a {
-font-family:"TF2Build";
-a-padding:1em 2em 1em 1em;
-}
-
-
-#backpack, #backpack-a, #backpack-listing {
-background-color:#2e2b2a;
-border-radius:1em;
--moz-border-radius:1em;
-border:3px solid #2e2b2a;
-padding-bottom:1.5em; 
-}
-
-#backpack-a, #backpack-listing {
-padding:1em;
-}
-
-#backpack-header-a div {
-font-family:"TF2secondary";
-}
-
-*/
 
 #footer {
 color:#827868;
@@ -470,42 +364,6 @@ border-bottom:0.125em solid #c8bba2;
 }
 
 
-#header img {
-}
-
-
-
-
-
-
-
-
-#pages, #pages-a {
-color:#c8503c;
-display:inline-block;
-text-align:center;
-width:2em;
-font-size:135%;
-vertical-align:middle;
-}
-
-
-#steamID {
-color:#c8bba1
-}
-
-
-#steamID a {
-color:#c8bba2;
-}
-
-
-#steamID a:hover {
-border-bottom:0.125em solid #c8bba2;
-}
-
-
-
 #tooltip {
 background:#000;
 border-top:1px solid #786B5C;
@@ -513,8 +371,7 @@ border-bottom:1px solid #1B1815;
 border-left:1px solid #453F36;
 border-right:1px solid #453F36;
 background: -webkit-gradient(linear, left top, left bottom, from(#38332D), to(#221E1A));
-border-radius:3px;
--moz-border-radius:3px;
+border-radius:3px; -moz-border-radius:3px;
 padding:0;
 position:absolute;
 text-align:center;
@@ -555,6 +412,7 @@ color:#00aa00;
 font-family:"TF2secondary";
 font-size:11pt;
 }
+
 
 /*
 from the tf2 wiki:
@@ -602,68 +460,9 @@ color:#eb3b3b;
 }
 
 
-#unknownProfile {
-color:#c8bba2;
-display:none;
-font-family:"TF2Build";
-text-align:center;
-width:80%;
-}
-
-
-#unknownProfile input[type="text"] {
-color:black;
-font-family:"TF2secondary";
-font-size:14pt;
-padding:0.25em;
-margin:1em auto 0.5em auto;
-}
-
-
-#unknownProfile h1 {
-margin:1em auto 1em auto;
-}
-
-#unknownProfile div:last-child {
-margin-top:1em;
-}
 
 
 
-#toolbar, #toolbar-a {
-margin:1em auto 1em auto;
-}
-
-
-#controls {
-float:left;
-}
-
-// what?
-#refresh a:hover {
-border-bottom:0.125em solid #c8bba2;
-}
-
-#stats {
-color:#827868;
-margin:1em auto 1em auto;
-}
-
-#stats table.stats {
-padding-top:1em;
-width:100%;
-}
-
-table.stats td {
-}
-
-table.stats span, table.stats div {
-color:#ebe2ca;
-}
-
-table.stats div {
-margin-left:1em;
-}
 
 .messages div {
 border-radius:0.75em;
@@ -689,43 +488,6 @@ border:0.25em solid rgba(241, 129, 73, 0.75);
 background-color:rgba(56, 92, 120, 0.5);
 border:0.25em solid rgba(91, 122, 140, 0.5);
 }
-
-:lang(ru) {
-display:none;
-}
-
-:lang(pt) {
-display:none;
-}
-
-:lang(nl) {
-display:none;
-}
-
-
-div.backpack-header {
-padding-bottom:0.125em;
-padding-top:0.125em;
-}
-
-div.backpack-header h1 {
-display:inline
-}
-
-
-span.showstock {
-color:#ebe2ca;
-font-size:110%;
-padding-left:5em;
-}
-
-#showstock {
-vertical-align:middle;
-cursor:pointer;
-}
-
-
-
 
 .p-top-05 {
 padding-top:0.5em;

@@ -35,7 +35,7 @@ var listingsOkay = function(listings) {
         console.log('listing:', listing)
 	ltable.append(c)
     })
-    SchemaTool.setImages()
+    new SchemaTool().setImages()
     console.log('created new schema loader', this)
 }
 
@@ -58,7 +58,6 @@ var profileReady = function(profile) {
 
 
 var schemaReady = function(s) {
-    SchemaTool.init(s)
     new ProfileLoader({success: profileReady})
 }
 

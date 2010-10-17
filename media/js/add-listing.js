@@ -1,9 +1,11 @@
-var AddListingTool = function(backpack) {
+var AddListingTool = function(backpack, uids) {
     var self = this
-    var bp = new BackpackView('a')
     self.backpack = backpack
-    bp.navChanged()
-    BackpackItemsTool.placeItems('a', backpack)
+
+    var initnav = BackpackNavigator('a')
+    initnav()
+    var initbp = BackpackItemsTool('a', backpack, uids)
+    initbp()
 
     this.show = function() {
 	$('#add-listing-intro').fadeAway().slideUp(750)
@@ -172,8 +174,8 @@ var showMinBid = function() {
     $('#add-listing-min-bid-show').slideUp(750)
     $('#add-listing-min-bid-wrapper').fadeIn('slow')
     var c = 0, p = '#add-listing-min-bid-'
-    // TODO:  tradable() returns a few non-tradable items
-    $.each(SchemaTool.tradable(), function(idx, item) {
+    var st = new SchemaTool()
+    $.each(st.tradable(), function(idx, item) {
 	$(''+p+''+c + ' div').html(makeImg({src:item.image_url, height:64, width:64}))
 	$('img:last', $(p+c+' div')).data('node', item)
 	c += 1
@@ -216,7 +218,18 @@ var maybeDeselectLast = function() {
 }
 
 
-var backpackReady = function(backpack) {
+var listingsUids = function(src) {
+    var uids = {}
+    $.each(src, function(idx, listing) {
+	$.each(listing.items, function(i, item) {
+	    uids[item.uniqueid] = item
+	})
+    })
+    return uids
+}
+
+
+var backpackReady = function(backpack, listings, profile) {
     var count = backpack.length
     // count - count_untradable_items - count_my_listing_items
     if (count > 0) {
@@ -226,7 +239,8 @@ var backpackReady = function(backpack) {
     }
     $('#load-own-msg-backpack').text(msg)
     $('#add-listing-help').fadeIn()
-    var tool = new AddListingTool(backpack)
+
+    var tool = new AddListingTool(backpack, listingsUids(listings))
     $('#add-listing-get-started').click(tool.show)
 }
 
@@ -234,26 +248,29 @@ var listingsError = function(err) {
     console.error('get listings error:', err)
 }
 
-var listingsReady = function(listings) {
+var listingsReady = function(listings, profile) {
     $('#load-own-msg-backpack').text('Loading your backpack...')
-    // always cached because this function is called after the first
-    // ProfileLoader is created.
-    var pl = new ProfileLoader()
-    new BackpackLoader({success: backpackReady, id64: pl.profile.id64})
+    new BackpackLoader({success: function (backpack) {
+            backpackReady(backpack, listings, profile)
+        },
+        suffix: profile.id64})
 }
 
 
 var profileReady = function(profile) {
     showProfile(profile)
     $('#load-own-msg-profile').text('Profile loaded.  Welcome back, ' + profile['personaname'] + '1')
-    new ListingsLoader({success: listingsReady, id64: profile.steamid})
+    new OwnListingsLoader({success: function(listings) {
+            console.log('inner', listings)
+	    listingsReady(listings, profile)
+        },
+        suffix: profile.steamid})
 }
 
 
 var schemaReady = function(schema) {
-    SchemaTool.init(schema)
     $('#load-own-msg-profile').text('Loading your profile...')
-    new ProfileLoader({success: profileReady})
+    PL = new ProfileLoader({success: profileReady})
 }
 
 

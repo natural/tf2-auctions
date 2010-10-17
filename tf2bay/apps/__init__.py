@@ -21,7 +21,9 @@ class ContextLoader(object):
 
 class View(RequestHandler):
     context_loader, template_loader = ContextLoader.build('htviews/')
-    default_js = ('jquery.json-2.2.js', 'fixes.js', 'tools.js')
+    default_js = ('jquery.json-2.2.js',
+		  #'underscore-min.js',
+		  'fixes.js', 'tools.js')
     related_css = ()
     related_js = ()
 
@@ -45,8 +47,11 @@ class View(RequestHandler):
 	logging.exception(exc)
 	self.error(500)
 	self.response.clear()
-        tb = traceback.format_exc() if is_devel(self.request.environ) else None
+        tb = traceback.format_exc() if self.is_devel() else None
 	self.render(self.template_loader.load('500.pt'), traceback=tb, stack='')
+
+    def is_devel(self):
+	return is_devel(self.request.environ)
 
     def login_url(self, dest='/profile?ref=steam', provider='steamcommunity.com/openid'):
 	return users.create_login_url(dest_url=dest, federated_identity=provider)

@@ -1,135 +1,193 @@
-var SchemaTool = {
-    init: function(source) {
-	var self = this
-	self.schema = source['result']
-        self._definitions = {}, self._attrByName = {}, self._attrById = {}
+var makeLoader = function(config) {
+    var cache = {}, prefix = config.prefix, name = config.name
 
+    return function(options) {
+        options = options || {}
+        var suffix = options.suffix
+        var url = prefix + (suffix || '')
+        var okay = function(data) {
+	    console.log(name, 'success', data)
+            cache[url] = data
+    	    var cb = options.success ? options.success : ident
+	    cb(data)
+        }
+        var error = function(err) {
+	    console.error(name, 'error', err, url)
+	    var cb = options.error ? options.error : ident
+	    cb(err)
+        }
+        if (!cache[url]) {
+            console.log(name, 'loading', url)
+	    $.ajax({url: url,
+		    dataType: (config.dataType||'json'),
+		    jsonpCallback: (config.jsonpCallback||null),
+		    cache: true,
+		    success: okay,
+		    error: error
+                    })
+        } else {
+	    console.log(name, 'using cached data', cache[url])
+	    okay(cache[url])
+        }
+    }
+}
+
+var ProfileLoader = makeLoader({
+    prefix: '/api/v1/own-profile',
+    name: 'ProfileLoader'
+})
+
+var BackpackLoader = makeLoader({
+    prefix: 'http://tf2apiproxy.appspot.com/api/v1/items/',
+    dataType: 'jsonp',
+    jsonpCallback: 'tf2bayBackpackLoader',
+    name: 'BackpackLoader'
+})
+
+var SchemaLoader = makeLoader({
+    prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
+    dataType: 'jsonp',
+    jsonpCallback: 'tf2baySchemaLoader',
+    name: 'SchemaLoader'
+})
+
+var ListingLoader = makeLoader({
+    prefix: '/api/v1/listing/',
+    name: 'ListingLoader'
+})
+
+var SearchLoader = makeLoader({
+    prefix: '/api/v1/listing/search',
+    name: 'SearchLoader'
+})
+
+var OwnListingsLoader = makeLoader({
+    prefix: '/api/v1/player-listings/',
+    name: 'OwnListingsLoader'
+})
+
+
+var SchemaTool = function() {
+    var self = this
+    new SchemaLoader({success: function(schema) {
+        self.schema = schema['result']
+        self._definitions = {}, self._attrByName = {}, self._attrById = {}
 	self.itemDefs = Lazy(function() {
 	    $.each(self.schema['items']['item'], function(index, definition) {
 		self._definitions[definition['defindex']] = definition
 	    })
             return self._definitions
 	})
-
 	self.attributesByName = Lazy(function() {
             $.each(self.schema['attributes']['attribute'], function(index, definition) {
 		self._attrByName[definition['name']] = definition
 	    })
 	    return self._attrByName
 	})
-
 	self.attributesById = Lazy(function() {
             $.each(self.schema['attributes']['attribute'], function(index, definition) {
 		self._attrById[definition['defindex']] = definition
             })
 	    return self._attrById
 	})
-    },
+    }})
 
-    setImages: function() {
+    self.setImages = function() {
         // replace any items on the page that have the "schema
         // definition index replace" class with the url of the item
         // specified in the content.
         var img = function(url) { return makeImg({src:url, width:64, height:64}) }
         $('.defindex-lazy').each(function(index, tag) {
-	    var item = SchemaTool.itemDefs()[$(tag).text()]
+	    var item = self.itemDefs()[$(tag).text()]
             if (!item) { return }
 	        $(tag).html(img(item['image_url'])).fadeIn()
 	})
-    },
+    }
 
-    select: function(key, match) {
+    self.select = function(key, match) {
         var res = {}
         var matchf = (typeof(match) == typeof('')) ? function(v) { return v == match } : match
-	$.each(this.itemDefs(), function(idx, def) {
+	$.each(self.itemDefs(), function(idx, def) {
 	    if (matchf(def[key])) {res[def.defindex] = def }})
         return res
-    },
+    }
 
-    actions: function() {return this.select('item_slot', 'action')},
-    crates:  function() {return this.select('craft_class', 'supply_crate')},
-    hats:    function() {return this.select('item_slot', 'head')},
-    metal:   function() {return this.select('craft_class', 'craft_bar')},
-    misc:    function() {return this.select('item_slot', 'misc')},
-    tokens:  function() {return this.select('craft_class', 'craft_token')},
-    tools:   function() {return this.select('craft_class', 'tool')},
-    weapons: function() {return this.select('craft_class', 'weapon')},
-    stock:   function() {
-	return this.select('defindex', function(v) {
+    self.actions = function() {return self.select('item_slot', 'action')}
+    self.crates = function() {return self.select('craft_class', 'supply_crate')}
+    self.hats = function() {return self.select('item_slot', 'head')}
+    self.metal = function() {return self.select('craft_class', 'craft_bar')}
+    self.misc = function() {return self.select('item_slot', 'misc')}
+    self.tokens = function() {return self.select('craft_class', 'craft_token')}
+    self.tools = function() {return self.select('craft_class', 'tool')}
+    self.weapons = function() {return self.select('craft_class', 'weapon')}
+    self.stock = function() {
+	return self.select('defindex', function(v) {
 	    return (v>190 && v<213) || (v>=0 && v<31)
 	})
-    },
-    uncraftable: function() {
-	return this.select('craft_class', function(v) { return (v==undefined) })
-    },
-    qualityMap: function() {
-	var map = {}, names = this.schema['qualityNames']
-	$.each(this.schema['qualities'], function(name, key) { map[key] = names[name] })
+    }
+    self.uncraftable = function() {
+	return self.select('craft_class', function(v) { return (v==undefined) })
+    }
+    self.qualityMap = function() {
+	var map = {}, names = self.schema['qualityNames']
+	$.each(self.schema['qualities'], function(name, key) { map[key] = names[name] })
 	return map
-    },
-
-    tradable: function() {
-	var stock = SchemaTool.stock(), can = {}, cannot = {}
-	$.each(SchemaTool.itemDefs(), function(idx, def) {
+    }
+    self.tradable = function() {
+	var stock = self.stock(), can = {}, cannot = {}
+	$.each(self.itemDefs(), function(idx, def) {
 	    $.each(   ((def.attributes || {} ).attribute || []), function(i, a) {
 		if (a['class']=='cannot_trade' && a['value'] == 1) {
 		    cannot[idx] = def
 		}
 	    })
 	})
-	    $.each(SchemaTool.itemDefs(), function(idx, def) {
+	    $.each(self.itemDefs(), function(idx, def) {
 		if (!(def.defindex in cannot) && !(def.defindex in stock)) {
 		    can[def.defindex] = def
 		}
 	    })
         return can
     }
-
-
+    return self
 }
 
 
-var listingsUids = function() {
-    var ll = new ListingsLoader(), uids = {}
-    $.each(ll.listings, function(idx, listing) {
-	$.each(listing.items, function(i, item) {
-	    uids[item.uniqueid] = item
-	})
-	    })
-    return uids
+var equippedTag = '<span style="display:none" class="equipped">Equipped</span>'
+var itemCanTrade = function(item) { return !(item.flag_cannot_trade) && !(item.flag_active_listing) }
+var itemContentSelector = function(s) {
+    return '#unplaced-backpack-'+s+' table.unplaced td img, #backpack-'+s+' table.backpack td img, span.equipped'
 }
+var itemEquipped = function(item) { return (item['inventory'] & 0xff0000) != 0 }
+var itemImg = function(item, tool) {
+    var src = tool.itemDefs()[item['defindex']]['image_url']
+    src = src ? src : '/media/img/missing.png'
+    return '<img style="display:none" src="' + src + '" />' // replace w/ makeImg
+}
+var itemInv = function(item) { return item['inventory'] }
+var itemPos = function(item) { return item['inventory'] & 0xFFFF  }
 
-var BackpackItemsTool = {
-    equippedTag: '<span style="display:none" class="equipped">Equipped</span>',
 
-    itemEquipped: function(item) { return (item['inventory'] & 0xff0000) != 0 },
-    itemImg: function(item) {
-	var src = SchemaTool.itemDefs()[item['defindex']]['image_url']
-	src = src ? src : '/media/img/missing.png'
-	return '<img style="display:none" src="' + src + '" />'
-    },
-    itemInv: function(item) { return item['inventory']  },
-    itemPos: function(item) { return item['inventory'] & 0xFFFF },
-    itemCanTrade: function(item) { return !(item.flag_cannot_trade) && !(item.flag_active_listing) },
-    placeItems: function(slug, items) {
-	var newIdx = -1, self = this
-	var toolDefs = SchemaTool.tools(), actionDefs = SchemaTool.actions()
-	var uids = listingsUids()
+var BackpackItemsTool = function(slug, items, uids) {
+    return function() {
+        var st = new SchemaTool()
+	var newIdx = -1, toolDefs = st.tools(), actionDefs = st.actions()
+
 	$.each(items, function(index, item) {
 	    item.flag_active_listing = (item.id in uids)
-	    var pos = self.itemPos(item)
+	    var pos = itemPos(item)
 	    if (pos > 0) {
-		var ele = $('#' + slug + pos + ' div').append(self.itemImg(item))
+		var ele = $('#' + slug + pos + ' div').append(itemImg(item, st))
 		var img = $('img:last', ele).data('node', item)
 		var def = item['defindex']
-		if (self.itemEquipped(item)) {
-		    img.addClass('equipped equipped-'+def).after(self.equippedTag)
+		if (itemEquipped(item)) {
+		    img.addClass('equipped equipped-'+def).after(equippedTag)
 		    img.removeClass('unequipped-'+def)
 		} else {
 		    img.addClass('unequipped-'+def)
 		    img.removeClass('equipped equipped-'+def)
 		}
-		if (self.itemCanTrade(item)) {
+		if (itemCanTrade(item)) {
 		    ele.parent().removeClass('cannot-trade active-listing')
 		} else {
 		    ele.parent().addClass('cannot-trade')
@@ -143,59 +201,47 @@ var BackpackItemsTool = {
 		    var cells = new Array(5+1).join('<td><div></div></td>')
 		    $('#unplaced-backpack-' + slug + ' table.unplaced').append('<tbody><tr>' + cells + '</tr></tbody>')
 		}
-		$('#unplaced-backpack-' + slug + ' table.unplaced td:eq('+newIdx+') div').append(self.itemImg(item))
+		$('#unplaced-backpack-' + slug + ' table.unplaced td:eq('+newIdx+') div').append(itemImg(item, st))
 		$('#unplaced-backpack-' + slug + ' table.unplaced td img:last').data('node', item)
 	    }
-	    // add the dohicky for item quanity
 	    if ((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) {
 		img.before('<span class="quantity">' + item['quantity'] + '</span>')
 		img.css('margin-top', '-1em')
 	    }
 	})
 	$('#unplaced-backpack-' + slug + ', #backpack-' + slug + ' label.null').toggle(newIdx > -1)
-	$(self.itemContentSelector(slug)).fadeIn(750)
+	$(itemContentSelector(slug)).fadeIn(750)
 	$('#backpack-listing').fadeIn()
-    },
-
-    itemContentSelector: function(slug) {
-	return '#unplaced-backpack-' + slug + ' table.unplaced td img, #backpack-' + slug + ' table.backpack td img, span.equipped'
     }
-
 }
 
 
-var BackpackView = function(slug) {
-    this.current = 1
-    this.count = 1
-    this.slug = slug
-    this.count = $('#backpack-' + slug + ' table.backpack tbody').length
-    var self = this
-    $('#backpack-nav-' + slug + ' .nav:first a').click(function (e) {return self.nav(e, -1)})
-    $('#backpack-nav-' + slug + ' .nav:last a').click(function (e) {return self.nav(e, 1)})
 
-    this.nav = function(event, offset) {
+var BackpackNavigator = function(slug) {
+    var current = 1, count = $('#backpack-' + slug + ' table.backpack tbody').length
+
+    var nav = function(event, offset) {
 	if (event.detail != 1) { return false }
-	if ((self.current + offset) > 0 && (self.current + offset <= self.count)) {
-	    $('#backpack-' + self.slug + ' .backpackPage-' + self.current).fadeOut(250, function() {
-		self.current += offset
-		$('#backpack-' + self.slug + ' .backpackPage-' + self.current).fadeIn(250)
-		self.navChanged()
+	if ((current + offset) > 0 && (current + offset <= count)) {
+	    $('#backpack-' + slug + ' .backpack-page-' + current).fadeOut(250, function() {
+		current += offset
+		$('#backpack-' + slug + ' .backpack-page-' + current).fadeIn(250)
+		navChanged()
 	    })
 	}
 	return false
     }
 
-    this.navChanged = function () {
-	var current = this.current, count = this.count
+    var navChanged = function () {
 	$('#backpack-pagecount-' + slug).text(current + '/' + count)
-	if (this.current == 1) {
+	if (current == 1) {
 	    $('#backpack-nav-' + slug + ' .nonav:first').show()
 	    $('#backpack-nav-' + slug + ' .nav:first').hide()
 	} else {
 	    $('#backpack-nav-' + slug + ' .nonav:first').hide()
 	    $('#backpack-nav-' + slug + ' .nav:first').show()
 	}
-	if (this.current == this.count) {
+	if (current == count) {
 	    $('#backpack-nav-' + slug + ' .nonav:last').show()
 	    $('#backpack-nav-' + slug + ' .nav:last').hide()
 	} else {
@@ -203,139 +249,136 @@ var BackpackView = function(slug) {
 	    $('#backpack-nav-' + slug + ' .nav:last').show()
 	}
     }
+    $('#backpack-nav-' + slug + ' .nav:first a').click(function (e) {return nav(e, -1)})
+    $('#backpack-nav-' + slug + ' .nav:last a').click(function (e) {return nav(e, 1)})
+    return navChanged
 }
 
 
-var ProfileLoader = function(options) {
-    options = options || {}
+var TooltipView = function(schema) {
     var self = this
-    var okay = function(profile) {
-	ProfileLoader.cache = self.profile = profile
-	var cb = options.success ? options.success : ident
-	cb(profile)
+    var quals = schema.qualityMap()
+    var extraLineMap = {0:'alt', 1:'positive', 2:'negative'}
+    var effectTypeMap = {negative: 'negative', neutral:'alt', positive: 'positive'}
+    var prefixCheckMap = {3:'vint', 5:'unusual', 7:'com', 8:'dev', 9:'self'}
+    var formatCalcMap = {
+	value_is_percentage: function (v) { return Math.round(v*100 - 100) },
+	value_is_inverted_percentage: function (v) { return Math.round(100 - (v*100)) },
+	value_is_additive: ident,
+	value_is_additive_percentage: function (v) { return Math.round(100*v) },
+	value_is_date: function (v) { return new Date(v * 1000) },
+	value_is_particle_index: ident,
+	value_is_account_id: function (v) { return '7656' + (v + 1197960265728) },
+	value_is_or: ident
     }
-    var error = function(err) {
-	console.error(err)
-	var cb = options.error ? options.error : ident
-	cb(schema)
+    var formatSchemaAttr = function(def, val) {
+	var line = def['description_string'].replace(/\n/gi, '<br />')
+	// we only look for (and sub) one '%s1'; that's the most there is (as of oct 2010)
+	if (line.indexOf('%s1') > -1) {
+	    var fCalc = formatCalcMap[def['description_format']]
+	    line = line.replace('%s1', fCalc(val))
+	}
+	return line.indexOf('Attrib_') > -1 ? '' : line
     }
-    if (!ProfileLoader.cache) {
-	console.log('fetching profile')
-	$.ajax({url: '/api/v1/own-profile', //'http://tf2apiproxy.appspot.com/api/v1/profile/'+id64,
-		dataType: 'json',
-		jsonpCallback:'tf2bayProfileLoader',
-		cache: true,
-		success: okay,
-		error: error
-	       })
-    } else {
-	console.log('using cached profile:', ProfileLoader.cache)
-	okay(ProfileLoader.cache)
+    self.hide = function(event) {
+	console.log('TooltipView.hide', this, schema)
+	$('#tooltip').hide().css({left: 0, top: 0})
     }
+    self.show = function(event) {
+
+	var cell = $(this), tooltip = $('#tooltip')
+	GCELL = cell
+
+	if (!cell.children().length) { return }
+	try {
+	    var playerItem = $('div', cell).data('node')
+	    //if (!playerItem) {
+		//playerItem = $($('div', cell).data('node'))
+	    //}
+	    var type = playerItem['defindex'] // empty cells will raise an exception
+	} catch (e) {
+	    console.error('Tooltip.show error:', e, cell)
+	    return
+	}
+	console.log('TooltipView.show (1a)', this, schema, type)
+	var schemaItem = schema.itemDefs()[type]
+	console.log('TooltipView.show (1b)', this, schemaItem)
+	var level = playerItem['level'], desc = schemaItem['item_name']
+	console.log('TooltipView.show (2)', this, schema, playerItem, level, desc, schemaItem)
+
+	// this doesn't match the game behavior exactly, but it is nice.
+	var levelType = schemaItem['item_type_name'].replace('TF_Wearable_Hat', 'Hat')
+	console.log('TooltipView.show (3a)', levelType)
+
+	var h4 = $('#tooltip h4')
+	// hide the darn thing first
+	self.hide()
+	// set the main title and maybe adjust its style and prefix
+	h4.text(desc)
+	h4.attr('class', 'quality-'+playerItem['quality'])
+	console.log('TooltipView.show (3b)', h4)
+
+	if (playerItem['quality'] in prefixCheckMap) {
+	    h4.text(quals[playerItem['quality']] + ' ' + h4.text())
+	}
+	console.log('TooltipView.show (4)', level, levelType)
+	// set the level
+	$('#tooltip .level').text('Level ' + level + ' ' + levelType)
+
+	console.log('TooltipView.show (5)', '')
+
+	// clear and set the extra text
+	$.each(extraLineMap, function(k, v) { $('#tooltip .'+ extraLineMap[k]).text('') })
+
+	if (playerItem['attributes']) {
+	    $.each(playerItem['attributes']['attribute'], function(aidx, itemAttr) {
+		var attrDef = schema.attributesById()[itemAttr['defindex']]
+		console.log(playerItem, itemAttr, attrDef)
+		var extra = formatSchemaAttr(attrDef, itemAttr['value'])
+		var etype = effectTypeMap[attrDef['effect_type']]
+		var current = $('#tooltip .' + etype).html()
+		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
+	    })
+	}
+	if (schemaItem['attributes']) {
+	    $.each(schemaItem['attributes']['attribute'], function(aidx, schemaAttr) {
+		var attrDef = schema.attributesByName()[schemaAttr['name']]
+		console.log(playerItem, schemaAttr, attrDef)
+		if (!attrDef) { return }
+		if (attrDef['description_string']=='unused') { return }
+		if (attrDef['attribute_class']=='set_employee_number') { return }
+		var extra = formatSchemaAttr(attrDef, schemaAttr['value'])
+		var etype = effectTypeMap[attrDef['effect_type']]
+		var current = $('#tooltip .' + etype).html()
+		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
+	    })
+	}
+
+	// calculate the position
+	var pos = cell.position()
+	var minleft = cell.parent().position().left
+	var cellw = cell.width()
+	var toolw = tooltip.width()
+	var left = pos.left - (toolw/2.0) + (cellw/2.0) // - 4 // 4 == half border?
+	left = left < minleft ? minleft : left
+	var maxright = cell.parent().position().left + cell.parent().width()
+	if (left + toolw > maxright) {
+    	    left = cell.position().left + cellw - toolw + 4 // - 12
+	}
+	left = left < 0 ? (window.innerWidth/2)-toolw/2 : left
+	var top = pos.top + cell.height() + 12
+	if (top + tooltip.height() > (window.innerHeight+window.scrollY)) {
+    	    top = pos.top - tooltip.height() - 8 // - 36
+	}
+
+	// position and show
+	tooltip.css({left:left, top:top})
+	tooltip.show()
+    }
+    return self
 }
-ProfileLoader.cache = null
-
-
-
-
-// all of these loaders need a closure.
-var BackpackLoader = function(options) {
-    options = options || {}
-    var id64 = options.id64
-    var self = this
-    var okay = function(backpack) {
-	BackpackLoader.cache = self.backpack = backpack
-	var cb = options.success ? options.success : ident
-	cb(backpack)
-    }
-    var error = function(err) {
-	console.error(err)
-	var cb = options.error ? options.error : ident
-	cb(err)
-    }
-    if (!BackpackLoader.cache) {
-	console.log('fetching backpack')
-	$.ajax({url: 'http://tf2apiproxy.appspot.com/api/v1/items/'+id64,
-		dataType: 'jsonp',
-		jsonpCallback:'tf2bayBackpackLoader',
-		cache: true,
-		success: okay,
-		error: error
-	       })
-    } else {
-	console.log('using cached backpack:', BackpackLoader.cache)
-	okay(BackpackLoader.cache)
-    }
-}
-BackpackLoader.cache = null
-
-
-
-var SchemaLoader = function(options) {
-    options = options || {}
-    var self = this
-    var okay = function(schema) {
-	console.log('schema loaded', schema)
-	SchemaLoader.cache = self.schema = schema
-	var cb = options.success ? options.success : ident
-	cb(schema)
-    }
-    var error = function(err) {
-	console.error(err)
-	var cb = options.error ? options.error : ident
-	cb(schema)
-    }
-    if (!SchemaLoader.cache) {
-	console.log('fetching schema')
-	// this combination of parameters allows the client to fetch the
-	// schema from another site and lets the browser cache it.
-	$.ajax({url: 'http://tf2apiproxy.appspot.com/api/v1/schema',
-		dataType: 'jsonp',
-		jsonpCallback:'tf2baySchemaLoader',
-		cache: true,
-		success: okay,
-		error: error
-	       })
-    } else {
-	console.log('using cached schema:', SchemaLoader.cache)
-	okay(SchemaLoader.cache)
-    }
-}
-SchemaLoader.cache = null
 
 
 $(document).ready(function() {
-    //$('body').mousedown(function() { return false }) //disable text selection
     console.log('tools.js document ready')
 })
-
-
-
-var ListingsLoader = function(options) {
-    options = options || {}
-    var self = this
-    var id64 = options.id64
-    var okay = function(listings) {
-	ListingsLoader.cache = self.listings = listings
-	var cb = options.success ? options.success : ident
-	cb(listings)
-    }
-    var error = function(err) {
-	console.error(err)
-	var cb = options.error ? options.error : ident
-	cb(schema)
-    }
-    if (!ListingsLoader.cache) {
-	console.log('fetching listings')
-	$.ajax({url: '/api/v1/player-listings/'+id64, // status=active, orderby=created, etc.
-		dataType: 'json',
-		cache: true,
-		success: okay,
-		error: error
-	       })
-    } else {
-	console.log('using cached profile:', ListingsLoader.cache)
-	okay(ListingsLoader.cache)
-    }
-}
-ListingsLoader.cache = null

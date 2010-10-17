@@ -23,10 +23,6 @@
 
 
 <body metal:fill-slot="body">
-	<!--[if lt IE 9]>
-            <script type="text/javascript">var isIE=true</script>
-        <![endif]-->
-
     <div id="header-wrapper">
 	<div id="header" metal:fill-slot="header">
 	    <a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
@@ -57,6 +53,16 @@
     </div>
 
     <metal:slot define-slot="main-prime">
+        <div id="tooltip" class="null">
+            <div id="tooltip-top-shim"></div>
+            <div id="tooltip-inner">
+                <h4>title</h4>
+                <div class="level">level</div>
+                <div class="alt">alt text</div>
+                <div class="positive">positive text</div>
+                <div class="negative">negative text</div>
+            </div>
+        </div>
 	<div id="content" metal:fill-slot="main">
             <div id="message"></div>
 	    <metal:slot define-slot="main" />
@@ -78,7 +84,10 @@
 	</div>
     </metal:slot>
 
-
+<metal:iesucks tal:condition="not controller.is_devel()">
+<!--[if lt IE 9]>
+<script type="text/javascript">var isIE=true</script>
+<![endif]-->
 <script type="text/javascript" tal:define="v python:'$buoop'">
 var ${v} = {vs:{i:9,f:5,o:10.01,s:3,n:9}, test:typeof(isIE)!='undefined'}
 ${v}.ol = window.onload;
@@ -90,5 +99,7 @@ e.setAttribute("src", "http://browser-update.org/update.js");
 document.body.appendChild(e);
 }
 </script>
+</metal:iesucks>
+
 </body>
 </html>

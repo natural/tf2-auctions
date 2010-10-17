@@ -1,34 +1,6 @@
 var $$ = function(suffix, next) { return $('#browse-'+suffix, next) } // slug defined in browse.pt
 
 
-var ListingsLoader = function(options) {
-    options = options || {}
-    var self = this
-    var search = options.search || '?f=new'
-    var okay = function(listings) {
-	ListingsLoader.cache[search] = listings
-	var cb = options.success ? options.success : ident
-	cb(listings)
-    }
-    var error = function(err) {
-	console.error(err)
-	var cb = options.error ? options.error : ident
-	cb(err)
-    }
-    if (!ListingsLoader.cache[search]) {
-	console.log('fetching listings')
-	$.ajax({url: '/api/v1/listing/search' + search,
-		dataType: 'json',
-		cache: true,
-		success: okay,
-		error: error
-	       })
-    } else {
-	console.log('using cached listings:', ListingsLoader.cache[search])
-	okay(ListingsLoader.cache[search])
-    }
-}
-ListingsLoader.cache = {}
 
 var categorySelected = function() {
     var refreshReady = function(listings) {
@@ -36,7 +8,7 @@ var categorySelected = function() {
 	listingsReady(listings)
     }
     var search = $(this).attr('href').replace('#', '?f=')
-    new ListingsLoader({search:search, success:refreshReady})
+    new SearchLoader({success:refreshReady, suffix:search})
     return false
 }
 
@@ -51,15 +23,14 @@ var addListing = function(listing, clone) {
 var listingsReady = function(listings) {
     var proto = $$('listings tbody.prototype')
     $.each(listings, function(idx, listing) { addListing(listing, proto.clone()) } )
-    SchemaTool.setImages()
+    new SchemaTool().setImages()
     $$('listings').slideDown()
 }
 
 
 var schemaReady = function(schema) {
-    SchemaTool.init(schema)
-    var search = window.location.search
-    new ListingsLoader({search:search, success:listingsReady})
+    var search = window.location.search || '?f=new'
+    new SearchLoader({success:listingsReady, suffix:search})
 }
 
 
