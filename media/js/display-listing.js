@@ -17,7 +17,6 @@ var listingReady = function(id, listing) {
     } else {
         $$('min-bid').html('No minimum.')
     }
-
     $.each(listing.items, function(idx, item) {
         $$('items table tr').append(
             '<td><div class="defindex-lazy">' + item.defindex + '</div></td>'
@@ -27,7 +26,8 @@ var listingReady = function(id, listing) {
     var st = new SchemaTool()
     st.setImages()
     var tt = new TooltipView(st)
-    $('#listing-detail-items td').mouseenter(tt.show).mouseleave(tt.hide)
+    $$('items td').mouseenter(tt.show).mouseleave(tt.hide)
+    $('#listing-detail-min-bid td').mouseenter(tt.show).mouseleave(tt.hide)
 
     $$('load').fadeAway('slow')
     $$('main').fadeIn('slow')

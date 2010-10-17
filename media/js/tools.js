@@ -68,6 +68,8 @@ var OwnListingsLoader = makeLoader({
 
 
 var SchemaTool = function() {
+    // TODO: allow for schema as argument and avoid the (cached)
+    // loader
     var self = this
     new SchemaLoader({success: function(schema) {
         self.schema = schema['result']
@@ -100,7 +102,9 @@ var SchemaTool = function() {
         $('.defindex-lazy').each(function(index, tag) {
 	    var item = self.itemDefs()[$(tag).text()]
             if (!item) { return }
-	        $(tag).html(img(item['image_url'])).fadeIn()
+	    console.log('setImage', item, asPlayerItem(item))
+            $(tag).data('node', asPlayerItem(item))
+	    $(tag).html(img(item['image_url'])).fadeIn()
 	})
     }
 
@@ -261,6 +265,7 @@ var TooltipView = function(schema) {
     var extraLineMap = {0:'alt', 1:'positive', 2:'negative'}
     var effectTypeMap = {negative: 'negative', neutral:'alt', positive: 'positive'}
     var prefixCheckMap = {3:'vint', 5:'unusual', 7:'com', 8:'dev', 9:'self'}
+
     var formatCalcMap = {
 	value_is_percentage: function (v) { return Math.round(v*100 - 100) },
 	value_is_inverted_percentage: function (v) { return Math.round(100 - (v*100)) },
@@ -271,6 +276,7 @@ var TooltipView = function(schema) {
 	value_is_account_id: function (v) { return '7656' + (v + 1197960265728) },
 	value_is_or: ident
     }
+
     var formatSchemaAttr = function(def, val) {
 	var line = def['description_string'].replace(/\n/gi, '<br />')
 	// we only look for (and sub) one '%s1'; that's the most there is (as of oct 2010)
@@ -280,60 +286,42 @@ var TooltipView = function(schema) {
 	}
 	return line.indexOf('Attrib_') > -1 ? '' : line
     }
+
     self.hide = function(event) {
-	console.log('TooltipView.hide', this, schema)
 	$('#tooltip').hide().css({left: 0, top: 0})
     }
+
     self.show = function(event) {
-
-	var cell = $(this), tooltip = $('#tooltip')
-	GCELL = cell
-
+	var tooltip = $('#tooltip'), cell = (this==self ? $(event.currentTarget) : $(this))
 	if (!cell.children().length) { return }
 	try {
 	    var playerItem = $('div', cell).data('node')
-	    //if (!playerItem) {
-		//playerItem = $($('div', cell).data('node'))
-	    //}
+	    if (!playerItem) { playerItem = $('img', cell).data('node') }
 	    var type = playerItem['defindex'] // empty cells will raise an exception
 	} catch (e) {
-	    console.error('Tooltip.show error:', e, cell)
 	    return
 	}
-	console.log('TooltipView.show (1a)', this, schema, type)
 	var schemaItem = schema.itemDefs()[type]
-	console.log('TooltipView.show (1b)', this, schemaItem)
 	var level = playerItem['level'], desc = schemaItem['item_name']
-	console.log('TooltipView.show (2)', this, schema, playerItem, level, desc, schemaItem)
-
 	// this doesn't match the game behavior exactly, but it is nice.
 	var levelType = schemaItem['item_type_name'].replace('TF_Wearable_Hat', 'Hat')
-	console.log('TooltipView.show (3a)', levelType)
-
 	var h4 = $('#tooltip h4')
 	// hide the darn thing first
 	self.hide()
 	// set the main title and maybe adjust its style and prefix
 	h4.text(desc)
 	h4.attr('class', 'quality-'+playerItem['quality'])
-	console.log('TooltipView.show (3b)', h4)
-
 	if (playerItem['quality'] in prefixCheckMap) {
 	    h4.text(quals[playerItem['quality']] + ' ' + h4.text())
 	}
-	console.log('TooltipView.show (4)', level, levelType)
 	// set the level
-	$('#tooltip .level').text('Level ' + level + ' ' + levelType)
-
-	console.log('TooltipView.show (5)', '')
-
+	$('#tooltip .level').text(level ? 'Level ' + level + ' ' + levelType : '')
 	// clear and set the extra text
 	$.each(extraLineMap, function(k, v) { $('#tooltip .'+ extraLineMap[k]).text('') })
 
 	if (playerItem['attributes']) {
 	    $.each(playerItem['attributes']['attribute'], function(aidx, itemAttr) {
 		var attrDef = schema.attributesById()[itemAttr['defindex']]
-		console.log(playerItem, itemAttr, attrDef)
 		var extra = formatSchemaAttr(attrDef, itemAttr['value'])
 		var etype = effectTypeMap[attrDef['effect_type']]
 		var current = $('#tooltip .' + etype).html()
@@ -343,7 +331,6 @@ var TooltipView = function(schema) {
 	if (schemaItem['attributes']) {
 	    $.each(schemaItem['attributes']['attribute'], function(aidx, schemaAttr) {
 		var attrDef = schema.attributesByName()[schemaAttr['name']]
-		console.log(playerItem, schemaAttr, attrDef)
 		if (!attrDef) { return }
 		if (attrDef['description_string']=='unused') { return }
 		if (attrDef['attribute_class']=='set_employee_number') { return }
@@ -370,7 +357,6 @@ var TooltipView = function(schema) {
 	if (top + tooltip.height() > (window.innerHeight+window.scrollY)) {
     	    top = pos.top - tooltip.height() - 8 // - 36
 	}
-
 	// position and show
 	tooltip.css({left:left, top:top})
 	tooltip.show()
@@ -382,3 +368,8 @@ var TooltipView = function(schema) {
 $(document).ready(function() {
     console.log('tools.js document ready')
 })
+
+
+var asPlayerItem = function(i) {
+    return {defindex:i.defindex, level:'', quality:6}
+}

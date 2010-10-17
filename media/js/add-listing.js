@@ -177,27 +177,12 @@ var showMinBid = function() {
     var st = new SchemaTool()
     $.each(st.tradable(), function(idx, item) {
 	$(''+p+''+c + ' div').html(makeImg({src:item.image_url, height:64, width:64}))
-	$('img:last', $(p+c+' div')).data('node', item)
+	$('img:last', $(p+c+' div')).data('node', asPlayerItem(item))
 	c += 1
-
     })
     return false
 }
 
-
-var hoverItem = function() {
-    try {
-        var data = $('img', this).data('node')
-	if (!data.flag_cannot_trade) {
-	    $(this).addClass('outline')
-	}
-    } catch (e) {}
-}
-
-
-var unhoverItem = function() {
-    $(this).removeClass('outline')
-}
 
 
 var selectItem = function() {
@@ -242,6 +227,25 @@ var backpackReady = function(backpack, listings, profile) {
 
     var tool = new AddListingTool(backpack, listingsUids(listings))
     $('#add-listing-get-started').click(tool.show)
+
+    var st = new SchemaTool()
+    var tt = new TooltipView(st)
+
+    var hoverItem = function(e) {
+        tt.show(e)
+        try {
+            var data = $('img', this).data('node')
+        	if (!data.flag_cannot_trade) {
+	            $(this).addClass('outline')
+                }
+        } catch (e) {}
+    }
+
+    var unhoverItem = function(e) {
+        tt.hide(e)
+        $(this).removeClass('outline')
+    }
+    $('div.organizer-view td').hover(hoverItem, unhoverItem)
 }
 
 var listingsError = function(err) {
@@ -277,8 +281,6 @@ var schemaReady = function(schema) {
 $(document).ready(function() {
     $("#profile-buttons a[href='/add-listing']").parent().fadeAway()
     $('#add-listing-min-bid-show a').click(showMinBid)
-    $('div.organizer-view td').live('mouseover', hoverItem)
-    $('div.organizer-view td').live('mouseout', unhoverItem)
     $('div.organizer-view td').live('click', selectItem)
     $('#chooser-add-listing-min-bid td').live('click', maybeDeselectLast)
     $('#load-own-msg-profile').text('Loading item schema...')
