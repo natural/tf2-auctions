@@ -135,6 +135,7 @@ var AddListingTool = function(backpack, uids) {
 	    $('img', this).css('margin-top', '0')
 	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
 	    window.setTimeout(updateCount, 150) // delay for accurate counting
+	    $("#chooser-add-listing-min-bid td, #backpack-a td").removeClass('selected')
 	}
 	var dragFromBackpack = function(event, ui) {
 	    var img = $('img', event.target) // source img, not the drag img
@@ -156,7 +157,6 @@ var AddListingTool = function(backpack, uids) {
 	    drag: dragFromBackpack, start: dragShow})
 	$('#backpack-a td div, #unplaced-backpack-a td div').droppable(
 	    {accept: '#chooser-add-listing-item td', drop: dropItem, over: dropOver, out: dropOut})
-
 	$('#chooser-add-listing-item td').draggable({
             containment: '#add-listing-own-backpack', helper: 'clone', cursor: 'move',
 	    start: dragShow})
@@ -202,6 +202,10 @@ var maybeDeselectLast = function() {
     window.setTimeout(maybeDeselect, 150)
 }
 
+var maybeMoveToChooser = function(event) {
+    // TODO:  implement this
+    console.log('maybe move this?', !$(event.target).parent().parent().hasClass('cannot-trade'))
+}
 
 var listingsUids = function(src) {
     var uids = {}
@@ -224,6 +228,7 @@ var backpackReady = function(backpack, listings, profile) {
     }
     $('#load-own-msg-backpack').text(msg)
     $('#add-listing-help').fadeIn()
+    $('a[href="/listing/add"]').parent().fadeAway()
 
     var tool = new AddListingTool(backpack, listingsUids(listings))
     $('#add-listing-get-started').click(tool.show)
@@ -284,5 +289,6 @@ $(document).ready(function() {
     $('div.organizer-view td').live('click', selectItem)
     $('#chooser-add-listing-min-bid td').live('click', maybeDeselectLast)
     $('#load-own-msg-profile').text('Loading item schema...')
+    $('#backpack-a td div img').live('dblclick', maybeMoveToChooser)
     new SchemaLoader({success: schemaReady})
 })

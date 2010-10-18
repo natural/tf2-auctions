@@ -15,15 +15,18 @@ class ProfileView(View):
     template_name = 'profile.pt'
     related_js = ('profile.js', )
 
+    def get(self, id64):
+	self.render()
+
+
+class ProfileLogin(View):
     def get(self):
+	user = users.get_current_user()
 	try:
 	    update = parse_qs(self.request.query_string).get('ref', [''])[0]
 	    if update == 'steam':
-		user = users.get_current_user()
 		profile = PlayerProfile.build(user)
 		profile.refresh().put()
 	except (Exception, ), exc:
 	    exception('player profile refresh: %s', exc)
-	self.render()
-
-
+	self.redirect('/profile/'+user.nickname())

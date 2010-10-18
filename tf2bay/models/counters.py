@@ -20,7 +20,7 @@ class Counter(db.Model):
     count = db.IntegerProperty(required=True, default=0)
 
 
-def get_count(name):
+def get_counter(name):
     """ Retrieve the value for a given sharded counter. """
     total = memcache.get(name)
     if total is None:
@@ -31,7 +31,7 @@ def get_count(name):
     return total
 
 
-def add(name, value):
+def increment_counter(name, value):
     """ Add a value to the given sharded counter. """
     config = CounterConfig.get_or_insert(name, name=name)
     def txn():
@@ -46,8 +46,8 @@ def add(name, value):
     memcache.incr(name)
 
 
-inc = functools.partial(add, value=1)
-dec = functools.partial(add, value=-1)
+inc = functools.partial(increment_counter, value=1)
+dec = functools.partial(increment_counter, value=-1)
 
 
 def increase_shards(name, num):

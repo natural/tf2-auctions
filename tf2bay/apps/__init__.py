@@ -53,7 +53,7 @@ class View(RequestHandler):
     def is_devel(self):
 	return is_devel(self.request.environ)
 
-    def login_url(self, dest='/profile?ref=steam', provider='steamcommunity.com/openid'):
+    def login_url(self, dest='/profile-update?ref=steam', provider='steamcommunity.com/openid'):
 	return users.create_login_url(dest_url=dest, federated_identity=provider)
 
     def logout_url(self):

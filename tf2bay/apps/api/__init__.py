@@ -5,9 +5,8 @@ from google.appengine.api import users
 
 from tf2bay.apps import View
 from tf2bay.models import Bid, Listing, ListingItem, PlayerProfile
+from tf2bay.models.counters import get_counter
 from tf2bay.utils import json
-
-
 
 
 class ListingDetail(View):
@@ -41,7 +40,6 @@ class ListingEditor(View):
     def add_listing(self):
 	try:
 	    listing = json.loads(self.request.body)
-
 	    items = listing['items']
 	    item_ids = [(i['id'], i) for i in items]
 	    if len(item_ids) != len(items):
@@ -57,7 +55,7 @@ class ListingEditor(View):
 	    exc = exc.message if hasattr(exc, 'message') else str(exc)
 	    result = {'msg':'error', 'description':exc}
 	else:
-	    result = {'msg':'success', 'key':key.id_or_name(), }
+	    result = {'msg':'success', 'key':key.id()}
 	return json.dumps(result)
 
     def cancel_listing(self):
@@ -82,16 +80,12 @@ class PublicQ(View):
 	self.response.out.write(json.dumps(rs, indent=4))
 
 
-class Expire(View):
-    pass
-
-
-
 class Profile(View):
     def get(self):
 	try:
 	    profile = PlayerProfile.get_by_user(users.get_current_user())
-	    self.response.out.write(json.dumps(profile.encode_builtin()))
+	    profile = profile.encode_builtin()
+	    self.response.out.write(json.dumps(profile, indent=4))
 	except (Exception, ), exc:
 	    self.error(500)
 	    self.response.out.write(json.dumps({'exception':str(exc)}))
@@ -108,3 +102,11 @@ class Search(View):
 	self.response.out.write(json.dumps([n.encode_builtin() for n in listings], indent=4))
 
 
+class Stats(View):
+    def get(self):
+	stats = {
+	    'items':get_counter('items'),
+	    'listings':get_counter('listings'),
+	    'players':get_counter('players'),
+	}
+	self.response.out.write(json.dumps(stats, indent=4))

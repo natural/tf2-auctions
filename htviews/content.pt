@@ -43,8 +43,8 @@
     <div id="profile-wrapper" metal:fill-slot="menu">
 	<metal:slot define-slot="menu-prime">
 	<div id="profile-buttons" tal:condition="user">
-	    <span class="big-button"><a href="/profile#bids">My Bids</a></span>
-	    <span class="big-button"><a href="/profile#listings">My Listings</a></span>
+	    <span class="big-button"><a href="/profile/${user.nickname()}#bids">My Bids</a></span>
+	    <span class="big-button"><a href="/profile/${user.nickname()}#listings">My Listings</a></span>
 	    <span class="big-button"><a href="/listing/add">Add Listing</a></span>
 	    <span><metal:slot define-slot="profile-buttons-next" /></span>
 	</div>

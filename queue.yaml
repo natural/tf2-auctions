@@ -1,3 +1,6 @@
 queue:
-- name: listing-expiration
+- name: expiration
   rate: 1/m
+
+- name: counters
+  rate: 1/s

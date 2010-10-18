@@ -11,10 +11,10 @@ var makeLoader = function(config) {
     	    var cb = options.success ? options.success : ident
 	    cb(data)
         }
-        var error = function(err) {
-	    console.error(name, 'error', err, url)
+        var error = function(req, status, err) {
+	    console.error(name, 'error', req, status, err, url)
 	    var cb = options.error ? options.error : ident
-	    cb(err)
+	    cb(req, status, err)
         }
         if (!cache[url]) {
             console.log(name, 'loading', url)
@@ -100,10 +100,15 @@ var SchemaTool = function() {
         // specified in the content.
         var img = function(url) { return makeImg({src:url, width:64, height:64}) }
         $('.defindex-lazy').each(function(index, tag) {
-	    var item = self.itemDefs()[$(tag).text()]
+            var data = $.parseJSON($(tag).text())
+            if (typeof(data) == 'object') {
+                var defindex = data.defindex
+	    } else {
+                var defindex = data
+            }
+	    var item = self.itemDefs()[defindex]
             if (!item) { return }
-	    console.log('setImage', item, asPlayerItem(item))
-            $(tag).data('node', asPlayerItem(item))
+            $(tag).data('node', asPlayerItem(data))
 	    $(tag).html(img(item['image_url'])).fadeIn()
 	})
     }
@@ -296,29 +301,31 @@ var TooltipView = function(schema) {
 	if (!cell.children().length) { return }
 	try {
 	    var playerItem = $('div', cell).data('node')
-	    if (!playerItem) { playerItem = $('img', cell).data('node') }
+	    console.log('playerItem div', playerItem)
+	    if (!playerItem) { playerItem = $('img', cell).data('node'); console.log('playerItem img', playerItem) }
 	    var type = playerItem['defindex'] // empty cells will raise an exception
 	} catch (e) {
 	    return
 	}
-	var schemaItem = schema.itemDefs()[type]
-	var level = playerItem['level'], desc = schemaItem['item_name']
-	// this doesn't match the game behavior exactly, but it is nice.
-	var levelType = schemaItem['item_type_name'].replace('TF_Wearable_Hat', 'Hat')
-	var h4 = $('#tooltip h4')
-	// hide the darn thing first
+	//console.log(playerItem)
 	self.hide()
+	var schemaItem = schema.itemDefs()[type]
+
 	// set the main title and maybe adjust its style and prefix
+	var h4 = $('#tooltip h4'), desc = schemaItem['item_name']
 	h4.text(desc)
 	h4.attr('class', 'quality-'+playerItem['quality'])
 	if (playerItem['quality'] in prefixCheckMap) {
 	    h4.text(quals[playerItem['quality']] + ' ' + h4.text())
 	}
-	// set the level
+
+	// set the level; this doesn't match the game behavior exactly, but it is nice.
+	var level = playerItem['level']
+	var levelType = schemaItem['item_type_name'].replace('TF_Wearable_Hat', 'Hat')
 	$('#tooltip .level').text(level ? 'Level ' + level + ' ' + levelType : '')
+
 	// clear and set the extra text
 	$.each(extraLineMap, function(k, v) { $('#tooltip .'+ extraLineMap[k]).text('') })
-
 	if (playerItem['attributes']) {
 	    $.each(playerItem['attributes']['attribute'], function(aidx, itemAttr) {
 		var attrDef = schema.attributesById()[itemAttr['defindex']]
@@ -371,5 +378,5 @@ $(document).ready(function() {
 
 
 var asPlayerItem = function(i) {
-    return {defindex:i.defindex, level:'', quality:6}
+    return {defindex:i.defindex, level:i.level||'', quality:i.quality||i.item_quality}
 }

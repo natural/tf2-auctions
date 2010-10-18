@@ -88,7 +88,18 @@ class PlayerProfile(db.Expando):
 	""" Returns the PlayerProfile for the given user, creating it if necessary. """
 	if id64 is None:
 	    id64 = user_steam_id(owner)
-	return cls.get_or_insert(id64, owner=owner)
+	def get_or_insert(): ## equiv to get_or_insert, copied from sdk docs.
+	    profile = cls.get_by_key_name(id64)
+	    if profile is None:
+		profile = cls(key_name=id64, owner=owner)
+		profile.put()
+		taskqueue.add(
+		    url='/api/v1/admin/queue/bang-counters',
+		    transactional=True,
+		    queue_name='counters',
+		    params={'players':1})
+	    return profile
+	return db.run_in_transaction(get_or_insert)
 
     def owns_all(self, item_ids):
 	""" True if this profile owns all of the specified items. """
@@ -242,11 +253,16 @@ class Listing(db.Model):
 
 	## 6.  submit an item to the expiration task queue.
 	taskqueue.add(
-	    url='/api/v1/expire-listing',
+	    url='/api/v1/admin/queue/expire-listing',
 	    transactional=True,
-	    queue_name='listing-expiration',
+	    queue_name='expiration',
 	    eta=expires,
 	    params={'key':key})
+	taskqueue.add(
+	    url='/api/v1/admin/queue/bang-counters',
+	    transactional=True,
+	    queue_name='counters',
+	    params={'listings':1, 'items':len(item_ids)})
 	return key
 
     def time_left(self):
@@ -270,10 +286,11 @@ class Listing(db.Model):
 
     def encode_builtin(self):
 	""" Encode this instance using only built-in types. """
+	tf = '%a, %d %b %Y %H:%M:%S'
 	return {
 	    'owner':PlayerProfile.get_by_user(self.owner).encode_builtin(),
-	    'created':str(self.created),
-	    'expires':str(self.expires),
+	    'created':self.created.strftime(tf),
+	    'expires':self.expires.strftime(tf),
 	    'description':self.description,
 	    'bid_count':self.bid_count,
 	    'min_bid':self.min_bid,
@@ -307,7 +324,7 @@ class Bid(db.Model):
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True)
     message = db.StringProperty('Message to Lister', multiline=True)
-
+    # status + status_reason
 
 class BidItem(PlayerItem):
     """ BidItem -> player items associated with a Bid.

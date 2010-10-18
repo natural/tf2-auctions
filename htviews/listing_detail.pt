@@ -4,33 +4,58 @@
 </head>
 <body>
     <div metal:fill-slot="main" class="detail-view">
-	<h1>
+	<h1 id="listing-detail-title-wrapper" class="null">
 	    <span class="hilite"></span>
-	    <span id="listing-detail-title">Listing</span>
+	    <span id="listing-detail-title"></span> - <span id="listing-detail-status"></span>
 	</h1>
-	<span id="listing-detail-load" class="centered">Loading...</span>
-
-	<div id="listing-detail-main" class="centered m-top-1 null">
-	    <div><label>Description:</label><div><strong id="listing-detail-description"></strong></div></div>
-	    <div><label>Items:</label>
-		<div class="items-view" id="listing-detail-items">
-		    <table><tr></tr></table>
+	<span id="listing-detail-load"></span>
+	<div id="listing-detail-main" class="centered null">
+	    <div>
+                <label>Description:</label>
+                <div class="m-lb-05"><strong id="listing-detail-description"></strong></div>
+            </div>
+	    <div>
+		<label>Items:</label>
+		<div class="items-view m-lb-05" id="listing-detail-items">
+		    <table></table>
 		</div>
 	    </div>
-	    <div><label>Status:</label><div><strong id="listing-detail-status"></strong></div></div>
-	    <div><label>Expires:</label><div><strong id="listing-detail-expires"></strong></div></div>
-	    <div><label>Minium Bid:</label>
-		<div class="items-view" id="listing-detail-min-bid">
-		    <table><tr></tr></table>
+	    <div>
+		<label>Minium Bid:</label>
+		<div class="items-view m-lb-05" id="listing-detail-min-bid">
+		    <table></table>
 		</div>
 	    </div>
-	    <div><label>Created:</label><div><strong id="listing-detail-created"></strong></div></div>
-	    <div><label>Owner:</label><div><strong id="listing-detail-owner"></strong></div></div>
-
+	    <div>
+		<label>Expires:</label>
+		<div class="m-lb-05"><strong id="listing-detail-expires"></strong></div>
+	    </div>
+	    <div>
+		<label>Created:</label>
+		<div class="m-lb-05"><strong id="listing-detail-created"></strong></div>
+	    </div>
+	    <div>
+		<label>Owner:</label>
+		<div><strong id="listing-detail-owner"></strong></div>
+	    </div>
 	    <div>
 		<label>Bids: <span id="listing-detail-bidcount"></span></label>
 		<div id="listing-detail-bids"></div>
 	    </div>
+	    <div class="m-top-1">
+		<div id="listing-detail-auth-bid-wrapper" class="null">
+		    Place your bid.
+		    <div class="organizer-view null" id="listing-detail-own-backpack">
+                    </div>
+
+                </div>
+                <div id="listing-detail-login-wrapper" class="null">
+                    You have to login to place a bid for these items.
+                </div>
+		<div id="listing-detail-owner-bid-wrapper" class="null">
+		    This is your listing.  Nice!
+                </div>
+            </div>
 
 	 </div>
     </div>
