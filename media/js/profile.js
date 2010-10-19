@@ -1,8 +1,12 @@
+var $$ = function(suffix, next) { return $('#profile-'+suffix, next) }
+var id64View = function() { return window.location.pathname.split('/').pop() }
 
 
 var listingFormats = {
     items: function(v) {
-        var s = $.map(v, function(item, idx) { return '<span class="defindex-lazy">' + item.defindex + '</span>' })
+        var s = $.map(v, function(item, idx) {
+            return '<span class="defindex-lazy">' + item.defindex + '</span>'
+            })
         return s.join("&nbsp;")
     },
     any: function(v) {
@@ -15,7 +19,6 @@ var listingsOkay = function(listings) {
     var llen = listings.length
     var ltable = $("#own-listings")
     var proto = $("#own-listings tbody.prototype")
-
     if (llen > 0) {
 	$('#load-own-msg-listings').text('Success! Showing your ' + llen + ' listing' + (llen==1?'':'s') + '.').fadeOut(5000)
 	ltable.removeClass("null")
@@ -36,7 +39,6 @@ var listingsOkay = function(listings) {
 	ltable.append(c)
     })
     new SchemaTool().setImages()
-    console.log('created new schema loader', this)
 }
 
 
@@ -44,12 +46,11 @@ var bidsOkay = function(bids) {
     $('#load-own-msg-bids').text('Success! Your bids: ' + bids.length)
 }
 
+var listingsError = function(err) { console.error(err) }
+var bidsError = function(err) { console.error(err) }
 
-var profileReady = function(profile) {
-    var listingsError = function(err) { console.error(err) }
-    var bidsError = function(err) { console.error(err) }
-    showProfile(profile)
-    $('#load-profile-msg').text('Profile loaded. Welcome, ' + profile['personaname'] + '!')
+
+var foo = function() {
     $.ajax({url: '/api/v1/player-bids/'+profile.steamid, dataType: 'json', cache: true,
 	    success: bidsOkay, error: bidsError})
     $.ajax({url: '/api/v1/player-listings/'+profile.steamid, dataType: 'json', cache: true,
@@ -57,16 +58,32 @@ var profileReady = function(profile) {
 }
 
 
+var ownProfileOkay = function(profile) {
+    showProfile(profile)
+    var id64 = id64View()
+    if (id64 != profile.id64) {
+	new ProfileLoader({suffix:id64})
+    } else {
+	var msg = 'Profile loaded. Welcome, ' + profile['personaname'] + '!'
+	$$('own-load-msg').text(msg).fadeIn()
+	$$('own-msg-bids').text('Loading your bids...')
+	$$('#load-own-msg-listings').text('Loading your listings...')
+    }
+}
+
+
+var ownProfileError = function(request, status, error) {
+    if (request.status==401) {
+    // not logged in.
+    }
+}
+
+
 var schemaReady = function(s) {
-    new ProfileLoader({success: profileReady})
+    new AuthProfileLoader({success: ownProfileOkay, error:ownProfileError})
 }
 
 
 $(document).ready(function() {
-    $('#load-own-msg-bids').text('Loading your bids...')
-    $('#load-own-msg-listings').text('Loading your listings...')
     new SchemaLoader({success: schemaReady})
 })
-
-
-

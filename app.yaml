@@ -5,7 +5,7 @@ api_version: 1
 
 handlers:
 
-  ## (static files) ##
+  ## == Static Files == ##
 
 - url: /media/ttf/(.*\.(ttf|eot))
   static_files: media/ttf/\1
@@ -23,61 +23,52 @@ handlers:
   upload: media/img/favicon.ico
 
 
-  ## (api methods) ##
+  ## == API Methods == ##
 
 - url: /api/v1/admin/(.*?)/(.*)
   login: admin
-  script: tf2bay/admin/\1/\2.py
-  # description: administrative scripts
+  script: tf2bay/api/admin/\1/\2.py
 
-- url: /api/v1/(add-listing|cancel-listing|add-bid|own-profile)
-  script: main.py
+- url: /api/v1/auth/(.*?)/\d{17}
   login: required
+  script: tf2bay/api/auth/\1.py
   auth_fail_action: unauthorized
-  # description: private apis for listing and bid create, update and delete
 
-- url: /api/v1/(player-listings|player-bids)/(\d{17})
-  script: main.py
-  # description: public apis for a players listings and bids
-
-- url: /api/v1/listing/(\d{17})
-  script: main.py
-  # description: public apis for listing details
-
-- url: /api/v1/listing/search
-  script: main.py
-  # description: public api for listing search
-
-- url: /api/v1/stats
-  script: main.py
-  # description: public api for site counters
-
-
-  ## (user interface) ##
-
-- url: /(/listing/add)
+- url: /api/v1/auth/(.*)
   login: required
-  script: main.py
-  # description:  displays form for creating new listing
+  script: tf2bay/api/auth/\1.py
+  auth_fail_action: unauthorized
 
-- url: /echo
+- url: /api/v1/public/(.*)/\d+
+  script: tf2bay/api/public/\1.py
+
+- url: /api/v1/public/(.*)
+  script: tf2bay/api/public/\1.py
+
+
+  ## == User Interface == ##
+
+- url: /(echo)
   login: admin
-  script: main.py
-  # description:  admin url that echos the request environment
+  script: tf2bay/apps/admin/\1.py
 
-- url: /profile-update
-  script: main.py
+- url: /(listing)/(add)
   login: required
+  script: tf2bay/apps/auth/\1/\2.py
+
+- url: /(profile-update)
+  login: required
+  script: tf2bay/apps/auth/\1.py
   auth_fail_action: unauthorized
 
-- url: /listing/(\d{1,20})
-  script: main.py
-  # description: listing detail
+- url: /(listing|profile)/\d{1,20}
+  script: tf2bay/apps/public/\1.py
 
-- url: /profile/(\d{17})
-  script: main.py
-  # description: player profile
+- url: /(browse|login)
+  script: tf2bay/apps/public/\1.py
 
-- url: (/|/login|/browse|/(.*))
-  script: main.py
-  # description:  public pages, including a 404 handler
+- url: /
+  script: tf2bay/apps/public/front.py
+
+- url: .*
+  script: tf2bay/apps/public/404.py

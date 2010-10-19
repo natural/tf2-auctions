@@ -10,11 +10,11 @@ DIR_PATH = abspath(join(dirname(realpath(ginitmod)), '..'))
 
 EXTRA_PATHS = (
     DIR_PATH,
-    join(DIR_PATH, 'lib', 'antlr3'),
-    join(DIR_PATH, 'lib', 'django'),
-    join(DIR_PATH, 'lib', 'ipaddr'),
-    join(DIR_PATH, 'lib', 'webob'),
-    join(DIR_PATH, 'lib', 'yaml', 'lib'),
+    join(DIR_PATH, 'ext', 'antlr3'),
+    join(DIR_PATH, 'ext', 'django'),
+    join(DIR_PATH, 'ext', 'ipaddr'),
+    join(DIR_PATH, 'ext', 'webob'),
+    join(DIR_PATH, 'ext', 'yaml', 'lib'),
 )
 
 
@@ -24,4 +24,4 @@ def add_sys_paths(paths):
 
 
 add_extra_paths = partial(add_sys_paths, EXTRA_PATHS)
-add_local_paths = partial(add_sys_paths, ('./lib', ))
+add_local_paths = partial(add_sys_paths, ('./ext', ))

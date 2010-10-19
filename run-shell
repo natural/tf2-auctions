@@ -1,8 +1,8 @@
 #!/usr/bin/env ipython-2.5
 # -*- coding: utf-8 -*-
 
-import lib.env
-lib.env.add_extra_paths()
+import ext.env
+ext.env.add_extra_paths()
 
 from google.appengine.tools import dev_appserver
 from google.appengine.tools.dev_appserver_main import *

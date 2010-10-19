@@ -1,11 +1,31 @@
-// note that in this script, just like everywhere else in the app,
-// authorization is enforced server-side.  so we enable and disable
-// various gui controls appropriate for the current user knowing full
-// well that there isn't real security here, but that it exists and is
-// enforced for us on the server.
-
 // slug '#listing-detail-' defined in browse.pt
 var $$ = function(suffix, next) { return $('#listing-detail-'+suffix, next) }
+
+
+expires = new Date(2010,9,19,17,26,10);
+function countdown(){
+    var now = new Date()
+    var delta = expires.getTime() - now.getTime()
+    if (delta < 0) {
+	//document.getElementById('countbox').innerHTML="Now!";
+    } else {
+	var days=0, hours=0, mins=0, secs=0, out=''
+	delta = Math.floor(delta/1000)
+	days = Math.floor(delta/86400)
+	delta = delta % 86400
+	hours = Math.floor(delta/3600)
+	delta = delta % 3600
+	mins = Math.floor(delta/60)
+	delta = delta%60
+	secs = Math.floor(delta)
+	if(days != 0) { out += days +' day' + ((days!=1)?'s':'') + ', ' }
+	if(days != 0 || hours != 0) { out += hours + ' hour' + ((hours!=1)?'s':'') + ', '}
+	if(days != 0 || hours != 0 || mins != 0){out += mins +' minute'+((mins!=1)?'s':'')+', '}
+	out += secs +' seconds'
+	//document.getElementById('countbox').innerHTML=out;
+	setTimeout('countdown()', 1000)
+    }
+}
 
 
 var profileReady = function(profile, listing) {
@@ -27,16 +47,20 @@ var profileError = function(request, status, error) {
 
 
 var listingReady = function(id, listing) {
-    var pl = new ProfileLoader({
+    var pl = new AuthProfileLoader({
          success:function (p) { profileReady(p, listing)},
          error:profileError
          })
+    $$('owner-link').text(listing.owner.personaname)
+    $$('owner-avatar').attr('src', listing.owner.avatarmedium)
+    $$('content').fadeIn('slow')
+    $$('footer').fadeIn('slow')
 
     $.each(['description', 'bid_count', 'status'], function(idx, name) {
         if (listing[name]) {
             $$(name).text(listing[name])
 	} else {
-	    $$(name).parent().parent().fadeAway()
+	    $$(name).parent().parent().slideUp()
 	}
     })
 
@@ -82,8 +106,8 @@ var listingReady = function(id, listing) {
     $$('min-bid td').mouseenter(tt.show).mouseleave(tt.hide)
     $$('title').html('Listing ' + id)
     $$('title-wrapper').fadeIn()
-    $$('load').fadeAway('slow')
-    $$('main').fadeIn('slow')
+    $$('load').slideUp('slow')
+
     // bid_count
     // owner (steam id, personaname, avatar (+full, +medium), profile url, id64)
     // bids
@@ -95,7 +119,7 @@ var listingReady = function(id, listing) {
 
 var schemaReady = function(schema) {
     var id = window.location.pathname.split('/').pop()
-
+    document.title += ' ' + id
     new ListingLoader({success:function(ls) { listingReady(id, ls) }, suffix:id})
 }
 

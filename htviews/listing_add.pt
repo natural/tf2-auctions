@@ -88,7 +88,7 @@
 			<a href="#" id="add-listing-success-view">View Listing</a>
 		    </span>
 		</div>
-		<div id="add-listing-error" class="m-1 null"></div>
+		<div id="add-listing-error" class="error m-1 null"></div>
             </div>
 
 

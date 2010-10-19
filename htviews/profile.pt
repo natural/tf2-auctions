@@ -4,18 +4,18 @@
 </head>
 <body>
     <metal:fill fill-slot="main">
-	<form action="/api/v1/add-listing" method="post" tal:condition="False">
-	    <input type="submit" value="Test" />
-	</form>
-	<div tal:condition="user">
+	<h1 class="null" id="profile-own-load-msg"></h1>
+        <h1 class="null">
+	    <span class="hilite"></span><a name="bids"></a>
+	</h1>
+
+	<div class="null">
 	    <h1 id="load-profile-msg">Loading your profile...</h1>
-	    <h1 class="message m-top-1"><span class="hilite"></span><a name="bids">My Bids</a></h1>
 	    <div><div id="load-own-msg-bids"></div></div>
 
 	    <h1 class="message m-top-1">
 		<span class="hilite"></span><a name="listings">My Listings</a>
 	    </h1>
-
 	    <metal:wrapper tal:define="slug 'own'">
                 <metal:include use-macro="context.listing_parts.macros.listing_large" />
             </metal:wrapper>

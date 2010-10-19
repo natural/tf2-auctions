@@ -1,5 +1,9 @@
 <html metal:extend-macro="context.base.macros.layout" metal:define-macro="layout">
 <head>
+    <metal:slot fill-slot="title">
+	<metal:slot define-slot="title"><title>TF2Bay.com</title></metal:slot>
+    </metal:slot>
+    <metal:slot define-slot="title" />
     <metal:slot fill-slot="meta">
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     </metal:slot>

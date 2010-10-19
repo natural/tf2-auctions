@@ -8,7 +8,7 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
-from tf2bay.utils import json, user_steam_id
+from tf2bay.lib import json, user_steam_id
 from tf2bay.models.proxyutils import fetch
 
 

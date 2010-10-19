@@ -1,6 +1,5 @@
 var makeLoader = function(config) {
     var cache = {}, prefix = config.prefix, name = config.name
-
     return function(options) {
         options = options || {}
         var suffix = options.suffix
@@ -32,39 +31,48 @@ var makeLoader = function(config) {
     }
 }
 
+
+var AuthProfileLoader = makeLoader({
+    prefix: '/api/v1/auth/profile',
+    name: 'AuthProfileLoader'})
+
+
 var ProfileLoader = makeLoader({
-    prefix: '/api/v1/own-profile',
-    name: 'ProfileLoader'
-})
+    prefix: '/api/v1/public/profile/',
+    name: 'ProfileLoader'})
+
 
 var BackpackLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/items/',
     dataType: 'jsonp',
     jsonpCallback: 'tf2bayBackpackLoader',
-    name: 'BackpackLoader'
-})
+    name: 'BackpackLoader'})
+
 
 var SchemaLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
     dataType: 'jsonp',
     jsonpCallback: 'tf2baySchemaLoader',
-    name: 'SchemaLoader'
-})
+    name: 'SchemaLoader'})
+
 
 var ListingLoader = makeLoader({
-    prefix: '/api/v1/listing/',
-    name: 'ListingLoader'
-})
+    prefix: '/api/v1/public/listing/',
+    name: 'ListingLoader'})
+
+
+var ListingsLoader = makeLoader({
+    prefix: '/api/v1/public/listings/',
+    name: 'ListingLoader'})
 
 var SearchLoader = makeLoader({
-    prefix: '/api/v1/listing/search',
-    name: 'SearchLoader'
-})
+    prefix: '/api/v1/public/search',
+    name: 'SearchLoader'})
 
-var OwnListingsLoader = makeLoader({
-    prefix: '/api/v1/player-listings/',
-    name: 'OwnListingsLoader'
-})
+
+var StatsLoader = makeLoader({
+    prefix: '/api/v1/public/stats',
+    name: 'StatsLoader'})
 
 
 var SchemaTool = function() {
@@ -301,7 +309,6 @@ var TooltipView = function(schema) {
 	if (!cell.children().length) { return }
 	try {
 	    var playerItem = $('div', cell).data('node')
-	    console.log('playerItem div', playerItem)
 	    if (!playerItem) { playerItem = $('img', cell).data('node'); console.log('playerItem img', playerItem) }
 	    var type = playerItem['defindex'] // empty cells will raise an exception
 	} catch (e) {

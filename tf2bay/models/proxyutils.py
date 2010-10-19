@@ -3,7 +3,7 @@
 import logging
 import re
 import urllib
-from tf2bay.utils import json
+from tf2bay.lib import json
 from google.appengine.api import memcache
 
 

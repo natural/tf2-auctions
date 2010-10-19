@@ -203,6 +203,7 @@ vertical-align:middle;
 span.hilite { color:#c8503c; }
 span.hilite:before { content:">> "; }
 
+.bid-button a,
 .login-button a,
 .logout-button a:hover,
 .submit a:hover,
@@ -222,7 +223,7 @@ border-bottom:0.25em solid #84756b;
 line-height:200%;
 margin:0 auto 0 auto;
 padding:1em 0 1em 0;
-width:70%;
+width:85%;
 position:relative;
 }
 
@@ -239,14 +240,14 @@ vertical-align:bottom;
 
 
 #profile-buttons {
-width:70%;
+width:85%;
 margin:0 auto 0 auto;
 padding-top:1em;
 }
 
 #content {
 margin: 1em auto 0 auto;
-width:70%;
+width:85%;
 }
 
 
@@ -336,7 +337,7 @@ margin-bottom:-0.125em;
 
 #footer {
 color:#827868;
-width:70%;
+width:85%;
 margin:0 auto 0 auto;
 a-border:1px solid yellow;
 position:relative;
@@ -470,18 +471,18 @@ text-align:center;
 color:#fff;
 }
 
-#error {
+.error {
 background-color:rgba(157, 48, 47, 0.15);
 border:0.25em solid rgba(189, 58, 58, 0.75);
 }
 
-#warning {
+.warning {
 background-color:rgba(239, 152, 73, 0.35);
 border:0.25em solid rgba(241, 129, 73, 0.75);
 }
 
 
-#information {
+.information {
 background-color:rgba(56, 92, 120, 0.5);
 border:0.25em solid rgba(91, 122, 140, 0.5);
 }
@@ -511,6 +512,19 @@ margin-left:0.5em;
 .m-lb-05 {
 margin-left:0.5em;
 margin-bottom:0.5em;
+}
+
+.m-tb-1 {
+margin-top:1em;
+margin-bottom:1em;
+}
+
+.m-b-1 {
+margin-bottom:1em;
+}
+
+.m-l-1 {
+margin-left:1em;
 }
 
 #filters {
@@ -553,4 +567,45 @@ opacity:0.33;
 #listing-detail-main > div div {
 a-margin-bottom:0.75em;
 a-margin-left:0.75em;
+}
+
+#listing-detail-content {
+    float: left;
+    width: 100%;
+}
+
+
+#listing-detail-right {
+float: right;
+width: 33%;
+display: inline;
+border:1px solid purple;
+}
+
+
+#listing-detail-right .owner {
+background-color:#766b5e;
+border-radius:0.75em; -moz-border-radius:0.75em;
+border:0.25em solid #766b5e;
+padding:0.5em 0.25em 1em 0.25em;
+color:#ece3cb;
+}
+
+
+#listing-detail-left {
+border:1px solid orange;
+clear: left;
+float: left;
+width: 65%;
+display: inline;
+}
+
+
+.rb {
+border:1px dashed red
+}
+
+#listing-detail-existing-bids {
+border:1px solid green;
+width:100%;
 }

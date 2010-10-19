@@ -56,7 +56,8 @@ var AddListingTool = function(backpack, uids) {
     this.postError = function(req, status, err) {
 	console.error('post error:', req, status, err)
 	$('#add-listing-working').text('Something went wrong.  Check the error below.').fadeIn()
-	$('#add-listing-error').text(err).fadeIn()
+	$('#add-listing-error').text(req.statusText).fadeIn()
+
     }
     this.addListing = function(input) {
 	var output = {}
@@ -68,7 +69,7 @@ var AddListingTool = function(backpack, uids) {
         $.each(input.min_bid, function(idx, img) { min_bid.push( $(img).data('node').defindex ) })
         console.log('submit new listing:', input, output)
 	$.ajax({
-	    url: '/api/v1/add-listing',
+	    url: '/api/v1/auth/add-listing',
 	    type: 'POST',
 	    dataType:'json',
 	    data: $.toJSON(output),
@@ -269,7 +270,7 @@ var listingsReady = function(listings, profile) {
 var profileReady = function(profile) {
     showProfile(profile)
     $('#load-own-msg-profile').text('Profile loaded.  Welcome back, ' + profile['personaname'] + '1')
-    new OwnListingsLoader({success: function(listings) {
+    new ListingsLoader({success: function(listings) {
             console.log('inner', listings)
 	    listingsReady(listings, profile)
         },
@@ -279,7 +280,7 @@ var profileReady = function(profile) {
 
 var schemaReady = function(schema) {
     $('#load-own-msg-profile').text('Loading your profile...')
-    PL = new ProfileLoader({success: profileReady})
+    new AuthProfileLoader({success: profileReady})
 }
 
 
