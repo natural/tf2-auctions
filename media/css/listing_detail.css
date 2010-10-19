@@ -1,0 +1,39 @@
+/* also need moved into distinct css */
+
+#listing-detail-content {
+}
+
+#listing-detail-place-bid-wrapper {
+}
+
+#listing-detail-left {
+float:left;
+width:62%;
+}
+
+#listing-detail-right {
+float:right;
+width:33%;
+}
+
+
+#listing-detail-right .owner {
+background-color:#3C352E;
+border-radius:0.75em; -moz-border-radius:0.75em;
+border:0.25em solid #766b5e;
+padding:0.5em 0.25em 1em 0.25em;
+color:#ece3cb;
+}
+
+
+
+
+#listing-detail-existing-bids {
+a-border:1px solid green;
+a-width:95%;
+}
+
+#listing-detail-place-bid-wrapper > h1:first-child {
+padding-top:1.25em;
+padding-bottom:0.25em;
+}

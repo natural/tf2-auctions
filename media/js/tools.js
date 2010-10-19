@@ -387,3 +387,86 @@ $(document).ready(function() {
 var asPlayerItem = function(i) {
     return {defindex:i.defindex, level:i.level||'', quality:i.quality||i.item_quality}
 }
+
+
+
+var BackpackChooser = function(backpack, uids, slug, chooserSlug) {
+    var self = this
+    self.backpack = backpack
+    var initnav = BackpackNavigator(slug)
+    initnav()
+    var initbp = BackpackItemsTool(slug, backpack, uids) // wow, same args, diff order.  fixme.
+    initbp()
+
+    this.show = function() {
+	//$('#add-listing-intro').fadeAway().slideUp(750)
+	//$('#add-listing-own-backpack').fadeBack()
+	$('#backpack-header-'  + slug + ' h3').first().html('Your Backpack')
+	$('#backpack-header-' + slug + ' div').first().html('Drag items from your backpack into the area below.');
+
+	var width = $('#backpack-' + slug + ' tbody').width()
+	$('#backpack-tools-' + slug).width(width)
+	$('#backpack-' + slug + ' label').width(width)
+	$('#unplaced-backpack-' + slug + ' label').width(width)
+	//$('#add-listing-fields textarea').width(width).height(width/4).text(self.defaultDescription)
+	//$('#add-listing-fields').width( $('#backpack-a tbody').width())
+	//$('#add-listing-description').focusin(function() {
+	//    if ($(this).text() == self.defaultDescription) { $(this).text('') }
+	//})
+	$('div.organizer-view table').mousedown(function() { return false })
+	self.initDrag()
+	//var slider = $("#add-listing-duration-slider").slider(
+	//    {animate: true, max: 30, min:1, value: 30, change: function(event, ui) {
+	//	var v = ui.value
+	//	$("#add-listing-duration").text(v + " day" + (v==1 ? "" : "s"))
+	//    }}
+	//)
+	//var ele = $('h1').first()
+	//$('html body').animate({scrollTop: ele.position().top})
+	//return false
+    }
+    //this.defaultDescription  = 'Enter a description.'
+
+    this.initDrag = function() {
+	var updateCount = function() {
+	    var len = $('#chooser-' + chooserSlug + ' img').length
+	    var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
+	    $('#' + chooserSlug + '-title-extra').text(txt)
+	}
+	var dropItem = function(event, ui) {
+	    if ($(this).children().length > 0) { return false }
+	    $(this).parent().removeClass('selected')
+	    $(this).append( $('div img', ui.draggable))
+	    $('img', this).css('margin-top', '0')
+	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
+	    window.setTimeout(updateCount, 150) // delay for accurate counting
+	    $('#chooser-' + chooserSlug + ' td, #backpack-' + slug + ' td').removeClass('selected outline')
+	}
+	var dragFromBackpack = function(event, ui) {
+	    var img = $('img', event.target) // source img, not the drag img
+            try {
+		var node = img.data('node')
+		return !(node.flag_cannot_trade) && !(node.flag_active_listing)
+	    } catch (e) { return false }
+	}
+	var dragShow = function(event, ui) {
+	    ui.helper.addClass('selected')
+	}
+	var dropOver = function(event, ui) { $(this).parent().addClass('outline') }
+	var dropOut = function(event, ui) {
+	    $(this).parent().removeClass('outline')
+	}
+
+	$('#backpack-' + slug + ' td, #unplaced-backpack-' + slug + ' td').draggable({
+            containment: 'body', helper: 'clone', cursor: 'move',
+	    drag: dragFromBackpack, start: dragShow})
+	$('#backpack-' + slug + ' td div, #unplaced-backpack-' + slug + 'td div').droppable(
+	    {accept: '#chooser-' + chooserSlug + ' td', drop: dropItem, over: dropOver, out: dropOut})
+	$('#chooser-' + chooserSlug + ' td').draggable({
+            containment: 'body', helper: 'clone', cursor: 'move',
+	    start: dragShow})
+	$('#chooser-' + chooserSlug + ' td div').droppable(
+	    {accept: '#backpack-' + slug + ' td, #unplaced-backpack-' + slug + ' td',
+	     drop: dropItem, over: dropOver, out: dropOut})
+    }
+}

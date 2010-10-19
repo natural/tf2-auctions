@@ -91,7 +91,7 @@ div.organizer-view {
 background-color:#2e2b2a;
 border-radius:0.75em; -moz-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
-padding:1em;
+padding:0.5em;
 }
 
 div.organizer-view .outline {
@@ -327,7 +327,7 @@ position:relative;
 font-size:0.85em;
 }
 
-
+.avatar,
 #avatar img {
 border:0.125em solid #847668 !important;
 border-radius:0.125em;
@@ -487,17 +487,23 @@ background-color:rgba(56, 92, 120, 0.5);
 border:0.25em solid rgba(91, 122, 140, 0.5);
 }
 
-.p-top-05 {
+.p-t-05 {
 padding-top:0.5em;
 }
 
-.m-1 { margin:1em; }
+.p-tb-1 {
+padding-top:0.5em;
+padding-bottom:0.5em;
+}
 
-.m-top-1 {
+.m-1 { margin:1em; }
+.m-05 { margin:0.5em; }
+
+.m-t-1 {
 margin-top:1em;
 }
 
-.m-bot-05 {
+.m-b-05 {
 margin-bottom:0.5em;
 }
 
@@ -559,53 +565,4 @@ opacity:0.5; /* TODO: add opacity to parent selectors, too */
 
 div.organizer-view .active-listing img {
 opacity:0.33;
-}
-
-/* also need moved into distinct css */
-
-
-#listing-detail-main > div div {
-a-margin-bottom:0.75em;
-a-margin-left:0.75em;
-}
-
-#listing-detail-content {
-    float: left;
-    width: 100%;
-}
-
-
-#listing-detail-right {
-float: right;
-width: 33%;
-display: inline;
-border:1px solid purple;
-}
-
-
-#listing-detail-right .owner {
-background-color:#766b5e;
-border-radius:0.75em; -moz-border-radius:0.75em;
-border:0.25em solid #766b5e;
-padding:0.5em 0.25em 1em 0.25em;
-color:#ece3cb;
-}
-
-
-#listing-detail-left {
-border:1px solid orange;
-clear: left;
-float: left;
-width: 65%;
-display: inline;
-}
-
-
-.rb {
-border:1px dashed red
-}
-
-#listing-detail-existing-bids {
-border:1px solid green;
-width:100%;
 }

@@ -1,64 +1,70 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
     <title metal:fill-slot="title">TF2Bay.com Listing</title>
+    <metal:js fill-slot="script">
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"
+		type="text/javascript"></script>
+        <metal:slot define-slot="script" />
+    </metal:js>
+
 </head>
 <body>
-    <div metal:fill-slot="main" class="detail-view">
-
-	<h1 id="listing-detail-title-wrapper" class="null">
+    <div metal:fill-slot="main">
+	<span id="listing-detail-load"></span>
+	<h1 id="listing-detail-title-wrapper" class="null m-b-05">
 	    <span class="hilite"></span>
 	    <span id="listing-detail-title"></span> - <span id="listing-detail-status"></span>
 	</h1>
-	<span id="listing-detail-load"></span>
 
-	<div id="listing-detail-content" class="centered null">
+	<div id="listing-detail-content" class="null centered detail-view">
 	    <div id="listing-detail-left">
-		<div id="listing-detail-auth-bid-wrapper" class="null m-tb-1">
-		    <span class="button bid-button"><a href="#">Place Your Bid</a></span>
-		</div>
-		<div id="listing-detail-login-wrapper" class="null m-tb-1">
-		    <h2>You have to login to place a bid for these items.</h2>
-		</div>
-		<div>
+		<div class="m-b-1">
 		    <label>Description:</label>
-		    <div><strong id="listing-detail-description"></strong></div>
+		    <div class="m-1"><strong id="listing-detail-description"></strong></div>
 		</div>
 		<div>
 		    <label>Items:</label>
 		    <div class="items-view" id="listing-detail-items"><table></table></div>
 		</div>
-		<div>
+		<div class="m-t-1">
 		    <label>Minium Bid:</label>
 		    <div class="items-view" id="listing-detail-min-bid"><table></table></div>
 		</div>
+		<div id="listing-detail-auth-bid-wrapper" class="null m-tb-1">
+		    <span class="button bid-button">
+			<a id="listing-detail-place-start" href="#">Place Your Bid</a>
+		    </span>
+		</div>
+		<div id="listing-detail-login-wrapper" class="null m-tb-1">
+		    <h2>You have to login to place a bid for these items.</h2>
+		</div>
             </div>
-
 	    <div id="listing-detail-right">
 		<div class="owner">
-		<label>Owner:
-		    <span><a id="listing-detail-owner-link" href="#"></a></span>
-		</label>
-		<div class="centered text-centered m-1">
-		    <img id="listing-detail-owner-avatar" />
-                </div>
-		<div class="centered text-centered m-1">
-		    Rating: * * * * *  (96.3% or 17.5/ 100)
-                </div>
-		<div class="m-1">
-		    Add Steam Friend<br />
-		    Start Steam Chat<br />
-		    Other Listings<br />
+		    <label>Created by
+			<span><a id="listing-detail-owner-link" href="#"></a></span>
+		    </label>
+		    <div class="centered text-centered m-1">
+			<img class="avatar" id="listing-detail-owner-avatar" />
+                    </div>
+		    <div class="centered text-centered m-1">
+			Rating: * * * * *  (96.3% or 17.5/ 100)
+                    </div>
+		    <div class="m-1" id="listing-detail-owner-links">
+			Add Steam Friend<br />
+			Start Steam Chat<br />
+			Other Listings<br />
+		    </div>
+		    <div id="listing-detail-owner-bid-wrapper" class="null centered m-tb-1">
+			<div class="m-1">You own this listing, so you may cancel it:</div>
+			<div class="centered text-centered">
+			    <span class="button bid-button"><a href="#">Cancel this Listing</a></span>
+			</div>
+                    </div>
 		</div>
-		<div id="listing-detail-owner-bid-wrapper" class="null centered text-centered m-tb-1">
-		    <label class="m-1">You're the owner of this, so you can cancel it:</label>
-		    <span class=" button bid-button"><a href="#">Cancel this Listing</a></span>
-                </div>
-
-		</div>
-
 		<div class="m-tb-1">
 		    <label>Time Left:</label>
-		    <div class="m-l-1"><strong id="listing-detail-timeleft"></strong></div>
+		    <div class="m-l-1"><strong id="listing-detail-timeleft">&nbsp;</strong></div>
 		</div>
 		<div class="m-b-1">
 		    <label>Expires:</label>
@@ -69,18 +75,42 @@
 		    <div class="m-l-1"><strong id="listing-detail-created"></strong></div>
 		</div>
             </div>
-
+	    <div class="clear"></div>
         </div>
-	<div class="clear"></div>
 
-	<div id="listing-detail-footer" class="null">
+	<div id="listing-detail-existing-bids-wrapper" class="null">
 	    <div id="listing-detail-existing-bids">
-	        <label>Bids: <span id="listing-detail-bidcount"></span></label>
-	        <div id="listing-detail-bids"></div>
+		<h1 class="p-t-05"><span class="hilite"></span><span id="listing-detail-bidcount"></span></h1>
+		<div id="listing-detail-bids"></div>
 	    </div>
 	</div>
 
 
+	<div id="listing-detail-place-bid-wrapper" class="null centered">
+            <h1><span class="hilite"></span>Place Your Bid</h1>
+	    <div class="organizer-view null" id="listing-detail-own-backpack">
+		<metal:settings tal:define="include_unplaced True; slug 'bid'">
+		    <span id="listing-detail-msg-backpack"></span>
+		    <metal:include use-macro="context.organizer_parts.macros.backpack" />
+		</metal:settings>
+		<h3 id="listing-detail-title">
+		    Your Bid <span id="add-bid-item-title-extra">(0 items)</span>
+		</h3>
+		<metal:settings tal:define="slug 'add-bid-item'">
+		    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
+		</metal:settings>
+		<div id="listing-detail-bid-buttons" class="centered text-centered m-1">
+		    <span class="submit button m-right-05">
+			<a href="#" id="listing-detail-bid-submit">Place Bid</a>
+		    </span>
+		    <span class="cancel button">
+			<a href="#" id="listing-detail-bid-cancel">Cancel</a>
+		    </span>
+		</div>
+	    </div>
+
+	</div>
+	<div class="clear"></div>
 
     </div>
 </body>

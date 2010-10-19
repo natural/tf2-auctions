@@ -13,7 +13,7 @@
 	    <h1 id="load-profile-msg">Loading your profile...</h1>
 	    <div><div id="load-own-msg-bids"></div></div>
 
-	    <h1 class="message m-top-1">
+	    <h1 class="message m-t-1">
 		<span class="hilite"></span><a name="listings">My Listings</a>
 	    </h1>
 	    <metal:wrapper tal:define="slug 'own'">

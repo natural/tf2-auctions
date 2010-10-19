@@ -14,14 +14,14 @@
 </head>
 <body>
     <metal:main fill-slot="main">
-	<h1 class="m-top-1 m-bot-05"><span class="hilite"></span>Add a New Listing</h1>
+	<h1 class="m-t-1 m-b-05"><span class="hilite"></span>Add a New Listing</h1>
 	<div id="add-listing-intro">
   	    <div id="load-own-msg-profile"></div>
             <div id="load-own-msg-backpack"></div>
 
-	    <div id="add-listing-help" class="null m-top-1">
+	    <div id="add-listing-help" class="null m-t-1">
 		<div>Click the button to display your backpack and start building a new listing:</div>
-		<div class="centered text-centered m-top-1">
+		<div class="centered text-centered m-t-1">
 		    <span class="button"><a href="#" id="add-listing-get-started">Get Started!</a></span>
 		</div>
 	    </div>

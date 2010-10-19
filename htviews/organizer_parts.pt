@@ -27,7 +27,7 @@
 
     <metal:if tal:condition="include_unplaced">
         <div id="unplaced-backpack-${slug}" class="null">
-	    <label class="centered m-top-1">New Items:</label>
+	    <label class="centered m-t-1">New Items:</label>
             <table class="unplaced centered">
 		<tbody>
 		    <tr><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td></tr>
