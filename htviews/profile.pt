@@ -4,9 +4,6 @@
 </head>
 <body>
     <metal:fill fill-slot="main">
-	<div class="" id="profile-small-load-msg"></div>
-	<div class="" id="profile-small-load-listings-msg"></div>
-	<div class="" id="profile-small-load-bids-msg"></div>
 
 	<div id="profile-bids-wrapper" class="null">
 	    <h1 class="m-t-1"><a name="bids"></a>

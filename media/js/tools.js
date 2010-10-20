@@ -229,6 +229,9 @@ var SchemaTool = function() {
 
 }
 
+var smallMsg = function(text) {
+    return $('#site-small-msg').removeClass('null').text(text)
+}
 
 var asPlayerItem = function(i) {
     return {defindex:i.defindex, level:i.level||'', quality:i.quality||i.item_quality}

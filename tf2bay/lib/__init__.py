@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from logging import info
+from os import environ
 from re import match
 
 from google.appengine.api import users
@@ -11,19 +13,23 @@ from chameleon.zpt.loader import TemplateLoader
 from tf2bay import template_dir
 
 
-def environ_extras_middleware(app, factory):
-    def environ_extras_app(environ, start_response):
-	environ.update(factory())
-	return app(environ, start_response)
-    return environ_extras_app
-
-
 def is_devel(environ):
     return environ['SERVER_SOFTWARE'].startswith('Dev')
 
 
 def is_prod(environ):
     return not is_devel(environ)
+
+
+debug = is_devel(environ)
+info('tf2bay.lib.__init__.debug=%s', debug)
+
+
+def environ_extras_middleware(app, factory):
+    def environ_extras_app(environ, start_response):
+	environ.update(factory())
+	return app(environ, start_response)
+    return environ_extras_app
 
 
 def user_steam_id(user):
@@ -53,7 +59,7 @@ class LocalHandler(RequestHandler):
 	return self.request.environ['PATH_INFO'].split('/')[-1]
 
     @staticmethod
-    def make_main(app, debug=True):
+    def make_main(app, debug=debug):
 	return make_main(app, debug)
 
 
@@ -146,17 +152,17 @@ def wsgi_local(app, debug):
     return local
 
 
-def run_app(app, debug=True):
+def run_app(app, debug=debug):
     run_wsgi_app(wsgi_local(app, debug))
 
 
-def make_main(app, debug=True):
+def make_main(app, debug=debug):
     def main():
 	run_wsgi_app(wsgi_local(app, debug))
     return main
 
 
-def template_main(template_name, related_css=None, related_js=None, debug=True):
+def template_main(template_name, related_css=None, related_js=None, debug=debug):
     return make_main(basic_view(template_name, related_css, related_js), debug)
 
 

@@ -43,8 +43,7 @@ var listingsOkay = function(listings) {
 
 
 var playerListingsOkay = function(listings) {
-    $$('small-load-listings-msg')
-	.text('Listings loaded, showing: ' + listings.length).delay(3000).fadeOut()
+    smallMsg('Listings loaded.')
     $$('listings-title').text('Listings')
     $$('listings-wrapper').slideDown()
 }
@@ -53,8 +52,7 @@ var playerListingsError = function(request, status, error) {
 }
 
 var playerBidsOkay = function(bids) {
-    $$('small-load-bids-msg')
-	.text('Bids loaded, showing: ' + bids.length).delay(4000).fadeOut()
+    smallMsg('Bids loaded.').fadeOut(1000)
     $$('bids-title').text('Bids')
     $$('bids-wrapper').slideDown()
 }
@@ -73,15 +71,13 @@ var ownProfileOkay = function(profile) {
     showProfile(profile)
     var id64 = id64View()
     if (id64 != profile.id64) {
+	smallMsg('Loading profile...')
 	new ProfileLoader({suffix: id64, success: playerProfileOkay, error: playerProfileError})
     } else {
 	var name = profile['personaname']
-	var msg = 'Profile loaded.  Welcome, ' + name + '!'
 	setTitle(name)
-	$$('small-load-msg').text(msg).fadeIn().delay(2000).fadeOut()
-	$$('small-load-listings-msg').text('Loading your listings...').fadeIn()
 	new ListingsLoader({suffix: id64, success: playerListingsOkay, error: playerListingsError})
-	$$('small-load-bids-msg').text('Loading your bids...').fadeIn()
+	smallMsg('Loading bids...')
 	new BidsLoader({suffix: id64, success: playerBidsOkay, error: playerBidsError})
     }
 }
@@ -95,11 +91,12 @@ var ownProfileError = function(request, status, error) {
 
 
 var schemaReady = function(s) {
+    smallMsg('Loading profile...')
     new AuthProfileLoader({success: ownProfileOkay, error:ownProfileError})
 }
 
 
 $(document).ready(function() {
-    $$('small-load-msg').text('Loading...')
+    smallMsg('Loading...')
     new SchemaLoader({success: schemaReady})
 })

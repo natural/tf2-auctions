@@ -153,7 +153,9 @@ var BackpackChooser = function(options) {
 	    if ($(this).children().length > 0) { return false }
 	    $(this).parent().removeClass('selected')
 	    if (options.copy) {
-		$(this).append($($('div img', ui.draggable)).clone())
+		var clone = $($('div img', ui.draggable)).clone()
+		clone.data('node', $('div img', ui.draggable).data('node'))
+		$(this).append(clone)
 	    } else {
 		$(this).append($('div img', ui.draggable))
 	    }

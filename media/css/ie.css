@@ -7,3 +7,27 @@ src: url("/media/ttf/TF2Build.eot");
 font-family: "TF2secondary";
 src: url("/media/ttf/TF2secondary.eot");
 }
+
+#tooltip {
+background:#000;
+}
+
+
+.big-button, big-button:hover {
+background:none;
+background-color:#9a8b6b !important;
+}
+
+
+#content, #header {
+margin:0 10% 0 10%;
+}
+
+body {
+margin:0 auto 0 auto;
+}
+
+
+.centered {
+margin:0 10% 0 10%;
+}

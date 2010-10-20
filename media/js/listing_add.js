@@ -210,16 +210,34 @@ var backpackReady = function(backpack, listings, profile) {
         tipTool.hide(e)
         $(this).removeClass('outline')
     }
+    var hoverMinBidChoice = function(e) {
+        try {
+            var data = $('img', this).data('node')
+        	if (!data.flag_cannot_trade) {
+	            $(this).addClass('selected-delete')
+                }
+        } catch (e) {}
+    }
+    var unhoverMinBidChoice = function(e) {
+        tipTool.hide(e)
+        $(this).removeClass('selected-delete')
+    }
+    var removeMinBidChoice = function(e) {
+	$('img', this).fadeOut().remove()
+	$(this).removeClass('selected-delete')
+    }
+
     if (count > 0) {
         var msg = "You've got " + count + " item" + (count==1?'':'s') + " to auction."
     } else {
-        var msg = "You don't have anything to trade.  How can this be?  Go play!"
+        var msg = 'Your backpack is empty!'
     }
-    $('#load-own-msg-backpack').text(msg)
-    $('#add-listing-get-started').click(addTool.show)
-    $('#add-listing-help').fadeIn()
+    smallMsg(msg).delay(3000).fadeAway()
     $('a[href="/listing/add"]').fadeAway()
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
+    $('#chooser-add-listing-min-bid td').hover(hoverMinBidChoice, unhoverMinBidChoice)
+    $('#chooser-add-listing-min-bid td').click(removeMinBidChoice)
+    addTool.show()
 }
 
 
@@ -229,7 +247,7 @@ var listingsError = function(err) {
 
 
 var listingsReady = function(listings, profile) {
-    $('#load-own-msg-backpack').text('Loading your backpack...')
+    smallMsg('Loading your backpack...')
     new BackpackLoader({
 	success: function (backpack) { backpackReady(backpack, listings, profile) },
         suffix: profile.id64})
@@ -238,14 +256,14 @@ var listingsReady = function(listings, profile) {
 
 var profileReady = function(profile) {
     showProfile(profile)
-    $('#load-own-msg-profile').text('Profile loaded.  Welcome back, ' + profile['personaname'] + '1')
+    smallMsg('Profile loaded.  Welcome back, ' + profile['personaname'] + '!')
     new ListingsLoader({success: function(listings) { listingsReady(listings, profile) },
 			suffix: profile.steamid})
 }
 
 
 var schemaReady = function(schema) {
-    $('#load-own-msg-profile').text('Loading your profile...')
+    smallMsg('Loading your profile...')
     new AuthProfileLoader({success: profileReady})
 }
 
@@ -255,7 +273,7 @@ $(document).ready(function() {
     $('#add-listing-min-bid-show a').click(showMinBid)
     $('div.organizer-view td').live('click', selectItem)
     $('#chooser-add-listing-min-bid td').live('click', maybeDeselectLast)
-    $('#load-own-msg-profile').text('Loading item schema...')
+    smallMsg('Loading item schema...')
     $('#backpack-a td div img').live('dblclick', maybeMoveToChooser)
     new SchemaLoader({success: schemaReady})
 })

@@ -25,12 +25,24 @@
 
 
 <body metal:fill-slot="body">
+    <div id="site-small-msg" class="null"></div>
+    <div id="tooltip" class="null">
+        <div id="tooltip-top-shim"></div>
+        <div id="tooltip-inner">
+            <h4>title</h4>
+            <div class="level">level</div>
+            <div class="alt">alt text</div>
+            <div class="positive">positive text</div>
+            <div class="negative">negative text</div>
+        </div>
+    </div>
+
     <div id="header-wrapper">
 	<div id="header" metal:fill-slot="header">
 	    <div id="main-logo">
 		<a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
 	    </div>
-	    <span id="site-buttons">
+	    <div id="site-buttons">
 		<metal:buttons tal:condition="user">
 		    <span id="avatar"></span>
 		    <a class="big-button" href="/profile/${user.nickname()}#bids">My Bids</a>
@@ -44,9 +56,9 @@
 		<metal:button tal:condition="user">
 		    <a class="button logout-button" href="${controller.logout_url()}">Logout</a>
 		</metal:button>
-	    </span>
-	    <metal:define define-slot="header" />
+	    </div>
 	    <div class="clear"></div>
+	    <metal:define define-slot="header" />
 	</div>
     </div>
 
@@ -57,18 +69,7 @@
     </div>
 
     <metal:slot define-slot="main-prime">
-        <div id="tooltip" class="null">
-            <div id="tooltip-top-shim"></div>
-            <div id="tooltip-inner">
-                <h4>title</h4>
-                <div class="level">level</div>
-                <div class="alt">alt text</div>
-                <div class="positive">positive text</div>
-                <div class="negative">negative text</div>
-            </div>
-        </div>
 	<div id="content" metal:fill-slot="main">
-            <div id="message"></div>
 	    <metal:slot define-slot="main" />
 	</div>
     </metal:slot>

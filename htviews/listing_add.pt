@@ -15,18 +15,6 @@
 <body>
     <metal:main fill-slot="main">
 	<h1 class="m-t-1 m-b-05"><span class="hilite"></span>Add a New Listing</h1>
-	<div id="add-listing-intro">
-  	    <div id="load-own-msg-profile"></div>
-            <div id="load-own-msg-backpack"></div>
-
-	    <div id="add-listing-help" class="null m-t-1">
-		<div>Click the button to display your backpack and start building a new listing:</div>
-		<div class="centered text-centered m-t-1">
-		    <span class="button"><a href="#" id="add-listing-get-started">Get Started!</a></span>
-		</div>
-	    </div>
-        </div>
-
 	<div class="organizer-view null" id="add-listing-own-backpack">
 	    <metal:settings tal:define="include_unplaced True; slug 'a'">
 		<metal:include use-macro="context.organizer_parts.macros.item_backpack" />
@@ -73,6 +61,7 @@
 			<h3 id="add-listing-min-bid-title">
 			    Minimum Bid <span id="add-listing-min-bid-title-extra">(0 items)</span>
 			</h3>
+			<div class="null" id="min-bid-remove">Remove</div>
 			<metal:settings tal:define="slug 'add-listing-min-bid'">
 			    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
 			</metal:settings>

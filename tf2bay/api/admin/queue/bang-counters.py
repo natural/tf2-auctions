@@ -4,6 +4,7 @@ from logging import info, warn
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
 from google.appengine.ext.webapp.util import run_wsgi_app
 
+from tf2bay import lib
 from tf2bay.models.counters import increment_counter
 
 
@@ -22,7 +23,7 @@ class BangCounters(RequestHandler):
 
 
 def main():
-    run_wsgi_app(WSGIApplication([('.*', BangCounters)], debug=True))
+    run_wsgi_app(WSGIApplication([('.*', BangCounters)], debug=lib.debug))
 
 
 if __name__ == '__main__':

@@ -4,6 +4,8 @@ from logging import info, warn
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
 from google.appengine.ext.webapp.util import run_wsgi_app
 
+from tf2bay import lib
+
 
 class ExpireListing(RequestHandler):
     def post(self):
@@ -13,7 +15,7 @@ class ExpireListing(RequestHandler):
 
 
 def main():
-    run_wsgi_app(WSGIApplication([('.*', ExpireListing)], debug=True))
+    run_wsgi_app(WSGIApplication([('.*', ExpireListing)], debug=lib.debug))
 
 
 if __name__ == '__main__':
