@@ -10,6 +10,7 @@ var MinbidListingTool = function(schema) {
     bpNav.init()
     bpChs.init()
     $(".quantity:contains('undefined')").fadeAway()
+    this.chooser = bpChs
 }
 
 
@@ -92,6 +93,11 @@ var BackpackListingTool = function(backpack, uids) {
 
     self.showErrors = function(errors) {
 	console.error('validation errors:', errors)
+	$.each(errors, function(index, error) {
+	    var ele = $('{0}-error'.format(error.id))
+	    ele.text('Error: {0}'.format(error.msg)).parent().fadeIn()
+	    if (index==0) { ele.parent().scrollTopAni() }
+	})
     }
 
     self.submit = function() {
@@ -120,7 +126,7 @@ var BackpackListingTool = function(backpack, uids) {
 		       msg:'Invalid duration.  Select 1-30 days.'})
 	}
         // 4.  min bid items: defindexes
-	var min_bid = $('#chooser-add-listing-min-bid td.selected img')
+	var min_bid = $('#chooser-add-listing-min-bid td img')
 	if (min_bid.length > 10) {
             errs.push({id:'#chooser-add-listing-min-bid',
 		       msg:'Too many items. Select 0-10 items as a minimum bid.'})
@@ -141,17 +147,29 @@ var showMinBid = function() {
     var schema = new SchemaTool()
     var minTool = new MinbidListingTool(schema)
     var tipTool = new TooltipView(schema)
+    var hoverMinBidChoice = function(e) {
+        try {
+            var data = $('img', this).data('node')
+        	if (!data.flag_cannot_trade) {
+	            $(this).addClass('selected-delete')
+                }
+        } catch (e) {}
+    }
+    var unhoverMinBidChoice = function(e) {
+	tipTool.hide(e)
+	$(this).removeClass('selected-delete')
+    }
+    var removeMinBidChoice = function(e) {
+	$('img', this).fadeOut().remove()
+	$(this).removeClass('selected-delete') // MARK
+	minTool.chooser.updateCount()
+	//window.setTimeout(, 1000)
+    }
 
+    $('#chooser-add-listing-min-bid td').hover(hoverMinBidChoice, unhoverMinBidChoice)
+    $('#chooser-add-listing-min-bid td').click(removeMinBidChoice)
     $('#add-listing-min-bid-show').slideUp(750)
     $('#add-listing-min-bid-wrapper').fadeIn('slow')
-
-//    var c = 0, p = '#add-listing-min-bid-'
-//    var st = new SchemaTool()
-//    $.each(st.tradable(), function(idx, item) {
-//	$(''+p+''+c + ' div').html(makeImg({src:item.image_url, height:64, width:64}))
-//	$('img:last', $(p+c+' div')).data('node', asPlayerItem(item))
-//	c += 1
-//    })
     return false
 }
 
@@ -210,33 +228,11 @@ var backpackReady = function(backpack, listings, profile) {
         tipTool.hide(e)
         $(this).removeClass('outline')
     }
-    var hoverMinBidChoice = function(e) {
-        try {
-            var data = $('img', this).data('node')
-        	if (!data.flag_cannot_trade) {
-	            $(this).addClass('selected-delete')
-                }
-        } catch (e) {}
-    }
-    var unhoverMinBidChoice = function(e) {
-        tipTool.hide(e)
-        $(this).removeClass('selected-delete')
-    }
-    var removeMinBidChoice = function(e) {
-	$('img', this).fadeOut().remove()
-	$(this).removeClass('selected-delete')
-    }
+    var msg = (count > 0) ? "You've got {0} item{1} to auction.".format(count, (count==1?'':'s')) : "Your backpack is empty!"
 
-    if (count > 0) {
-        var msg = "You've got " + count + " item" + (count==1?'':'s') + " to auction."
-    } else {
-        var msg = 'Your backpack is empty!'
-    }
     smallMsg(msg).delay(3000).fadeAway()
     $('a[href="/listing/add"]').fadeAway()
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
-    $('#chooser-add-listing-min-bid td').hover(hoverMinBidChoice, unhoverMinBidChoice)
-    $('#chooser-add-listing-min-bid td').click(removeMinBidChoice)
     addTool.show()
 }
 

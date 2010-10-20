@@ -1,5 +1,5 @@
 // slug '#listing-detail-' defined in browse.pt
-var $$ = function(suffix, next) { return $('#listing-detail-'+suffix, next) }
+var $$ = function(suffix, next) { return $('#{0}-{1}'.format(idSlug, suffix), next) }
 
 
 function updateTimeLeft(expires, selector) {
@@ -55,15 +55,58 @@ var backpackReady = function(backpack, listing, profile) {
         $(this).removeClass('outline')
     }
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
-    setTimeout(function() {
-	$('html body').animate({scrollTop: $$('place-bid-wrapper').position().top})
-    }, 500)
+    setTimeout(function() { $$('place-bid-wrapper').scrollTopAni() }, 500)
 }
 
+var submitCancel = function() {
+    console.log('submit cancel')
+    var listingId = window.location.pathname.split('/').pop()
+    var cancelOkay = function(results) {
+	console.log('cancel success', results)
+	$$('status').text('Cancelled')
+	$$('owner-controls').slideUp()
+    }
+    var cancelError = function(request, status, error) {
+	console.error('cancel failed', request, status, error)
+    }
+    $$('cancel-confirm').fadeAway()
+    $.ajax({
+	url: '/api/v1/auth/cancel-listing',
+	type: 'POST',
+	data: $.toJSON({id:listingId}),
+	dataType: 'json',
+	success: cancelOkay,
+	error: cancelError
+    })
+}
+
+var cancelCancel = function() {
+    $$('cancel-prompt').fadeBack()
+    $$('cancel-confirm').fadeOut()
+}
+
+var showConfirmCancel = function(e) {
+    $$('cancel-prompt').fadeAway()
+    $$('cancel-confirm').fadeIn()
+    $$('cancel-submit').click(submitCancel)
+    $$('cancel-cancel').click(cancelCancel)
+    return false
+}
+
+// steam://friends/message/76561197970837723
+// steam://friends/add/76561198000876040
+
 var profileReady = function(profile, listing) {
-    if (profile.steamid == listing.owner.steamid) {
+    var ownerid = listing.owner.steamid
+    $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.format(ownerid))
+    $$('chat-owner').attr('href', 'steam://friends/message/{0}'.format(ownerid))
+
+    if (profile.steamid == ownerid) {
 	$$('owner-links').slideUp()
-        $$('owner-bid-wrapper').slideDown()
+	if (listing.status == 'active') {
+            $$('owner-controls').slideDown()
+	    $$('cancel-show-confirm').click(showConfirmCancel)
+	}
     } else {
         $$('auth-bid-wrapper').fadeIn()
 	$$('place-start').click(function() {
@@ -86,16 +129,12 @@ var profileError = function(request, status, error) {
 }
 
 
-var makeCell = function(v) {
-    return '<td><div class="defindex-lazy">' + v + '</div></td>'
-}
 
 
 var listingReady = function(id, listing) {
     var pl = new AuthProfileLoader({
          success: function (p) { profileReady(p, listing)},
-         error: profileError
-    })
+         error: profileError })
     var cells = 0
     var timer = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
     var st = new SchemaTool()
@@ -105,14 +144,10 @@ var listingReady = function(id, listing) {
     $$('owner-avatar').attr('src', listing.owner.avatarmedium)
     $$('content').fadeIn('slow')
     $$('existing-bids-wrapper').fadeIn('slow')
-
     $.each(['description', 'status'], function(idx, name) {
-	listing[name] ? $$(name).text(listing[name]) : $$(name).parent().parent().slideUp()
-    })
+	listing[name] ? $$(name).text(listing[name]) : $$(name).parent().parent().slideUp() })
     $.each(['created', 'expires'], function(idx, name) {
-	$$(name).text('' + new Date(listing[name] + ' GMT'))
-    })
-
+	$$(name).text('' + new Date(listing[name] + ' GMT')) })
     if (listing.min_bid.length) {
         $.each(listing.min_bid, function(idx, defindex) {
 	    if (!(cells % 5)) {
@@ -124,7 +159,6 @@ var listingReady = function(id, listing) {
     } else {
         $$('min-bid').html('No minimum.')
     }
-
     cells = 0
     $.each(listing.items, function(idx, item) {
 	if (!(cells % 5)) { $$('items table').append('<tr></tr>') }
@@ -138,10 +172,8 @@ var listingReady = function(id, listing) {
     $$('title').html('Listing ' + id)
     $$('bidcount').text(listing.bid_count ? ('Bids (' + listing.bid_count + ')') : 'No Bids')
     $$('title-wrapper').fadeIn()
-    $$('load').slideUp('slow')
+    smallMsg('').fadeAway()
 }
-
-
 
 
 var schemaReady = function(schema) {
@@ -152,6 +184,6 @@ var schemaReady = function(schema) {
 
 
 $(document).ready(function() {
-    $$('load').text('Loading...')
+    smallMsg('Loading...')
     new SchemaLoader({success: schemaReady})
 })

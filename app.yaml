@@ -13,10 +13,10 @@ handlers:
   mime_type: font/ttf
   upload: media/ttf/(.*\.(ttf|eot))
 
-- url: /media/(.*\.(css|js|png))
+- url: /media/(.*\.(css|js|png|gif))
   static_files: media/\1
   expiration: "1d 1h"
-  upload: media/(.*\.(css|js|png))
+  upload: media/(.*\.(css|js|png|gif))
 
 - url: /favicon.ico
   static_files: media/img/favicon.ico

@@ -485,13 +485,15 @@ color:#eb3b3b;
 
 
 
-.messages div {
-border-radius:0.75em;
--moz-border-radius:0.75em;
-margin-right:5em;
-opacity:0.9;
-text-align:center;
+.message div {
+border-radius:0.75em; -moz-border-radius:0.75em;
 color:#fff;
+font-family:"TF2Build";
+margin-bottom:0.5em;
+margin-top:0.5em;
+opacity:0.9;
+padding:0.5em;
+text-align:center;
 }
 
 .error {
@@ -578,11 +580,27 @@ border-bottom:none;
 
 .listings-large {
 width:100%;
+margin-top:1em;
 }
 
 .listings-large tbody tr td {
 border:1px dotted red;
 }
+
+.listings-large td.view-link {
+border:1px solid green;
+width:5em;
+}
+
+.listings-large tbody tr:last-child td:last-child {
+border:1px solid blue;
+padding-bottom:1em;
+}
+
+.listings-large td strong {
+font-family:"TF2Build";
+}
+
 
 
 .cannot-trade img {
@@ -592,15 +610,4 @@ opacity:0.5; /* TODO: add opacity to parent selectors, too */
 
 div.organizer-view .active-listing img {
 opacity:0.33;
-}
-
-
-#min-bid-remove {
-background-color:red;
-border-radius:0.5em; -moz-border-radius:0.5em;
-color:black;
-font-family:"TF2secondary";
-font-size:0.85em;
-padding:0.25em 0.4em 0.25em 0.4em;
-position:absolute;
 }

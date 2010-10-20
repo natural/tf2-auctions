@@ -229,17 +229,26 @@ var SchemaTool = function() {
 
 }
 
+
 var smallMsg = function(text) {
     return $('#site-small-msg').removeClass('null').text(text)
 }
+
 
 var asPlayerItem = function(i) {
     return {defindex:i.defindex, level:i.level||'', quality:i.quality||i.item_quality}
 }
 
+
+var makeCell = function(v) {
+    return '<td><div class="defindex-lazy">{0}</div></td>'.format(v)
+}
+
+
 var initExtensions = function(jq) {
     jq.fn.fadeAway = function() { return this.each(function() { jq(this).fadeTo(750, 0) }) }
     jq.fn.fadeBack = function() { return this.each(function() { jq(this).fadeTo(750, 100) }) }
+    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).position().top}) }
 }
 initExtensions(jQuery)
 

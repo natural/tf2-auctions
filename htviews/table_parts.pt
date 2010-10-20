@@ -1,0 +1,24 @@
+<metal:parts>
+    <metal:macro define-macro="listing_large">
+        <table id="${slug}-listings" class="listings-large null">
+            <tbody class="null prototype">
+
+	        <tr>
+                    <td>
+			<strong>Items:</strong>
+			<table class="${slug}-listing-items"><tr></tr></table>
+                    </td>
+		    <td class="view-link">
+			<a class="button">View</a>
+		    </td>
+                </tr>
+                <tr>
+	            <td colspan="2">
+			<strong class="${slug}-listing-description"></strong>
+		    </td>
+		</tr>
+
+            </tbody>
+        </table>
+    </metal:macro>
+</metal:parts>

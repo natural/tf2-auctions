@@ -16,6 +16,11 @@ var addListing = function(listing, clone) {
     clone.removeClass('null prototype')
     $$('listing-description', clone).text(listing.description)
     $$('listing-created', clone).text(listing.created)
+
+    $.each(listing.items, function(index, item) {
+	//$$('items table tr:last').append(makeCell($.toJSON(item)))
+    })
+    GL = listing
     $$('listings').prepend(clone)
 }
 
@@ -39,6 +44,5 @@ $(document).ready(function() {
     // set loading msg...
     $("#filters a").click(categorySelected)
     new SchemaLoader({success: schemaReady})
-
 })
 

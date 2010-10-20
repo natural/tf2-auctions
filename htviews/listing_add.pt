@@ -30,8 +30,10 @@
 
 	    <div id="add-listing-fields" class="centered">
 		<label for="add-listing-fields">Description:</label>
+ 		<div class="message null"><div class="error" id="add-listing-description-error"></div></div>
 		<textarea id="add-listing-description" name="add-listing-description"></textarea>
 		<label for="add-listing-duration">Duration:</label>
+ 		<div class="message null"><div class="error" id="add-listing-duration-slider-error"></div></div>
 		<div class="centered">
 		    <div id="add-listing-duration">30 days</div>
 		    <div id="add-listing-duration-slider" name="duration"></div>
@@ -58,10 +60,9 @@
 			<metal:settings tal:define="slug 'mb'">
 			    <metal:include use-macro="context.organizer_parts.macros.item_backpack" />
 			</metal:settings>
-			<h3 id="add-listing-min-bid-title">
+			<label id="add-listing-min-bid-title">
 			    Minimum Bid <span id="add-listing-min-bid-title-extra">(0 items)</span>
-			</h3>
-			<div class="null" id="min-bid-remove">Remove</div>
+			</label>
 			<metal:settings tal:define="slug 'add-listing-min-bid'">
 			    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
 			</metal:settings>

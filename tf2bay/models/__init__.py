@@ -170,10 +170,21 @@ class Listing(db.Model):
     ## non-normalized:  listing status and reason
     status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
-    def set_status(self, status):
-	# TODO: set the status and status of all ListingItem records
-	# with this as their parent.
-	pass
+
+    def set_status(self, status, reason):
+	items = self.items
+	def txn():
+	    self.status = status
+	    self.status_reason = reason
+	    self.put()
+	    for item in items:
+		item.status = status
+		item.put()
+	db.run_in_transaction(txn)
+
+    def cancel(self, reason):
+	self.set_status('cancelled', reason)
+	return 'okay'
 
     ## non-normalized: bid counter
     bid_count = db.IntegerProperty('Bid Count', default=0)

@@ -3,6 +3,7 @@
 
 <div metal:define-macro="item_chooser" id="chooser-${slug}">
     <table class="centered chooser">
+	<caption><div class="message null"><div class="error" id="chooser-${slug}-error"></div></div></caption>
         <tbody>
 	    <metal:define tal:define="rows rows | 2; cols cols | 5">
 	    <metal:loop tal:repeat="row range(rows)">

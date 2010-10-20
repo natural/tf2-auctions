@@ -14,7 +14,7 @@
 	    </metal:filters>
 	</div>
 	<metal:wrapper tal:define="slug 'browse'">
-	    <metal:include use-macro="context.listing_parts.macros.listing_large" />
+	    <metal:include use-macro="context.table_parts.macros.listing_large" />
 	</metal:wrapper>
 
 

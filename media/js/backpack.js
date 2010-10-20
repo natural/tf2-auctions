@@ -143,12 +143,15 @@ var BackpackChooser = function(options) {
 	$('div.organizer-view table').mousedown(function() { return false })
     }
 
-    self.initDrag = function() {
-	var updateCount = function() {
+    self.updateCount = function() {
+	window.setTimeout(function() {
 	    var len = $('#chooser-' + chooserSlug + ' img').length
 	    var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
 	    $('#' + chooserSlug + '-title-extra').text(txt)
-	}
+	}, 150)
+    }
+
+    self.initDrag = function() {
 	var dropMove = function(event, ui) {
 	    if ($(this).children().length > 0) { return false }
 	    $(this).parent().removeClass('selected')
@@ -161,7 +164,7 @@ var BackpackChooser = function(options) {
 	    }
 	    $('img', this).css('margin-top', '0')
 	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
-	    window.setTimeout(updateCount, 150) // delay for accurate counting
+	    self.updateCount() //window.setTimeout(self.updateCount, 150) // delay for accurate counting
 	    $('#chooser-' + chooserSlug + ' td, #backpack-' + backpackSlug + ' td').removeClass('selected outline')
 	}
 	var dragFromBackpack = function(event, ui) {
