@@ -1,3 +1,67 @@
+if (typeof(console) == 'undefined') {
+    var console = {}
+    console.log = console.error = function() {}
+}
+
+String.prototype.format = function() {
+    var formatted = this
+    for (arg in arguments) {
+        formatted = formatted.replace("{" + arg + "}", arguments[arg])
+    }
+    return formatted
+}
+
+
+var ident = function(a) { return a }
+
+
+var keys = function(obj) {
+    var ks = []
+    for (var k in obj) {
+	ks.push(k)
+    }
+    return ks
+}
+
+
+var values = function(obj) {
+    var vs = []
+    for (var k in obj) {
+	vs.push(obj[k])
+    }
+    return vs
+}
+
+
+var makeImg = function(options) {
+    var src = options['src'] ? options['src'] : '/media/img/missing.png'
+    var width = '' + (options['width'] || 32)
+    var height = '' + (options['height'] || 32)
+    var alt = options['alt'] || ''
+    var style = options['style'] || ''
+    var cls = options['class'] || ''
+    return '<img src="'+src+'" width="'+width+'" height="'+height+'" alt="'+alt+'" style="'+style+'" class="'+cls+'" />'
+}
+
+
+var showProfile = function(p) {
+    $('#avatar').html(makeImg({src: p.avatar, width: 32, height: 32})).show()
+}
+
+
+var lazy = function(def) {
+    var cache = []
+    return function(i) {
+	return (i in cache) ? cache[i] : (cache[i] = def.call(arguments.callee, i))
+    }
+}
+
+
+var setTitle = function(name) {
+    $('title').append(' -- ' + name)
+}
+
+
 var makeLoader = function(config) {
     var cache = {}, prefix = config.prefix, name = config.name
     return function(options) {
@@ -31,16 +95,13 @@ var makeLoader = function(config) {
     }
 }
 
-
 var AuthProfileLoader = makeLoader({
     prefix: '/api/v1/auth/profile',
     name: 'AuthProfileLoader'})
 
-
 var ProfileLoader = makeLoader({
     prefix: '/api/v1/public/profile/',
     name: 'ProfileLoader'})
-
 
 var BackpackLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/items/',
@@ -48,18 +109,15 @@ var BackpackLoader = makeLoader({
     jsonpCallback: 'tf2bayBackpackLoader',
     name: 'BackpackLoader'})
 
-
 var SchemaLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
     dataType: 'jsonp',
     jsonpCallback: 'tf2baySchemaLoader',
     name: 'SchemaLoader'})
 
-
 var ListingLoader = makeLoader({
     prefix: '/api/v1/public/listing/',
     name: 'ListingLoader'})
-
 
 var ListingsLoader = makeLoader({
     prefix: '/api/v1/public/listings/',
@@ -69,32 +127,33 @@ var SearchLoader = makeLoader({
     prefix: '/api/v1/public/search',
     name: 'SearchLoader'})
 
-
 var StatsLoader = makeLoader({
     prefix: '/api/v1/public/stats',
     name: 'StatsLoader'})
 
+var BidsLoader = makeLoader({
+    prefix: '/api/v1/public/bids/',
+    name: 'BidsLoader'})
+
 
 var SchemaTool = function() {
-    // TODO: allow for schema as argument and avoid the (cached)
-    // loader
     var self = this
     new SchemaLoader({success: function(schema) {
         self.schema = schema['result']
         self._definitions = {}, self._attrByName = {}, self._attrById = {}
-	self.itemDefs = Lazy(function() {
+	self.itemDefs = lazy(function() {
 	    $.each(self.schema['items']['item'], function(index, definition) {
 		self._definitions[definition['defindex']] = definition
 	    })
             return self._definitions
 	})
-	self.attributesByName = Lazy(function() {
+	self.attributesByName = lazy(function() {
             $.each(self.schema['attributes']['attribute'], function(index, definition) {
 		self._attrByName[definition['name']] = definition
 	    })
 	    return self._attrByName
 	})
-	self.attributesById = Lazy(function() {
+	self.attributesById = lazy(function() {
             $.each(self.schema['attributes']['attribute'], function(index, definition) {
 		self._attrById[definition['defindex']] = definition
             })
@@ -166,307 +225,22 @@ var SchemaTool = function() {
 	    })
         return can
     }
-    return self
+
+
 }
-
-
-var equippedTag = '<span style="display:none" class="equipped">Equipped</span>'
-var itemCanTrade = function(item) { return !(item.flag_cannot_trade) && !(item.flag_active_listing) }
-var itemContentSelector = function(s) {
-    return '#unplaced-backpack-'+s+' table.unplaced td img, #backpack-'+s+' table.backpack td img, span.equipped'
-}
-var itemEquipped = function(item) { return (item['inventory'] & 0xff0000) != 0 }
-var itemImg = function(item, tool) {
-    var src = tool.itemDefs()[item['defindex']]['image_url']
-    src = src ? src : '/media/img/missing.png'
-    return '<img style="display:none" src="' + src + '" />' // replace w/ makeImg
-}
-var itemInv = function(item) { return item['inventory'] }
-var itemPos = function(item) { return item['inventory'] & 0xFFFF  }
-
-
-var BackpackItemsTool = function(slug, items, uids) {
-    return function() {
-        var st = new SchemaTool()
-	var newIdx = -1, toolDefs = st.tools(), actionDefs = st.actions()
-
-	$.each(items, function(index, item) {
-	    item.flag_active_listing = (item.id in uids)
-	    var pos = itemPos(item)
-	    if (pos > 0) {
-		var ele = $('#' + slug + pos + ' div').append(itemImg(item, st))
-		var img = $('img:last', ele).data('node', item)
-		var def = item['defindex']
-		if (itemEquipped(item)) {
-		    img.addClass('equipped equipped-'+def).after(equippedTag)
-		    img.removeClass('unequipped-'+def)
-		} else {
-		    img.addClass('unequipped-'+def)
-		    img.removeClass('equipped equipped-'+def)
-		}
-		if (itemCanTrade(item)) {
-		    ele.parent().removeClass('cannot-trade active-listing')
-		} else {
-		    ele.parent().addClass('cannot-trade')
-		    if (item.flag_active_listing) {
-			ele.parent().addClass('active-listing')
-		    }
-		}
-	    } else {
-		newIdx += 1
-		if ($('#unplaced-backpack-' + slug + ' table.unplaced td:not(:has(img))').length == 0) {
-		    var cells = new Array(5+1).join('<td><div></div></td>')
-		    $('#unplaced-backpack-' + slug + ' table.unplaced').append('<tbody><tr>' + cells + '</tr></tbody>')
-		}
-		$('#unplaced-backpack-' + slug + ' table.unplaced td:eq('+newIdx+') div').append(itemImg(item, st))
-		$('#unplaced-backpack-' + slug + ' table.unplaced td img:last').data('node', item)
-	    }
-	    if ((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) {
-		img.before('<span class="quantity">' + item['quantity'] + '</span>')
-		img.css('margin-top', '-1em')
-	    }
-	})
-	$('#unplaced-backpack-' + slug + ', #backpack-' + slug + ' label.null').toggle(newIdx > -1)
-	$(itemContentSelector(slug)).fadeIn(750)
-	$('#backpack-listing').fadeIn()
-    }
-}
-
-
-
-var BackpackNavigator = function(slug) {
-    var current = 1, count = $('#backpack-' + slug + ' table.backpack tbody').length
-
-    var nav = function(event, offset) {
-	if (event.detail != 1) { return false }
-	if ((current + offset) > 0 && (current + offset <= count)) {
-	    $('#backpack-' + slug + ' .backpack-page-' + current).fadeOut(250, function() {
-		current += offset
-		$('#backpack-' + slug + ' .backpack-page-' + current).fadeIn(250)
-		navChanged()
-	    })
-	}
-	return false
-    }
-
-    var navChanged = function () {
-	$('#backpack-pagecount-' + slug).text(current + '/' + count)
-	if (current == 1) {
-	    $('#backpack-nav-' + slug + ' .nonav:first').show()
-	    $('#backpack-nav-' + slug + ' .nav:first').hide()
-	} else {
-	    $('#backpack-nav-' + slug + ' .nonav:first').hide()
-	    $('#backpack-nav-' + slug + ' .nav:first').show()
-	}
-	if (current == count) {
-	    $('#backpack-nav-' + slug + ' .nonav:last').show()
-	    $('#backpack-nav-' + slug + ' .nav:last').hide()
-	} else {
-	    $('#backpack-nav-' + slug + ' .nonav:last').hide()
-	    $('#backpack-nav-' + slug + ' .nav:last').show()
-	}
-    }
-    $('#backpack-nav-' + slug + ' .nav:first a').click(function (e) {return nav(e, -1)})
-    $('#backpack-nav-' + slug + ' .nav:last a').click(function (e) {return nav(e, 1)})
-    return navChanged
-}
-
-
-var TooltipView = function(schema) {
-    var self = this
-    var quals = schema.qualityMap()
-    var extraLineMap = {0:'alt', 1:'positive', 2:'negative'}
-    var effectTypeMap = {negative: 'negative', neutral:'alt', positive: 'positive'}
-    var prefixCheckMap = {3:'vint', 5:'unusual', 7:'com', 8:'dev', 9:'self'}
-
-    var formatCalcMap = {
-	value_is_percentage: function (v) { return Math.round(v*100 - 100) },
-	value_is_inverted_percentage: function (v) { return Math.round(100 - (v*100)) },
-	value_is_additive: ident,
-	value_is_additive_percentage: function (v) { return Math.round(100*v) },
-	value_is_date: function (v) { return new Date(v * 1000) },
-	value_is_particle_index: ident,
-	value_is_account_id: function (v) { return '7656' + (v + 1197960265728) },
-	value_is_or: ident
-    }
-
-    var formatSchemaAttr = function(def, val) {
-	var line = def['description_string'].replace(/\n/gi, '<br />')
-	// we only look for (and sub) one '%s1'; that's the most there is (as of oct 2010)
-	if (line.indexOf('%s1') > -1) {
-	    var fCalc = formatCalcMap[def['description_format']]
-	    line = line.replace('%s1', fCalc(val))
-	}
-	return line.indexOf('Attrib_') > -1 ? '' : line
-    }
-
-    self.hide = function(event) {
-	$('#tooltip').hide().css({left: 0, top: 0})
-    }
-
-    self.show = function(event) {
-	var tooltip = $('#tooltip'), cell = (this==self ? $(event.currentTarget) : $(this))
-	if (!cell.children().length) { return }
-	try {
-	    var playerItem = $('div', cell).data('node')
-	    if (!playerItem) { playerItem = $('img', cell).data('node'); console.log('playerItem img', playerItem) }
-	    var type = playerItem['defindex'] // empty cells will raise an exception
-	} catch (e) {
-	    return
-	}
-	//console.log(playerItem)
-	self.hide()
-	var schemaItem = schema.itemDefs()[type]
-
-	// set the main title and maybe adjust its style and prefix
-	var h4 = $('#tooltip h4'), desc = schemaItem['item_name']
-	h4.text(desc)
-	h4.attr('class', 'quality-'+playerItem['quality'])
-	if (playerItem['quality'] in prefixCheckMap) {
-	    h4.text(quals[playerItem['quality']] + ' ' + h4.text())
-	}
-
-	// set the level; this doesn't match the game behavior exactly, but it is nice.
-	var level = playerItem['level']
-	var levelType = schemaItem['item_type_name'].replace('TF_Wearable_Hat', 'Hat')
-	$('#tooltip .level').text(level ? 'Level ' + level + ' ' + levelType : '')
-
-	// clear and set the extra text
-	$.each(extraLineMap, function(k, v) { $('#tooltip .'+ extraLineMap[k]).text('') })
-	if (playerItem['attributes']) {
-	    $.each(playerItem['attributes']['attribute'], function(aidx, itemAttr) {
-		var attrDef = schema.attributesById()[itemAttr['defindex']]
-		var extra = formatSchemaAttr(attrDef, itemAttr['value'])
-		var etype = effectTypeMap[attrDef['effect_type']]
-		var current = $('#tooltip .' + etype).html()
-		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
-	    })
-	}
-	if (schemaItem['attributes']) {
-	    $.each(schemaItem['attributes']['attribute'], function(aidx, schemaAttr) {
-		var attrDef = schema.attributesByName()[schemaAttr['name']]
-		if (!attrDef) { return }
-		if (attrDef['description_string']=='unused') { return }
-		if (attrDef['attribute_class']=='set_employee_number') { return }
-		var extra = formatSchemaAttr(attrDef, schemaAttr['value'])
-		var etype = effectTypeMap[attrDef['effect_type']]
-		var current = $('#tooltip .' + etype).html()
-		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
-	    })
-	}
-
-	// calculate the position
-	var pos = cell.position()
-	var minleft = cell.parent().position().left
-	var cellw = cell.width()
-	var toolw = tooltip.width()
-	var left = pos.left - (toolw/2.0) + (cellw/2.0) // - 4 // 4 == half border?
-	left = left < minleft ? minleft : left
-	var maxright = cell.parent().position().left + cell.parent().width()
-	if (left + toolw > maxright) {
-    	    left = cell.position().left + cellw - toolw + 4 // - 12
-	}
-	left = left < 0 ? (window.innerWidth/2)-toolw/2 : left
-	var top = pos.top + cell.height() + 12
-	if (top + tooltip.height() > (window.innerHeight+window.scrollY)) {
-    	    top = pos.top - tooltip.height() - 8 // - 36
-	}
-	// position and show
-	tooltip.css({left:left, top:top})
-	tooltip.show()
-    }
-    return self
-}
-
-
-$(document).ready(function() {
-    console.log('tools.js document ready')
-})
 
 
 var asPlayerItem = function(i) {
     return {defindex:i.defindex, level:i.level||'', quality:i.quality||i.item_quality}
 }
 
-
-
-var BackpackChooser = function(backpack, uids, slug, chooserSlug) {
-    var self = this
-    self.backpack = backpack
-    var initnav = BackpackNavigator(slug)
-    initnav()
-    var initbp = BackpackItemsTool(slug, backpack, uids) // wow, same args, diff order.  fixme.
-    initbp()
-
-    this.show = function() {
-	//$('#add-listing-intro').fadeAway().slideUp(750)
-	//$('#add-listing-own-backpack').fadeBack()
-	$('#backpack-header-'  + slug + ' h3').first().html('Your Backpack')
-	$('#backpack-header-' + slug + ' div').first().html('Drag items from your backpack into the area below.');
-
-	var width = $('#backpack-' + slug + ' tbody').width()
-	$('#backpack-tools-' + slug).width(width)
-	$('#backpack-' + slug + ' label').width(width)
-	$('#unplaced-backpack-' + slug + ' label').width(width)
-	//$('#add-listing-fields textarea').width(width).height(width/4).text(self.defaultDescription)
-	//$('#add-listing-fields').width( $('#backpack-a tbody').width())
-	//$('#add-listing-description').focusin(function() {
-	//    if ($(this).text() == self.defaultDescription) { $(this).text('') }
-	//})
-	$('div.organizer-view table').mousedown(function() { return false })
-	self.initDrag()
-	//var slider = $("#add-listing-duration-slider").slider(
-	//    {animate: true, max: 30, min:1, value: 30, change: function(event, ui) {
-	//	var v = ui.value
-	//	$("#add-listing-duration").text(v + " day" + (v==1 ? "" : "s"))
-	//    }}
-	//)
-	//var ele = $('h1').first()
-	//$('html body').animate({scrollTop: ele.position().top})
-	//return false
-    }
-    //this.defaultDescription  = 'Enter a description.'
-
-    this.initDrag = function() {
-	var updateCount = function() {
-	    var len = $('#chooser-' + chooserSlug + ' img').length
-	    var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
-	    $('#' + chooserSlug + '-title-extra').text(txt)
-	}
-	var dropItem = function(event, ui) {
-	    if ($(this).children().length > 0) { return false }
-	    $(this).parent().removeClass('selected')
-	    $(this).append( $('div img', ui.draggable))
-	    $('img', this).css('margin-top', '0')
-	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
-	    window.setTimeout(updateCount, 150) // delay for accurate counting
-	    $('#chooser-' + chooserSlug + ' td, #backpack-' + slug + ' td').removeClass('selected outline')
-	}
-	var dragFromBackpack = function(event, ui) {
-	    var img = $('img', event.target) // source img, not the drag img
-            try {
-		var node = img.data('node')
-		return !(node.flag_cannot_trade) && !(node.flag_active_listing)
-	    } catch (e) { return false }
-	}
-	var dragShow = function(event, ui) {
-	    ui.helper.addClass('selected')
-	}
-	var dropOver = function(event, ui) { $(this).parent().addClass('outline') }
-	var dropOut = function(event, ui) {
-	    $(this).parent().removeClass('outline')
-	}
-
-	$('#backpack-' + slug + ' td, #unplaced-backpack-' + slug + ' td').draggable({
-            containment: 'body', helper: 'clone', cursor: 'move',
-	    drag: dragFromBackpack, start: dragShow})
-	$('#backpack-' + slug + ' td div, #unplaced-backpack-' + slug + 'td div').droppable(
-	    {accept: '#chooser-' + chooserSlug + ' td', drop: dropItem, over: dropOver, out: dropOut})
-	$('#chooser-' + chooserSlug + ' td').draggable({
-            containment: 'body', helper: 'clone', cursor: 'move',
-	    start: dragShow})
-	$('#chooser-' + chooserSlug + ' td div').droppable(
-	    {accept: '#backpack-' + slug + ' td, #unplaced-backpack-' + slug + ' td',
-	     drop: dropItem, over: dropOver, out: dropOut})
-    }
+var initExtensions = function(jq) {
+    jq.fn.fadeAway = function() { return this.each(function() { jq(this).fadeTo(750, 0) }) }
+    jq.fn.fadeBack = function() { return this.each(function() { jq(this).fadeTo(750, 100) }) }
 }
+initExtensions(jQuery)
+
+
+$(document).ready(function() {
+    console.log('tools.js ready')
+})

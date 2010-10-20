@@ -67,9 +67,8 @@ class ApiHandler(LocalHandler):
 
 class View(LocalHandler):
     context_loader, template_loader = ContextLoader.build(template_dir)
-    default_js = ('jquery.json-2.2.js',
-		  #'underscore-min.js',
-		  'fixes.js', 'tools.js')
+    default_css = ('site.css', )
+    default_js = ('jquery.json-2.2.js', 'tools.js', )
     related_css = ()
     related_js = ()
 
@@ -168,10 +167,10 @@ def basic_view(template_name, related_css=None, related_js=None):
     if related_css is not None:
 	if isinstance(related_css, (basestring, )):
 	    related_css = (related_css, )
-	    Basic.related_css = related_css
+        Basic.related_css = related_css
     if related_js is not None:
 	if isinstance(related_js, (basestring, )):
 	    related_js = (related_js, )
-	    Basic.related_js = related_js
+        Basic.related_js = related_js
     return Basic
 

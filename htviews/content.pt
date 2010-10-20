@@ -8,12 +8,10 @@
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     </metal:slot>
     <metal:slot fill-slot="style">
-        <link rel="media" href="/media/css/screen.css" type="text/css" media="screen, projection" />
-        <link rel="stylesheet" href="/media/css/site.css" type="text/css" media="screen, projection" />
-        <!--[if lt IE 10]><link rel="stylesheet" href="/media/css/ie.css" type="text/css" media="screen, projection"><![endif]-->
-	<metal:assoc tal:repeat="link controller.related_css">
+	<metal:assoc tal:repeat="link controller.default_css + controller.related_css">
             <link rel="stylesheet" href="/media/css/${link}" type="text/css" media="screen, projection" />
 	</metal:assoc>
+        <!--[if lt IE 10]><link rel="stylesheet" href="/media/css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <metal:slot define-slot="style" />
     </metal:slot>
     <metal:slot fill-slot="script">
@@ -29,30 +27,32 @@
 <body metal:fill-slot="body">
     <div id="header-wrapper">
 	<div id="header" metal:fill-slot="header">
-	    <a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
-	    <div id="header-buttons">
-		    <span class="button"><a href="/browse">Browse</a></span>
-		    <span tal:condition="not user" class="button login-button">
-			<a href="/login">Login</a>
-		    </span>
-		    <span tal:condition="user" class="button logout-button">
-			<a href="${controller.logout_url()}">Logout</a>
-		    </span>
-		    <span id="avatar"></span>
+	    <div id="main-logo">
+		<a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
 	    </div>
+	    <span id="site-buttons">
+		<metal:buttons tal:condition="user">
+		    <span id="avatar"></span>
+		    <a class="big-button" href="/profile/${user.nickname()}#bids">My Bids</a>
+		    <a class="big-button" href="/profile/${user.nickname()}#listings">My Listings</a>
+		    <a class="big-button m-r-1" href="/listing/add">Add Listing</a>
+		</metal:buttons>
+		<a class="button" href="/browse">Browse</a>
+		<metal:button tal:condition="not user">
+		    <a class="button login-button" href="/login">Login</a>
+		</metal:button>
+		<metal:button tal:condition="user">
+		    <a class="button logout-button" href="${controller.logout_url()}">Logout</a>
+		</metal:button>
+	    </span>
 	    <metal:define define-slot="header" />
+	    <div class="clear"></div>
 	</div>
     </div>
 
     <div id="profile-wrapper" metal:fill-slot="menu">
 	<metal:slot define-slot="menu-prime">
-	<div id="profile-buttons" tal:condition="user">
-	    <span class="big-button"><a href="/profile/${user.nickname()}#bids">My Bids</a></span>
-	    <span class="big-button"><a href="/profile/${user.nickname()}#listings">My Listings</a></span>
-	    <span class="big-button"><a href="/listing/add">Add Listing</a></span>
-	    <span><metal:slot define-slot="profile-buttons-next" /></span>
-	</div>
-	<metal:slot define-slot="menu" />
+	    <metal:slot define-slot="menu" />
 	</metal:slot>
     </div>
 

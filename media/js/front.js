@@ -2,6 +2,7 @@ var $$ = function(suffix, next) { return $('#front-'+suffix, next) }
 
 
 var profileOkay = function(profile) {
+    showProfile(profile)
     $$('auth').fadeIn()
 }
 

@@ -1,27 +1,32 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
-    <title metal:fill-slot="title">tf2bay.com - profile</title>
+    <title metal:fill-slot="title">TF2Bay.com Profile</title>
 </head>
 <body>
     <metal:fill fill-slot="main">
-	<h1 class="null" id="profile-own-load-msg"></h1>
-        <h1 class="null">
-	    <span class="hilite"></span><a name="bids"></a>
-	</h1>
+	<div class="" id="profile-small-load-msg"></div>
+	<div class="" id="profile-small-load-listings-msg"></div>
+	<div class="" id="profile-small-load-bids-msg"></div>
 
-	<div class="null">
-	    <h1 id="load-profile-msg">Loading your profile...</h1>
-	    <div><div id="load-own-msg-bids"></div></div>
-
-	    <h1 class="message m-t-1">
-		<span class="hilite"></span><a name="listings">My Listings</a>
+	<div id="profile-bids-wrapper" class="null">
+	    <h1 class="m-t-1"><a name="bids"></a>
+		<span class="hilite"></span><span id="profile-bids-title"></span>
 	    </h1>
-	    <metal:wrapper tal:define="slug 'own'">
+	    <metal:wrapper tal:define="slug 'profile-bids'">
                 <metal:include use-macro="context.listing_parts.macros.listing_large" />
             </metal:wrapper>
-	    <div><div id="load-own-msg-listings"></div></div>
-
 	</div>
+
+	<div id="profile-listings-wrapper" class="null">
+	    <h1 class="m-t-1"><a name="listings"></a>
+		<span class="hilite"></span><span id="profile-listings-title"></span>
+	    </h1>
+	    <metal:wrapper tal:define="slug 'profile-listings'">
+                <metal:include use-macro="context.listing_parts.macros.listing_large" />
+            </metal:wrapper>
+	</div>
+
+
     </metal:fill>
 </body>
 </html>

@@ -9,7 +9,7 @@ from tf2bay.models import Listing
 class ListingDetailView(View):
     template_name = 'listing_detail.pt'
     related_css = ('listing_detail.css', )
-    related_js = ('listing_detail.js', )
+    related_js = ('backpack.js', 'listing_detail.js', )
 
     def get(self):
 	listing_id = self.path_tail()

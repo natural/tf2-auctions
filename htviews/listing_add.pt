@@ -29,11 +29,11 @@
 
 	<div class="organizer-view null" id="add-listing-own-backpack">
 	    <metal:settings tal:define="include_unplaced True; slug 'a'">
-		<metal:include use-macro="context.organizer_parts.macros.backpack" />
+		<metal:include use-macro="context.organizer_parts.macros.item_backpack" />
 	    </metal:settings>
 
 	    <h3 id="add-listing-title">
-		Your Listing <span id="add-listing-title-extra">(0 items)</span>
+		Your Listing <span id="add-listing-item-title-extra">(0 items)</span>
 	    </h3>
 	    <metal:settings tal:define="slug 'add-listing-item'">
 		<metal:include use-macro="context.organizer_parts.macros.item_chooser" />
@@ -66,9 +66,17 @@
 			Select the minimum items you will consider for
 			a trade. You can select up to 10 items.
 		    </div>
-		    <metal:settings tal:define="rows 35; slug 'add-listing-min-bid'">
-			<metal:include use-macro="context.organizer_parts.macros.item_chooser" />
-		    </metal:settings>
+		    <div class="organizer-view" id="add-listing-min-bid">
+			<metal:settings tal:define="slug 'mb'">
+			    <metal:include use-macro="context.organizer_parts.macros.item_backpack" />
+			</metal:settings>
+			<h3 id="add-listing-min-bid-title">
+			    Minimum Bid <span id="add-listing-min-bid-title-extra">(0 items)</span>
+			</h3>
+			<metal:settings tal:define="slug 'add-listing-min-bid'">
+			    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
+			</metal:settings>
+		    </div>
 		</div>
 	    </div>
 

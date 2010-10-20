@@ -1,0 +1,21 @@
+Organizer IDs
+
+1.  macro:		item_chooser
+    table parent id:	chooser-{slug}
+    table class: 	chooser
+    cell id:	 	{slug}-{row}-{col}
+
+2.  macro:       	item_backpack
+    header id:	 	backpack-header-{slug}
+
+    unplaced table
+    parent id:	        unplaced-backpack-{slug}
+    table class:	unplaced
+
+    table parent id:	backpack-{slug}
+    table pages: 	backpack-page-{n}
+    table cells		{slug}{n}
+
+    tools id:	 	backpack-tools-{slug}
+    nav id:	 	backpack-nav-{slug}
+    pg count id: 	backpack-pagecount-{slug}

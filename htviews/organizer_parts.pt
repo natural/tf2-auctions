@@ -1,8 +1,8 @@
 <metal:organizers>
 
 
-<div metal:define-macro="item_chooser">
-    <table class="centered chooser" id="chooser-${slug}">
+<div metal:define-macro="item_chooser" id="chooser-${slug}">
+    <table class="centered chooser">
         <tbody>
 	    <metal:define tal:define="rows rows | 2; cols cols | 5">
 	    <metal:loop tal:repeat="row range(rows)">
@@ -18,28 +18,28 @@
 </div>
 
 
-<div metal:define-macro="backpack">
-
+<div metal:define-macro="item_backpack" tal:omit-tag="True">
     <div id="backpack-header-${slug}">
         <h3></h3>
 	<div></div>
     </div>
-
-    <metal:if tal:condition="include_unplaced">
-        <div id="unplaced-backpack-${slug}" class="null">
-	    <label class="centered m-t-1">New Items:</label>
-            <table class="unplaced centered">
-		<tbody>
-		    <tr><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td></tr>
-		</tbody>
-	    </table>
-        </div>
-    </metal:if>
-
-
+    <div id="unplaced-backpack-${slug}" class="null">
+	<label class="centered m-t-1">New Items:</label>
+	<table class="centered unplaced">
+	    <tbody>
+		<tr><!-- prototype  -->
+		    <td><div></div></td>
+		    <td><div></div></td>
+		    <td><div></div></td>
+		    <td><div></div></td>
+		    <td><div></div></td>
+		</tr>
+	    </tbody>
+	</table>
+    </div>
     <div id="backpack-${slug}">
 	<label class="centered null">Existing Items:</label>
-        <table class="backpack centered">
+        <table class="centered backpack">
             <tbody class="backpack-page-1">
                 <tr><td id="${slug}1"><div></div></td><td id="${slug}2"><div></div></td><td id="${slug}3"><div></div></td><td id="${slug}4"><div></div></td><td id="${slug}5"><div></div></td></tr>
                 <tr><td id="${slug}11"><div></div></td><td id="${slug}12"><div></div></td><td id="${slug}13"><div></div></td><td id="${slug}14"><div></div></td><td id="${slug}15"><div></div></td></tr>
@@ -97,7 +97,6 @@
                 <tr><td id="${slug}196"><div></div></td><td id="${slug}197"><div></div></td><td id="${slug}198"><div></div></td><td id="${slug}199"><div></div></td><td id="${slug}200"><div></div></td></tr>
 	    </tbody>
         </table>
-
         <div id="backpack-tools-${slug}" class="tools">
 	    <div id="backpack-nav-${slug}" class="navs">
 	        <span class="nonav">&lt;</span>
@@ -107,9 +106,8 @@
 		<span class="nav"><a href="#">&gt;</a></span>
 	    </div>
 	</div>
-        <div metal:define-slot="backpack-next"></div>
     </div>
-
-
 </div>
+
+
 </metal:organizers>

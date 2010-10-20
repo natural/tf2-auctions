@@ -2,7 +2,7 @@
 var $$ = function(suffix, next) { return $('#listing-detail-'+suffix, next) }
 
 
-function countdown(expires, selector) {
+function updateTimeLeft(expires, selector) {
     expires = new Date(expires)
     return function() {
 	var now = new Date()
@@ -34,8 +34,11 @@ var backpackReady = function(backpack, listing, profile) {
     $$('place-start').fadeOut()
 
     var uids = []
-    var t = new BackpackChooser(backpack, uids, 'bid', 'add-bid-item')
-    t.show()
+    var bc = new BackpackChooser({backpack:backpack, uids:uids,
+				  backpackSlug:'bid',
+				  chooserSlug:'add-bid-item',
+				  help: 'Drag items from your backpack to the bid area below.'})
+    bc.init()
     var st = new SchemaTool()
     var tt = new TooltipView(st)
     var hoverItem = function(e) {
@@ -94,7 +97,7 @@ var listingReady = function(id, listing) {
          error: profileError
     })
     var cells = 0
-    var timer = setInterval(countdown(listing.expires, $$('timeleft')), 1000)
+    var timer = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
     var st = new SchemaTool()
     var tt = new TooltipView(st)
 
@@ -149,9 +152,6 @@ var schemaReady = function(schema) {
 
 
 $(document).ready(function() {
-    new SchemaLoader({success: schemaReady})
     $$('load').text('Loading...')
-
-
-
+    new SchemaLoader({success: schemaReady})
 })
