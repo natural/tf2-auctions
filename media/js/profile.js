@@ -64,6 +64,7 @@ var playerProfileOkay = function(profile) {
 }
 
 var playerProfileError = function(request, status, error) {
+    smallMsg().fadeAway()
 }
 
 
@@ -86,6 +87,7 @@ var ownProfileOkay = function(profile) {
 var ownProfileError = function(request, status, error) {
     if (request.status==401) {
 	// not logged in
+	smallMsg('').fadeAway()
     }
 }
 

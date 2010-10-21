@@ -5,6 +5,7 @@ from tf2bay.lib import View
 
 class ListingBrowserView(View):
     template_name = 'browse.pt'
+    related_css = ('browse.css', )
     related_js = ('browse.js', )
 
     def filters(self):

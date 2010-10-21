@@ -231,7 +231,11 @@ var SchemaTool = function() {
 
 
 var smallMsg = function(text) {
-    return $('#site-small-msg').removeClass('null').text(text)
+    if (text) {
+	return $('#site-small-msg').removeClass('null').text(text)
+    } else {
+	return $('#site-small-msg')
+    }
 }
 
 
@@ -242,6 +246,17 @@ var asPlayerItem = function(i) {
 
 var makeCell = function(v) {
     return '<td><div class="defindex-lazy">{0}</div></td>'.format(v)
+}
+
+
+var listingItemsUids = function(src) {
+    var uids = {}
+    $.each(src, function(idx, listing) {
+	$.each(listing.items, function(i, item) {
+	    uids[item.uniqueid] = item
+	})
+    })
+    return uids
 }
 
 

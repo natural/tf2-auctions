@@ -28,35 +28,6 @@ function updateTimeLeft(expires, selector) {
     }
 }
 
-var backpackReady = function(backpack, listing, profile) {
-    $$('msg-backpack').fadeAway()
-    $$('own-backpack').fadeIn()
-    $$('place-start').fadeOut()
-
-    var uids = []
-    var bc = new BackpackChooser({backpack:backpack, uids:uids,
-				  backpackSlug:'bid',
-				  chooserSlug:'add-bid-item',
-				  help: 'Drag items from your backpack to the bid area below.'})
-    bc.init()
-    var st = new SchemaTool()
-    var tt = new TooltipView(st)
-    var hoverItem = function(e) {
-        tt.show(e)
-        try {
-            var data = $('img', this).data('node')
-        	if (!data.flag_cannot_trade) {
-	            $(this).addClass('outline')
-                }
-        } catch (e) {}
-    }
-    var unhoverItem = function(e) {
-        tt.hide(e)
-        $(this).removeClass('outline')
-    }
-    $('div.organizer-view td').hover(hoverItem, unhoverItem)
-    setTimeout(function() { $$('place-bid-wrapper').scrollTopAni() }, 500)
-}
 
 var submitCancel = function() {
     console.log('submit cancel')
@@ -93,14 +64,82 @@ var showConfirmCancel = function(e) {
     return false
 }
 
-// steam://friends/message/76561197970837723
-// steam://friends/add/76561198000876040
+var moveToChooser = function(e) {
+    var source = $(event.target)
+    var target = $("#chooser-add-bid-item td div:empty").first()
+    var cell = source.parent().parent()
+    if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
+    source.data('original-cell', cell)
+    target.prepend(source)
+    // update counts
+}
+
+
+var moveToBackpack = function(e) {
+    var source = $(event.target)
+    var target = source.data('original-cell')
+    if (target) {
+	$('div', target).prepend(source)
+	// update counts
+    }
+}
+
+
+
+var backpackReady = function(backpack, listings, profile) {
+    $$('msg-backpack').fadeAway()
+    $$('own-backpack').fadeIn()
+    $$('place-start').fadeOut()
+    var bc = new BackpackChooser(
+	{backpack:backpack, uids:listingItemsUids(listings),
+	 backpackSlug:'bid', chooserSlug:'add-bid-item',
+	 help: 'Drag items from your backpack to the bid area below.'})
+
+    bc.init()
+    var st = new SchemaTool()
+    var tt = new TooltipView(st)
+    var hoverItem = function(e) {
+        tt.show(e)
+        try {
+            var data = $('img', this).data('node')
+        	if (!data.flag_cannot_trade) {
+	            $(this).addClass('outline')
+                }
+        } catch (e) {}
+    }
+    var unhoverItem = function(e) {
+        tt.hide(e)
+        $(this).removeClass('outline')
+    }
+    $('div.organizer-view td').hover(hoverItem, unhoverItem)
+    setTimeout(function() { $$('place-bid-wrapper').scrollTopAni() }, 500)
+}
+
+
+var  backpackError = function(request, status, error) {
+    console.error('backpack fetch failure', request, status, error)
+}
+
+
+var listingsReady = function(listings, profile) {
+    smallMsg('Loading your backpack...')
+    new BackpackLoader({
+	success: function (backpack) { backpackReady(backpack, listings, profile) },
+	error: backpackError,
+	suffix: profile.id64
+    })
+}
+
+
+var listingsError = function(request, status, error)  {
+    console.error('listings fetch failure', request, status, error)
+}
+
 
 var profileReady = function(profile, listing) {
     var ownerid = listing.owner.steamid
     $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.format(ownerid))
     $$('chat-owner').attr('href', 'steam://friends/message/{0}'.format(ownerid))
-
     if (profile.steamid == ownerid) {
 	$$('owner-links').slideUp()
 	if (listing.status == 'active') {
@@ -108,15 +147,19 @@ var profileReady = function(profile, listing) {
 	    $$('cancel-show-confirm').click(showConfirmCancel)
 	}
     } else {
-        $$('auth-bid-wrapper').fadeIn()
-	$$('place-start').click(function() {
-	    $$('place-bid-wrapper').fadeIn()
-	    $$('msg-backpack').text('Loading your backpack...')
-	    new BackpackLoader({success: function (backpack) {
-		backpackReady(backpack, listing, profile)
-            }, suffix: profile.id64})
-	    return false
-	})
+	if (listing.status == 'active') {
+            $$('auth-bid-wrapper').fadeIn()
+	    $$('place-start').click(function() {
+		$$('place-bid-wrapper').fadeIn()
+		smallMsg('Loading your backpack...')
+		new ListingsLoader({
+		    success: function(listings) { listingsReady(listings, profile) },
+		    error: listingsError,
+		    suffix: profile.id64
+		})
+		return false
+	    })
+	}
     }
 }
 
@@ -129,14 +172,11 @@ var profileError = function(request, status, error) {
 }
 
 
-
-
 var listingReady = function(id, listing) {
     var pl = new AuthProfileLoader({
          success: function (p) { profileReady(p, listing)},
          error: profileError })
     var cells = 0
-    var timer = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
     var st = new SchemaTool()
     var tt = new TooltipView(st)
 
@@ -173,17 +213,39 @@ var listingReady = function(id, listing) {
     $$('bidcount').text(listing.bid_count ? ('Bids (' + listing.bid_count + ')') : 'No Bids')
     $$('title-wrapper').fadeIn()
     smallMsg('').fadeAway()
+    if (listing.status == 'active') {
+	var timer = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
+    } else {
+	$$('place-start').fadeOut()
+	$$('timeleft').text(listing.status)
+    }
+}
+
+
+var listingError = function(request, status, error) {
+    console.error('listing fetch failure', request, status, error)
 }
 
 
 var schemaReady = function(schema) {
     var id = window.location.pathname.split('/').pop()
     document.title += ' ' + id
-    new ListingLoader({success:function(ls) { listingReady(id, ls) }, suffix:id})
+    new ListingLoader({
+	success: function(ls) { listingReady(id, ls) },
+	error: listingError,
+	suffix:id
+    })
+}
+
+
+var schemaError = function(request, status, error) {
+    console.error('schema fetch failure', request, status, error)
 }
 
 
 $(document).ready(function() {
+    $('#backpack-bid td div img').live('dblclick', moveToChooser)
+    $('#chooser-add-bid-item td div img').live('dblclick', moveToBackpack)
     smallMsg('Loading...')
-    new SchemaLoader({success: schemaReady})
+    new SchemaLoader({success: schemaReady, error: schemaError})
 })

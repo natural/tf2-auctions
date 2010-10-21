@@ -57,7 +57,17 @@ var BackpackItemsTool = function(items, uids, slug) {
 		    $('#unplaced-backpack-' + slug + ' table.unplaced').append('<tbody><tr>' + cells + '</tr></tbody>')
 		}
 		$('#unplaced-backpack-' + slug + ' table.unplaced td:eq('+newIdx+') div').append(iutil.img())
-		$('#unplaced-backpack-' + slug + ' table.unplaced td img:last').data('node', item)
+		var ele = $('#unplaced-backpack-' + slug + ' table.unplaced td img:last')
+		ele.data('node', item)
+		if (iutil.canTrade()) {
+		    ele.parent().removeClass('cannot-trade active-listing')
+		} else {
+		    ele.parent().addClass('cannot-trade')
+		    if (item.flag_active_listing) {
+			ele.parent().addClass('active-listing')
+		    }
+		}
+
 	    }
 	    if ((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) {
 		img.before('<span class="quantity">' + item['quantity'] + '</span>')
@@ -239,17 +249,18 @@ var TooltipView = function(schema) {
     }
 
     self.hide = function(event) {
-	$('#tooltip').hide().css({left: 0, top: 0})
+	$('#tooltip').hide()//.css({left: 0, top: 0})
     }
 
     self.show = function(event) {
 	var tooltip = $('#tooltip'), cell = (this==self ? $(event.currentTarget) : $(this))
-	if (!cell.children().length) { return }
+	if (!cell.children().length) { tooltip.hide(); return }
 	try {
 	    var playerItem = $('div', cell).data('node')
 	    if (!playerItem) { playerItem = $('img', cell).data('node') }
 	    var type = playerItem['defindex'] // empty cells will raise an exception
 	} catch (e) {
+	    tooltip.hide()
 	    return
 	}
 	//console.log(playerItem)
@@ -292,25 +303,11 @@ var TooltipView = function(schema) {
 		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
 	    })
 	}
-
-	// calculate the position
-	var pos = cell.position()
-	var minleft = cell.parent().position().left
-	var cellw = cell.width()
-	var toolw = tooltip.width()
-	var left = pos.left - (toolw/2.0) + (cellw/2.0) // - 4 // 4 == half border?
-	left = left < minleft ? minleft : left
-	var maxright = cell.parent().position().left + cell.parent().width()
-	if (left + toolw > maxright) {
-    	    left = cell.position().left + cellw - toolw + 4 // - 12
-	}
-	left = left < 0 ? (window.innerWidth/2)-toolw/2 : left
-	var top = pos.top + cell.height() + 12
-	if (top + tooltip.height() > (window.innerHeight+window.scrollY)) {
-    	    top = pos.top - tooltip.height() - 8 // - 36
-	}
 	// position and show
-	tooltip.css({left:left, top:top})
+	tooltip.css({
+	    left: cell.offset().left - (tooltip.width()/2) + (cell.width()/2),
+	    top: cell.offset().top + cell.height() + 14
+	})
 	tooltip.show()
     }
     return self

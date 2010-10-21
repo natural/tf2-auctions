@@ -1,24 +1,36 @@
 <metal:parts>
     <metal:macro define-macro="listing_large">
-        <table id="${slug}-listings" class="listings-large null">
-            <tbody class="null prototype">
+	<div id="browse-listings">
+	<div class="null listing-wrapper prototype">
+            <table>
+		<tbody>
+                    <tr>
+			<td class="${slug}-view-link">
+			    <div class="m-1 centered text-centered">
+				<a class="small-button">View</a>
+			    </div>
+			    <div class="centered text-centered">
+				<div><img src="" class="listing-avatar" /></div>
+				<div><span class="listing-owner"></span></div>
+			    </div>
+			</td>
+			<td>
+			    <strong>&nbsp;Items:</strong>
+			    <metal:wrapper>
+				<metal:display use-macro="context.organizer_parts.macros.item_display" />
+			    </metal:wrapper>
+			</td>
+		    </tr>
+	            <tr>
+			<td colspan="2">
+			    <strong>Description:</strong>
+			    <span class="listing-description"></span>
+			</td>
+                    </tr>
 
-	        <tr>
-                    <td>
-			<strong>Items:</strong>
-			<table class="${slug}-listing-items"><tr></tr></table>
-                    </td>
-		    <td class="view-link">
-			<a class="button">View</a>
-		    </td>
-                </tr>
-                <tr>
-	            <td colspan="2">
-			<strong class="${slug}-listing-description"></strong>
-		    </td>
-		</tr>
-
-            </tbody>
-        </table>
+		</tbody>
+            </table>
+	</div>
+	</div>
     </metal:macro>
 </metal:parts>

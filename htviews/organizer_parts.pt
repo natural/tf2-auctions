@@ -1,6 +1,21 @@
 <metal:organizers>
 
 
+<div metal:define-macro="item_display">
+    <table class="centered chooser">
+        <tbody>
+	    <metal:define tal:define="rows rows | 1; cols cols | 10">
+		<metal:loop tal:repeat="row range(rows)">
+    		    <tr>
+			<metal:loop tal:repeat="col range(cols)"><td class="item-display"><div></div></td></metal:loop>
+		    </tr>
+		</metal:loop>
+	    </metal:define>
+	</tbody>
+    </table>
+</div>
+
+
 <div metal:define-macro="item_chooser" id="chooser-${slug}">
     <table class="centered chooser">
 	<caption><div class="message null"><div class="error" id="chooser-${slug}-error"></div></div></caption>

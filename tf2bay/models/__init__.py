@@ -299,6 +299,7 @@ class Listing(db.Model):
 	""" Encode this instance using only built-in types. """
 	tf = '%a, %d %b %Y %H:%M:%S'
 	return {
+	    'id':self.key().id(),
 	    'owner':PlayerProfile.get_by_user(self.owner).encode_builtin(),
 	    'created':self.created.strftime(tf),
 	    'expires':self.expires.strftime(tf),

@@ -1,0 +1,28 @@
+div.organizer-view {
+background-color:#393431;
+border:none;
+}
+
+
+.listing-wrapper {
+background-color:#2e2b2a;
+border-radius:0.75em; -moz-border-radius:0.75em;
+border:0.25em solid #2E2B2A;
+width:100%;
+margin:0 auto 1em auto;
+}
+
+.listing-wrapper strong {
+font-family:"TF2Build";
+}
+
+div.organizer-view table img.listing-avatar {
+height:24px !important;
+width:24px !important;
+margin:0;
+}
+
+
+div.organizer-view table.chooser td {
+
+}

@@ -31,9 +31,7 @@
 		    <div class="items-view" id="${slug}-min-bid"><table></table></div>
 		</div>
 		<div id="${slug}-auth-bid-wrapper" class="null m-tb-1">
-		    <span class="button bid-button">
-			<a id="${slug}-place-start" href="#">Place Your Bid</a>
-		    </span>
+		    <a class="button bid-button" id="${slug}-place-start" href="#">Place Your Bid</a>
 		</div>
 		<div id="${slug}-login-wrapper" class="null m-tb-1">
 		    <h2>You have to login to place a bid for these items.</h2>
@@ -50,17 +48,19 @@
 		    <div class="centered text-centered m-1">
 			Rating: * * * * *  (96.3% or 17.5/ 100)
                     </div>
-		    <div class="m-1" id="${slug}-owner-links">
-			<ul class="m-1">
-			    <li><img src="/media/img/iconAddFriend.gif" />
+
+		    <div class="owner-links m-1-top" id="${slug}-owner-links">
+			<div class="m-1">
+			    <div><img src="/media/img/iconAddFriend.gif" />
 				<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
-			    </li>
-			    <li><img src="/media/img/iconChat.gif" />
+			    </div>
+			    <div><img src="/media/img/iconChat.gif" />
 				<a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
-			    </li>
-			    <li><a href="#">Other Listings</a></li>
-			</ul>
+			    </div>
+			    <div><a href="#">Other Listings</a></div>
+			</div>
 		    </div>
+
 		    <div id="${slug}-owner-controls" class="null centered m-tb-1">
 			<div class="m-1">You own this listing, so you may cancel it:</div>
 			<div class="centered text-centered" id="${slug}-cancel-prompt">

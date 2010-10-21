@@ -38,7 +38,7 @@ label { display:block; font-family:"TF2Build"; }
 .null { display:none; }
 .text-centered { text-align:center; }
 
-.button {
+.button, .small-button {
 font-family:"TF2Build";
 background-color:#766b5e;
 border-bottom:none !important;
@@ -46,17 +46,23 @@ border-radius:0.25em; -moz-border-radius:0.25em;
 color:#ece3cb;
 height:1.5em;
 line-height:1.5em;
-padding:0.5em 0.75em 0.5em 0.75em;
+padding:0.6em 0.75em 0.5em 0.75em;
 text-align:center;
 vertical-align:middle;
 white-space:nowrap !important;
 }
 
-.button:hover {
+.button:hover, .small-button:hover {
 background-color:#5b7a8c;
 color:#ece3cb;
 }
 
+.small-button {
+height:1em;
+line-height:1em;
+padding:0.35em 0.5em 0.25em 0.5em;
+font-size:90%
+}
 
 .big-button {
 background-color:#9a8b6b;
@@ -133,8 +139,8 @@ div.items-view table td div,
 div.organizer-view table.chooser td div,
 div.organizer-view table.backpack td div,
 div.organizer-view table.unplaced td div {
-width:4em !important;
 height:4em !important;
+width:100% !important;
 }
 
 div.organizer-view .cannot-trade {
@@ -516,6 +522,7 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 padding-top:0.5em;
 }
 
+
 .p-tb-1 {
 padding-top:0.5em;
 padding-bottom:0.5em;
@@ -562,16 +569,18 @@ margin-left:1em;
 margin-right:1em;
 }
 
+.owner-links,
 #filters {
 font-family:"TF2Build";
 margin:0.5em auto 0.5em auto;
-width:90%;
 }
 
+.owner-links a,
 #filters a {
 border-bottom:1px solid;
 }
 
+.owner-links a:hover,
 #filters a:hover {
 color:#c8503c;
 border-bottom:none;
@@ -580,11 +589,10 @@ border-bottom:none;
 
 .listings-large {
 width:100%;
-margin-top:1em;
 }
 
 .listings-large tbody tr td {
-border:1px dotted red;
+a-border:1px dotted red;
 }
 
 .listings-large td.view-link {
@@ -593,7 +601,7 @@ width:5em;
 }
 
 .listings-large tbody tr:last-child td:last-child {
-border:1px solid blue;
+a-border:1px solid blue;
 padding-bottom:1em;
 }
 

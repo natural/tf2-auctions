@@ -4,23 +4,23 @@
 </head>
 <body>
     <metal:fill fill-slot="main">
-        <h1 class="message"><span class="hilite"></span>Browse Listings</h1>
-
+        <h1><span class="hilite"></span>Browse Listings</h1>
 	<div id="filters">
-	Filter by category:&nbsp;&nbsp;
+	    Filter by category:&nbsp;&nbsp;
 	    <metal:filters tal:repeat="filt controller.filters()">
 	        <a href="#${filt[0]}">${filt[1]}</a>
 		<metal:dot tal:replace="' &middot; '" tal:condition="not repeat.filt.end" />
 	    </metal:filters>
 	</div>
-	<metal:wrapper tal:define="slug 'browse'">
-	    <metal:include use-macro="context.table_parts.macros.listing_large" />
-	</metal:wrapper>
-
-
-        <div class="centered text-centered">
-        Yo dawg, I heard you like browsers so I put a browser in your
-        browser so you can browse while you're browsin!
+	<div class="organizer-view">
+	    <h2 class="null" id="browse-no-listings"></h2>
+	    <metal:wrapper tal:define="slug 'browse'">
+		<metal:include use-macro="context.table_parts.macros.listing_large" />
+	    </metal:wrapper>
+	</div>
+        <div class="centered text-centered m-t-1">
+            Yo dawg, I heard you like browsers so I put a browser in
+            your browser so you can browse while you're browsin!
         </div>
     </metal:fill>
 </body>

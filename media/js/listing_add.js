@@ -156,18 +156,24 @@ var showMinBid = function() {
         } catch (e) {}
     }
     var unhoverMinBidChoice = function(e) {
-	tipTool.hide(e)
+	//tipTool.hide(e)
 	$(this).removeClass('selected-delete')
     }
     var removeMinBidChoice = function(e) {
 	$('img', this).fadeOut().remove()
-	$(this).removeClass('selected-delete') // MARK
+	$(this).removeClass('selected selected-delete')
 	minTool.chooser.updateCount()
-	//window.setTimeout(, 1000)
     }
-
+    var copyToMinbidChooser = function(e) {
+	var source = $(event.target)
+	var target = $("#chooser-add-listing-min-bid td div:empty").first()
+	if (!target.length) { return }
+	target.prepend(source.clone())
+	minTool.chooser.updateCount()
+    }
+    //$('#backpack-mb td div img').dblclick(copyToMinbidChooser)
     $('#chooser-add-listing-min-bid td').hover(hoverMinBidChoice, unhoverMinBidChoice)
-    $('#chooser-add-listing-min-bid td').click(removeMinBidChoice)
+    $('#chooser-add-listing-min-bid td').dblclick(removeMinBidChoice)
     $('#add-listing-min-bid-show').slideUp(750)
     $('#add-listing-min-bid-wrapper').fadeIn('slow')
     return false
@@ -199,20 +205,9 @@ var maybeMoveToChooser = function(event) {
 }
 
 
-var listingsUids = function(src) {
-    var uids = {}
-    $.each(src, function(idx, listing) {
-	$.each(listing.items, function(i, item) {
-	    uids[item.uniqueid] = item
-	})
-    })
-    return uids
-}
-
-
 var backpackReady = function(backpack, listings, profile) {
     var count = backpack.length // count - count_untradable_items - count_my_listing_items
-    var addTool = new BackpackListingTool(backpack, listingsUids(listings))
+    var addTool = new BackpackListingTool(backpack, listingItemsUids(listings))
     var schema = new SchemaTool()
     var tipTool = new TooltipView(schema)
     var hoverItem = function(e) {
@@ -225,7 +220,7 @@ var backpackReady = function(backpack, listings, profile) {
         } catch (e) {}
     }
     var unhoverItem = function(e) {
-        tipTool.hide(e)
+        //tipTool.hide(e)
         $(this).removeClass('outline')
     }
     var msg = (count > 0) ? "You've got {0} item{1} to auction.".format(count, (count==1?'':'s')) : "Your backpack is empty!"
@@ -262,6 +257,7 @@ var schemaReady = function(schema) {
     smallMsg('Loading your profile...')
     new AuthProfileLoader({success: profileReady})
 }
+
 
 
 $(document).ready(function() {
