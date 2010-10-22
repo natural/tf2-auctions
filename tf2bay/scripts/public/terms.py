@@ -3,7 +3,7 @@
 from tf2bay.lib import template_main
 
 
-main = template_main('profile.pt', related_css='profile.css', related_js='profile.js')
+main = template_main('terms.pt')
 
 
 if __name__ == '__main__':

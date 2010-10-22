@@ -168,6 +168,7 @@ var SchemaTool = function() {
         var img = function(url) { return makeImg({src:url, width:64, height:64}) }
         $('.defindex-lazy').each(function(index, tag) {
             var data = $.parseJSON($(tag).text())
+	    if (!data) { return }
             if (typeof(data) == 'object') {
                 var defindex = data.defindex
 	    } else {

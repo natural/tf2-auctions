@@ -68,9 +68,22 @@
 			</metal:settings>
 		    </div>
 		</div>
+
+		<div class="centered m-t-2">
+                    <label for="" id="add-listing-terms-desc">Site Rules, Terms and Conditions:</label>
+ 		    <div class="message null">
+			<div class="error" id="add-listing-terms-error"></div>
+		    </div>
+		    <div class="m-t-05">
+			<input type="checkbox" id="add-listing-terms" />
+			I Agree to follow the Site Rules and Terms of Use.
+                        <span><a href="#" id="add-listing-show-terms">(Click here to show them)</a></span>
+		    </div>
+                </div>
+
 	    </div>
 
-	    <div id="add-listing-buttons" class="centered text-centered m-1">
+	    <div id="add-listing-buttons" class="centered text-centered m-2">
 		<span class="submit button m-right-05">
 		    <a href="#" id="add-listing-submit">OK, Post It</a>
 		</span>
@@ -92,6 +105,9 @@
 
 	</div>
 
+	<div id="terms-dialog" class="null">
+	    rules, terms, etc.  fetch via ajax, yo.
+       </div>
     </metal:main>
 </body>
 </html>

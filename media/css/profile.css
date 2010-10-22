@@ -1,0 +1,13 @@
+#profile-badge {
+position:absolute;
+right:0;
+top:0
+
+
+background-color:#3C352E;
+border-radius:0.75em; -moz-border-radius:0.75em;
+border:0.25em solid #766b5e;
+padding:0.5em 0.25em 1em 0.25em;
+color:#ece3cb;
+
+}

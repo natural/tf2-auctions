@@ -20,7 +20,7 @@ var addListing = function(listing, clone) {
 
     var next = 1
     $.each(listing.items, function(index, item) {
-	$('.item-display:nth-child(' + next + ') div', clone).append( makeCell($.toJSON(item) ))
+	$('.item-display:nth-child(' + next + ') div', clone).append( $.toJSON(item) )
 	next += 1
     })
     $('.browse-view-link a', clone).attr('href', '/listing/'+listing.id)

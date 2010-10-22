@@ -7,7 +7,9 @@
 	    <metal:define tal:define="rows rows | 1; cols cols | 10">
 		<metal:loop tal:repeat="row range(rows)">
     		    <tr>
-			<metal:loop tal:repeat="col range(cols)"><td class="item-display"><div></div></td></metal:loop>
+			<metal:loop tal:repeat="col range(cols)">
+			    <td class="item-display"><div class="defindex-lazy"></div></td>
+			</metal:loop>
 		    </tr>
 		</metal:loop>
 	    </metal:define>

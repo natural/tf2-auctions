@@ -42,26 +42,33 @@ var listingsOkay = function(listings) {
 }
 
 
-var playerListingsOkay = function(listings) {
+var listingsReady = function(listings) {
     smallMsg('Listings loaded.')
     $$('listings-title').text('Listings')
     $$('listings-wrapper').slideDown()
 }
 
-var playerListingsError = function(request, status, error) {
+var listingsError = function(request, status, error) {
 }
 
-var playerBidsOkay = function(bids) {
+var bidsReady = function(bids) {
     smallMsg('Bids loaded.').fadeOut(1000)
     $$('bids-title').text('Bids')
     $$('bids-wrapper').slideDown()
 }
 
-var playerBidsError = function(request, status, error) {
+var bidsError = function(request, status, error) {
 }
 
+
 var playerProfileOkay = function(profile) {
+    setTitle(profile.personaname)
+    $$('title').text(profile.personaname)
+    $$('avatar').attr('src', profile.avatarfull)
+    $$('badge').slideDown()
+    smallMsg().fadeAway()
 }
+
 
 var playerProfileError = function(request, status, error) {
     smallMsg().fadeAway()
@@ -69,25 +76,32 @@ var playerProfileError = function(request, status, error) {
 
 
 var ownProfileOkay = function(profile) {
-    showProfile(profile)
     var id64 = id64View()
+    showProfile(profile)
     if (id64 != profile.id64) {
+	// signed in, but viewing someone else's profile, so we load
+	// that also:
 	smallMsg('Loading profile...')
 	new ProfileLoader({suffix: id64, success: playerProfileOkay, error: playerProfileError})
     } else {
-	var name = profile['personaname']
-	setTitle(name)
-	new ListingsLoader({suffix: id64, success: playerListingsOkay, error: playerListingsError})
-	smallMsg('Loading bids...')
-	new BidsLoader({suffix: id64, success: playerBidsOkay, error: playerBidsError})
+	// this is them:
+	playerProfileOkay(profile)
+	$$('is-you').text('This is you!').slideDown()
     }
+    new ListingsLoader({suffix: id64, success: listingsReady, error: listingsError})
+    new BidsLoader({suffix: id64, success: bidsReady, error: bidsError})
+    smallMsg('Loading bids...')
 }
 
 
 var ownProfileError = function(request, status, error) {
+    var id64 = id64View()
     if (request.status==401) {
 	// not logged in
-	smallMsg('').fadeAway()
+	smallMsg('Loading profile...')
+	new ProfileLoader({suffix: id64, success: playerProfileOkay, error: playerProfileError})
+	new ListingsLoader({suffix: id64, success: listingsReady, error: listingsError})
+	new BidsLoader({suffix: id64, success: bidsReady, error: bidsError})
     }
 }
 
