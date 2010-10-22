@@ -8,7 +8,7 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
-from tf2bay.lib import json, user_steam_id
+from tf2bay.lib import json, user_steam_id, schematools
 from tf2bay.models.proxyutils import fetch
 
 
@@ -161,15 +161,17 @@ class Listing(db.Model):
     min_bid = db.ListProperty(long, 'Minimum Bid')
     description = db.StringProperty('Description', default='', multiline=True)
 
-    ## non-normalized:  sequence uniqueids for the items in this listing
-    # TODO: is this needed now that there's a 'status' property on ListingItem??
-    #uniqueids = db.ListProperty(long, 'Unique IDs', indexed=True)
-    ## non-normalized:  sequence defindexes for the items in this listing
-    #defindexes = db.ListProperty(long, 'Def Index', indexed=True)
-
     ## non-normalized:  listing status and reason
     status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
+
+    ## non-normalized: specific categories for fast searches
+    category_craft_bar = db.BooleanProperty(indexed=True, default=False)
+    category_craft_token = db.BooleanProperty(indexed=True, default=False)
+    category_hat = db.BooleanProperty(indexed=True, default=False)
+    category_supply_crate = db.BooleanProperty(indexed=True, default=False)
+    category_tool = db.BooleanProperty(indexed=True, default=False)
+    category_weapon = db.BooleanProperty(indexed=True, default=False)
 
     def set_status(self, status, reason):
 	items = self.items
@@ -247,6 +249,12 @@ class Listing(db.Model):
 	    expires=expires,
 	    min_bid=min_bid,
 	    description=desc)
+
+	## 4a.  derive categories
+	cats = schematools.item_categories([i for u, i in item_ids], schema)
+	for cat in schematools.known_categories:
+	    if cat in cats:
+		setattr(listing, 'category_%s' % cat, True)
 	key = listing.put()
 
 	# 5. assign the items
@@ -366,3 +374,30 @@ class Feedback(db.Model):
 	pass
 
 
+
+
+category_filters = (
+    ('new', 'New',
+     lambda q: q.filter('created > ', datetime.now() - timedelta(hours=24))),
+
+    ('ending-soon', 'Ending Soon',
+     lambda q: q.filter('expires < ', datetime.now() - timedelta(hours=24))),
+
+    ('hat', 'Hats',
+     lambda q: q.filter('category_hat = ', True)),
+
+    ('weapon', 'Weapons',
+     lambda q: q.filter('category_weapon = ', True)),
+
+    ('tool', 'Tools',
+     lambda q: q.filter('category_tool = ', True)),
+
+    ('craft_bar', 'Metal',
+     lambda q: q.filter('category_craft_bar = ', True)),
+
+    ('craft_token', 'Tokens',
+     lambda q: q.filter('category_craft_token = ', True)),
+
+    ('supply_crate', 'Crates',
+     lambda q: q.filter('category_supply_crate = ', True)),
+)

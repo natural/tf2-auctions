@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from tf2bay.lib import View
+from tf2bay.models import category_filters
 
 
 class ListingBrowserView(View):
@@ -9,14 +10,7 @@ class ListingBrowserView(View):
     related_js = ('browse.js', )
 
     def filters(self):
-	return (
-	    ('new', 'New'),
-	    ('ending-soon', 'Ending Soon'),
-	    ('popular', 'Popular'),
-	    ('hats', 'Hats'),
-	    ('weapons', 'Weapons'),
-	    ('tools', 'Tools'),
-	)
+	return [(key, name) for key, name, filt in category_filters]
 
 main = View.make_main(ListingBrowserView)
 

@@ -1,15 +1,22 @@
 var $$ = function(suffix, next) { return $('#browse-'+suffix, next) } // slug defined in browse.pt
+var searchOptions = {cursor:null, filters:[]}
+
 
 
 
 var categorySelected = function() {
-    var refreshReady = function(listings) {
-	$$('listings tbody:gt(0)').fadeOut('slow')
-	listingsReady(listings)
+    var searchOkay = function(results) {
+	//$$('listings tbody:gt(0)').fadeOut()
+	listingsReady(results)
     }
-    var search = $(this).attr('href').replace('#', '?f=')
-    new SearchLoader({success:refreshReady, suffix:search})
-    return false
+    var qs = $("#filters input[type='checkbox']").map(function(i,v) {
+	return '{0}={1}'.format( $(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
+    })
+    new SearchLoader({
+	success: searchOkay,
+	suffix: '?' + qs.toArray().join('&')
+    })
+    //return false
 }
 
 var addListing = function(listing, clone) {
@@ -30,16 +37,21 @@ var addListing = function(listing, clone) {
 }
 
 
-var listingsReady = function(listings) {
-    if (listings.length) {
+var listingsReady = function(search) {
+    $('div.listing-wrapper table').slideUp('fast').delay(500)
+    $('div.listing-wrapper').queue(function() { $(this).remove() })
+    if (search.listings.length) {
 	var proto = $$('listings div.prototype')
-	$.each(listings, function(idx, listing) { addListing(listing, proto.clone()) } )
+	$.each(search.listings, function(idx, listing) {
+	    var clone = proto.clone().addClass('listing-wrapper')
+	    addListing(listing, clone)
+	})
         new SchemaTool().setImages()
     } else {
 	$$('no-listings').text('Nothing found.  You should add a listing.').show()
     }
     smallMsg().fadeAway()
-    $$('listings').slideDown()
+    $$('listings').slideDown('fast')
 }
 
 
@@ -52,7 +64,7 @@ var schemaReady = function(schema) {
 
 $(document).ready(function() {
     console.log('browse.js ready')
-    $("#filters a").click(categorySelected)
+    $("#filters input[type='checkbox']").click(categorySelected)
     smallMsg('Loading schema...')
     new SchemaLoader({success: schemaReady})
 })

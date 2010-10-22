@@ -8,8 +8,7 @@
 	<div id="filters">
 	    Filter by category:&nbsp;&nbsp;
 	    <metal:filters tal:repeat="filt controller.filters()">
-	        <a href="#${filt[0]}">${filt[1]}</a>
-		<metal:dot tal:replace="' &middot; '" tal:condition="not repeat.filt.end" />
+	        <input type="checkbox" name="${filt[0]}" />&nbsp;${filt[1]}&nbsp;&nbsp;
 	    </metal:filters>
 	</div>
 	<div class="organizer-view">

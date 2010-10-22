@@ -1,7 +1,7 @@
 <metal:parts>
     <metal:macro define-macro="listing_large">
 	<div id="browse-listings">
-	<div class="null listing-wrapper prototype">
+	<div class="null prototype">
             <table>
 		<tbody>
                     <tr>

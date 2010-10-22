@@ -14,7 +14,7 @@ from tf2bay import template_dir
 
 
 def is_devel(environ):
-    return environ['SERVER_SOFTWARE'].startswith('Dev')
+    return environ.get('SERVER_SOFTWARE', '').startswith('Dev')
 
 
 def is_prod(environ):
@@ -179,4 +179,3 @@ def basic_view(template_name, related_css=None, related_js=None):
 	    related_js = (related_js, )
         Basic.related_js = related_js
     return Basic
-
