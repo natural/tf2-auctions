@@ -5,22 +5,27 @@ from tf2bay.lib import ApiHandler
 from tf2bay.models import Listing, category_filters
 
 
-
 class Search(ApiHandler):
+    max_fetch = 20
+
     def get(self):
 	qs = parse_qs(self.request.query_string)
-	q = Listing.all().filter('status = ', 'active').order('-created')
+	mf = self.max_fetch
 
-	for key, title, filt in category_filters:
-	    if qs.get(key, [''])[0] == 'on':
-		filt(q)
-
-	## get offset, count, etc
-	listings = q.fetch(limit=100)
-	results = {
-	    'listings' : [n.encode_builtin() for n in listings],
-	    'cursor' : q.cursor(),
-	    'count' : q.count(101),
+	if 'c' in qs:
+	    #results = cursor search
+	    pass
+	else:
+	    q = Listing.all().filter('status = ', 'active')
+	    for key, title, filt in category_filters:
+		if qs.get(key, [''])[0] == 'on':
+		    filt(q)
+	    listings = q.fetch(limit=mf+1)
+	    listings = [n.encode_builtin() for n in listings][0:mf]
+	    results = {
+		'listings' : listings,
+		'cursor' : q.cursor(),
+		'more' : len(listings)==mf+1,
 	    }
 	self.write_json(results)
 

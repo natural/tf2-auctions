@@ -7,7 +7,7 @@ from tf2bay.models import category_filters
 class ListingBrowserView(View):
     template_name = 'browse.pt'
     related_css = ('browse.css', )
-    related_js = ('browse.js', )
+    related_js = ('browse.js', 'backpack.js', )
 
     def filters(self):
 	return [(key, name) for key, name, filt in category_filters]

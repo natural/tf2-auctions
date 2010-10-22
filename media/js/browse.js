@@ -52,13 +52,21 @@ var listingsReady = function(search) {
     }
     smallMsg().fadeAway()
     $$('listings').slideDown('fast')
+
+
 }
 
 
 var schemaReady = function(schema) {
-    var search = window.location.search || '?f=new'
+    var st = new SchemaTool()
+    var tt = new TooltipView(st)
+    var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
+    var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
+    $('div.organizer-view td.item-display').live('mouseover', hoverItem)
+    $('div.organizer-view td.item-display').live('mouseout', unhoverItem)
+
     smallMsg('Loading results...')
-    new SearchLoader({success:listingsReady, suffix:search})
+    new SearchLoader({success:listingsReady})
 }
 
 
