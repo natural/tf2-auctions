@@ -32,4 +32,37 @@
 	</div>
 	</div>
     </metal:macro>
+
+    <metal:macro define-macro="listing_bids">
+	<div class="null prototype">
+            <table class="bid-table w100">
+		<tbody>
+                    <tr>
+			<td class="${slug}-view-link" rowspan="2">
+			    <div class="centered text-centered ${slug}-view-summary">
+				<div style="white-space:nowrap;">
+				    <img src="" class="bid-avatar" />
+				    <span class="bid-owner"></span>
+				</div>
+			    </div>
+			</td>
+			<td class="w88">
+			    <strong>&nbsp;Bid Items:</strong>
+			    <metal:wrapper>
+				<metal:display use-macro="context.organizer_parts.macros.item_display" />
+			    </metal:wrapper>
+			</td>
+		    </tr>
+	            <tr>
+			<td>
+			    <strong>Message:</strong>
+			    <div class="bid-message"></div>
+			</td>
+                    </tr>
+		</tbody>
+            </table>
+	</div>
+    </metal:macro>
+
+
 </metal:parts>

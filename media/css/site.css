@@ -445,6 +445,9 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .mtb1 { margin-top:1em; margin-bottom:1em; }
 .pt05 { padding-top:0.5em; }
 
+.w12  { width:12%; }
+.w88  { width:88%; }
+.w100 { width:100%; }
 
 .owner-links, #filters {
 font-family:"TF2Build";

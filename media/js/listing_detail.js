@@ -2,11 +2,11 @@
 var $$ = function(suffix, next) { return $('#{0}-{1}'.format(idSlug, suffix), next) }
 var listingId = function() { return window.location.pathname.split('/').pop() }
 
+
 function updateTimeLeft(expires, selector) {
     expires = new Date(expires)
     return function() {
-	var now = new Date()
-	var delta = expires.getTime() - now.getTime()
+	var now = new Date(), delta = expires.getTime() - now.getTime()
 	if (delta < 0) {
 	    selector.text('Expired')
 	} else {
@@ -29,9 +29,7 @@ function updateTimeLeft(expires, selector) {
 }
 
 
-var submitCancel = function() {
-    console.log('submit cancel')
-    var id = listingId()
+var sendListingCancel = function() {
     var cancelOkay = function(results) {
 	console.log('cancel success', results)
 	$$('status').text('Cancelled')
@@ -44,23 +42,23 @@ var submitCancel = function() {
     $.ajax({
 	url: '/api/v1/auth/cancel-listing',
 	type: 'POST',
-	data: $.toJSON({id:id}),
+	data: $.toJSON({id: listingId()}),
 	dataType: 'json',
 	success: cancelOkay,
 	error: cancelError
     })
 }
 
-var cancelCancel = function() {
+var rescindListingCancel = function() {
     $$('cancel-prompt').fadeIn()
     $$('cancel-confirm').fadeOut()
 }
 
-var showConfirmCancel = function(e) {
+var showCancelConfirm = function(e) {
     $$('cancel-prompt').fadeOut()
     $$('cancel-confirm').fadeIn()
-    $$('cancel-submit').click(submitCancel)
-    $$('cancel-cancel').click(cancelCancel)
+    $$('cancel-submit').click(sendListingCancel)
+    $$('cancel-cancel').click(rescindListingCancel)
     return false
 }
 
@@ -74,7 +72,6 @@ var moveToChooser = function(e) {
     // update counts
 }
 
-
 var moveToBackpack = function(e) {
     var source = $(event.target)
     var target = source.data('original-cell')
@@ -83,8 +80,6 @@ var moveToBackpack = function(e) {
 	// update counts
     }
 }
-
-
 
 
 var backpackReady = function(backpack, listings, profile) {
@@ -97,15 +92,17 @@ var backpackReady = function(backpack, listings, profile) {
 	GITEM = item
 	console.log('item copied:', item)
     }
+
     var bc = new BackpackChooser(
 	{backpack:backpack, uids:listingItemsUids(listings),
 	 backpackSlug:'bid', chooserSlug:'add-bid-item',
 	 afterDropMove: itemMoved,
 	 help: 'Drag items from your backpack to the bid area below.'})
-
     bc.init()
+
     var st = new SchemaTool()
     var tt = new TooltipView(st)
+
     var hoverItem = function(e) {
         tt.show(e)
         try {
@@ -115,10 +112,12 @@ var backpackReady = function(backpack, listings, profile) {
                 }
         } catch (e) {}
     }
+
     var unhoverItem = function(e) {
         tt.hide(e)
         $(this).removeClass('outline')
     }
+
     var cancelNewBid = function(event) {
 	$$('place-bid-wrapper').slideUp('slow')
 	$('body').scrollTopAni()
@@ -202,14 +201,9 @@ var backpackReady = function(backpack, listings, profile) {
 	return false
     }
 
-    $$('bid-cancel').click(cancelNewBid)
-    $$('bid-submit').click(submitNewBid)
-
-    $('div.organizer-view td').hover(hoverItem, unhoverItem)
     var width = $('#chooser-add-bid-item tbody').width()
     $('#add-bid-fields').width(width)
     $('#add-bid-fields textarea').width(width).height(width/4).text()
-
     $.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
 	$('#{0}'.format(value)).text( $('#{0}-default'.format(value)).text() )
 	$('#{0}'.format(value)).focusin(function() {
@@ -217,6 +211,9 @@ var backpackReady = function(backpack, listings, profile) {
 	    if (area.text() == $('#{0}-default'.format(area.context.id)).text()) { area.text('') }
 	})
     })
+    $$('bid-cancel').click(cancelNewBid)
+    $$('bid-submit').click(submitNewBid)
+    $('div.organizer-view td').hover(hoverItem, unhoverItem)
     setTimeout(function() { $$('place-bid-wrapper h1').scrollTopAni() }, 500)
 }
 
@@ -249,7 +246,7 @@ var profileReady = function(profile, listing) {
 	$$('owner-links').slideUp()
 	if (listing.status == 'active') {
             $$('owner-controls').slideDown()
-	    $$('cancel-show-confirm').click(showConfirmCancel)
+	    $$('cancel-show-confirm').click(showCancelConfirm)
 	}
     } else {
 	if (listing.status == 'active') {
@@ -311,9 +308,19 @@ var listingReady = function(id, listing) {
         $$('items table tr:last').append(makeCell($.toJSON(item)))
         $$('items table tr td:last div').data('node', item)
     })
+    $.each(listing.bids, function(idx, bid) {
+	var clone = $$('bids .prototype').clone()
+	clone.removeClass('null prototype')
+	$$('bids').prepend(clone)
+	$.each(bid.items, function(i, item) {
+	    $('td.item-display:nth-child({0}) div'.format(i+1), clone).text( $.toJSON(item) )
+	    $('td.item-display:nth-child({0}) div'.format(i+1), clone).data('node', item)
+	})
+    })
     st.setImages()
     $$('items td').mouseenter(tt.show).mouseleave(tt.hide)
     $$('min-bid td').mouseenter(tt.show).mouseleave(tt.hide)
+    $$('bids td').mouseenter(tt.show).mouseleave(tt.hide)
     $$('title').html('Listing ' + id)
     $$('bidcount').text(listing.bid_count ? ('Bids (' + listing.bid_count + ')') : 'No Bids')
     $$('title-wrapper').fadeIn()

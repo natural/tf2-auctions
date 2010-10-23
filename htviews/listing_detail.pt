@@ -13,7 +13,7 @@
 	<script type="text/javascript">var idSlug="${slug}"</script>
 	<h1 id="${slug}-title-wrapper" class="null mb05">
 	    <span class="hilite"></span>
-	    <span id="${slug}-title"></span> - <span id="${slug}-status"></span>
+	    <span id="${slug}-title"></span> (<span id="${slug}-status"></span>)
 	</h1>
 
 	<div id="${slug}-content" class="null centered detail-view">
@@ -92,7 +92,9 @@
 	<div id="${slug}-existing-bids-wrapper" class="null">
 	    <div id="${slug}-existing-bids">
 		<h1 class="pt05"><span class="hilite"></span><span id="${slug}-bidcount"></span></h1>
-		<div id="${slug}-bids"></div>
+		<div id="${slug}-bids">
+		    <metal:include use-macro="context.table_parts.macros.listing_bids" />
+		</div>
 	    </div>
 	</div>
 
