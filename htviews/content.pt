@@ -47,7 +47,7 @@
 		    <span id="avatar"></span>
 		    <a class="big-button" href="/profile/${user.nickname()}#bids">My Bids</a>
 		    <a class="big-button" href="/profile/${user.nickname()}#listings">My Listings</a>
-		    <a class="big-button m-r-1" href="/listing/add">Add Listing</a>
+		    <a class="big-button mr1" href="/listing/add">Add Listing</a>
 		</metal:buttons>
 		<a class="button" href="/browse">Browse</a>
 		<metal:button tal:condition="not user">

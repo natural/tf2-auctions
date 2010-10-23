@@ -17,7 +17,7 @@
 		<metal:include use-macro="context.table_parts.macros.listing_large" />
 	    </metal:wrapper>
 	</div>
-        <div class="centered text-centered m-t-1">
+        <div class="centered text-centered mt1">
             Yo dawg, I heard you like browsers so I put a browser in
             your browser so you can browse while you're browsin!
         </div>

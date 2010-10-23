@@ -7,12 +7,12 @@
 	<div id="profile-badge" class="null">
 	    <div class="centered text-centered">
 		<h2 class="null" id="profile-is-you"></h2>
-		<img id="profile-avatar" class="m-1" />
-		<h1 class="m-1" id="profile-title"></h1>
+		<img id="profile-avatar" class="m1" />
+		<h1 class="m1" id="profile-title"></h1>
 	    </div>
 	</div>
 	<div id="profile-bids-wrapper" class="null">
-	    <h1 class="m-t-1"><a name="bids"></a>
+	    <h1 class="mt1"><a name="bids"></a>
 		<span class="hilite"></span><span id="profile-bids-title"></span>
 	    </h1>
 	    <metal:wrapper tal:define="slug 'profile-bids'">
@@ -20,7 +20,7 @@
             </metal:wrapper>
 	</div>
 	<div id="profile-listings-wrapper" class="null">
-	    <h1 class="m-t-1"><a name="listings"></a>
+	    <h1 class="mt1"><a name="listings"></a>
 		<span class="hilite"></span><span id="profile-listings-title"></span>
 	    </h1>
 	    <metal:wrapper tal:define="slug 'profile-listings'">

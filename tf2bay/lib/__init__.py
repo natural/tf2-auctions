@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from cgi import parse_qs
 from logging import info
 from os import environ
 from re import match
+from urllib import quote as quote_url
 
 from google.appengine.api import users
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication, Request, Response
@@ -104,7 +106,13 @@ class View(LocalHandler):
     def is_devel(self):
 	return is_devel(self.request.environ)
 
-    def login_url(self, dest='/profile-update?ref=steam', provider='steamcommunity.com/openid'):
+    def login_url(self, dest='/profile-update', provider='steamcommunity.com/openid'):
+	next_url = parse_qs(self.request.query_string).get('next', [''])[0]
+	if next_url:
+	    ## we're not encoding for for security, just ease of
+	    ## transmission -- the base64 slug is more easily
+	    ## recognized by the login redirector.
+	    dest += '/' + next_url.encode('base64')
 	return users.create_login_url(dest_url=dest, federated_identity=provider)
 
     def logout_url(self):

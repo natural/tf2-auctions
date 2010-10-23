@@ -14,7 +14,7 @@
 </head>
 <body>
     <metal:main fill-slot="main">
-	<h1 class="m-t-1 m-b-05"><span class="hilite"></span>Add a New Listing</h1>
+	<h1 class="mt1 mb05"><span class="hilite"></span>Add a New Listing</h1>
 	<div class="organizer-view null" id="add-listing-own-backpack">
 	    <metal:settings tal:define="include_unplaced True; slug 'a'">
 		<metal:include use-macro="context.organizer_parts.macros.item_backpack" />
@@ -69,12 +69,12 @@
 		    </div>
 		</div>
 
-		<div class="centered m-t-2">
+		<div class="centered mt2">
                     <label for="" id="add-listing-terms-desc">Site Rules, Terms and Conditions:</label>
  		    <div class="message null">
 			<div class="error" id="add-listing-terms-error"></div>
 		    </div>
-		    <div class="m-t-05">
+		    <div class="mt05">
 			<input type="checkbox" id="add-listing-terms" />
 			I Agree to follow the Site Rules and Terms of Use.
                         <span><a href="#" id="add-listing-show-terms">(Click here to show them)</a></span>
@@ -83,8 +83,8 @@
 
 	    </div>
 
-	    <div id="add-listing-buttons" class="centered text-centered m-2">
-		<span class="submit button m-right-05">
+	    <div id="add-listing-buttons" class="centered text-centered m2">
+		<span class="submit button mr05">
 		    <a href="#" id="add-listing-submit">OK, Post It</a>
 		</span>
 		<span class="cancel button">
@@ -93,13 +93,13 @@
 	    </div>
 
 	    <div id="add-listing-response" class="centered text-centered">
-		<div id="add-listing-working" class="m-1 null"></div>
-		<div id="add-listing-success" class="m-1 null">
-		    <span class="button m-right-05">
+		<div id="add-listing-working" class="m1 null"></div>
+		<div id="add-listing-success" class="m1 null">
+		    <span class="button mr05">
 			<a href="#" id="add-listing-success-view">View Listing</a>
 		    </span>
 		</div>
-		<div id="add-listing-error" class="error m-1 null"></div>
+		<div id="add-listing-error" class="error m1 null"></div>
             </div>
 
 

@@ -5,14 +5,14 @@
 <body>
     <metal:fill fill-slot="main">
 	<div id="login">
-	    <h1 class="message"><span class="hilite"></span>Login</h1>
-	    <p>
-	    Get ready to roll, lil doggie!  Click the link to sign in
-	    with your Steam account.  This site never gets your
-	    username or your password so you're pretty safe - at
-	    least from us.
+	    <h1 class="message"><span class="hilite"></span>Login.  It's Safe.</h1>
+	    <div class="m1">
+		Click the link to sign in
+		with your Steam account.  This site never gets your
+		username or your password so you're pretty safe - at
+		least from us.
 
-	    </p>
+	    </div>
 	    <div  class="login-link">
 	    <a href="${controller.login_url()}">
 		<img src="http://steamcommunity.com/public/images/signinthroughsteam/sits_small.png" />

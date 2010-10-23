@@ -136,9 +136,10 @@ var BidsLoader = makeLoader({
     name: 'BidsLoader'})
 
 
-var SchemaTool = function() {
+var SchemaTool = function(schema) {
     var self = this
-    new SchemaLoader({success: function(schema) {
+
+    self.load = function(schema) {
         self.schema = schema['result']
         self._definitions = {}, self._attrByName = {}, self._attrById = {}
 	self.itemDefs = lazy(function() {
@@ -159,7 +160,7 @@ var SchemaTool = function() {
             })
 	    return self._attrById
 	})
-    }})
+    }
 
     self.setImages = function() {
         // replace any items on the page that have the "schema
@@ -226,8 +227,11 @@ var SchemaTool = function() {
 	    })
         return can
     }
-
-
+    if (typeof(schema) == 'undefined') {
+	new SchemaLoader({success: self.load})
+    } else {
+	self.load(schema)
+    }
 }
 
 
@@ -270,5 +274,8 @@ initExtensions(jQuery)
 
 
 $(document).ready(function() {
+    $("a[href='/login']").attr('href', '/login?next=' + encodeURIComponent(window.location.href))
     console.log('tools.js ready')
 })
+
+

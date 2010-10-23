@@ -11,29 +11,29 @@
 <body>
     <div metal:fill-slot="main" tal:define="slug 'listing-detail'">
 	<script type="text/javascript">var idSlug="${slug}"</script>
-	<h1 id="${slug}-title-wrapper" class="null m-b-05">
+	<h1 id="${slug}-title-wrapper" class="null mb05">
 	    <span class="hilite"></span>
 	    <span id="${slug}-title"></span> - <span id="${slug}-status"></span>
 	</h1>
 
 	<div id="${slug}-content" class="null centered detail-view">
 	    <div id="${slug}-left">
-		<div class="m-b-1">
+		<div class="mb1">
 		    <label>Description:</label>
-		    <div class="m-1"><strong id="${slug}-description"></strong></div>
+		    <div class="m1"><strong id="${slug}-description"></strong></div>
 		</div>
 		<div>
 		    <label>Items:</label>
 		    <div class="items-view" id="${slug}-items"><table></table></div>
 		</div>
-		<div class="m-t-1">
+		<div class="mt1">
 		    <label>Minium Bid:</label>
 		    <div class="items-view" id="${slug}-min-bid"><table></table></div>
 		</div>
-		<div id="${slug}-auth-bid-wrapper" class="null m-tb-1">
+		<div id="${slug}-auth-bid-wrapper" class="null mtb1">
 		    <a class="button bid-button" id="${slug}-place-start" href="#">Place Your Bid</a>
 		</div>
-		<div id="${slug}-login-wrapper" class="null m-tb-1">
+		<div id="${slug}-login-wrapper" class="null mtb1">
 		    <h2>You have to login to place a bid for these items.</h2>
 		</div>
             </div>
@@ -42,15 +42,15 @@
 		    <label>Created by
 			<span><a id="${slug}-owner-link" href="#"></a></span>
 		    </label>
-		    <div class="centered text-centered m-1">
+		    <div class="centered text-centered m1">
 			<img class="avatar" id="${slug}-owner-avatar" />
                     </div>
-		    <div class="centered text-centered m-1">
+		    <div class="centered text-centered m1">
 			Rating: * * * * *  (96.3% or 17.5/ 100)
                     </div>
 
-		    <div class="owner-links m-1-top" id="${slug}-owner-links">
-			<div class="m-1">
+		    <div class="owner-links m1-top" id="${slug}-owner-links">
+			<div class="m1">
 			    <div><img src="/media/img/iconAddFriend.gif" />
 				<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
 			    </div>
@@ -61,29 +61,29 @@
 			</div>
 		    </div>
 
-		    <div id="${slug}-owner-controls" class="null centered m-tb-1">
-			<div class="m-1">You own this listing, so you may cancel it:</div>
+		    <div id="${slug}-owner-controls" class="null centered mtb1">
+			<div class="m1">You own this listing, so you may cancel it:</div>
 			<div class="centered text-centered" id="${slug}-cancel-prompt">
 			    <span class="button bid-button"><a href="#" id="${slug}-cancel-show-confirm">Cancel this Listing</a></span>
 			</div>
 			<div class="centered text-centered null" id="${slug}-cancel-confirm">
-			    <label class="m-1">Are you sure you want to cancel this listing?</label>
+			    <label class="m1">Are you sure you want to cancel this listing?</label>
 			    <a href="#" class="button" id="${slug}-cancel-submit">Yes, Do It</a>
 			    <a href="#" class="button" id="${slug}-cancel-cancel">No, Don't</a>
 			</div>
                     </div>
 		</div>
-		<div class="m-tb-1">
+		<div class="mtb1">
 		    <label>Time Left:</label>
-		    <div class="m-l-1"><strong id="${slug}-timeleft">&nbsp;</strong></div>
+		    <div class="ml1"><strong id="${slug}-timeleft">&nbsp;</strong></div>
 		</div>
-		<div class="m-b-1">
+		<div class="mb1">
 		    <label>Expires:</label>
-		    <div class="m-l-1"><strong id="${slug}-expires"></strong></div>
+		    <div class="ml1"><strong id="${slug}-expires"></strong></div>
 		</div>
-		<div class="m-b-1">
+		<div class="mb1">
 		    <label>Created:</label>
-		    <div class="m-l-1"><strong id="${slug}-created"></strong></div>
+		    <div class="ml1"><strong id="${slug}-created"></strong></div>
 		</div>
             </div>
 	    <div class="clear"></div>
@@ -91,7 +91,7 @@
 
 	<div id="${slug}-existing-bids-wrapper" class="null">
 	    <div id="${slug}-existing-bids">
-		<h1 class="p-t-05"><span class="hilite"></span><span id="${slug}-bidcount"></span></h1>
+		<h1 class="pt05"><span class="hilite"></span><span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids"></div>
 	    </div>
 	</div>
@@ -110,8 +110,8 @@
 		<metal:settings tal:define="slug 'add-bid-item'">
 		    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
 		</metal:settings>
-		<div id="${slug}-bid-buttons" class="centered text-centered m-1">
-		    <span class="submit button m-right-05">
+		<div id="${slug}-bid-buttons" class="centered text-centered m1">
+		    <span class="submit button mr05">
 			<a href="#" id="${slug}-bid-submit">Place Bid</a>
 		    </span>
 		    <span class="cancel button">

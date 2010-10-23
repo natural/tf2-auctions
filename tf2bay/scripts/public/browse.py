@@ -12,7 +12,9 @@ class ListingBrowserView(View):
     def filters(self):
 	return [(key, name) for key, name, filt in category_filters]
 
+
 main = View.make_main(ListingBrowserView)
+
 
 if __name__ == '__main__':
     main()

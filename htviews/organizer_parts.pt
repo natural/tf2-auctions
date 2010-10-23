@@ -2,7 +2,7 @@
 
 
 <div metal:define-macro="item_display">
-    <table class="centered chooser">
+    <table class="chooser">
         <tbody>
 	    <metal:define tal:define="rows rows | 1; cols cols | 10">
 		<metal:loop tal:repeat="row range(rows)">
@@ -42,7 +42,7 @@
 	<div></div>
     </div>
     <div id="unplaced-backpack-${slug}" class="null">
-	<label class="centered m-t-1">New Items:</label>
+	<label class="centered mt1">New Items:</label>
 	<table class="centered unplaced">
 	    <tbody>
 		<tr><!-- prototype  -->

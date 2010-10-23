@@ -26,3 +26,54 @@ margin:0;
 div.organizer-view table.chooser td {
 
 }
+
+
+
+.listing-table, .listing-table > tbody >  tr > td {
+border:1px solid blue;
+}
+
+.listing-table {
+border-collapse:collapse;
+border-spacing:0 0;
+}
+
+.listing-table td {
+vertical-align:top;
+padding:0;
+}
+
+.w100 {
+width:100%;
+}
+
+.w12 {
+width:12%;
+}
+
+.w88 {
+width:88%;
+}
+
+.browse-view-link > div {
+}
+
+.browse-view-link a.small-button {
+}
+
+.browse-view-link img {
+vertical-align:middle;
+}
+
+.listing-description {
+margin:1em;
+}
+
+.browse-view-summary {
+border:1px solid red;
+}
+
+.browse-view-summary a.small-button {
+margin-top:1em !important;
+border:1px solid green;
+}

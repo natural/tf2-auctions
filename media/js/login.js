@@ -1,3 +1,3 @@
 $(document).ready(function(){
-    $('a[href=/login]').fadeAway()
+    $('a[href^="/login"]').fadeAway()
 })

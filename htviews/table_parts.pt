@@ -2,19 +2,19 @@
     <metal:macro define-macro="listing_large">
 	<div id="browse-listings">
 	<div class="null prototype">
-            <table>
+            <table class="listing-table w100">
 		<tbody>
                     <tr>
-			<td class="${slug}-view-link">
-			    <div class="m-1 centered text-centered">
+			<td class="${slug}-view-link" rowspan="2">
+			    <div class="centered text-centered ${slug}-view-summary">
 				<a class="small-button">View</a>
-			    </div>
-			    <div class="centered text-centered">
-				<div><img src="" class="listing-avatar" /></div>
-				<div><span class="listing-owner"></span></div>
+				<div style="white-space:nowrap;">
+				    <img src="" class="listing-avatar" />
+				    <span class="listing-owner"></span>
+				</div>
 			    </div>
 			</td>
-			<td>
+			<td class="w88">
 			    <strong>&nbsp;Items:</strong>
 			    <metal:wrapper>
 				<metal:display use-macro="context.organizer_parts.macros.item_display" />
@@ -22,12 +22,11 @@
 			</td>
 		    </tr>
 	            <tr>
-			<td colspan="2">
+			<td>
 			    <strong>Description:</strong>
-			    <span class="listing-description"></span>
+			    <div class="listing-description"></div>
 			</td>
                     </tr>
-
 		</tbody>
             </table>
 	</div>

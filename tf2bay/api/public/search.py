@@ -20,6 +20,7 @@ class Search(ApiHandler):
 	    for key, title, filt in category_filters:
 		if qs.get(key, [''])[0] == 'on':
 		    filt(q)
+	    q.order('-expires')
 	    listings = q.fetch(limit=mf+1)
 	    listings = [n.encode_builtin() for n in listings][0:mf]
 	    results = {

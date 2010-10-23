@@ -7,7 +7,7 @@
 
 	<div id="front-no-auth" class="null">
 	    <h1>Lookin to Trade?</h1>
-	    <div class="m-1">You've gotta login to bid or make listing.</div>
+	    <div class="m1">You've gotta login to bid or make listing.</div>
 
 	    <h3>Players: <span id="front-players"></span></h3>
 	    <h3>Listings: <span id="front-listings"></span></h3>

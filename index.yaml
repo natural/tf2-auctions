@@ -29,7 +29,23 @@ indexes:
 - kind: Listing
   properties:
   - name: category_craft_bar
+  - name: category_supply_crate
+  - name: status
+  - name: expires
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_craft_bar
   - name: category_tool
+  - name: status
+  - name: expires
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_craft_bar
+  - name: category_weapon
   - name: status
   - name: expires
     direction: desc
@@ -84,6 +100,14 @@ indexes:
 - kind: Listing
   properties:
   - name: category_hat
+  - name: category_tool
+  - name: status
+  - name: expires
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_hat
   - name: category_weapon
   - name: status
   - name: created
@@ -108,6 +132,21 @@ indexes:
   properties:
   - name: category_hat
   - name: status
+  - name: created
+    direction: desc
+  - name: expires
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_hat
+  - name: status
+  - name: expires
+
+- kind: Listing
+  properties:
+  - name: category_hat
+  - name: status
   - name: expires
     direction: desc
 
@@ -129,6 +168,14 @@ indexes:
 - kind: Listing
   properties:
   - name: category_supply_crate
+  - name: status
+  - name: expires
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_tool
+  - name: category_weapon
   - name: status
   - name: expires
     direction: desc
@@ -166,6 +213,11 @@ indexes:
   - name: status
   - name: created
     direction: desc
+
+- kind: Listing
+  properties:
+  - name: status
+  - name: expires
 
 - kind: Listing
   properties:

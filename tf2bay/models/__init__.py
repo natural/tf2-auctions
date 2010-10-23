@@ -377,35 +377,36 @@ class Feedback(db.Model):
 
 
 category_filters = (
-    ('new', 'New',
-     lambda q: q.filter('created > ', datetime.now() - timedelta(hours=24)).order('-created')
-     ),
+
+#    ('new', 'New',
+#     lambda q: q.filter('created > ', datetime.now() - timedelta(hours=24)).order('-created')
+#     ),
 
     ('ending-soon', 'Ending Soon',
-     lambda q: q.filter('expires < ', datetime.now() - timedelta(hours=24)).order('-expires')
-     ),
+     lambda q: q.filter('expires < ', datetime.now() - timedelta(hours=24))
+    ),
 
     ('hat', 'Hats',
-     lambda q: q.filter('category_hat = ', True).order('-expires')
+     lambda q: q.filter('category_hat = ', True)
      ),
 
     ('weapon', 'Weapons',
-     lambda q: q.filter('category_weapon = ', True).order('-expires')
+     lambda q: q.filter('category_weapon = ', True)
      ),
 
     ('tool', 'Tools',
-     lambda q: q.filter('category_tool = ', True).order('-expires')
+     lambda q: q.filter('category_tool = ', True)
      ),
 
     ('craft_bar', 'Metal',
-     lambda q: q.filter('category_craft_bar = ', True).order('-expires')
+     lambda q: q.filter('category_craft_bar = ', True)
      ),
 
     ('craft_token', 'Tokens',
-     lambda q: q.filter('category_craft_token = ', True).order('-expires')
+     lambda q: q.filter('category_craft_token = ', True)
      ),
 
     ('supply_crate', 'Crates',
-     lambda q: q.filter('category_supply_crate = ', True).order('-expires')
+     lambda q: q.filter('category_supply_crate = ', True)
      ),
 )

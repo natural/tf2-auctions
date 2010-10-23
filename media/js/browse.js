@@ -21,7 +21,11 @@ var categorySelected = function() {
 
 var addListing = function(listing, clone) {
     clone.removeClass('null prototype')
-    $('.listing-description', clone).text(listing.description)
+    if (listing.description) {
+	$('.listing-description', clone).text(listing.description)
+    } else {
+	$('.listing-description', clone).parent().empty()
+    }
     $('.listing-owner', clone).text(listing.owner.personaname)
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)
 
@@ -47,6 +51,7 @@ var listingsReady = function(search) {
 	    addListing(listing, clone)
 	})
         new SchemaTool().setImages()
+	$("div.listing-wrapper td.item-display div:empty").parent().remove()
     } else {
 	$$('no-listings').text('Nothing found.  You should add a listing.').show()
     }
@@ -58,7 +63,7 @@ var listingsReady = function(search) {
 
 
 var schemaReady = function(schema) {
-    var st = new SchemaTool()
+    var st = new SchemaTool(schema)
     var tt = new TooltipView(st)
     var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
