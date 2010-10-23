@@ -8,7 +8,7 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
-from tf2bay.lib import json, user_steam_id, schematools
+from tf2bay.lib import json, user_steam_id, schematools, js_datetime
 from tf2bay.models.proxyutils import fetch
 
 
@@ -39,9 +39,7 @@ class PlayerItem(polymodel.PolyModel):
     @classmethod
     def get_by_uid(cls, uniqueid):
 	""" Returns an item by uniqueid. """
-	query = cls.all()
-	query.filter('uniqueid =', uniqueid)
-	return query.get()
+	return cls.all().filter('uniqueid =', uniqueid).get()
 
     @classmethod
     def build(cls, uniqueid, defindex, **kwds):
@@ -69,7 +67,7 @@ class PlayerProfile(db.Expando):
     backpack = db.TextProperty('Backpack Items')
 
     def __str__(self):
-	return '<PlayerProfile id64=%s>' % (self.id64, )
+	return '<PlayerProfile id64=%s>' % (self.id64(), )
 
     @classmethod
     def get_by_id64(cls, id64):
@@ -79,9 +77,7 @@ class PlayerProfile(db.Expando):
     @classmethod
     def get_by_user(cls, user):
 	""" Returns the PlayerProfile for the given user. """
-	query = cls.all()
-	query.filter('owner =', user)
-	return query.get()
+	return cls.all().filter('owner =', user).get()
 
     @classmethod
     def build(cls, owner, id64=None):
@@ -103,17 +99,15 @@ class PlayerProfile(db.Expando):
 
     def owns_all(self, item_ids):
 	""" True if this profile owns all of the specified items. """
-	ids = [item['id'] for item in self.items]
+	ids = [item['id'] for item in self.items()]
 	return all(item_id in ids for item_id in item_ids)
 
-    @property
     def id64(self):
 	try:
 	    return self.key().name()
     	except (AttributeError, db.NotSavedError, ):
 	    return ''
 
-    @property
     def items(self):
 	try:
 	    return json.loads(self.backpack)
@@ -122,7 +116,7 @@ class PlayerProfile(db.Expando):
 
     def refresh(self):
 	try:
-	    steam_profile = json.loads(fetch.profile(self.id64))
+	    steam_profile = json.loads(fetch.profile(self.id64()))
 	except (Exception, ), exc:
 	    exception('PlayerProfile.refresh(): %s %s', self, exc)
 	else:
@@ -130,14 +124,14 @@ class PlayerProfile(db.Expando):
 		setattr(self, key, steam_profile[key])
 	    self.keys = [k for k in steam_profile]
 	try:
-	    self.backpack = fetch.items(self.id64)
+	    self.backpack = fetch.items(self.id64())
 	except:
 	    exception('PlayerProfile.refresh(): %s %s', self, exc)
 	return self
 
     def encode_builtin(self):
 	""" Encode this instance using only built-in types. """
-	res = {'id64':self.id64}
+	res = {'id64':self.id64()}
 	for key in self.keys:
 	    res[key] = getattr(self, key)
 	return res
@@ -157,7 +151,7 @@ class Listing(db.Model):
     """
     owner = db.UserProperty('Owner', required=True, indexed=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
-    expires = db.DateTimeProperty('Expires', required=True, validator=future_expires)
+    expires = db.DateTimeProperty('Expires', required=True) #, validator=future_expires)
     min_bid = db.ListProperty(long, 'Minimum Bid')
     description = db.StringProperty('Description', default='', multiline=True)
 
@@ -173,25 +167,9 @@ class Listing(db.Model):
     category_tool = db.BooleanProperty(indexed=True, default=False)
     category_weapon = db.BooleanProperty(indexed=True, default=False)
 
-    def set_status(self, status, reason):
-	items = self.items
-	def txn():
-	    self.status = status
-	    self.status_reason = reason
-	    self.put()
-	    for item in items:
-		item.status = status
-		item.put()
-	db.run_in_transaction(txn)
-
-    def cancel(self, reason):
-	self.set_status('cancelled', reason)
-	return 'okay'
-
     ## non-normalized: bid counter
     bid_count = db.IntegerProperty('Bid Count', default=0)
 
-    valid_days = range(1, 31) # 1-30
 
     @classmethod
     def build(cls, **kwds):
@@ -213,7 +191,9 @@ class Listing(db.Model):
 	    q = ListingItem.all(keys_only=True)
 	    if q.filter('uniqueid', uid).filter('status', 'active').get():
 		raise TypeError('Item already in an active auction.')
-
+	    q = BidItem.all(keys_only=True)
+	    if q.filter('uniqueid', uid).filter('status', 'active').get():
+		raise TypeError('Item already in an active bid.')
 
 	return db.run_in_transaction(cls.build_transaction, **kwds)
 
@@ -258,8 +238,7 @@ class Listing(db.Model):
 	key = listing.put()
 
 	# 5. assign the items
-	item_types = dict((i['defindex'], i['item_type_name'])
-			  for i in schema['result']['items']['item'])
+	item_types = schematools.item_type_map(schema)
 	for uid, item in item_ids:
 	    listing_item = ListingItem(
 		parent=listing,
@@ -281,8 +260,24 @@ class Listing(db.Model):
 	    url='/api/v1/admin/queue/bang-counters',
 	    transactional=True,
 	    queue_name='counters',
-	    params={'listings':1, 'items':len(item_ids)})
+	    params={'listings':1, 'listing_items':len(item_ids)})
 	return key
+
+    valid_days = range(1, 31) # 1-30
+
+    def set_status(self, status, reason):
+	items = self.items()
+	def txn():
+	    self.status = status
+	    self.status_reason = reason
+	    self.put()
+	    for item in items:
+		item.status = status
+		item.put()
+	db.run_in_transaction(txn)
+
+    def cancel(self, reason):
+	self.set_status('cancelled', reason)
 
     def time_left(self):
 	return self.expires - datetime.now()
@@ -291,32 +286,32 @@ class Listing(db.Model):
 	## query for other listings by the owner of this listing.
 	pass
 
-    @property
     def items(self):
 	""" Returns the player items for this listing. """
-	q = ListingItem.all()
-	q.filter('listing =', self)
-	return q.fetch(limit=100)
+	return ListingItem.all().filter('listing =', self).fetch(limit=100)
 
-    @property
+    def bids(self):
+	""" Returns the bids for this listing. """
+	return Bid.all().filter('listing =', self).fetch(limit=100)
+
     def owner_profile(self):
 	""" Returns the player profile for this listing. """
 	return PlayerProfile.get_by_id64(self.owner.nickname())
 
-    def encode_builtin(self):
+    def encode_builtin(self, bids=False):
 	""" Encode this instance using only built-in types. """
-	tf = '%a, %d %b %Y %H:%M:%S'
 	return {
-	    'id':self.key().id(),
-	    'owner':PlayerProfile.get_by_user(self.owner).encode_builtin(),
-	    'created':self.created.strftime(tf),
-	    'expires':self.expires.strftime(tf),
-	    'description':self.description,
-	    'bid_count':self.bid_count,
-	    'min_bid':self.min_bid,
-	    'items':[i.encode_builtin() for i in self.items],
-	    'status':self.status,
-	    'status_reason':self.status_reason,
+	    'id' : self.key().id(),
+	    'owner' : PlayerProfile.get_by_user(self.owner).encode_builtin(),
+	    'created' : js_datetime(self.created),
+	    'expires' : js_datetime(self.expires),
+	    'description' : self.description,
+	    'bid_count' : self.bid_count,
+	    'min_bid' : self.min_bid,
+	    'items' : [i.encode_builtin() for i in self.items()],
+	    'status' : self.status,
+	    'status_reason' : self.status_reason,
+	    'bids' : [b.encode_builtin() for b in self.bids()] if bids else (),
 	}
 
 
@@ -343,14 +338,88 @@ class Bid(db.Model):
     owner = db.UserProperty('Owner', required=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True)
-    message = db.StringProperty('Message to Lister', multiline=True)
-    # status + status_reason
+    message_private = db.StringProperty('Private message', multiline=True)
+    message_public = db.StringProperty('Public message', multiline=True)
+    status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
+    status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
+
+
+    @classmethod
+    def build(cls, **kwds):
+	owner = users.get_current_user()
+	if not owner:
+	    raise ValueError('No owner specified.')
+	kwds['owner'] = owner
+	kwds['profile'] = PlayerProfile.get_by_id64(user_steam_id(owner))
+	item_ids = kwds['item_ids']
+	for uid, item in item_ids:
+	    q = ListingItem.all(keys_only=True)
+	    if q.filter('uniqueid', uid).filter('status', 'active').get():
+		raise TypeError('Item already in an active auction.')
+	    q = BidItem.all(keys_only=True)
+	    if q.filter('uniqueid', uid).filter('status', 'active').get():
+		raise TypeError('Item already in an active bid.')
+	listing_id = int(kwds.pop('listing_id'))
+	listing = kwds['listing'] = Listing.get_by_id(listing_id)
+	if not listing:
+	    raise TypeError('Invalid listing.')
+	if listing.status != 'active':
+	    raise TypeError('Invalid listing status.')
+	key = db.run_in_transaction(cls.build_transaction, **kwds)
+    	listing.bid_count += 1
+	listing.put()
+	return key
+
+
+    @classmethod
+    def build_transaction(cls, owner, profile, listing, item_ids, public_msg, private_msg):
+	if not profile.owns_all(uid for uid, item in item_ids):
+	    ## TODO: re-fetch backpack.  will probably need to move
+	    ## backpack feed into this site for that to work.
+	    raise ValueError('Incorrect ownership.')
+	schema = json.loads(fetch.schema())
+	bid = cls(owner=owner, listing=listing, message_private=private_msg, message_public=public_msg)
+	key = bid.put()
+	item_types = schematools.item_type_map(schema)
+	for uid, item in item_ids:
+	    bid_item = BidItem(
+		parent=bid,
+		uniqueid=uid,
+		defindex=item['defindex'],
+		source=json.dumps(item),
+		item_type_name=item_types[item['defindex']],
+		listing=listing,
+		bid=bid)
+	    bid_item.put()
+	taskqueue.add(
+	    url='/api/v1/admin/queue/bang-counters',
+	    transactional=True,
+	    queue_name='counters',
+	    params={'bids':1, 'bid_items':len(item_ids)})
+	return key
+
+    def encode_builtin(self):
+	return {
+	    'owner' : self.owner.nickname(),
+	    'created' : js_datetime(self.created),
+	    'message_public' : self.message_public,
+	    'status' : self.status,
+	    'items' : [i.encode_builtin() for i in self.items()],
+	    }
+
+    def items(self):
+	return BidItem.all().filter('bid = ', self).fetch(limit=100)
+
 
 class BidItem(PlayerItem):
     """ BidItem -> player items associated with a Bid.
 
     """
     bid = db.ReferenceProperty(Bid, 'Parent Bid', required=True, indexed=True)
+    ## non-normalized:
+    listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True, indexed=True)
+    ## non-normalized:
+    status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
 
     def __str__(self):
 	return '<BidItem listing=%s, uniqueid=%s, defindex=%s>' % (self.bid, self.uniqueid, self.defindex)

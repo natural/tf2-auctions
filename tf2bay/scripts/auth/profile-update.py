@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from cgi import parse_qs
-from logging import exception, warn
-from urllib import quote as quote_url
+from logging import exception
 from google.appengine.api import users
 from tf2bay.lib import View
 from tf2bay.models import PlayerProfile

@@ -27,7 +27,7 @@ label { display:block; font-family:"TF2Build"; }
 .button, .small-button {
 background-color:#766b5e;
 border-bottom:none !important;
-border-radius:0.25em; -moz-border-radius:0.25em;
+border-radius:0.25em; -moz-border-radius:0.25em; -webkit-border-radius:0.25em;
 color:#ece3cb;
 font-family:"TF2Build";
 height:1.5em;
@@ -54,7 +54,7 @@ padding:0.35em 1.5em 0.25em 1.5em;
 background-color:#9a8b6b;
 background: -moz-linear-gradient(top, #dcd2ba, #9a8b6b);
 background: -webkit-gradient(linear, left top, left bottom, from(#dcd2ba), to(#9a8b6b));
-border-radius:0.25em; -moz-border-radius:0.25em;
+border-radius:0.25em; -moz-border-radius:0.25em; -webkit-border-radius:0.25em;
 color:#2e2b2a;
 font-family:"TF2Build";
 height:1.5em;
@@ -76,7 +76,7 @@ color:#ebe2ca;
 
 div.detail-view, div.organizer-view {
 background-color:#2e2b2a;
-border-radius:0.75em; -moz-border-radius:0.75em;
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
 padding:0.5em;
 }
@@ -103,7 +103,7 @@ div.organizer-view table.chooser td,
 div.organizer-view table.backpack td,
 div.organizer-view table.unplaced td {
 background-color:#3c352e;
-border-radius:0.75em; -moz-border-radius:0.75em;
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
 height:4em !important;
 max-height:4em !important
@@ -127,13 +127,13 @@ width:100% !important;
 
 div.organizer-view .cannot-trade {
 background-color:#252221 !important;
-border-radius:0.75em; -moz-border-radius:0.75em;
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A !important;
 }
 
 div.organizer-view .active-listing {
 background-color:#1c201c !important;
-border-radius:0.75em; -moz-border-radius:0.75em;
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A !important;
 }
 
@@ -149,7 +149,7 @@ div.organizer-view div.tools div.navs span.nonav,
 div.organizer-view div.tools div.navs span.nav a {
 background-color:#766b5e;
 border-bottom:none !important;
-border-radius:0.25em; -moz-border-radius:0.25em;
+border-radius:0.25em; -moz-border-radius:0.25em; -webkit-border-radius:0.25em;
 height:1.5em;
 line-height:1.5em;
 padding:0.5em 0.75em 0.5em 0.75em;
@@ -205,7 +205,7 @@ width:85%;
 
 #site-small-msg {
 background-color:#111;
-border-radius:0.5em; -moz-border-radius:0.5em;
+border-radius:0.5em; -moz-border-radius:0.5em; -webkit-border-radius:0.5em;
 border:3px solid #000;
 color:#fff;
 font-family:Verdana, Arial, Sans-Serif;
@@ -214,7 +214,7 @@ opacity:0.5;
 padding:0.5em 1.5em 0.5em 1em;
 position:absolute;
 right:7.5%;
-top:4em;
+top:3.65em;
 }
 
 
@@ -227,7 +227,7 @@ width:38px;
 
 #avatar img {
 border:0.2em solid #847668 !important;
-border-radius:0.15em;
+border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
 }
 
 #content {
@@ -251,10 +251,11 @@ float:left;
 padding-top:2%;
 }
 
-#add-listing-fields label {
+#add-bid-fields label, #add-listing-fields label {
 margin-top:0.5em;
 }
-#add-listing-fields textarea {
+
+#add-bid-fields textarea, #add-listing-fields textarea {
 margin-bottom:1em;
 }
 
@@ -288,7 +289,7 @@ padding-top:0.5em;
 
 span.equipped {
 background-color:black;
-border-radius:0.5em; -moz-border-radius:0.5em;
+border-radius:0.5em; -moz-border-radius:0.5em; -webkit-border-radius:0.5em;
 bottom:1.5em;
 color:#c8503c;
 display:block;
@@ -302,7 +303,7 @@ width:4.25em;
 
 span.quantity {
 background-color:black;
-border-radius:0.5em; -moz-border-radius:0.5em;
+border-radius:0.5em; -moz-border-radius:0.5em; -webkit-border-radius:0.5em;
 color:#c8503c;
 font-family:"TF2secondary";
 font-size:0.85em;
@@ -336,12 +337,13 @@ color:#c8bba2;
 #footer a:hover { border-bottom:0.125em solid #c8bba2; }
 
 #tooltip {
-background: -moz-linear-gradient(top, #38332D, #221E1A);
-background: -webkit-gradient(linear, left top, left bottom, from(#38332D), to(#221E1A));
 background:#000;
+background: -moz-linear-gradient(top, #38332D, #221E1A);
+background: -webkit-gradient(linear, left top, left bottom, from(#38332d), to(#221e1a));
+
 border-bottom:1px solid #1B1815;
 border-left:1px solid #453F36;
-border-radius:3px; -moz-border-radius:3px;
+border-radius:3px; -moz-border-radius:3px; -webkit-border-radius:3px;
 border-right:1px solid #453F36;
 border-top:1px solid #786B5C;
 overflow:hidden;
@@ -405,7 +407,7 @@ A50F79 Developer
 #tooltip .negative { color:#eb3b3b; }
 
 .message div {
-border-radius:0.75em; -moz-border-radius:0.75em;
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 color:#fff;
 font-family:"TF2Build";
 margin-bottom:0.5em;

@@ -23,6 +23,11 @@ def is_prod(environ):
     return not is_devel(environ)
 
 
+def js_datetime(dt):
+    fmt = '%a, %d %b %Y %H:%M:%S'
+    return dt.strftime(fmt)
+
+
 debug = is_devel(environ)
 info('tf2bay.lib.__init__.debug=%s', debug)
 

@@ -64,7 +64,7 @@
 		    <div id="${slug}-owner-controls" class="null centered mtb1">
 			<div class="m1">You own this listing, so you may cancel it:</div>
 			<div class="centered text-centered" id="${slug}-cancel-prompt">
-			    <span class="button bid-button"><a href="#" id="${slug}-cancel-show-confirm">Cancel this Listing</a></span>
+			    <a href="#" id="${slug}-cancel-show-confirm" class="button bid-button">Cancel this Listing</a>
 			</div>
 			<div class="centered text-centered null" id="${slug}-cancel-confirm">
 			    <label class="m1">Are you sure you want to cancel this listing?</label>
@@ -110,6 +110,19 @@
 		<metal:settings tal:define="slug 'add-bid-item'">
 		    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
 		</metal:settings>
+
+		<div id="add-bid-fields" class="centered">
+		<label>Private Message (Optional):</label>
+		<div class="null" id="bid-private-msg-default">You can enter a private message for the listing owner here.</div>
+ 		<div class="message null"><div class="error" id="bid-private-msg-error"></div></div>
+		<textarea id="bid-private-msg" name="bid-private-msg"></textarea>
+
+		<label>Public Message (Optional):</label>
+		<div class="null" id="bid-public-msg-default">You can also enter a message with your bid that will be visible to everyone.</div>
+ 		<div class="message null"><div class="error" id="bid-public-msg-error"></div></div>
+		<textarea id="bid-public-msg" name="bid-public-msg"></textarea>
+		</div>
+
 		<div id="${slug}-bid-buttons" class="centered text-centered m1">
 		    <span class="submit button mr05">
 			<a href="#" id="${slug}-bid-submit">Place Bid</a>
@@ -118,7 +131,21 @@
 			<a href="#" id="${slug}-bid-cancel">Cancel</a>
 		    </span>
 		</div>
+
+	    <div id="add-bid-response" class="centered text-centered">
+		<div id="add-bid-working" class="m1 null"></div>
+		<div id="add-bid-success" class="m1 null">
+		    <span class="button mr05">
+			<a href="#" id="add-bid-success-view">View Bid</a>
+		    </span>
+		</div>
+		<div id="add-bid-error" class="error m1 null"></div>
+            </div>
+
+
+
 	    </div>
+
 
 	</div>
 	<div class="clear"></div>

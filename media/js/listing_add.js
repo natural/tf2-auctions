@@ -246,7 +246,8 @@ var backpackReady = function(backpack, listings, profile) {
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
 //    $('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
 
-    smallMsg(msg).delay(3000).fadeAway()
+    //smallMsg(msg).delay(3000).fadeAway()
+    smallMsg().fadeAway()
     addTool.show()
 }
 

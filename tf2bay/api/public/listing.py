@@ -13,7 +13,7 @@ class ListingDetail(ApiHandler):
 	if not listing:
 	    self.error(404)
 	    return
-	self.write_json(listing.encode_builtin())
+	self.write_json(listing.encode_builtin(bids=True))
 
 
 main = ApiHandler.make_main(ListingDetail)

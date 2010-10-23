@@ -52,6 +52,10 @@ handlers:
   login: admin
   script: tf2bay/scripts/admin/\1.py
 
+- url: /shell.*
+  login: admin
+  script: tf2bay/scripts/admin/shell.py
+
 - url: /(listing)/(add)
   login: required
   script: tf2bay/scripts/auth/\1/\2.py

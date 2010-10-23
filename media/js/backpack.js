@@ -166,16 +166,18 @@ var BackpackChooser = function(options) {
 	    if ($(this).children().length > 0) { return false }
 	    $(this).parent().removeClass('selected')
 	    if (options.copy) {
-		var clone = $($('div img', ui.draggable)).clone()
-		clone.data('node', $('div img', ui.draggable).data('node'))
-		$(this).append(clone)
+		var item = $($('div img', ui.draggable)).clone()
+		item.data('node', $('div img', ui.draggable).data('node'))
 	    } else {
-		$(this).append($('div img', ui.draggable))
+		var item = $('div img', ui.draggable)
 	    }
+	    $(this).append(item)
 	    $('img', this).css('margin-top', '0')
 	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
-	    self.updateCount() //window.setTimeout(self.updateCount, 150) // delay for accurate counting
 	    $('#chooser-' + chooserSlug + ' td, #backpack-' + backpackSlug + ' td').removeClass('selected outline')
+	    self.updateCount()
+	    if (options.afterDropMove) { options.afterDropMove(item) }
+	    if (options.copy && options.afterDropCopy) { options.afterDropCopy(item) }
 	}
 	var dragFromBackpack = function(event, ui) {
 	    var img = $('img', event.target) // source img, not the drag img

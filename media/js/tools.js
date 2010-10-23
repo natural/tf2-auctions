@@ -132,7 +132,7 @@ var StatsLoader = makeLoader({
     name: 'StatsLoader'})
 
 var BidsLoader = makeLoader({
-    prefix: '/api/v1/public/bids/',
+    prefix: '/api/v1/public/bids/', // move to /api/v1/public/player-bids/
     name: 'BidsLoader'})
 
 
@@ -268,7 +268,7 @@ var listingItemsUids = function(src) {
 var initExtensions = function(jq) {
     jq.fn.fadeAway = function() { return this.each(function() { jq(this).fadeTo(750, 0) }) }
     jq.fn.fadeBack = function() { return this.each(function() { jq(this).fadeTo(750, 100) }) }
-    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).position().top}) }
+    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
 }
 initExtensions(jQuery)
 

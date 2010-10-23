@@ -1,6 +1,6 @@
 // slug '#listing-detail-' defined in browse.pt
 var $$ = function(suffix, next) { return $('#{0}-{1}'.format(idSlug, suffix), next) }
-
+var listingId = function() { return window.location.pathname.split('/').pop() }
 
 function updateTimeLeft(expires, selector) {
     expires = new Date(expires)
@@ -31,7 +31,7 @@ function updateTimeLeft(expires, selector) {
 
 var submitCancel = function() {
     console.log('submit cancel')
-    var listingId = window.location.pathname.split('/').pop()
+    var id = listingId()
     var cancelOkay = function(results) {
 	console.log('cancel success', results)
 	$$('status').text('Cancelled')
@@ -40,11 +40,11 @@ var submitCancel = function() {
     var cancelError = function(request, status, error) {
 	console.error('cancel failed', request, status, error)
     }
-    $$('cancel-confirm').fadeAway()
+    $$('cancel-confirm').fadeOut()
     $.ajax({
 	url: '/api/v1/auth/cancel-listing',
 	type: 'POST',
-	data: $.toJSON({id:listingId}),
+	data: $.toJSON({id:id}),
 	dataType: 'json',
 	success: cancelOkay,
 	error: cancelError
@@ -52,12 +52,12 @@ var submitCancel = function() {
 }
 
 var cancelCancel = function() {
-    $$('cancel-prompt').fadeBack()
+    $$('cancel-prompt').fadeIn()
     $$('cancel-confirm').fadeOut()
 }
 
 var showConfirmCancel = function(e) {
-    $$('cancel-prompt').fadeAway()
+    $$('cancel-prompt').fadeOut()
     $$('cancel-confirm').fadeIn()
     $$('cancel-submit').click(submitCancel)
     $$('cancel-cancel').click(cancelCancel)
@@ -86,13 +86,21 @@ var moveToBackpack = function(e) {
 
 
 
+
 var backpackReady = function(backpack, listings, profile) {
-    $$('msg-backpack').fadeAway()
+    $$('msg-backpack').fadeOut()
     $$('own-backpack').fadeIn()
     $$('place-start').fadeOut()
+    smallMsg('').fadeOut()
+
+    var itemMoved = function(item) {
+	GITEM = item
+	console.log('item copied:', item)
+    }
     var bc = new BackpackChooser(
 	{backpack:backpack, uids:listingItemsUids(listings),
 	 backpackSlug:'bid', chooserSlug:'add-bid-item',
+	 afterDropMove: itemMoved,
 	 help: 'Drag items from your backpack to the bid area below.'})
 
     bc.init()
@@ -111,8 +119,105 @@ var backpackReady = function(backpack, listings, profile) {
         tt.hide(e)
         $(this).removeClass('outline')
     }
+    var cancelNewBid = function(event) {
+	$$('place-bid-wrapper').slideUp('slow')
+	$('body').scrollTopAni()
+	$$('place-start').fadeIn().unbind().click(function() {
+	    $$('place-bid-wrapper').fadeIn()
+	    $$('msg-backpack').fadeOut()
+	    $$('own-backpack').fadeIn()
+	    $$('place-start').fadeOut()
+	    smallMsg('').fadeOut()
+	    setTimeout(function() { $$('place-bid-wrapper h1').scrollTopAni() }, 500)
+	})
+	return false
+    }
+
+    var postOkay = function(data, status, req) {
+	console.log('post okay:', data, status, req)
+	$('#add-bid-working').text('Complete.  Click the link to view your bid.')
+	//$('#add-bid-success a').attr('href', '/listing/'+data.key)
+	$('#add-bid-success').fadeIn()
+    }
+
+    var postError = function(req, status, err) {
+	console.error('post error:', req, status, err)
+	$('#add-bid-working').text('Something went wrong.  Check the error below.').fadeIn()
+	$('#add-bid-error').text(req.statusText).fadeIn()
+    }
+
+    var showErrors = function(errors) {
+	console.error('validation errors:', errors)
+	$.each(errors, function(index, error) {
+	    var ele = $('{0}-error'.format(error.id))
+	    ele.text('Error: {0}'.format(error.msg)).parent().fadeIn()
+	    if (index==0) { ele.parent().scrollTopAni() }
+	})
+    }
+
+    var addBid = function(input) {
+	var output = {id: listingId(), private_msg: input.private_msg, public_msg: input.public_msg}
+	var items = output.items = []
+	$.each(input.items, function(idx, img) { items.push( $(img).data('node')) })
+        console.log(input, output)
+	$.ajax({
+	    url: '/api/v1/auth/add-bid',
+	    type: 'POST',
+	    dataType:'json',
+	    data: $.toJSON(output),
+	    success: postOkay,
+	    error: postError
+	})
+    }
+
+    var submitNewBid = function(event) {
+	var errs = []
+	// 1.  bid items
+	var items = $('#chooser-add-bid-item img')
+	if (items.length < 1 || items.length > 10) {
+	    errs.push({id:'#chooser-add-bid-item',
+		       msg:'Select 1-10 items from your backpack.'})
+	}
+	// 2. private msg
+	var private_msg = $('#bid-private-msg').val()
+	private_msg = (private_msg ==  $('#bid-private-msg-default').text() ? '' : private_msg)
+	if (private_msg.length > 400) {
+	    errs.push({id:'#bid-private-msg',
+		       msg:'Too much text.  Make your message shorter.'})
+	}
+	// 3. private msg
+	var public_msg = $('#bid-public-msg').val()
+	public_msg = (public_msg ==  $('#bid-public-msg-default').text() ? '' : public_msg)
+	if (public_msg.length > 400) {
+	    errs.push({id:'#bid-public-msg',
+		       msg:'Too much text.  Make your message shorter.'})
+	}
+	if (errs.length) {
+	    showErrors(errs)
+	} else {
+	    $$('bid-buttons').slideUp('slow')
+	    $('#add-bid-working').removeClass('null').text('Working...').fadeIn('fast')
+	    addBid({items: items, public_msg: public_msg, private_msg: private_msg})
+	}
+	return false
+    }
+
+    $$('bid-cancel').click(cancelNewBid)
+    $$('bid-submit').click(submitNewBid)
+
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
-    setTimeout(function() { $$('place-bid-wrapper').scrollTopAni() }, 500)
+    var width = $('#chooser-add-bid-item tbody').width()
+    $('#add-bid-fields').width(width)
+    $('#add-bid-fields textarea').width(width).height(width/4).text()
+
+    $.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
+	$('#{0}'.format(value)).text( $('#{0}-default'.format(value)).text() )
+	$('#{0}'.format(value)).focusin(function() {
+	    var area = $(this)
+	    if (area.text() == $('#{0}-default'.format(area.context.id)).text()) { area.text('') }
+	})
+    })
+    setTimeout(function() { $$('place-bid-wrapper h1').scrollTopAni() }, 500)
 }
 
 
@@ -151,7 +256,7 @@ var profileReady = function(profile, listing) {
             $$('auth-bid-wrapper').fadeIn()
 	    $$('place-start').click(function() {
 		$$('place-bid-wrapper').fadeIn()
-		smallMsg('Loading your backpack...')
+		smallMsg('Loading your backpack...').fadeIn()
 		new ListingsLoader({
 		    success: function(listings) { listingsReady(listings, profile) },
 		    error: listingsError,
@@ -212,7 +317,7 @@ var listingReady = function(id, listing) {
     $$('title').html('Listing ' + id)
     $$('bidcount').text(listing.bid_count ? ('Bids (' + listing.bid_count + ')') : 'No Bids')
     $$('title-wrapper').fadeIn()
-    smallMsg('').fadeAway()
+    smallMsg('').fadeOut()
     if (listing.status == 'active') {
 	var timer = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
     } else {
@@ -228,7 +333,7 @@ var listingError = function(request, status, error) {
 
 
 var schemaReady = function(schema) {
-    var id = window.location.pathname.split('/').pop()
+    var id = listingId()
     document.title += ' ' + id
     new ListingLoader({
 	success: function(ls) { listingReady(id, ls) },
