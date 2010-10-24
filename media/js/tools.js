@@ -276,6 +276,27 @@ var bidItemsUids = function(src) {
 }
 
 
+var showTermsDialog = function(e) {
+    var okay = function(text) {
+	$('#terms-dialog').html(text).dialog({
+	    dialogClass: 'dialog-test',
+	    modal: true,
+	    resizable: false,
+	    show: 'fade',
+	    title: 'Site Rules, Terms and Conditions',
+	    width: $(window).width() * 0.9
+	})
+    }
+    var error = function(request, status, error) {}
+    $.ajax({url: '/terms',
+	    cache: true,
+	    success: okay,
+	    error: error
+    })
+    return false
+}
+
+
 var initExtensions = function(jq) {
     jq.fn.fadeAway = function() { return this.each(function() { jq(this).fadeTo(750, 0) }) }
     jq.fn.fadeBack = function() { return this.each(function() { jq(this).fadeTo(750, 100) }) }

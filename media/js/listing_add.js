@@ -294,25 +294,6 @@ var schemaReady = function(schema) {
     new AuthProfileLoader({success: profileReady})
 }
 
-var showTermsDialog = function(e) {
-    var okay = function(text) {
-	$('#terms-dialog').html(text).dialog({
-	    dialogClass: 'detail-view',
-	    modal: true,
-	    resizable: false,
-	    show: 'fade',
-	    title: 'Site Rules, Terms and Conditions',
-	    width: $(window).width() * 0.9
-	})
-    }
-    var error = function(request, status, error) {}
-    $.ajax({url: '/terms',
-	    cache: true,
-	    success: okay,
-	    error: error
-    })
-    return false
-}
 
 
 $(document).ready(function() {

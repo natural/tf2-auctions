@@ -72,7 +72,6 @@ background: -webkit-gradient(linear, left top, left bottom, from(#995040), to(#5
 color:#ebe2ca;
 }
 
-.ui-dialog-content, .ui-widget-content { background-color:#2e2b2a !important; }
 
 div.detail-view, div.organizer-view {
 background-color:#2e2b2a;
@@ -193,13 +192,13 @@ border-bottom:0.25em solid #84756b;
 }
 
 #header {
-margin:0 auto 0 auto;
+margin:0.25em auto 0 auto;
 padding:1em 0 1em 0;
 width:85%;
 }
 
 #main-logo { float:left; width:275px; /* just over the size of the img */ }
-#site-buttons { float:right; white-space:nowrap; }
+#site-buttons { margin-top:0.25em; float:right; white-space:nowrap; }
 #site-buttons span, #site-buttons img { vertical-align:middle; }
 
 #site-small-msg {
@@ -479,4 +478,13 @@ opacity:0.5; /* TODO: add opacity to parent selectors, too */
 
 div.organizer-view .active-listing img {
 opacity:0.33;
+}
+
+
+.dialog-test {
+margin:1em;
+padding:1em;
+color:black;
+background-color:white;
+border:1px solid blue;
 }

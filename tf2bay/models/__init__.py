@@ -266,21 +266,15 @@ class Listing(db.Model):
     valid_days = range(1, 31) # 1-30
 
     def set_status(self, status, reason):
-	items = self.items()
-	def txn():
-	    self.status = status
-	    self.status_reason = reason
-	    self.put()
-	    for item in items:
-		item.status = status
-		item.put()
-	db.run_in_transaction(txn)
-	bids = self.bids()
-	def txn():
-	    for bid in bids:
-		bid.set_status(status, reason)
-		bid.put()
-	db.run_in_transaction(txn)
+	self.status = status
+	self.status_reason = reason
+	self.put()
+	for item in self.items():
+	    item.status = status
+	    item.put()
+	for bid in self.bids():
+	    bid.set_status(status, reason)
+	    bid.put()
 
     def cancel(self, reason):
 	self.set_status('cancelled', reason)
@@ -417,6 +411,8 @@ class Bid(db.Model):
 	return BidItem.all().filter('bid = ', self).fetch(limit=100)
 
     def set_status(self, status, reason):
+	self.status = status
+	self.put()
 	for bid_item in self.items():
 	    bid_item.status = status
 	    bid_item.put()

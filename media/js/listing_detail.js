@@ -194,6 +194,11 @@ var backpackReady = function(backpack, listings, bids, profile) {
 	    errs.push({id:'#bid-public-msg',
 		       msg:'Too much text.  Make your message shorter.'})
 	}
+	// 5. agree w/ site terms
+	if (! $('#add-bid-terms').attr('checked')) {
+	    errs.push({id: '#add-bid-terms',
+		       msg:'You must read and agree with site rules, terms, and conditions.'})
+	}
 	if (errs.length) {
 	    showErrors(errs)
 	} else {
@@ -207,6 +212,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
     var width = $('#chooser-add-bid-item tbody').width()
     $('#add-bid-fields').width(width)
     $('#add-bid-fields textarea').width(width).height(width/4).text()
+    $('#add-bid-terms-desc').parent().width(width)
     $.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
 	$('#{0}'.format(value)).text( $('#{0}-default'.format(value)).text() )
 	$('#{0}'.format(value)).focusin(function() {
@@ -371,6 +377,7 @@ var schemaError = function(request, status, error) {
 $(document).ready(function() {
     $('#backpack-bid td div img').live('dblclick', moveToChooser)
     $('#chooser-add-bid-item td div img').live('dblclick', moveToBackpack)
+    $('#add-bid-show-terms').click(showTermsDialog)
     smallMsg('Loading...')
     new SchemaLoader({success: schemaReady, error: schemaError})
 })
