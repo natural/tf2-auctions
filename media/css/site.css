@@ -125,17 +125,16 @@ height:4em !important;
 width:100% !important;
 }
 
-div.organizer-view .cannot-trade {
-background-color:#252221 !important;
+div.organizer-view .cannot-trade, div.organizer-view .active-listing, div.organizer-view .active-bid {
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A !important;
 }
 
-div.organizer-view .active-listing {
-background-color:#1c201c !important;
-border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
-border:0.25em solid #2E2B2A !important;
-}
+
+div.organizer-view .active-listing { border-color:#9d302f !important; }
+div.organizer-view .active-bid { border-color:#385c78 !important; }
+div.organizer-view .cannot-trade { background-color:#252221 !important; }
+
 
 div.organizer-view div.tools { margin:1em auto 1em auto; }
 

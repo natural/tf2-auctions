@@ -82,7 +82,7 @@ var moveToBackpack = function(e) {
 }
 
 
-var backpackReady = function(backpack, listings, profile) {
+var backpackReady = function(backpack, listings, bids, profile) {
     $$('msg-backpack').fadeOut()
     $$('own-backpack').fadeIn()
     $$('place-start').fadeOut()
@@ -94,8 +94,11 @@ var backpackReady = function(backpack, listings, profile) {
     }
 
     var bc = new BackpackChooser(
-	{backpack:backpack, uids:listingItemsUids(listings),
-	 backpackSlug:'bid', chooserSlug:'add-bid-item',
+	{backpack: backpack,
+	 listingUids: listingItemsUids(listings),
+	 bidUids: bidItemsUids(bids),
+	 backpackSlug: 'bid',
+	 chooserSlug: 'add-bid-item',
 	 afterDropMove: itemMoved,
 	 help: 'Drag items from your backpack to the bid area below.'})
     bc.init()
@@ -218,15 +221,15 @@ var backpackReady = function(backpack, listings, profile) {
 }
 
 
-var  backpackError = function(request, status, error) {
+var backpackError = function(request, status, error) {
     console.error('backpack fetch failure', request, status, error)
 }
 
 
-var listingsReady = function(listings, profile) {
+var listingsReady = function(listings, bids, profile) {
     smallMsg('Loading your backpack...')
     new BackpackLoader({
-	success: function (backpack) { backpackReady(backpack, listings, profile) },
+	success: function (backpack) { backpackReady(backpack, listings, bids, profile) },
 	error: backpackError,
 	suffix: profile.id64
     })
@@ -254,8 +257,18 @@ var profileReady = function(profile, listing) {
 	    $$('place-start').click(function() {
 		$$('place-bid-wrapper').fadeIn()
 		smallMsg('Loading your backpack...').fadeIn()
+		var bidsError = function(request, status, error) {
+		    console.log('bid load error:', request, status, error)
+		}
+		var listingsOk = function(listings) {
+		    new BidsLoader({
+			success: function(bids) { listingsReady(listings, bids, profile) },
+			error: bidsError,
+			suffix: profile.id64
+		    })
+		}
 		new ListingsLoader({
-		    success: function(listings) { listingsReady(listings, profile) },
+		    success: listingsOk,
 		    error: listingsError,
 		    suffix: profile.id64
 		})

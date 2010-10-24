@@ -6,7 +6,7 @@ var itemContentSelector = function(s) {
 var itemUtil = function(item, schema) {
     return {
 	canTrade: function() {
-	    return !(item.flag_cannot_trade) && !(item.flag_active_listing)
+	    return !(item.flag_cannot_trade) && !(item.flag_active_listing) && !(item.flag_active_bid)
 	},
 	equippedTag: function() {
 	    return '<span style="display:none" class="equipped">Equipped</span>'
@@ -21,7 +21,7 @@ var itemUtil = function(item, schema) {
 }
 
 
-var BackpackItemsTool = function(items, uids, slug) {
+var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
     var self = this
 
     self.init = function() {
@@ -29,7 +29,9 @@ var BackpackItemsTool = function(items, uids, slug) {
 	var newIdx = -1, toolDefs = schema.tools(), actionDefs = schema.actions()
 
 	$.each(items, function(index, item) {
-	    item.flag_active_listing = (item.id in uids)
+	    item.flag_active_listing = (item.id in listingUids)
+	    item.flag_active_bid = (item.id in bidUids)
+
 	    var iutil = itemUtil(item, schema)
 	    if (iutil.pos() > 0) {
 		var ele = $('#' + slug + iutil.pos() + ' div').append(iutil.img())
@@ -43,11 +45,13 @@ var BackpackItemsTool = function(items, uids, slug) {
 		    img.removeClass('equipped equipped-'+def)
 		}
 		if (iutil.canTrade()) {
-		    ele.parent().removeClass('cannot-trade active-listing')
+		    ele.parent().removeClass('cannot-trade active-listing active-bid')
 		} else {
 		    ele.parent().addClass('cannot-trade')
 		    if (item.flag_active_listing) {
 			ele.parent().addClass('active-listing')
+		    } else if (item.flag_active_bid) {
+			ele.parent().addClass('active-bid')
 		    }
 		}
 	    } else {
@@ -60,12 +64,15 @@ var BackpackItemsTool = function(items, uids, slug) {
 		var ele = $('#unplaced-backpack-' + slug + ' table.unplaced td img:last')
 		ele.data('node', item)
 		if (iutil.canTrade()) {
-		    ele.parent().removeClass('cannot-trade active-listing')
+		    ele.parent().removeClass('cannot-trade active-listing active-bid')
 		} else {
 		    ele.parent().addClass('cannot-trade')
 		    if (item.flag_active_listing) {
 			ele.parent().addClass('active-listing')
+		    } else if (item.flag_active_bid) {
+			ele.parent().addClass('active-bid')
 		    }
+
 		}
 
 	    }
@@ -127,12 +134,12 @@ var BackpackNavigator = function(slug) {
 
 var BackpackChooser = function(options) {
     var self = this
-    var backpack = options.backpack, uids = options.uids
+    var backpack = options.backpack, listingUids = options.listingUids, bidUids = options.bidUids
     var backpackSlug = options.backpackSlug, chooserSlug = options.chooserSlug
 
     self.init = function() {
 	var bn = new BackpackNavigator(backpackSlug)
-	var bp = new BackpackItemsTool(backpack, uids, backpackSlug)
+	var bp = new BackpackItemsTool(backpack, listingUids, bidUids, backpackSlug)
 	bn.init()
 	bp.init()
 	self.initBackpack()
@@ -183,7 +190,7 @@ var BackpackChooser = function(options) {
 	    var img = $('img', event.target) // source img, not the drag img
             try {
 		var node = img.data('node')
-		return !(node.flag_cannot_trade) && !(node.flag_active_listing)
+		return !(node.flag_cannot_trade) && !(node.flag_active_listing) && !(node.flag_active_bid)
 	    } catch (e) { return false }
 	}
 	var dragShow = function(event, ui) { ui.helper.addClass('selected') }

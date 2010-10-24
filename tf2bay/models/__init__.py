@@ -275,6 +275,12 @@ class Listing(db.Model):
 		item.status = status
 		item.put()
 	db.run_in_transaction(txn)
+	bids = self.bids()
+	def txn():
+	    for bid in bids:
+		bid.set_status(status, reason)
+		bid.put()
+	db.run_in_transaction(txn)
 
     def cancel(self, reason):
 	self.set_status('cancelled', reason)
@@ -409,6 +415,11 @@ class Bid(db.Model):
 
     def items(self):
 	return BidItem.all().filter('bid = ', self).fetch(limit=100)
+
+    def set_status(self, status, reason):
+	for bid_item in self.items():
+	    bid_item.status = status
+	    bid_item.put()
 
 
 class BidItem(PlayerItem):

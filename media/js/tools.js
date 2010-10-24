@@ -265,6 +265,17 @@ var listingItemsUids = function(src) {
 }
 
 
+var bidItemsUids = function(src) {
+    var uids = {}
+    $.each(src, function(idx, bid) {
+	$.each(bid.items, function(i, item) {
+	    uids[item.uniqueid] = item
+	})
+    })
+    return uids
+}
+
+
 var initExtensions = function(jq) {
     jq.fn.fadeAway = function() { return this.each(function() { jq(this).fadeTo(750, 0) }) }
     jq.fn.fadeBack = function() { return this.each(function() { jq(this).fadeTo(750, 100) }) }

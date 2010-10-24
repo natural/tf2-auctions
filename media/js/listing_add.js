@@ -4,9 +4,14 @@ var MinbidListingTool = function(schema) {
     })
     var bpNav = new BackpackNavigator('mb')
     var bpChs = new BackpackChooser({
-	backpack: backpack, copy:true,
-	uids:[], backpackSlug: 'mb', chooserSlug: 'add-listing-min-bid',
-	title:'', help:''
+	backpack: backpack,
+	copy:true,
+	listingUids: [],
+	bidUids: [],
+	backpackSlug: 'mb',
+	chooserSlug: 'add-listing-min-bid',
+	title:'',
+	help:''
     })
     bpNav.init()
     bpChs.init()
@@ -15,13 +20,16 @@ var MinbidListingTool = function(schema) {
 }
 
 
-var BackpackListingTool = function(backpack, uids) {
+var BackpackListingTool = function(backpack, listingUids, bidUids) {
     var self = this
     var defDesc  = 'Enter a description.'
     var bpNav = new BackpackNavigator('a')
     var bpChs = new BackpackChooser({
 	backpack: backpack,
-	uids:uids, backpackSlug: 'a', chooserSlug: 'add-listing-item',
+	listingUids: listingUids,
+	bidUids: bidUids,
+	backpackSlug: 'a',
+	chooserSlug: 'add-listing-item',
 	help:'Drag items from your backpack into the Listing Items area below.'
     })
     bpNav.init()
@@ -223,9 +231,9 @@ var maybeDeselectLast = function() {
 
 
 
-var backpackReady = function(backpack, listings, profile) {
+var backpackReady = function(backpack, listings, bids, profile) {
     var count = backpack.length // count - count_untradable_items - count_my_listing_items
-    var addTool = new BackpackListingTool(backpack, listingItemsUids(listings))
+    var addTool = new BackpackListingTool(backpack, listingItemsUids(listings), bidItemsUids(bids))
     var schema = new SchemaTool()
     var tipTool = new TooltipView(schema)
     var hoverItem = function(e) {
@@ -244,8 +252,7 @@ var backpackReady = function(backpack, listings, profile) {
     var msg = (count > 0) ? "You've got {0} item{1} to auction.".format(count, (count==1?'':'s')) : "Your backpack is empty!"
     $('a[href="/listing/add"]').fadeAway()
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
-//    $('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
-
+    //$('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
     //smallMsg(msg).delay(3000).fadeAway()
     smallMsg().fadeAway()
     addTool.show()
@@ -257,10 +264,10 @@ var listingsError = function(err) {
 }
 
 
-var listingsReady = function(listings, profile) {
+var listingsReady = function(listings, bids, profile) {
     smallMsg('Loading your backpack...')
     new BackpackLoader({
-	success: function (backpack) { backpackReady(backpack, listings, profile) },
+	success: function (backpack) { backpackReady(backpack, listings, bids, profile) },
         suffix: profile.id64
     })
 }
@@ -269,8 +276,14 @@ var listingsReady = function(listings, profile) {
 var profileReady = function(profile) {
     showProfile(profile)
     smallMsg('Profile loaded.  Welcome back, ' + profile['personaname'] + '!')
+    var listingsLoaded = function(listings) {
+	new BidsLoader({
+	    success: function(bids) { listingsReady(listings, bids, profile) },
+	    suffix: profile.steamid
+	})
+    }
     new ListingsLoader({
-	success: function(listings) { listingsReady(listings, profile) },
+	success: listingsLoaded,
 	suffix: profile.steamid
     })
 }

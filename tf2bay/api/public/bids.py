@@ -11,7 +11,7 @@ class PlayerBids(ApiHandler):
 	try:
 	    id64 = self.path_tail()
 	    q = Bid.all()
-	    q.filter('owner = ', users.User(id64))
+	    q.filter('owner = ', users.User(id64)).filter('status = ', 'active')
 	    rs = [r.encode_builtin() for r in q.fetch(limit=100)]
 	    self.write_json(rs)
 	except (Exception, ), exc:
