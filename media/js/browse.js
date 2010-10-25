@@ -1,10 +1,7 @@
 var $$ = function(suffix, next) { return $('#browse-'+suffix, next) } // slug defined in browse.pt
-var searchOptions = {cursor:null, filters:[]}
 
 
-
-
-var categorySelected = function() {
+var optionChanged = function() {
     var searchOkay = function(results) {
 	//$$('listings tbody:gt(0)').fadeOut()
 	listingsReady(results)
@@ -12,17 +9,18 @@ var categorySelected = function() {
     var qs = $("#filters input[type='checkbox']").map(function(i,v) {
 	return '{0}={1}'.format( $(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
     })
+    qs.push('{0}={1}'.format('sort', $("#filters input[type='radio']:checked").attr('value')))
     new SearchLoader({
 	success: searchOkay,
 	suffix: '?' + qs.toArray().join('&')
     })
-    //return false
 }
+
 
 var addListing = function(listing, clone) {
     clone.removeClass('null prototype')
-    if (listing.description) {
-	$('.listing-description', clone).text(listing.description)
+    if (listing.description || true) {
+	$('.listing-description', clone).text(listing.description || 'empty text should go here')
     } else {
 	$('.listing-description', clone).parent().empty()
     }
@@ -51,7 +49,7 @@ var listingsReady = function(search) {
 	    addListing(listing, clone)
 	})
         new SchemaTool().setImages()
-	$("div.listing-wrapper td.item-display div:empty").parent().remove()
+	$('div.listing-wrapper td.item-display div:empty').parent().remove()
     } else {
 	$$('no-listings').text('Nothing found.  You should add a listing.').show()
     }
@@ -76,9 +74,10 @@ var schemaReady = function(schema) {
 
 
 $(document).ready(function() {
-    console.log('browse.js ready')
-    $("#filters input[type='checkbox']").click(categorySelected)
+    $("input[name='sort_date']").first().click()
+    $("#filters input[type='checkbox']").click(optionChanged)
+    $("#filters input[type='radio']").click(optionChanged)
     smallMsg('Loading schema...')
     new SchemaLoader({success: schemaReady})
+    console.log('browse.js ready')
 })
-

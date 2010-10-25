@@ -4,6 +4,9 @@ from tf2bay.lib import View
 
 
 class NotFound(View):
+    """ Final catchall handler configured in app.yaml.  Sends 404 and
+        a nice error page.
+    """
     template_name = '404.pt'
 
     def get(self):

@@ -6,10 +6,18 @@
     <metal:fill fill-slot="main">
         <h1><span class="hilite"></span>Browse Listings</h1>
 	<div id="filters">
-	    Filter by category:&nbsp;&nbsp;
-	    <metal:filters tal:repeat="filt controller.filters()">
-	        <input type="checkbox" name="${filt[0]}" />&nbsp;${filt[1]}&nbsp;&nbsp;
-	    </metal:filters>
+	    <span class="mr1">
+		Filter by category:
+		<metal:filters tal:repeat="filt controller.filters()">
+	            <input type="checkbox" name="${filt[0]}" />${filt[1]}
+		</metal:filters>
+	    </span>
+	    <span>
+		Sort by date:
+		<input name="sort_date" type="radio" value="created" />Recently Added
+		<input name="sort_date" type="radio" value="expires" />Ending Soon
+	    </span>
+
 	</div>
 	<div class="organizer-view">
 	    <h2 class="null" id="browse-no-listings"></h2>

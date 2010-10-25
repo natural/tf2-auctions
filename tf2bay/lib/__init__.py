@@ -19,10 +19,6 @@ def is_devel(environ):
     return environ.get('SERVER_SOFTWARE', '').startswith('Dev')
 
 
-def is_prod(environ):
-    return not is_devel(environ)
-
-
 def js_datetime(dt):
     fmt = '%a, %d %b %Y %H:%M:%S'
     return dt.strftime(fmt)
@@ -30,13 +26,6 @@ def js_datetime(dt):
 
 debug = is_devel(environ)
 info('tf2bay.lib.__init__.debug=%s', debug)
-
-
-def environ_extras_middleware(app, factory):
-    def environ_extras_app(environ, start_response):
-	environ.update(factory())
-	return app(environ, start_response)
-    return environ_extras_app
 
 
 def user_steam_id(user):
@@ -62,6 +51,11 @@ class ContextLoader(object):
 
 
 class LocalHandler(RequestHandler):
+    def __init__(self, request, response):
+	super(RequestHandler, self).__init__()
+	self.request = request
+	self.response = response
+
     def path_tail(self):
 	return self.request.environ['PATH_INFO'].split('/')[-1]
 
@@ -81,7 +75,7 @@ class ApiHandler(LocalHandler):
 class View(LocalHandler):
     context_loader, template_loader = ContextLoader.build(template_dir)
     default_css = ('site.css', )
-    default_js = ('jquery.json-2.2.js', 'tools.js', )
+    default_js = ('jquery.json-2.2.js', 'tools.js')
     related_css = ()
     related_js = ()
 
@@ -136,37 +130,24 @@ class View(LocalHandler):
 
 
 def wsgi_local(app, debug):
+    methods = ('get', 'post', 'head', 'options', 'put', 'delete', 'trace')
     def local(environ, start_response):
-	req, res = Request(environ), Response()
-	handler, groups = app(), ()
-	handler.initialize(req, res)
-	try:
-	    method = environ['REQUEST_METHOD']
-	    if method == 'GET':
-		handler.get(*groups)
-	    elif method == 'POST':
-		handler.post(*groups)
-	    elif method == 'HEAD':
-		handler.head(*groups)
-	    elif method == 'OPTIONS':
-		handler.options(*groups)
-	    elif method == 'PUT':
-		handler.put(*groups)
-	    elif method == 'DELETE':
-		handler.delete(*groups)
-	    elif method == 'TRACE':
-		handler.trace(*groups)
-	    else:
+	handler = app(Request(environ), Response())
+	method = environ['REQUEST_METHOD'].lower()
+	if method not in methods:
+	    handler.error(405)
+	else:
+	    call = getattr(handler, method, None)
+	    if call is None:
 		handler.error(501)
-	except Exception, e:
-	    handler.handle_exception(e, debug)
-	res.wsgi_write(start_response)
+	    else:
+		try:
+		    call()
+		except Exception, e:
+		    handler.handle_exception(e, debug)
+	handler.response.wsgi_write(start_response)
 	return ['']
     return local
-
-
-def run_app(app, debug=debug):
-    run_wsgi_app(wsgi_local(app, debug))
 
 
 def make_main(app, debug=debug):

@@ -7,6 +7,7 @@ from tf2bay.models import Listing, category_filters
 
 class Search(ApiHandler):
     max_fetch = 20
+    sorts = {None:'expires', 'expires':'expires', 'created':'created'}
 
     def get(self):
 	qs = parse_qs(self.request.query_string)
@@ -20,7 +21,8 @@ class Search(ApiHandler):
 	    for key, title, filt in category_filters:
 		if qs.get(key, [''])[0] == 'on':
 		    filt(q)
-	    q.order('-expires')
+	    sort = self.sorts.get(qs.get('sort', ['expires'])[0], self.sorts[None])
+	    q.order('%s' % sort)
 	    listings = q.fetch(limit=mf+1)
 	    listings = [n.encode_builtin() for n in listings][0:mf]
 	    results = {

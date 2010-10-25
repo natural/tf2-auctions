@@ -114,7 +114,7 @@ class PlayerProfile(db.Expando):
 	except:
 	    return []
 
-    def refresh(self):
+    def refresh(self, put=False):
 	try:
 	    steam_profile = json.loads(fetch.profile(self.id64()))
 	except (Exception, ), exc:
@@ -127,6 +127,8 @@ class PlayerProfile(db.Expando):
 	    self.backpack = fetch.items(self.id64())
 	except:
 	    exception('PlayerProfile.refresh(): %s %s', self, exc)
+	if put:
+	    self.put()
 	return self
 
     def encode_builtin(self):
@@ -458,9 +460,9 @@ category_filters = (
 #     lambda q: q.filter('created > ', datetime.now() - timedelta(hours=24)).order('-created')
 #     ),
 
-    ('ending-soon', 'Ending Soon',
-     lambda q: q.filter('expires < ', datetime.now() - timedelta(hours=24))
-    ),
+#    ('ending-soon', 'Ending Soon',
+#     lambda q: q.filter('expires < ', datetime.now() - timedelta(hours=24))
+#    ),
 
     ('hat', 'Hats',
      lambda q: q.filter('category_hat = ', True)

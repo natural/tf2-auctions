@@ -1,8 +1,3 @@
-var itemContentSelector = function(s) {
-    return '#unplaced-backpack-'+s+' table.unplaced td img, #backpack-'+s+' table.backpack td img, span.equipped'
-}
-
-
 var itemUtil = function(item, schema) {
     return {
 	canTrade: function() {
@@ -82,7 +77,7 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 	    }
 	})
 	$('#unplaced-backpack-' + slug + ', #backpack-' + slug + ' label.null').toggle(newIdx > -1)
-	$(itemContentSelector(slug)).fadeIn(750)
+	$('#unplaced-backpack-{0} table.unplaced td img, #backpack-{1} table.backpack td img, span.equipped'.format(slug, slug)).fadeIn('slow')
 	$('#backpack-listing').fadeIn()
     }
 }

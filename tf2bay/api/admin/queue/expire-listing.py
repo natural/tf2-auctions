@@ -1,21 +1,18 @@
 #!/usr/bin/env python
-from logging import info, warn
+# -*- coding: utf-8 -*-
+from logging import warn
 
-from google.appengine.ext.webapp import RequestHandler, WSGIApplication
-from google.appengine.ext.webapp.util import run_wsgi_app
-
-from tf2bay import lib
+from tf2bay.lib import ApiHandler
 
 
-class ExpireListing(RequestHandler):
+class ExpireListing(ApiHandler):
     def post(self):
 	data = self.request.get('key')
 	warn('expire listing: %s', data)
 	self.response.out.write('OK')
 
 
-def main():
-    run_wsgi_app(WSGIApplication([('.*', ExpireListing)], debug=lib.debug))
+main = ApiHandler.make_main(ExpireListing)
 
 
 if __name__ == '__main__':

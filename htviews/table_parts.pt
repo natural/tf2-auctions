@@ -5,28 +5,33 @@
             <table class="listing-table w100">
 		<tbody>
                     <tr>
-			<td class="${slug}-view-link" rowspan="2">
+			<td class="${slug}-view-link" width="10%">
 			    <div class="centered text-centered ${slug}-view-summary">
 				<a class="small-button">View</a>
-				<div style="white-space:nowrap;">
-				    <img src="" class="listing-avatar" />
-				    <span class="listing-owner"></span>
-				</div>
 			    </div>
 			</td>
-			<td class="w88">
+			<td width="90%">
 			    <strong>&nbsp;Items:</strong>
 			    <metal:wrapper>
 				<metal:display use-macro="context.organizer_parts.macros.item_display" />
 			    </metal:wrapper>
+			    <table class="w100">
+				<tr>
+				    <td class="w50"><strong>Description:</strong></td>
+				    <td><strong>Created By:</strong></td>
+				</tr>
+				<tr>
+				    <td><div class="listing-description"></div></td>
+				    <td>
+					<div class="">
+					    <img src="" class="listing-avatar" />
+					    <span class="listing-owner"></span>
+					</div>
+				    </td>
+				</tr>
+			    </table>
 			</td>
 		    </tr>
-	            <tr>
-			<td>
-			    <strong>Description:</strong>
-			    <div class="listing-description"></div>
-			</td>
-                    </tr>
 		</tbody>
             </table>
 	</div>
