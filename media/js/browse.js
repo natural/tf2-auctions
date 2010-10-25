@@ -19,10 +19,11 @@ var optionChanged = function() {
 
 var addListing = function(listing, clone) {
     clone.removeClass('null prototype')
-    if (listing.description || true) {
-	$('.listing-description', clone).text(listing.description || 'empty text should go here')
+    if (listing.description) {
+	$('.listing-description', clone).text(listing.description)
     } else {
-	$('.listing-description', clone).parent().empty()
+	$('.listing-description-label', clone).empty()
+	$('.listing-description', clone).empty()
     }
     $('.listing-owner', clone).text(listing.owner.personaname)
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)

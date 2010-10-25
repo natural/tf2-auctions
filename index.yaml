@@ -68,6 +68,12 @@ indexes:
   - name: category_craft_bar
   - name: status
   - name: expires
+
+- kind: Listing
+  properties:
+  - name: category_craft_bar
+  - name: status
+  - name: expires
     direction: desc
 
 - kind: Listing
@@ -189,6 +195,12 @@ indexes:
   - name: status
   - name: created
     direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_supply_crate
+  - name: status
+  - name: expires
 
 - kind: Listing
   properties:

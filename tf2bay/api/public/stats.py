@@ -5,12 +5,11 @@ from tf2bay.models.counters import get_counter
 
 
 class Stats(ApiHandler):
+    keys = ('bids', 'bid_items', 'listings', 'listing_items', 'players')
+
     def get(self):
-	self.write_json({
-	    'items':get_counter('items'),
-	    'listings':get_counter('listings'),
-	    'players':get_counter('players'),
-	})
+	stats = [(k, get_counter(k)) for k in self.keys]
+	self.write_json(dict(stats))
 
 
 main = ApiHandler.make_main(Stats)

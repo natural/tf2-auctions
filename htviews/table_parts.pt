@@ -1,4 +1,6 @@
 <metal:parts>
+
+
     <metal:macro define-macro="listing_large">
 	<div id="browse-listings">
 	<div class="null prototype">
@@ -11,19 +13,21 @@
 			    </div>
 			</td>
 			<td width="90%">
-			    <strong>&nbsp;Items:</strong>
+			    <strong>Items:</strong>
 			    <metal:wrapper>
 				<metal:display use-macro="context.organizer_parts.macros.item_display" />
 			    </metal:wrapper>
 			    <table class="w100">
 				<tr>
-				    <td class="w50"><strong>Description:</strong></td>
+				    <td class="w50">
+					<strong class="listing-description-label">Description:</strong>
+				    </td>
 				    <td><strong>Created By:</strong></td>
 				</tr>
 				<tr>
 				    <td><div class="listing-description"></div></td>
 				    <td>
-					<div class="">
+					<div class="listing-owner-wrapper">
 					    <img src="" class="listing-avatar" />
 					    <span class="listing-owner"></span>
 					</div>
@@ -37,6 +41,7 @@
 	</div>
 	</div>
     </metal:macro>
+
 
     <metal:macro define-macro="listing_bids">
 	<div class="null prototype">
@@ -52,7 +57,7 @@
 			    </div>
 			</td>
 			<td class="w88">
-			    <strong>&nbsp;Bid Items:</strong>
+			    <strong>Bid Items:</strong>
 			    <metal:wrapper>
 				<metal:display use-macro="context.organizer_parts.macros.item_display" />
 			    </metal:wrapper>

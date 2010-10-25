@@ -4,22 +4,19 @@
 </head>
 <body>
     <metal:fill fill-slot="main">
-
 	<div id="front-no-auth" class="null">
 	    <h1>Lookin to Trade?</h1>
 	    <div class="m1">You've gotta login to bid or make listing.</div>
-
 	    <h3>Players: <span id="front-players"></span></h3>
 	    <h3>Listings: <span id="front-listings"></span></h3>
-	    <h3>Items: <span id="front-items"></span></h3>
+	    <h3>Listed Items: <span id="front-listing-items"></span></h3>
+	    <h3>Bids: <span id="front-bids"></span></h3>
+	    <h3>Bid Items: <span id="front-bid-items"></span></h3>
 	</div>
-
 	<div id="front-auth" class="null">
 	    <h1>Howdy there, pardner!</h1>
 	    <div>Get to tradin' yer stuff for other stuff!</div>
 	</div>
-
-
     </metal:fill>
 </body>
 </html>

@@ -17,7 +17,7 @@ var profileError = function(request, status, error) {
 var statsOkay = function(stats) {
     new AuthProfileLoader({success:profileOkay, error:profileError})
     $.each(keys(stats), function(index, key) {
-	$$(key).text(stats[key])
+	$$(key.replace('_', '-')).text(stats[key])
     })
 }
 
