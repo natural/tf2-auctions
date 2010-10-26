@@ -1,18 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from tf2bay.lib import View
+from tf2bay.lib import template_main
 
 
-class BrowseView(View):
-    """ Displays a page for browsing listings.
-
-    """
-    template_name = 'browse.pt'
-    related_css = ('browse.css', )
-    related_js = ('browse.js', 'backpack.js')
-
-
-main = View.make_main(BrowseView)
+main = template_main('browse.pt', related_css='browse.css', related_js=('browse.js', 'backpack.js'))
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 var $$ = function(suffix, next) { return $('#browse-'+suffix, next) } // slug defined in browse.pt
-
+var previousStack = []
 
 
 var optionsQuery = function() {
@@ -13,7 +13,8 @@ var optionsQuery = function() {
 
 
 var optionChanged = function() {
-    //new SearchLoader({success: searchOkay, suffix: optionsQuery()})
+    previousStack = []
+    new SearchLoader({success: searchOkay, suffix: optionsQuery()})
 }
 
 
@@ -27,7 +28,6 @@ var showListing = function(listing, clone) {
     }
     $('.listing-owner', clone).text(listing.owner.personaname)
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)
-
     var next = 1
     $.each(listing.items, function(index, item) {
 	$('.item-display:nth-child(' + next + ') div', clone).append( $.toJSON(item) )
@@ -37,8 +37,6 @@ var showListing = function(listing, clone) {
     $('.browse-listing-id', clone).text(listing.id)
     $$('listings').append(clone)
 }
-
-var previousStack = []
 
 
 var showListings = function(results) {
@@ -94,9 +92,7 @@ var showListings = function(results) {
 }
 
 
-
 var searchOkay = function(search) {
-    //$('div.listing-wrapper table').fadeOut('fast')
     if (!$('#filter-inputs').children().length) {
 	$.each(search.filters, function(idx, filter) {
 	    var input = '<input type="checkbox" name="{0}" />{1}'.format(filter[0], filter[1])
