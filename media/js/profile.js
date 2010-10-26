@@ -46,6 +46,10 @@ var listingsReady = function(listings) {
     smallMsg('Listings loaded.')
     $$('listings-title').text('Listings')
     $$('listings-wrapper').slideDown()
+
+    // this goes elsewhere:
+    $$('backpack-title').text('Backpack')
+    $$('backpack-wrapper').slideDown()
 }
 
 var listingsError = function(request, status, error) {
@@ -75,7 +79,7 @@ var playerProfileError = function(request, status, error) {
 }
 
 
-var ownProfileOkay = function(profile) {
+var authProfileOkay = function(profile) {
     var id64 = id64View()
     showProfile(profile)
     if (id64 != profile.id64) {
@@ -94,10 +98,9 @@ var ownProfileOkay = function(profile) {
 }
 
 
-var ownProfileError = function(request, status, error) {
+var authProfileError = function(request, status, error) {
     var id64 = id64View()
     if (request.status==401) {
-	// not logged in
 	smallMsg('Loading profile...')
 	new ProfileLoader({suffix: id64, success: playerProfileOkay, error: playerProfileError})
 	new ListingsLoader({suffix: id64, success: listingsReady, error: listingsError})
@@ -107,8 +110,7 @@ var ownProfileError = function(request, status, error) {
 
 
 var schemaReady = function(s) {
-    smallMsg('Loading profile...')
-    new AuthProfileLoader({success: ownProfileOkay, error:ownProfileError})
+    new AuthProfileLoader({success: authProfileOkay, error:authProfileError})
 }
 
 

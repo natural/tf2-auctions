@@ -1,29 +1,27 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
-    <title metal:fill-slot="title">tf2bay.com - browse listings</title>
+    <title metal:fill-slot="title">TF2Bay.com -- Browse Listings</title>
 </head>
 <body>
     <metal:fill fill-slot="main">
         <h1><span class="hilite"></span>Browse Listings</h1>
 	<div id="filters">
-	    <span class="mr1">
-		Filter by category:
-		<metal:filters tal:repeat="filt controller.filters()">
-	            <input type="checkbox" name="${filt[0]}" />${filt[1]}
-		</metal:filters>
-	    </span>
-	    <span>
-		Sort by date:
-		<input name="sort_date" type="radio" value="created" />Recently Added
-		<input name="sort_date" type="radio" value="expires" />Ending Soon
-	    </span>
-
+	    <span class="mr1">Filter: <span id="filter-inputs"></span></span>
+	    <span>Sort: <span id="sort-inputs"></span></span>
 	</div>
 	<div class="organizer-view">
 	    <h2 class="null" id="browse-no-listings"></h2>
 	    <metal:wrapper tal:define="slug 'browse'">
 		<metal:include use-macro="context.table_parts.macros.listing_large" />
 	    </metal:wrapper>
+	    <div class="tools">
+		<div class="navs null" id="search-nav">
+		    <span class="nonav" id="prev-none">&lt;</span>
+		    <span class="nav" id="prev-link"><a href="#" id="search-prev">&lt;</a></span>
+		    <span class="nav" id="next-link"><a href="#" id="search-next">&gt;</a></span>
+		    <span class="nonav" id="next-none">&gt;</span>
+		</div>
+	    </div>
 	</div>
         <div class="centered text-centered mt1">
             Yo dawg, I heard you like browsers so I put a browser in

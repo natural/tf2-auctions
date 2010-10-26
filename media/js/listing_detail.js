@@ -1,5 +1,5 @@
 // slug '#listing-detail-' defined in browse.pt
-var $$ = function(suffix, next) { return $('#{0}-{1}'.format(idSlug, suffix), next) }
+var $$ = function(suffix, next) { return $('#listing-detail-{0}'.format(suffix), next) }
 var listingId = function() { return window.location.pathname.split('/').pop() }
 
 

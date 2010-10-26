@@ -47,6 +47,13 @@ indexes:
   - name: category_craft_bar
   - name: category_weapon
   - name: status
+  - name: created
+
+- kind: Listing
+  properties:
+  - name: category_craft_bar
+  - name: category_weapon
+  - name: status
   - name: expires
     direction: desc
 
@@ -83,6 +90,12 @@ indexes:
   - name: status
   - name: created
     direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_craft_token
+  - name: status
+  - name: created
 
 - kind: Listing
   properties:
@@ -123,6 +136,13 @@ indexes:
   - name: status
   - name: expires
     direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_hat
+  - name: category_weapon
+  - name: status
+  - name: created
 
 - kind: Listing
   properties:

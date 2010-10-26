@@ -15,6 +15,8 @@ EXTRA_PATHS = (
     join(DIR_PATH, 'ext', 'ipaddr'),
     join(DIR_PATH, 'ext', 'webob'),
     join(DIR_PATH, 'ext', 'yaml', 'lib'),
+    join(DIR_PATH, 'ext', 'simplejson'),
+    join(DIR_PATH, 'ext', 'graphy'),
 )
 
 

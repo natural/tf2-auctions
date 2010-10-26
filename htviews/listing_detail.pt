@@ -15,7 +15,6 @@
 </head>
 <body>
     <div metal:fill-slot="main" tal:define="slug 'listing-detail'">
-	<script type="text/javascript">var idSlug="${slug}"</script>
 	<div id="terms-dialog" class="null">
 	    rules, terms, etc.  fetch via ajax, yo.
        </div>

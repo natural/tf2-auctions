@@ -16,7 +16,7 @@ margin-bottom:1em;
 padding:0.5em;
 }
 
-#browse-listings div.listing-wrapper:nth-child(odd) table.listing-table {
+#browse-listings div.listing-wrapper:nth-child(even) table.listing-table {
 background-color:#2E2B2A;
 border-radius:0.75em; -moz-border-radius:0.75em;
 }
@@ -50,4 +50,23 @@ margin-bottom:0.25em;
 
 .listing-owner-wrapper img {
 vertical-align:middle;
+}
+
+
+#filters {
+font-family:"TF2Build";
+margin:0.5em auto 0.5em auto;
+}
+
+#filters input {
+margin-left:2em;
+margin-right:0.5em;
+}
+
+div.organizer-view div.navs {
+text-align:left;
+}
+
+span.nav a, span.nonav {
+font-size:1.5em;
 }

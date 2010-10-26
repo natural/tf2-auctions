@@ -11,19 +11,24 @@
 		<h1 class="m1" id="profile-title"></h1>
 	    </div>
 	</div>
-	<div id="profile-bids-wrapper" class="null">
-	    <h1 class="mt1"><a name="bids"></a>
-		<span class="hilite"></span><span id="profile-bids-title"></span>
-	    </h1>
-	    <metal:wrapper tal:define="slug 'profile-bids'">
-                <metal:include use-macro="context.table_parts.macros.listing_large" />
-            </metal:wrapper>
-	</div>
 	<div id="profile-listings-wrapper" class="null">
 	    <h1 class="mt1"><a name="listings"></a>
 		<span class="hilite"></span><span id="profile-listings-title"></span>
 	    </h1>
 	    <metal:wrapper tal:define="slug 'profile-listings'">
+                <metal:include use-macro="context.table_parts.macros.listing_large" />
+            </metal:wrapper>
+	</div>
+	<div id="profile-backpack-wrapper" class="null">
+	    <h1 class="mt1"><a name=""></a>
+		<span class="hilite"></span><span id="profile-backpack-title"></span>
+	    </h1>
+	</div>
+	<div id="profile-bids-wrapper" class="null">
+	    <h1 class="mt1"><a name="bids"></a>
+		<span class="hilite"></span><span id="profile-bids-title"></span>
+	    </h1>
+	    <metal:wrapper tal:define="slug 'profile-bids'">
                 <metal:include use-macro="context.table_parts.macros.listing_large" />
             </metal:wrapper>
 	</div>

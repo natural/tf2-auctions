@@ -2,35 +2,20 @@
 # -*- coding: utf-8 -*-
 from cgi import parse_qs
 from tf2bay.lib import ApiHandler
-from tf2bay.models import Listing, category_filters
+from tf2bay.models import ListingSearch
 
 
 class Search(ApiHandler):
-    max_fetch = 20
-    sorts = {None:'expires', 'expires':'expires', 'created':'created'}
-
     def get(self):
-	qs = parse_qs(self.request.query_string)
-	mf = self.max_fetch
-
-	if 'c' in qs:
-	    #results = cursor search
-	    pass
-	else:
-	    q = Listing.all().filter('status = ', 'active')
-	    for key, title, filt in category_filters:
-		if qs.get(key, [''])[0] == 'on':
-		    filt(q)
-	    sort = self.sorts.get(qs.get('sort', ['expires'])[0], self.sorts[None])
-	    q.order('%s' % sort)
-	    listings = q.fetch(limit=mf+1)
-	    listings = [n.encode_builtin() for n in listings][0:mf]
-	    results = {
-		'listings' : listings,
-		'cursor' : q.cursor(),
-		'more' : len(listings)==mf+1,
-	    }
-	self.write_json(results)
+	search = ListingSearch(parse_qs(self.request.query_string))
+	listings, cursor, next_qs = search()
+	self.write_json({
+	    'listings' : [lst.encode_builtin() for lst in listings],
+	    'more' : search.more(),
+	    'filters' : [(key, title) for key, title, func in search.filters],
+	    'orders' : [(key, title) for key, (title, func) in sorted(search.orders.items())],
+	    'next_qs' : next_qs,
+	})
 
 
 main = ApiHandler.make_main(Search)

@@ -452,10 +452,6 @@ class Feedback(db.Model):
 	pass
 
 
-
-
-category_filters = (
-
 #    ('new', 'New',
 #     lambda q: q.filter('created > ', datetime.now() - timedelta(hours=24)).order('-created')
 #     ),
@@ -464,27 +460,48 @@ category_filters = (
 #     lambda q: q.filter('expires < ', datetime.now() - timedelta(hours=24))
 #    ),
 
-    ('hat', 'Hats',
-     lambda q: q.filter('category_hat = ', True)
-     ),
 
-    ('weapon', 'Weapons',
-     lambda q: q.filter('category_weapon = ', True)
-     ),
+class ListingSearch(object):
+    limit = 3
+    orders = {
+	'created' : ('Recently Added', lambda q:q.order('created')),
+	'expires' : ('Expiring Soon', lambda q:q.order('-expires')),
+    }
 
-    ('tool', 'Tools',
-     lambda q: q.filter('category_tool = ', True)
-     ),
+    filters = (
+	('hat', 'Hats', lambda q: q.filter('category_hat = ', True)),
+	('weapon', 'Weapons',  lambda q: q.filter('category_weapon = ', True)),
+	('tool', 'Tools', lambda q: q.filter('category_tool = ', True)),
+	('craft_bar', 'Metal', lambda q: q.filter('category_craft_bar = ', True)),
+	('craft_token', 'Tokens', lambda q: q.filter('category_craft_token = ', True)),
+	('supply_crate', 'Crates', lambda q: q.filter('category_supply_crate = ', True)),
+    )
 
-    ('craft_bar', 'Metal',
-     lambda q: q.filter('category_craft_bar = ', True)
-     ),
+    def __init__(self, query_string, status='active'):
+	self.qs = query_string
+	self.q = Listing.all().filter('status = ', status)
+	self.apply_qs(query_string)
 
-    ('craft_token', 'Tokens',
-     lambda q: q.filter('category_craft_token = ', True)
-     ),
+    def apply_qs(self, qs):
+	for key, title, filt in self.filters:
+	    if qs.get(key, [''])[0] == 'on':
+		filt(self.q)
+	sort = qs.get('sort', ['created'])[0]
+	order = self.orders.get('sort', None)
+	if order:
+	    order(self.q)
+	if 'c' in qs:
+	    self.q.with_cursor(qs['c'][0])
 
-    ('supply_crate', 'Crates',
-     lambda q: q.filter('category_supply_crate = ', True)
-     ),
-)
+    def __call__(self):
+	results = self.q.fetch(self.limit)
+	cursor = self.q.cursor()
+	return results, cursor, self.next_qs(self.qs, cursor)
+
+    def next_qs(self, query_string, cursor):
+	parts = ['%s=%s' % (k, vs[0]) for k, vs in query_string.items() if k != 'c']
+	parts.append('c=%s' % cursor)
+	return str.join('&', parts)
+
+    def more(self):
+	return bool(self.q.fetch(1, self.limit+1))

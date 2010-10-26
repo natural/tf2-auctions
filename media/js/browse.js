@@ -1,23 +1,23 @@
 var $$ = function(suffix, next) { return $('#browse-'+suffix, next) } // slug defined in browse.pt
 
 
-var optionChanged = function() {
-    var searchOkay = function(results) {
-	//$$('listings tbody:gt(0)').fadeOut()
-	listingsReady(results)
-    }
+
+var optionsQuery = function() {
     var qs = $("#filters input[type='checkbox']").map(function(i,v) {
 	return '{0}={1}'.format( $(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
     })
     qs.push('{0}={1}'.format('sort', $("#filters input[type='radio']:checked").attr('value')))
-    new SearchLoader({
-	success: searchOkay,
-	suffix: '?' + qs.toArray().join('&')
-    })
+    console.log(qs)
+    return '?' + qs.toArray().join('&')
 }
 
 
-var addListing = function(listing, clone) {
+var optionChanged = function() {
+    //new SearchLoader({success: searchOkay, suffix: optionsQuery()})
+}
+
+
+var showListing = function(listing, clone) {
     clone.removeClass('null prototype')
     if (listing.description) {
 	$('.listing-description', clone).text(listing.description)
@@ -35,29 +35,86 @@ var addListing = function(listing, clone) {
     })
     $('.browse-view-link a', clone).attr('href', '/listing/'+listing.id)
     $('.browse-listing-id', clone).text(listing.id)
-    GL = listing
-    $$('listings').prepend(clone)
+    $$('listings').append(clone)
+}
+
+var previousStack = []
+
+
+var showListings = function(results) {
+    $('div.listing-wrapper').remove()
+    if (!results.listings.length) {
+	$$('no-listings').text('Nothing found.  You should add a listing.').show()
+	return
+    } else {
+	$$('no-listings').hide()
+    }
+
+    var proto = $$('listings div.prototype')
+    $.each(results.listings, function(idx, listing) {
+	showListing(listing, proto.clone().addClass('listing-wrapper'))
+    })
+
+    if (results.more) {
+	$('#search-next').unbind().click(function(e) {
+	    var next = function(rs) {
+		previousStack.push(results)
+		showListings(rs)
+	    }
+	    new SearchLoader({success: next, suffix: '?' + results.next_qs })
+	    return false
+	})
+	$('#next-link').show()
+	$('#next-none').hide()
+    } else {
+	$('#next-link').hide()
+	$('#next-none').show()
+    }
+
+    if (previousStack.length) {
+	$('#search-prev').unbind().click(function(e) {
+	    showListings(previousStack.pop())
+	})
+	$('#prev-link').show()
+	$('#prev-none').hide()
+    } else {
+	$('#prev-link').hide()
+	$('#prev-none').show()
+    }
+
+    if (results.more || previousStack.length) {
+	$('#search-nav').fadeIn()
+    } else {
+	$('#search-nav').fadeOut()
+    }
+    new SchemaTool().setImages()
+    $('div.listing-wrapper td.item-display div:empty').parent().remove()
+    $('#search-nav').fadeIn()
+    $('#browse-listings').fadeIn()
 }
 
 
-var listingsReady = function(search) {
-    $('div.listing-wrapper table').slideUp('fast').delay(500)
-    $('div.listing-wrapper').queue(function() { $(this).remove() })
-    if (search.listings.length) {
-	var proto = $$('listings div.prototype')
-	$.each(search.listings, function(idx, listing) {
-	    var clone = proto.clone().addClass('listing-wrapper')
-	    addListing(listing, clone)
+
+var searchOkay = function(search) {
+    //$('div.listing-wrapper table').fadeOut('fast')
+    if (!$('#filter-inputs').children().length) {
+	$.each(search.filters, function(idx, filter) {
+	    var input = '<input type="checkbox" name="{0}" />{1}'.format(filter[0], filter[1])
+	    $('#filter-inputs').append(input)
 	})
-        new SchemaTool().setImages()
-	$('div.listing-wrapper td.item-display div:empty').parent().remove()
-    } else {
-	$$('no-listings').text('Nothing found.  You should add a listing.').show()
+	$('#filters input[type="checkbox"]').click(optionChanged)
     }
+    if (!$('#sort-inputs').children().length) {
+	$.each(search.orders, function(idx, order) {
+	    var input = '<input type="radio" name="sort" value="{0}" />{1}'.format(order[0], order[1])
+	    $('#sort-inputs').append(input)
+	})
+	$('#filters input[type="radio"]').click(optionChanged)
+	$('input[name="sort"]').first().click()
+    }
+    showListings(search)
     smallMsg().fadeAway()
     $$('listings').slideDown('fast')
-
-
 }
 
 
@@ -68,17 +125,14 @@ var schemaReady = function(schema) {
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
     $('div.organizer-view td.item-display').live('mouseover', hoverItem)
     $('div.organizer-view td.item-display').live('mouseout', unhoverItem)
-
     smallMsg('Loading results...')
-    new SearchLoader({success:listingsReady})
+    new SearchLoader({success:searchOkay})
 }
 
 
 $(document).ready(function() {
-    $("input[name='sort_date']").first().click()
-    $("#filters input[type='checkbox']").click(optionChanged)
-    $("#filters input[type='radio']").click(optionChanged)
     smallMsg('Loading schema...')
     new SchemaLoader({success: schemaReady})
+    new AuthProfileLoader({success: showProfile})
     console.log('browse.js ready')
 })

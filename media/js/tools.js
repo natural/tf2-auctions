@@ -70,7 +70,7 @@ var makeLoader = function(config) {
         var url = prefix + (suffix || '')
         var okay = function(data) {
 	    console.log(name, 'success', data)
-            cache[url] = data
+	    cache[url] = data
     	    var cb = options.success ? options.success : ident
 	    cb(data)
         }

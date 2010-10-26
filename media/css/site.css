@@ -448,16 +448,16 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .w88  { width:88%; }
 .w100 { width:100%; }
 
-.owner-links, #filters {
+.owner-links {
 font-family:"TF2Build";
 margin:0.5em auto 0.5em auto;
 }
 
-.owner-links a, #filters a {
+.owner-links a {
 border-bottom:1px solid;
 }
 
-.owner-links a:hover, #filters a:hover {
+.owner-links a:hover {
 color:#c8503c;
 border-bottom:none;
 }
