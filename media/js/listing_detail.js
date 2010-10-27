@@ -1,5 +1,5 @@
 // slug '#listing-detail-' defined in browse.pt
-var $$ = function(suffix, next) { return $('#listing-detail-{0}'.format(suffix), next) }
+var $$ = function(suffix, next) { return $('#listing-detail-{0}'.fs(suffix), next) }
 var listingId = function() { return window.location.pathname.split('/').pop() }
 
 
@@ -151,8 +151,8 @@ var backpackReady = function(backpack, listings, bids, profile) {
     var showErrors = function(errors) {
 	console.error('validation errors:', errors)
 	$.each(errors, function(index, error) {
-	    var ele = $('{0}-error'.format(error.id))
-	    ele.text('Error: {0}'.format(error.msg)).parent().fadeIn()
+	    var ele = $('{0}-error'.fs(error.id))
+	    ele.text('Error: {0}'.fs(error.msg)).parent().fadeIn()
 	    if (index==0) { ele.parent().scrollTopAni() }
 	})
     }
@@ -214,10 +214,10 @@ var backpackReady = function(backpack, listings, bids, profile) {
     $('#add-bid-fields textarea').width(width).height(width/4).text()
     $('#add-bid-terms-desc').parent().width(width)
     $.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
-	$('#{0}'.format(value)).text( $('#{0}-default'.format(value)).text() )
-	$('#{0}'.format(value)).focusin(function() {
+	$('#{0}'.fs(value)).text( $('#{0}-default'.fs(value)).text() )
+	$('#{0}'.fs(value)).focusin(function() {
 	    var area = $(this)
-	    if (area.text() == $('#{0}-default'.format(area.context.id)).text()) { area.text('') }
+	    if (area.text() == $('#{0}-default'.fs(area.context.id)).text()) { area.text('') }
 	})
     })
     $$('bid-cancel').click(cancelNewBid)
@@ -249,8 +249,8 @@ var listingsError = function(request, status, error)  {
 
 var profileReady = function(profile, listing) {
     var ownerid = listing.owner.steamid
-    $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.format(ownerid))
-    $$('chat-owner').attr('href', 'steam://friends/message/{0}'.format(ownerid))
+    $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
+    $$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
     if (profile.steamid == ownerid) {
 	$$('owner-links').slideUp()
 	if (listing.status == 'active') {
@@ -332,8 +332,8 @@ var listingReady = function(id, listing) {
 	clone.removeClass('null prototype')
 	$$('bids').prepend(clone)
 	$.each(bid.items, function(i, item) {
-	    $('td.item-display:nth-child({0}) div'.format(i+1), clone).text( $.toJSON(item) )
-	    $('td.item-display:nth-child({0}) div'.format(i+1), clone).data('node', item)
+	    $('td.item-display:nth-child({0}) div'.fs(i+1), clone).text( $.toJSON(item) )
+	    $('td.item-display:nth-child({0}) div'.fs(i+1), clone).data('node', item)
 	})
     })
     st.setImages()

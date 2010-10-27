@@ -2,7 +2,7 @@
 
 
     <metal:macro define-macro="listing_large">
-	<div id="browse-listings">
+	<div id="search-listings">
 	<div class="null prototype">
             <table class="listing-table w100">
 		<tbody>

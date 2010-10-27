@@ -11,7 +11,6 @@
 		with your Steam account.  This site never gets your
 		username or your password so you're pretty safe - at
 		least from us.
-
 	    </div>
 	    <div  class="login-link">
 	    <a href="${controller.login_url()}">

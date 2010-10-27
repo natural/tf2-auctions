@@ -1,0 +1,71 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">TF2Bay.com -- Search Listings</title>
+    <metal:css fill-slot="style">
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
+	      rel="stylesheet" type="text/css" />
+        <metal:slot define-slot="style" />
+    </metal:css>
+    <metal:js fill-slot="script">
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"
+		type="text/javascript"></script>
+        <metal:slot define-slot="script" />
+    </metal:js>
+</head>
+<body>
+<metal:fill fill-slot="main">
+<h1><span class="hilite"></span>Search Listings</h1>
+<div id="container-container">
+
+    <div id="controls" class="null">
+	Page:
+	<div class="organizer-view" id="controls-nav">
+	    <div class="tools" id="search-nav">
+		<div class="navs">
+		    <span class="nonav" id="prev-none">&lt;</span>
+		    <span class="nav" id="prev-link"><a href="" id="search-prev">&lt;</a></span>
+		    <span class="nav" id="next-link"><a href="" id="search-next">&gt;</a></span>
+		    <span class="nonav" id="next-none">&gt;</span>
+		</div>
+	    </div>
+	</div>
+	<div id="bsearch" class="null">
+	    <div><a id="bsearch-link" href="" onclick="return false">Basic <span class="hi">&lt;&lt;</span></a></div>
+	</div>
+	<div class="null" id="advanced-search-wrapper">
+	    <div class="organizer-view" id="advanced-search-view">
+		<metal:settings tal:define="slug 'ac'">
+		    <metal:include use-macro="context.organizer_parts.macros.item_backpack_narrow" />
+		</metal:settings>
+		<label id="advanced-search-label-chooser">Your Search:</label>
+		<metal:settings tal:define="slug 'advanced-search'; rows 1; cols 3">
+		    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
+		</metal:settings>
+	    </div>
+	</div>
+        <div id="filters">Filters: <div id="filter-inputs"></div></div>
+	<div id="sorts">Sort: <div id="sort-inputs"></div></div>
+	<div id="asearch">
+	    <div><a id="asearch-link" href="" onclick="return false">Advanced <span class="hi">&gt;&gt;</span></a></div>
+	</div>
+    </div>
+
+    <div id="listing-container">
+	<div>
+	    <h2 class="null" id="search-no-listings"></h2>
+	    <h2 class="null" id="search-some-listings"></h2>
+	    <div id="results-wrapper">
+		<div class="organizer-view" id="results-inner">
+		    <metal:wrapper tal:define="slug 'search'">
+			<metal:include use-macro="context.table_parts.macros.listing_large" />
+		    </metal:wrapper>
+		</div>
+	    </div>
+	</div>
+    </div>
+</div>
+
+
+</metal:fill>
+</body>
+</html>

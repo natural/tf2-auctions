@@ -77,7 +77,7 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 	    }
 	})
 	$('#unplaced-backpack-' + slug + ', #backpack-' + slug + ' label.null').toggle(newIdx > -1)
-	$('#unplaced-backpack-{0} table.unplaced td img, #backpack-{1} table.backpack td img, span.equipped'.format(slug, slug)).fadeIn('slow')
+	$('#unplaced-backpack-{0} table.unplaced td img, #backpack-{1} table.backpack td img, span.equipped'.fs(slug, slug)).fadeIn('slow')
 	$('#backpack-listing').fadeIn()
     }
 }

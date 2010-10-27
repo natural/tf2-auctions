@@ -8,7 +8,7 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
-from tf2bay.lib import json, user_steam_id, schematools, js_datetime
+from tf2bay.lib import json, user_steam_id, schematools, js_datetime, devel
 from tf2bay.models.proxyutils import fetch
 
 
@@ -211,7 +211,9 @@ class Listing(db.Model):
 	## 2. check the date
 	if days not in cls.valid_days:
 	    raise ValueError('Invalid number of days until expiration.')
-	expires = datetime.now() + timedelta(days=days)
+	## regulation 46a:
+	delta = timedelta(hours=days) if devel else timedelta(days=days)
+	expires = datetime.now() + delta
 
 	## 3.  extract and create categories for the ListingItem
 	## item types and for the min_bid defindex checks.

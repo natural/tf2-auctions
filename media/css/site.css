@@ -20,6 +20,13 @@ label { display:block; font-family:"TF2Build"; }
 
 .centered { margin:0 auto 0 auto; }
 .clear { clear:both; }
+.clear:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
 .defindex-lazy { display:none; }
 .null { display:none; }
 .text-centered { text-align:center; }
@@ -176,7 +183,7 @@ width:2em;
 
 
 /* more specific classes on all pages */
-span.hilite { color:#c8503c; }
+span.hilite, span.hi { color:#c8503c; }
 span.hilite:before { content:">> "; }
 
 .bid-button, .login-button, .logout-button:hover, .submit:hover, .cancel:hover {
@@ -192,13 +199,27 @@ border-bottom:0.25em solid #84756b;
 }
 
 #header {
-margin:0.25em auto 0 auto;
-padding:1em 0 1em 0;
+height:96px;
+margin:0 auto 0 auto;
+position:relative;
+top:0;
 width:85%;
 }
 
-#main-logo { float:left; width:275px; /* just over the size of the img */ }
-#site-buttons { margin-top:0.25em; float:right; white-space:nowrap; }
+
+#main-logo {
+left:0;
+position:absolute;
+top:8px;
+}
+
+
+#site-buttons {
+position:absolute;
+right:0;
+top:12px;
+}
+
 #site-buttons span, #site-buttons img { vertical-align:middle; }
 
 #site-small-msg {
@@ -211,8 +232,8 @@ font-weight:bold;
 opacity:0.5;
 padding:0.5em 1.5em 0.5em 1em;
 position:absolute;
-right:7.5%;
-top:3.65em;
+right:0;
+top:3.25em;
 }
 
 
@@ -312,12 +333,12 @@ top:0.5em;
 }
 
 #footer {
-bottom:0;
+a-bottom:0;
 color:#827868;
 height:3em;
 margin:0 auto 0 auto;
 padding-top:2em;
-position:relative;
+a-position:relative;
 width:100%;
 }
 

@@ -17,6 +17,7 @@ EXTRA_PATHS = (
     join(DIR_PATH, 'ext', 'yaml', 'lib'),
     join(DIR_PATH, 'ext', 'simplejson'),
     join(DIR_PATH, 'ext', 'graphy'),
+    join(DIR_PATH, 'ext', 'firepython'),
 )
 
 

@@ -10,7 +10,7 @@ from google.appengine.api import users
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication, Request, Response
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-from django.utils import simplejson as json
+import simplejson as json
 from chameleon.zpt.loader import TemplateLoader
 from tf2bay import template_dir
 
@@ -24,8 +24,8 @@ def js_datetime(dt):
     return dt.strftime(fmt)
 
 
-debug = is_devel(environ)
-info('tf2bay.lib.__init__.debug=%s', debug)
+devel = is_devel(environ)
+info('tf2bay.lib.__init__.devel=%s', devel)
 
 
 def user_steam_id(user):
@@ -60,7 +60,7 @@ class LocalHandler(RequestHandler):
 	return self.request.environ['PATH_INFO'].split('/')[-1]
 
     @staticmethod
-    def make_main(app, debug=debug):
+    def make_main(app, debug=devel):
 	return make_main(app, debug)
 
 
@@ -150,13 +150,13 @@ def wsgi_local(app, debug):
     return local
 
 
-def make_main(app, debug=debug):
+def make_main(app, debug=devel):
     def main():
 	run_wsgi_app(wsgi_local(app, debug))
     return main
 
 
-def template_main(template_name, related_css=None, related_js=None, debug=debug):
+def template_main(template_name, related_css=None, related_js=None, debug=devel):
     return make_main(basic_view(template_name, related_css, related_js), debug)
 
 

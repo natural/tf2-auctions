@@ -103,8 +103,8 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
     self.showErrors = function(errors) {
 	console.error('validation errors:', errors)
 	$.each(errors, function(index, error) {
-	    var ele = $('{0}-error'.format(error.id))
-	    ele.text('Error: {0}'.format(error.msg)).parent().fadeIn()
+	    var ele = $('{0}-error'.fs(error.id))
+	    ele.text('Error: {0}'.fs(error.msg)).parent().fadeIn()
 	    if (index==0) { ele.parent().scrollTopAni() }
 	})
     }
@@ -249,7 +249,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
         tipTool.hide(e)
         $(this).removeClass('outline')
     }
-    var msg = (count > 0) ? "You've got {0} item{1} to auction.".format(count, (count==1?'':'s')) : "Your backpack is empty!"
+    var msg = (count > 0) ? "You've got {0} item{1} to auction.".fs(count, (count==1?'':'s')) : "Your backpack is empty!"
     $('a[href="/listing/add"]').fadeAway()
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
     //$('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)

@@ -3,10 +3,11 @@ if (typeof(console) == 'undefined') {
     console.log = console.error = function() {}
 }
 
-String.prototype.format = function() {
+
+String.prototype.fs = function() {
     var formatted = this
-    for (arg in arguments) {
-        formatted = formatted.replace("{" + arg + "}", arguments[arg])
+    for (var i=0; i<arguments.length; i++) {
+        formatted = formatted.replace("{" + i + "}", arguments[i])
     }
     return formatted
 }
@@ -17,35 +18,15 @@ var ident = function(a) { return a }
 
 var keys = function(obj) {
     var ks = []
-    for (var k in obj) {
-	ks.push(k)
-    }
+    for (var k in obj) { ks.push(k) }
     return ks
 }
 
 
 var values = function(obj) {
     var vs = []
-    for (var k in obj) {
-	vs.push(obj[k])
-    }
+    for (var k in obj) { vs.push(obj[k]) }
     return vs
-}
-
-
-var makeImg = function(options) {
-    var src = options['src'] ? options['src'] : '/media/img/missing.png'
-    var width = '' + (options['width'] || 32)
-    var height = '' + (options['height'] || 32)
-    var alt = options['alt'] || ''
-    var style = options['style'] || ''
-    var cls = options['class'] || ''
-    return '<img src="'+src+'" width="'+width+'" height="'+height+'" alt="'+alt+'" style="'+style+'" class="'+cls+'" />'
-}
-
-
-var showProfile = function(p) {
-    $('#avatar').html(makeImg({src: p.avatar, width: 32, height: 32})).show()
 }
 
 
@@ -57,9 +38,25 @@ var lazy = function(def) {
 }
 
 
-var setTitle = function(name) {
-    $('title').append(' -- ' + name)
+var makeImg = function(options) {
+    var src = options['src'] ? options['src'] : '/media/img/missing.png'
+    var width = '' + (options['width'] || 32)
+    var height = '' + (options['height'] || 32)
+    var alt = options['alt'] || ''
+    var style = options['style'] || ''
+    var cls = options['class'] || ''
+    return '<img src="{0}" width="{1}" height="{2}" alt="{3}" style="{4}" class="{5}" />'.fs(
+	src, width, height, alt, style, cls)
 }
+
+
+var setTitle = function(name) { $('title').append(' -- ' + name) }
+
+
+var showProfile = function(profile) {
+    $('#avatar').html(makeImg({src: profile.avatar, width: 32, height: 32})).show()
+}
+
 
 
 var makeLoader = function(config) {
@@ -70,16 +67,18 @@ var makeLoader = function(config) {
         var url = prefix + (suffix || '')
         var okay = function(data) {
 	    console.log(name, 'success', data)
-	    cache[url] = data
+	    cache[url] = {data:data}
     	    var cb = options.success ? options.success : ident
 	    cb(data)
         }
         var error = function(req, status, err) {
 	    console.error(name, 'error', req, status, err, url)
+	    cache[url] = {request:req, status:status, error:err}
 	    var cb = options.error ? options.error : ident
 	    cb(req, status, err)
         }
-        if (!cache[url]) {
+        var res = cache[url]
+        if (!res) {
             console.log(name, 'loading', url)
 	    $.ajax({url: url,
 		    dataType: (config.dataType||'json'),
@@ -90,7 +89,11 @@ var makeLoader = function(config) {
                     })
         } else {
 	    console.log(name, 'using cached data', cache[url])
-	    okay(cache[url])
+	    if (res.data) {
+		okay(res.data)
+	    } else {
+		error(res.request, res.status, res.error)
+	    }
         }
     }
 }
@@ -250,7 +253,7 @@ var asPlayerItem = function(i) {
 
 
 var makeCell = function(v) {
-    return '<td><div class="defindex-lazy">{0}</div></td>'.format(v)
+    return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v)
 }
 
 
@@ -297,6 +300,20 @@ var showTermsDialog = function(e) {
 }
 
 
+var userAuthOkay = function(profile) {
+    $('#user-buttons, #logout-button').show()
+    $('#login-button').hide()
+    $('#my-bids').attr('href', $('#my-bids').attr('href') + profile.id64)
+    $('#my-listings').attr('href', $('#my-listings').attr('href') + profile.id64)
+    showProfile(profile)
+}
+
+
+var userAuthFail = function(request, status, error) {
+    $('#login-button').attr('href', '/login?next=' + encodeURIComponent(window.location.href))
+}
+
+
 var initExtensions = function(jq) {
     jq.fn.fadeAway = function() { return this.each(function() { jq(this).fadeTo(750, 0) }) }
     jq.fn.fadeBack = function() { return this.each(function() { jq(this).fadeTo(750, 100) }) }
@@ -306,7 +323,7 @@ initExtensions(jQuery)
 
 
 $(document).ready(function() {
-    $("a[href='/login']").attr('href', '/login?next=' + encodeURIComponent(window.location.href))
+    new AuthProfileLoader({success: userAuthOkay, error: userAuthFail})
     console.log('tools.js ready')
 })
 

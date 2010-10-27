@@ -3,13 +3,11 @@
     <title metal:fill-slot="title">Not Found</title>
 </head>
 <body>
-    <metal:hide fill-slot="menu-prime"></metal:hide>
     <metal:lol fill-slot="main">
 	<div class="centered text-centered">
 	    <h1>404 Not Found</h1>
 	    <h1>LOL</h1>
 	 </div>
     </metal:lol>
-    <metal:hide fill-slot="footer-prime"></metal:hide>
 </body>
 </html>

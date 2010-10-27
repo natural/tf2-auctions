@@ -15,8 +15,8 @@
 <body>
     <metal:main fill-slot="main">
 	<div id="terms-dialog" class="null">
-	    rules, terms, etc.  fetch via ajax, yo.
-       </div>
+	    rules, terms, etc.  fetched via ajax, yo.
+        </div>
 
 	<h1 class="mt1 mb05"><span class="hilite"></span>Add a New Listing</h1>
 	<div class="organizer-view null" id="add-listing-own-backpack">

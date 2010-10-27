@@ -6,12 +6,11 @@ from tf2bay.models import Listing
 
 
 class ListingSearch(object):
-    limit = 4
+    limit = 5
     orders = {
-	'created' : ('Recently Added', lambda q:q.order('-created')),
-	'expires' : ('Expiring Soon', lambda q:q.order('-expires')),
+	'created' : ('New', lambda q:q.order('-created')),
+	'expires' : ('Expires', lambda q:q.order('expires')),
     }
-
     filters = (
 	('hat', 'Hats', lambda q: q.filter('category_hat = ', True)),
 	('weapon', 'Weapons',  lambda q: q.filter('category_weapon = ', True)),
@@ -31,7 +30,7 @@ class ListingSearch(object):
 	    if qs.get(key, [''])[0] == 'on':
 		filt(self.q)
 	sort = qs.get('sort', ['created'])[0]
-	order = self.orders.get('sort', None)
+	title, order = self.orders.get(sort, self.orders['created'])
 	if order:
 	    order(self.q)
 	if 'c' in qs:

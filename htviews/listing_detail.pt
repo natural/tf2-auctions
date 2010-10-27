@@ -16,8 +16,8 @@
 <body>
     <div metal:fill-slot="main" tal:define="slug 'listing-detail'">
 	<div id="terms-dialog" class="null">
-	    rules, terms, etc.  fetch via ajax, yo.
-       </div>
+	    rules, terms, etc.  fetched via ajax, yo.
+        </div>
 
 	<h1 id="${slug}-title-wrapper" class="null mb05">
 	    <span class="hilite"></span>

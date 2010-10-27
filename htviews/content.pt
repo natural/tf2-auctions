@@ -25,7 +25,6 @@
 
 
 <body metal:fill-slot="body">
-    <div id="site-small-msg" class="null"></div>
     <div id="tooltip" class="null">
         <div id="tooltip-top-shim"></div>
         <div id="tooltip-inner">
@@ -43,51 +42,37 @@
 		<a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
 	    </div>
 	    <div id="site-buttons">
-		<metal:buttons tal:condition="user">
+		<span class="null" id="user-buttons">
 		    <span id="avatar"></span>
-		    <a class="big-button" href="/profile/${user.nickname()}#bids">My Bids</a>
-		    <a class="big-button" href="/profile/${user.nickname()}#listings">My Listings</a>
+		    <a class="big-button" href="/profile/" id="my-bids">My Bids</a>
+		    <a class="big-button" href="/profile/" id="my-listings">My Listings</a>
 		    <a class="big-button mr1" href="/listing/add">Add Listing</a>
-		</metal:buttons>
-		<a class="button" href="/browse">Browse</a>
-		<metal:button tal:condition="not user">
-		    <a class="button login-button" href="/login">Login</a>
-		</metal:button>
-		<metal:button tal:condition="user">
-		    <a class="button logout-button" href="${controller.logout_url()}">Logout</a>
-		</metal:button>
+		</span>
+		<a class="button" href="/search">Search</a>
+		<a class="button login-button" href="/login" id="login-button">Login</a>
+		<a class="button logout-button null" href="${controller.logout_url()}" id="logout-button">Logout</a>
 	    </div>
-	    <div class="clear"></div>
-	    <metal:define define-slot="header" />
+	    <div id="site-small-msg" class="null"></div>
 	</div>
     </div>
 
-    <div id="profile-wrapper" metal:fill-slot="menu">
-	<metal:slot define-slot="menu-prime">
-	    <metal:slot define-slot="menu" />
-	</metal:slot>
+    <div id="content" metal:fill-slot="main">
+	<metal:slot define-slot="main" />
+	<div class="clear"></div>
     </div>
 
-    <metal:slot define-slot="main-prime">
-	<div id="content" metal:fill-slot="main">
-	    <metal:slot define-slot="main" />
+    <div id="footer" metal:fill-slot="footer">
+	<metal:slot define-slot="footer" />
+	<div class="text-centered">
+	    <a href="#">about</a> |
+	    <a href="#">faq</a> |
+	    <a href="#">terms of service</a> | etc...
 	</div>
-    </metal:slot>
-
-    <metal:slot define-slot="footer-prime">
-	<div id="footer" metal:fill-slot="footer">
-	    <div class="text-centered">
-		<a href="#">about</a> |
-		<a href="#">faq</a> |
-		<a href="#">terms of service</a> | etc...
-	    </div>
-	    <div class="text-centered">
-		Powered by <a href="http://steampowered.com">Steam</a>
-		(but we don't have anything to do with Valve or Steam)
-	    </div>
-	    <metal:slot define-slot="footer" />
+	<div class="text-centered">
+	    Powered by <a href="http://steampowered.com">Steam</a>
+	    (but we don't have anything to do with Valve or Steam)
 	</div>
-    </metal:slot>
+    </div>
 
 <metal:iesucks tal:condition="not controller.is_devel()">
 <!--[if lt IE 9]>

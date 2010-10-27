@@ -86,7 +86,23 @@ indexes:
 - kind: Listing
   properties:
   - name: category_craft_token
+  - name: category_hat
+  - name: status
+  - name: created
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_craft_token
   - name: category_supply_crate
+  - name: status
+  - name: created
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_craft_token
+  - name: category_weapon
   - name: status
   - name: created
     direction: desc
@@ -101,6 +117,19 @@ indexes:
   properties:
   - name: category_craft_token
   - name: status
+  - name: created
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_craft_token
+  - name: status
+  - name: expires
+
+- kind: Listing
+  properties:
+  - name: category_craft_token
+  - name: status
   - name: expires
     direction: desc
 
@@ -127,6 +156,22 @@ indexes:
   - name: category_supply_crate
   - name: status
   - name: expires
+
+- kind: Listing
+  properties:
+  - name: category_hat
+  - name: category_supply_crate
+  - name: status
+  - name: expires
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_hat
+  - name: category_tool
+  - name: category_weapon
+  - name: status
+  - name: created
     direction: desc
 
 - kind: Listing
@@ -158,6 +203,13 @@ indexes:
   - name: category_weapon
   - name: status
   - name: expires
+
+- kind: Listing
+  properties:
+  - name: category_hat
+  - name: category_weapon
+  - name: status
+  - name: expires
     direction: desc
 
 - kind: Listing
@@ -234,6 +286,14 @@ indexes:
   - name: category_tool
   - name: category_weapon
   - name: status
+  - name: created
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_tool
+  - name: category_weapon
+  - name: status
   - name: expires
     direction: desc
 
@@ -243,6 +303,12 @@ indexes:
   - name: status
   - name: created
     direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_tool
+  - name: status
+  - name: expires
 
 - kind: Listing
   properties:
