@@ -203,7 +203,7 @@ var SchemaTool = function(schema) {
     self.weapons = function() {return self.select('craft_class', 'weapon')}
     self.stock = function() {
 	return self.select('defindex', function(v) {
-	    return (v>190 && v<213) || (v>=0 && v<31)
+	    return ((v>=190 && v<=212) || (v<=30))
 	})
     }
     self.uncraftable = function() {

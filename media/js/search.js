@@ -55,28 +55,60 @@ var showBasicSearch = function() {
 var showAdvancedSearch = function() {
     if ( !$('#advanced-search-wrapper').data('init') ) {
 	var schema = new SchemaTool()
-	var minTool = new SearchBackpackTool(schema)
+	var advSearchTool = new SearchBackpackTool(schema)
 	$('#advanced-search-wrapper').data('init', true)
     }
-    //var tipTool = new TooltipView(schema)
-    //$('#backpack-ac td div img').dblclick(copyToMinbidChooser)
-    //$('#chooser-advanced-search td').hover(hoverMinBidChoice, unhoverMinBidChoice)
-    //$('#chooser-advanced-search td').dblclick(removeMinBidChoice)
+    var tipTool = new TooltipView(schema)
+    var searchDefIndexes = function() {
+	return $('#chooser-advanced-search img').map(
+	    function(k, v) { return $(v).data('node')['defindex'] }
+	).toArray()
+    }
 
-//    $('#advanced-search-wrapper').slideDown()
+    var hoverSearchChoice = function(e) {
+        try {
+            var data = $('img', this).data('node')
+        	if (!data.flag_cannot_trade) {
+	            $(this).addClass('selected-delete')
+                }
+        } catch (e) {}
+    }
+    var unhoverSearchChoice = function(e) {
+	$(this).removeClass('selected-delete')
+    }
+    var copyToSearchChoice = function(e) {
+	var source = $(event.target)
+	var target = $("#chooser-advanced-search td div:empty").first()
+	if (!target.length) { return }
+	var clone = source.clone()
+	clone.data('node', source.data('node'))
+	target.prepend(clone)
+	console.log('chooser dblclick; update search', searchDefIndexes())
+    }
+    var removeSearchChoice = function(e) {
+	$('img', this).fadeOut().remove()
+	$(this).removeClass('selected selected-delete')
+	console.log('chooser remove; update search', searchDefIndexes())
+    }
+    $('#backpack-ac td div img').dblclick(copyToSearchChoice)
+    $('#chooser-advanced-search td').hover(hoverSearchChoice, unhoverSearchChoice)
+    $('#chooser-advanced-search td').dblclick(removeSearchChoice)
+    $('#chooser-advanced-search td div').bind('drop', function(event, ui) {
+	window.setTimeout(function() {
+	    console.log('chooser drop; update search', searchDefIndexes())
+	}, 150)
+    })
+
     $('#asearch, #sorts, #filters').fadeOut()
     $('#bsearch').fadeIn()
+
     var width = $('#container-container').width()
     $("#advanced-search-wrapper").show()
     $('#controls').animate({width:330} ,400)
-    $("#listing-container").animate({width:width-330}, 400)
 
-
-    var width = $('#backpack-ac tbody').width()
-    $('#advanced-search-wrapper').show() ///width(width)
-    $('#backpack-ac, #chooser-advanced-search').css('width', width + ' important!')
-
-//, #advanced-search-label-chooser, #advanced-search-label-results
+    $("#listing-container").animate({width:width-330}, 400, function() {
+	$('#advanced-search-wrapper').show()
+    })
     return false
 }
 
@@ -183,8 +215,8 @@ var schemaReady = function(schema) {
     var tt = new TooltipView(st)
     var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
-    $('div.organizer-view td.item-display').live('mouseover', hoverItem)
-    $('div.organizer-view td.item-display').live('mouseout', unhoverItem)
+    $('div.organizer-view td.item-display, #backpack-ac td').live('mouseover', hoverItem)
+    $('div.organizer-view td.item-display, #backpack-ac td').live('mouseout', unhoverItem)
     $('.listing-table').live('mouseover', function() { $(this).addClass('listing-hover') })
     $('.listing-table').live('mouseout', function() { $(this).removeClass('listing-hover') })
     $('#asearch-link').click(showAdvancedSearch)

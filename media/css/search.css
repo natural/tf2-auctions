@@ -95,7 +95,7 @@ div.organizer-view div.tools {
 }
 /* span.nav a, span.nonav { font-size:1.5em; } */
 
-#filters, #sorts, #asearch { margin-top: 1em; }
+#sorts, #asearch { margin-top: 1em; }
 
 /*
 #filters, #sorts, #asearch { white-space:nowrap; }
@@ -136,3 +136,19 @@ a-border-radius:0.75em; -moz-border-radius:0.75em;
 background-color:#393431;
 border:none;
 }
+
+#backpack-nav-ac {
+text-align:right;
+padding-right:0.6em;
+}
+
+#backpack-nav-ac .pagecount {
+padding-left:0.25em;
+padding-right:0.25em;
+}
+
+
+#bsearch {
+margin-bottom:0.5em;
+}
+
