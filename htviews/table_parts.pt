@@ -2,12 +2,12 @@
 
 
     <metal:macro define-macro="listing_large">
-	<div id="${slug}-listings">
+	<div id="${slug}-listings" tal:define="use_created use_created|True">
 	<div class="null prototype">
             <table class="listing-table w100 mb1">
 		<tbody>
                     <tr>
-			<td width="70%">
+			<td tal:attributes="width '70%' if use_created else '100%'">
 			    <div class="${slug}-view-link m05 mb1">
 				<a class="small-button">View</a>
 				<strong>Items:</strong>
@@ -17,7 +17,7 @@
 			    <strong class="listing-description-label">Description:</strong>
 			    <div class="listing-description"></div>
 			</td>
-			<td>
+			<td tal:condition="use_created">
 			    <strong>Created By:</strong>
 			    <div class="listing-owner-wrapper">
 				<img src="" class="listing-avatar" />

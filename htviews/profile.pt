@@ -6,6 +6,7 @@
 <metal:fill fill-slot="main">
     <div id="profile-content-wrapper">
 
+	<!-- player profile badge on the right -->
 	<div id="profile-badge-wrapper">
 	    <div id="profile-badge" class="null owner">
 		<div class="centered text-centered">
@@ -16,46 +17,83 @@
 	    </div>
 	</div>
 
+	<!-- outer wrapper for listings and bids -->
 	<div id="profile-main-wrapper">
-	    <div id="profile-listings-wrapper" class="null">
-		<h1 class="mt1"><a name="listings"></a>
-		    <span class="hilite"></span><span id="profile-listings-title"></span>
-		</h1>
-		<div class="organizer-view mt05" id="profile-listings-inner">
-		    <metal:wrapper tal:define="slug 'profile-listings'">
-			<metal:include use-macro="context.table_parts.macros.listing_large" />
-		    </metal:wrapper>
-		    <h2 class="null" id="profile-listings-none"></h2>
+
+	    <!-- inner wrapper for listings -->
+	    <div id="profile-listings-wrapper">
+		<div class="init-container null">
+		    <h1>
+			<span class="hilite"></span><span id="profile-listings-title"></span>
+		    </h1>
+		    <div class="mt05">
+			<a id="profile-listings-show"
+			   class="small-button" onclick="return false" href="">Show &gt;&gt;</a>
+		    </div>
+		    <div class="organizer-view null" id="profile-listings-inner">
+			<metal:wrapper tal:define="slug 'profile-listings';
+						   rows 2; cols 5;
+						   use_created False">
+			    <metal:include use-macro="context.table_parts.macros.listing_large" />
+			</metal:wrapper>
+			<h2 class="null" id="profile-listings-none"></h2>
+		    </div>
+		</div>
+		<div class="text-right">
+		    <a id="profile-listings-hide"
+		       class="small-button null" onclick="return false" href="">Hide &lt;&lt;</a>
 		</div>
 	    </div>
-	    <div id="profile-bids-wrapper" class="null">
-		<h1 class="mt1"><a name="bids"></a>
-		    <span class="hilite"></span><span id="profile-bids-title"></span>
-		</h1>
-		<div class="organizer-view mt05" id="profile-bids-inner">
+
+	    <!-- inner wrapper for bids -->
+	    <div id="profile-bids-wrapper" class="mt2">
+		<div class="init-container null">
+		    <h1>
+			<span class="hilite"></span><span id="profile-bids-title"></span>
+		    </h1>
+		    <div class="mt05">
+			<a id="profile-bids-show"
+			   class="small-button" onclick="return false" href="">Show &gt;&gt;</a>
+		    </div>
+		</div>
+		<div class="organizer-view null" id="profile-bids-inner">
 		    <metal:wrapper tal:define="slug 'profile-bids'">
 			<metal:include use-macro="context.table_parts.macros.listing_large" />
 		    </metal:wrapper>
 		    <h2 class="null" id="profile-bids-none"></h2>
 		</div>
+		<div class="mt1 text-right">
+		    <a id="profile-bids-hide"
+		       class="small-button null" onclick="return false" href="">Hide &lt;&lt;</a>
+		</div>
 	    </div>
-	</div>
 
-	<div class="clear"></div>
-
-	<div id="profile-backpack-wrapper" class="null">
-	    <h1 class="mt1"><a name=""></a>
+	<!-- wrapper for backpack -->
+	<div id="profile-backpack-wrapper" class="mt2">
+	    <div class="init-container null">
+	    <h1>
 		<span class="hilite"></span><span id="profile-backpack-title"></span>
 	    </h1>
-	    <div class="mt1">
-		<a onclick="return false" id="profile-backpack-show" href="" class="small-button">Show &gt;&gt;</a>
+	    <div class="mt05">
+		<a id="profile-backpack-show"
+		   class="small-button" onclick="return false" href="">Show &gt;&gt;</a>
 	    </div>
-	    <div class="organizer-view mt05 null" id="profile-backpack">
+	    </div>
+	    <div class="organizer-view null" id="profile-backpack-inner">
 		<metal:settings tal:define="include_unplaced True; slug 'profile'">
 		    <metal:include use-macro="context.organizer_parts.macros.item_backpack_wide" />
 		</metal:settings>
 	    </div>
+	    <div class="mt1 text-right">
+		<a id="profile-backpack-hide"
+		   class="small-button null" onclick="return false" href="">Hide &lt;&lt;</a>
+	    </div>
 	</div>
+
+
+	</div>
+	<div class="clear"></div>
+
 
 
     </div>

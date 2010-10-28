@@ -29,7 +29,8 @@ label { display:block; font-family:"TF2Build"; }
 }
 .defindex-lazy { display:none; }
 .null { display:none; }
-.text-centered { text-align:center; }
+.text-centered { text-align:center; } /* should be text-center */
+.text-right { text-align:right; }
 
 .button, .small-button {
 background-color:#766b5e;
