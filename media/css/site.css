@@ -466,6 +466,7 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 
 .w12  { width:12%; }
 .w50  { width:50%; }
+.w75  { width:75%; }
 .w88  { width:88%; }
 .w100 { width:100%; }
 
@@ -509,4 +510,12 @@ padding:1em;
 color:black;
 background-color:white;
 border:1px solid blue;
+}
+
+.owner {
+background-color:#332f2d;
+border-radius:0.75em; -moz-border-radius:0.75em;
+border:0.25em solid #847c69;
+padding:0.5em 0.25em 1em 0.25em;
+color:#ece3cb;
 }

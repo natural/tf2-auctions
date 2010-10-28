@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from cgi import parse_qs
 from tf2bay.lib import ApiHandler
-from tf2bay.models import Listing
+from tf2bay.models import Listing, ListingItem
 
 
 class ListingSearch(object):
@@ -20,34 +20,8 @@ class ListingSearch(object):
 	('supply_crate', 'Crates', lambda q: q.filter('category_supply_crate = ', True)),
     )
 
-    def __init__(self, query_string, status='active'):
+    def __init__(self, query_string):
 	self.qs = query_string
-	self.q = Listing.all().filter('status = ', status)
-	self.apply_qs(query_string)
-
-    def apply_qs(self, qs):
-	for key, title, filt in self.filters:
-	    if qs.get(key, [''])[0] == 'on':
-		filt(self.q)
-	sort = qs.get('sort', ['created'])[0]
-	title, order = self.orders.get(sort, self.orders['created'])
-	if order:
-	    order(self.q)
-	if 'c' in qs:
-	    self.q.with_cursor(qs['c'][0])
-
-    def run(self):
-	listings = [lst.encode_builtin() for lst in self.q.fetch(self.limit)]
-	return listings, self.next_qs(), self.more()
-
-    def next_qs(self):
-	cursor = self.q.cursor()
-	parts = ['%s=%s' % (k, vs[0]) for k, vs in self.qs.items() if k != 'c']
-	parts.append('c=%s' % cursor)
-	return str.join('&', parts)
-
-    def more(self):
-	return bool(self.q.fetch(1, self.limit+1))
 
     def filter_items(self):
 	return [(k, t) for k, t, f in self.filters]
@@ -55,10 +29,59 @@ class ListingSearch(object):
     def order_items(self):
 	return [(k, t) for k, (t, f) in sorted(self.orders.items())]
 
+    def more(self, q):
+	return bool(q.fetch(1, self.limit+1))
+
+    def next_qs(self, q, qs):
+	parts = ['%s=%s' % (k, vs[0]) for k, vs in qs.items() if k != 'c']
+	parts.append('c=%s' % q.cursor())
+	return str.join('&', parts)
+
+
+class BasicSearch(ListingSearch):
+    def run(self):
+	q = Listing.all().filter('status = ', 'active')
+	qs = self.qs
+	for key, title, filt in self.filters:
+	    if qs.get(key, [''])[0] == 'on':
+		filt(q)
+	sort = qs.get('sort', ['created'])[0]
+	title, order = self.orders.get(sort, self.orders['created'])
+	if order:
+	    order(q)
+	if 'c' in qs:
+	    q.with_cursor(qs['c'][0])
+	listings = [lst.encode_builtin() for lst in q.fetch(self.limit)]
+	return listings, self.next_qs(q, qs), self.more(q)
+
+
+class AdvancedSearch(ListingSearch):
+    limit = 100
+    max_defs = 3
+
+    def run(self):
+	listings, qs = [], self.qs
+	for di in qs.get('di', [])[0:self.max_defs]:
+	    try:
+		di = int(di)
+	    except (ValueError, ):
+		continue
+	    q = ListingItem.all(keys_only=True).filter('status = ', 'active')
+	    q.filter('defindex =', di)
+	    listings += Listing.get(i.parent() for i in q.fetch(self.limit))
+	listings.sort(key=lambda o:o.expires) ## TODO:  verify this is desired
+	listings = [lst.encode_builtin() for lst in listings]
+	return listings, '', False
+
+
+def buildSearch(raw_qs):
+    qs = parse_qs(raw_qs)
+    return AdvancedSearch(qs) if 'di' in qs else BasicSearch(qs)
+
 
 class ListingSearchHandler(ApiHandler):
     def get(self):
-	search = ListingSearch(parse_qs(self.request.query_string))
+	search = buildSearch(self.request.query_string)
 	listings, next_qs, more = search.run()
 	self.write_json({
 	    'filters' : search.filter_items(),

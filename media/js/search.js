@@ -1,6 +1,5 @@
 var $$ = function(suffix, next) { return $('#search-'+suffix, next) } // slug defined in search.pt
-var previousStack = []
-var contentWidths = {controls:null, results:null}
+var previousStack = [], contentWidths = {controls:null, results:null}
 
 
 var SearchBackpackTool = function(schema) {
@@ -10,13 +9,14 @@ var SearchBackpackTool = function(schema) {
     var bpNav = new BackpackNavigator('ac')
     var bpChs = new BackpackChooser({
 	backpack: backpack,
-	copy:true,
+	copy: true,
 	listingUids: [],
 	bidUids: [],
 	backpackSlug: 'ac',
 	chooserSlug: 'advanced-search',
 	title:'',
-	help:''
+	help:'',
+	afterDropMove: chooserChanged
     })
     bpNav.init()
     bpChs.init()
@@ -30,7 +30,6 @@ var optionsQuery = function() {
 	return '{0}={1}'.fs( $(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
     })
     qs.push('{0}={1}'.fs('sort', $("#controls input[type='radio']:checked").attr('value')))
-    console.log(qs)
     return '?' + qs.toArray().join('&')
 }
 
@@ -40,31 +39,37 @@ var optionChanged = function() {
     new SearchLoader({success: searchOkay, suffix: optionsQuery()})
 }
 
+
+var chooserQuery = function() {
+    var qs = $('#chooser-advanced-search img')
+        .map(function(k, v) { return 'di={0}'.fs( $(v).data('node')['defindex'] ) })
+        .toArray()
+    return '?' + qs.join('&')
+}
+
+var chooserChanged = function() {
+    previousStack = []
+    new SearchLoader({success: searchOkay, suffix: chooserQuery()})
+}
+
+
 var showBasicSearch = function() {
     $('#advanced-search-wrapper').slideUp()
     $('#asearch, #sorts, #filters').fadeBack()
     $('#bsearch').fadeOut()
-//    $("#listing-container").animate({width:contentWidths.results}, 400)
-//    $("#advanced-search-wrapper").animate({width:contentWidths.controls} ,400)
     $("#listing-container").animate({width:contentWidths.results}, 400)
     $("#controls").animate({width:contentWidths.controls} ,400)
-
+    $("#controls-nav").fadeIn()
 }
 
 
 var showAdvancedSearch = function() {
+    var schema = new SchemaTool()
     if ( !$('#advanced-search-wrapper').data('init') ) {
-	var schema = new SchemaTool()
 	var advSearchTool = new SearchBackpackTool(schema)
 	$('#advanced-search-wrapper').data('init', true)
     }
     var tipTool = new TooltipView(schema)
-    var searchDefIndexes = function() {
-	return $('#chooser-advanced-search img').map(
-	    function(k, v) { return $(v).data('node')['defindex'] }
-	).toArray()
-    }
-
     var hoverSearchChoice = function(e) {
         try {
             var data = $('img', this).data('node')
@@ -83,29 +88,22 @@ var showAdvancedSearch = function() {
 	var clone = source.clone()
 	clone.data('node', source.data('node'))
 	target.prepend(clone)
-	console.log('chooser dblclick; update search', searchDefIndexes())
+	chooserChanged()
     }
     var removeSearchChoice = function(e) {
 	$('img', this).fadeOut().remove()
 	$(this).removeClass('selected selected-delete')
-	console.log('chooser remove; update search', searchDefIndexes())
+	chooserChanged()
     }
     $('#backpack-ac td div img').dblclick(copyToSearchChoice)
     $('#chooser-advanced-search td').hover(hoverSearchChoice, unhoverSearchChoice)
     $('#chooser-advanced-search td').dblclick(removeSearchChoice)
-    $('#chooser-advanced-search td div').bind('drop', function(event, ui) {
-	window.setTimeout(function() {
-	    console.log('chooser drop; update search', searchDefIndexes())
-	}, 150)
-    })
-
-    $('#asearch, #sorts, #filters').fadeOut()
+    $('#asearch, #sorts, #filters, #controls-nav').fadeOut()
     $('#bsearch').fadeIn()
 
     var width = $('#container-container').width()
     $("#advanced-search-wrapper").show()
     $('#controls').animate({width:330} ,400)
-
     $("#listing-container").animate({width:width-330}, 400, function() {
 	$('#advanced-search-wrapper').show()
     })

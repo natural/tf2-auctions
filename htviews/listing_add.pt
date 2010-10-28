@@ -1,6 +1,6 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
-    <title metal:fill-slot="title">tf2bay.com</title>
+    <title metal:fill-slot="title">TF2Bay.com -- Add Listing</title>
     <metal:css fill-slot="style">
 	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
 	      rel="stylesheet" type="text/css" />

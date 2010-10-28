@@ -4,34 +4,52 @@
 </head>
 <body>
     <metal:fill fill-slot="main">
-	<div id="profile-badge" class="null">
+	<div id="profile-badge" class="null owner">
 	    <div class="centered text-centered">
 		<h2 class="null" id="profile-is-you"></h2>
 		<img id="profile-avatar" class="m1" />
 		<h1 class="m1" id="profile-title"></h1>
 	    </div>
 	</div>
-	<div id="profile-listings-wrapper" class="null">
+
+	<div id="profile-listings-wrapper" class="null w75">
 	    <h1 class="mt1"><a name="listings"></a>
 		<span class="hilite"></span><span id="profile-listings-title"></span>
 	    </h1>
-	    <metal:wrapper tal:define="slug 'profile-listings'">
-                <metal:include use-macro="context.table_parts.macros.listing_large" />
-            </metal:wrapper>
+	    <div class="organizer-view mt05" id="profile-listings-inner">
+		<metal:wrapper tal:define="slug 'profile-listings'">
+		    <metal:include use-macro="context.table_parts.macros.listing_large" />
+		</metal:wrapper>
+		<h2 class="null" id="profile-listings-none"></h2>
+	    </div>
 	</div>
+
+	<div id="profile-bids-wrapper" class="null w75">
+	    <h1 class="mt1"><a name="bids"></a>
+		<span class="hilite"></span><span id="profile-bids-title"></span>
+	    </h1>
+	    <div class="organizer-view mt05" id="profile-bids-inner">
+		<metal:wrapper tal:define="slug 'profile-bids'">
+                    <metal:include use-macro="context.table_parts.macros.listing_large" />
+		</metal:wrapper>
+		<h2 class="null" id="profile-bids-none"></h2>
+	    </div>
+	</div>
+
 	<div id="profile-backpack-wrapper" class="null">
 	    <h1 class="mt1"><a name=""></a>
 		<span class="hilite"></span><span id="profile-backpack-title"></span>
 	    </h1>
+	    <div class="mt1">
+		<a onclick="return false" id="profile-backpack-show" href="" class="small-button">Show &gt;&gt;</a>
+	    </div>
+	    <div class="organizer-view mt05 null" id="profile-backpack">
+		<metal:settings tal:define="include_unplaced True; slug 'profile'">
+		    <metal:include use-macro="context.organizer_parts.macros.item_backpack_wide" />
+		</metal:settings>
+	    </div>
 	</div>
-	<div id="profile-bids-wrapper" class="null">
-	    <h1 class="mt1"><a name="bids"></a>
-		<span class="hilite"></span><span id="profile-bids-title"></span>
-	    </h1>
-	    <metal:wrapper tal:define="slug 'profile-bids'">
-                <metal:include use-macro="context.table_parts.macros.listing_large" />
-            </metal:wrapper>
-	</div>
+
     </metal:fill>
 </body>
 </html>

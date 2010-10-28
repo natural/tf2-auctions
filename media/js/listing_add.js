@@ -156,10 +156,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	return false
     }
 
-    var moveItemToChooser = function(event) {
-	// called when the user double clicks an img within their
-	// backpack.  if possible, this function will move the image to
-	// the chooser, saving the original location with it.
+    self.moveItemToChooser = function(event) {
 	var source = $(event.target)
 	var target = $("#chooser-add-listing-item td div:empty").first()
 	var cell = source.parent().parent()
@@ -167,6 +164,12 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	source.data('original-cell', cell)
 	target.prepend(source)
 	bpChs.updateCount()
+    }
+
+    self.moveItemToBackpack = function(event) {
+	var source = $(event.target)
+	var target = $('div', source.data('original-cell'))
+	target.append(source)
     }
 
 }
@@ -233,8 +236,8 @@ var maybeDeselectLast = function() {
 
 var backpackReady = function(backpack, listings, bids, profile) {
     var count = backpack.length // count - count_untradable_items - count_my_listing_items
-    var addTool = new BackpackListingTool(backpack, listingItemsUids(listings), bidItemsUids(bids))
     var schema = new SchemaTool()
+    var addTool = new BackpackListingTool(backpack, listingItemsUids(listings), bidItemsUids(bids))
     var tipTool = new TooltipView(schema)
     var hoverItem = function(e) {
         tipTool.show(e)
@@ -252,8 +255,8 @@ var backpackReady = function(backpack, listings, bids, profile) {
     var msg = (count > 0) ? "You've got {0} item{1} to auction.".fs(count, (count==1?'':'s')) : "Your backpack is empty!"
     $('a[href="/listing/add"]').fadeAway()
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
-    //$('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
-    //smallMsg(msg).delay(3000).fadeAway()
+    $('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
+    $('#chooser-add-listing-item td div img').live('dblclick', addTool.moveItemToBackpack)
     smallMsg().fadeAway()
     addTool.show()
 }

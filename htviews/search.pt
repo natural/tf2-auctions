@@ -18,8 +18,8 @@
 <div id="container-container">
 
     <div id="controls" class="null">
-	Page:
 	<div class="organizer-view" id="controls-nav">
+	    Page:
 	    <div class="tools" id="search-nav">
 		<div class="navs">
 		    <span class="nonav" id="prev-none">&lt;</span>

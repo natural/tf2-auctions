@@ -61,6 +61,7 @@ var showProfile = function(profile) {
 
 var makeLoader = function(config) {
     var cache = {}, prefix = config.prefix, name = config.name
+    this.cache = cache
     return function(options) {
         options = options || {}
         var suffix = options.suffix
