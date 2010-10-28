@@ -54,6 +54,14 @@ indexes:
   - name: category_craft_bar
   - name: category_weapon
   - name: status
+  - name: created
+    direction: desc
+
+- kind: Listing
+  properties:
+  - name: category_craft_bar
+  - name: category_weapon
+  - name: status
   - name: expires
     direction: desc
 

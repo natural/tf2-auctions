@@ -110,7 +110,7 @@ var showBackpack = function(backpack) {
     schema.setImages()
     $('#profile-backpack td').hover(hoverItem, unhoverItem)
     $$('backpack').fadeIn()
-    $('#profile-backpack').width($('#backpack-profile table.backpack tbody').first().width())
+    $('#profile-backpack').width($('#backpack-profile table.backpack tbody').first().width()).addClass('centered')
 }
 
 

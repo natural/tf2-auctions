@@ -56,7 +56,7 @@
 	    <h2 class="null" id="search-some-listings"></h2>
 	    <div id="results-wrapper">
 		<div class="organizer-view" id="results-inner">
-		    <metal:wrapper tal:define="slug 'search'">
+		    <metal:wrapper tal:define="slug 'search'; rows 2; cols 5;">
 			<metal:include use-macro="context.table_parts.macros.listing_large" />
 		    </metal:wrapper>
 		</div>

@@ -13,10 +13,10 @@ a-border:none;
 
 #search-listings div.listing-wrapper table.listing-table {
 margin-bottom:1em;
-padding:0.5em;
+padding:1.25em;
 }
 
-#search-listings div.listing-wrapper:nth-child(even) table.listing-table {
+#search-listings div.listing-wrapper table.listing-table {
 background-color:#2E2B2A;
 border-radius:0.75em; -moz-border-radius:0.75em;
 }
@@ -33,8 +33,8 @@ border-radius:0.75em; -moz-border-radius:0.75em;
 }
 
 #search-listings div.listing-wrapper table.listing-table a.small-button {
-position:relative;
-top:-1.1em;
+a-position:relative;
+a-top:-1.1em;
 }
 
 #search-listings div.listing-wrapper table.listing-table img.listing-avatar {

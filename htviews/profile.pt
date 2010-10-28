@@ -3,38 +3,45 @@
     <title metal:fill-slot="title">TF2Bay.com Profile</title>
 </head>
 <body>
-    <metal:fill fill-slot="main">
-	<div id="profile-badge" class="null owner">
-	    <div class="centered text-centered">
-		<h2 class="null" id="profile-is-you"></h2>
-		<img id="profile-avatar" class="m1" />
-		<h1 class="m1" id="profile-title"></h1>
+<metal:fill fill-slot="main">
+    <div id="profile-content-wrapper">
+
+	<div id="profile-badge-wrapper">
+	    <div id="profile-badge" class="null owner">
+		<div class="centered text-centered">
+		    <h2 class="null mt1" id="profile-is-you"></h2>
+		    <img id="profile-avatar" class="m1" />
+		    <h1 class="mb1" id="profile-title"></h1>
+		</div>
 	    </div>
 	</div>
 
-	<div id="profile-listings-wrapper" class="null w75">
-	    <h1 class="mt1"><a name="listings"></a>
-		<span class="hilite"></span><span id="profile-listings-title"></span>
-	    </h1>
-	    <div class="organizer-view mt05" id="profile-listings-inner">
-		<metal:wrapper tal:define="slug 'profile-listings'">
-		    <metal:include use-macro="context.table_parts.macros.listing_large" />
-		</metal:wrapper>
-		<h2 class="null" id="profile-listings-none"></h2>
+	<div id="profile-main-wrapper">
+	    <div id="profile-listings-wrapper" class="null">
+		<h1 class="mt1"><a name="listings"></a>
+		    <span class="hilite"></span><span id="profile-listings-title"></span>
+		</h1>
+		<div class="organizer-view mt05" id="profile-listings-inner">
+		    <metal:wrapper tal:define="slug 'profile-listings'">
+			<metal:include use-macro="context.table_parts.macros.listing_large" />
+		    </metal:wrapper>
+		    <h2 class="null" id="profile-listings-none"></h2>
+		</div>
+	    </div>
+	    <div id="profile-bids-wrapper" class="null">
+		<h1 class="mt1"><a name="bids"></a>
+		    <span class="hilite"></span><span id="profile-bids-title"></span>
+		</h1>
+		<div class="organizer-view mt05" id="profile-bids-inner">
+		    <metal:wrapper tal:define="slug 'profile-bids'">
+			<metal:include use-macro="context.table_parts.macros.listing_large" />
+		    </metal:wrapper>
+		    <h2 class="null" id="profile-bids-none"></h2>
+		</div>
 	    </div>
 	</div>
 
-	<div id="profile-bids-wrapper" class="null w75">
-	    <h1 class="mt1"><a name="bids"></a>
-		<span class="hilite"></span><span id="profile-bids-title"></span>
-	    </h1>
-	    <div class="organizer-view mt05" id="profile-bids-inner">
-		<metal:wrapper tal:define="slug 'profile-bids'">
-                    <metal:include use-macro="context.table_parts.macros.listing_large" />
-		</metal:wrapper>
-		<h2 class="null" id="profile-bids-none"></h2>
-	    </div>
-	</div>
+	<div class="clear"></div>
 
 	<div id="profile-backpack-wrapper" class="null">
 	    <h1 class="mt1"><a name=""></a>
@@ -50,6 +57,8 @@
 	    </div>
 	</div>
 
-    </metal:fill>
+
+    </div>
+</metal:fill>
 </body>
 </html>

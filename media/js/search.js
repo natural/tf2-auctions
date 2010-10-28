@@ -81,7 +81,7 @@ var showAdvancedSearch = function() {
     var unhoverSearchChoice = function(e) {
 	$(this).removeClass('selected-delete')
     }
-    var copyToSearchChoice = function(e) {
+    var copyToSearchChoice = function(event) {
 	var source = $(event.target)
 	var target = $("#chooser-advanced-search td div:empty").first()
 	if (!target.length) { return }
@@ -104,7 +104,7 @@ var showAdvancedSearch = function() {
     var width = $('#container-container').width()
     $("#advanced-search-wrapper").show()
     $('#controls').animate({width:330} ,400)
-    $("#listing-container").animate({width:width-330}, 400, function() {
+    $("#listing-container").animate({width:width-350}, 400, function() {
 	$('#advanced-search-wrapper').show()
     })
     return false
@@ -121,9 +121,9 @@ var showListing = function(listing, clone) {
     }
     $('.listing-owner', clone).text(listing.owner.personaname)
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)
-    var next = 1
+    var next = 0
     $.each(listing.items, function(index, item) {
-	$('.item-display:nth-child(' + next + ') div', clone).append( $.toJSON(item) )
+	$( $('.item-display div', clone)[next]).append( $.toJSON(item) )
 	next += 1
     })
     $('.search-view-link a', clone).attr('href', '/listing/'+listing.id)

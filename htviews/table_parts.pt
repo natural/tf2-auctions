@@ -2,38 +2,27 @@
 
 
     <metal:macro define-macro="listing_large">
-	<div id="search-listings">
+	<div id="${slug}-listings">
 	<div class="null prototype">
-            <table class="listing-table w100">
+            <table class="listing-table w100 mb1">
 		<tbody>
                     <tr>
-			<td class="${slug}-view-link" width="10%">
-			    <div class="centered text-centered ${slug}-view-summary">
+			<td width="70%">
+			    <div class="${slug}-view-link m05 mb1">
 				<a class="small-button">View</a>
+				<strong>Items:</strong>
 			    </div>
+
+			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
+			    <strong class="listing-description-label">Description:</strong>
+			    <div class="listing-description"></div>
 			</td>
-			<td width="90%">
-			    <strong>Items:</strong>
-			    <metal:wrapper>
-				<metal:display use-macro="context.organizer_parts.macros.item_display" />
-			    </metal:wrapper>
-			    <table class="w100">
-				<tr>
-				    <td class="w50">
-					<strong class="listing-description-label">Description:</strong>
-				    </td>
-				    <td><strong>Created By:</strong></td>
-				</tr>
-				<tr>
-				    <td><div class="listing-description"></div></td>
-				    <td>
-					<div class="listing-owner-wrapper">
-					    <img src="" class="listing-avatar" />
-					    <span class="listing-owner"></span>
-					</div>
-				    </td>
-				</tr>
-			    </table>
+			<td>
+			    <strong>Created By:</strong>
+			    <div class="listing-owner-wrapper">
+				<img src="" class="listing-avatar" />
+				<span class="listing-owner"></span>
+			    </div>
 			</td>
 		    </tr>
 		</tbody>

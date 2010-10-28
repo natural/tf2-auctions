@@ -1,5 +1,18 @@
 #profile-badge {
-position:absolute;
-right:0;
-top:0
+}
+
+
+#profile-content-wrapper {
+width:100%;
+}
+
+
+#profile-badge-wrapper {
+float:right;
+width:30%;
+}
+
+#profile-main-wrapper {
+float:left;
+width:65%;
 }
