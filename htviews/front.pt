@@ -7,6 +7,17 @@
 	<div id="front-no-auth" class="null">
 	    <h1>Lookin to Trade?</h1>
 	    <div class="m1">You've gotta login to bid or make listing.</div>
+	</div>
+
+	<div id="front-auth" class="null">
+	    <h1>Good to See Ya!</h1>
+	    <div class="m1">
+		Now that you're logged in, you can create listings and
+		bids.
+	    </div>
+	</div>
+
+	<div id="front-stats" class="null">
 	    <h3>Players: <span id="front-players"></span></h3>
 	    <h3>Listings: <span id="front-listings"></span></h3>
 	    <h3>Listed Items: <span id="front-listing-items"></span></h3>

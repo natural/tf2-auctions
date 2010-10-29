@@ -1,7 +1,7 @@
 // slug '#listing-detail-' defined in browse.pt
 var $$ = function(suffix, next) { return $('#listing-detail-{0}'.fs(suffix), next) }
 var listingId = function() { return window.location.pathname.split('/').pop() }
-
+var timeLeftId = null
 
 function updateTimeLeft(expires, selector) {
     expires = new Date(expires)
@@ -31,9 +31,11 @@ function updateTimeLeft(expires, selector) {
 
 var sendListingCancel = function() {
     var cancelOkay = function(results) {
-	console.log('cancel success', results)
+	window.clearTimer(timeLeftId)
 	$$('status').text('Cancelled')
+	$$('timeleft').text('Cancelled')
 	$$('owner-controls').slideUp()
+
     }
     var cancelError = function(request, status, error) {
 	console.error('cancel failed', request, status, error)
@@ -358,9 +360,7 @@ var listingReady = function(id, listing) {
     $$('title-wrapper').fadeIn()
     smallMsg('').fadeOut()
     if (listing.status == 'active') {
-	GEXPIRES = listing.expires
-	console.log('expires: ', listing.expires)
-	var timer = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
+	timeLeftId = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
     } else {
 	$$('place-start').fadeOut()
 	$$('timeleft').text(listing.status)
@@ -391,6 +391,7 @@ var schemaError = function(request, status, error) {
 
 $(document).ready(function() {
     $('#backpack-bid td div img').live('dblclick', moveToChooser)
+    $('#unplaced-backpack-bid td div img').live('dblclick', moveToChooser)
     $('#chooser-add-bid-item td div img').live('dblclick', moveToBackpack)
     $('#add-bid-show-terms').click(showTermsDialog)
     $('#add-bid-success-view').click(function(){ window.location.reload() })

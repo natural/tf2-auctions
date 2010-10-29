@@ -1,21 +1,28 @@
 var $$ = function(suffix, next) { return $('#front-'+suffix, next) }
 
 
-var statsOkay = function(stats) {
-    new AuthProfileLoader({success:profileOkay, error:profileError})
-    $.each(keys(stats), function(index, key) {
+var userAuthOkay = function(profile) {
+    defaultUserAuthOkay(profile)
+    $$('auth').slideDown()
+}
+
+
+var userAuthError = function(request, status, error) {
+    defaultUserAuthError(request, status, error)
+    $$('no-auth').slideDown()
+}
+
+
+var statsLoaded = function(stats) {
+    $.each(keys(stats), function(idx, key) {
 	$$(key.replace('_', '-')).text(stats[key])
     })
+    $$('stats').slideDown()
 }
-
-
-var statsError = function(request, status, error) {
-}
-
-
 
 
 $(document).ready(function() {
-    new StatsLoader({success:statsOkay, error:statsError})
-    new AuthProfileLoader({success: defaultUserAuthOkay, error: defaultUserAuthError})
+    new AuthProfileLoader({success: userAuthOkay, error: userAuthError})
+    new StatsLoader({success: statsLoaded })
+
 })

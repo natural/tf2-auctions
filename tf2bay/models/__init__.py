@@ -172,7 +172,6 @@ class Listing(db.Model):
     ## non-normalized: bid counter
     bid_count = db.IntegerProperty('Bid Count', default=0)
 
-
     @classmethod
     def build(cls, **kwds):
 	## 0.  verify the owner, duration and description before

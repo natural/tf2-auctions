@@ -40,13 +40,13 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		    img.removeClass('equipped equipped-'+def)
 		}
 		if (iutil.canTrade()) {
-		    ele.parent().removeClass('cannot-trade active-listing active-bid')
+		    ele.parent('td').removeClass('cannot-trade active-listing active-bid')
 		} else {
-		    ele.parent().addClass('cannot-trade')
+		    ele.parent('td').addClass('cannot-trade')
 		    if (item.flag_active_listing) {
-			ele.parent().addClass('active-listing')
+			ele.parent('td').addClass('active-listing')
 		    } else if (item.flag_active_bid) {
-			ele.parent().addClass('active-bid')
+			ele.parent('td').addClass('active-bid')
 		    }
 		}
 	    } else {
@@ -61,11 +61,11 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		if (iutil.canTrade()) {
 		    ele.parent().removeClass('cannot-trade active-listing active-bid')
 		} else {
-		    ele.parent().addClass('cannot-trade')
+		    ele.parents('td').addClass('cannot-trade')
 		    if (item.flag_active_listing) {
-			ele.parent().addClass('active-listing')
+			ele.parents('td').addClass('active-listing')
 		    } else if (item.flag_active_bid) {
-			ele.parent().addClass('active-bid')
+			ele.parents('td').addClass('active-bid')
 		    }
 
 		}

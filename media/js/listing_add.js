@@ -166,7 +166,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	bpChs.updateCount()
     }
 
-    self.moveItemToBackpack = function(event) {
+    self.moveItemOriginal = function(event) {
 	var source = $(event.target)
 	var target = $('div', source.data('original-cell'))
 	target.append(source)
@@ -256,7 +256,8 @@ var backpackReady = function(backpack, listings, bids, profile) {
     $('a[href="/listing/add"]').fadeAway()
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
     $('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
-    $('#chooser-add-listing-item td div img').live('dblclick', addTool.moveItemToBackpack)
+    $('#unplaced-backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
+    $('#chooser-add-listing-item td div img').live('dblclick', addTool.moveItemOriginal)
     smallMsg().fadeAway()
     addTool.show()
 }
