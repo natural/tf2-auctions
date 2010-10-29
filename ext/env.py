@@ -11,13 +11,13 @@ DIR_PATH = abspath(join(dirname(realpath(ginitmod)), '..'))
 EXTRA_PATHS = (
     DIR_PATH,
     join(DIR_PATH, 'ext', 'antlr3'),
+    join(DIR_PATH, 'ext', 'chameleon'),
     join(DIR_PATH, 'ext', 'django'),
     join(DIR_PATH, 'ext', 'ipaddr'),
     join(DIR_PATH, 'ext', 'webob'),
     join(DIR_PATH, 'ext', 'yaml', 'lib'),
     join(DIR_PATH, 'ext', 'simplejson'),
     join(DIR_PATH, 'ext', 'graphy'),
-    join(DIR_PATH, 'ext', 'firepython'),
 )
 
 

@@ -180,12 +180,15 @@ var listingsError = function(request, status, error) {}
 
 
 var putListings = function(listings) {
-    var proto = $$('listings-inner div.prototype')
-    $.each(listings, function(idx, listing) {
-	putListing(listing, proto.clone().addClass('listing-wrapper'))
-    })
-    new SchemaTool().setImages()
-    $('div.listing-wrapper td.item-display div:empty').parent().remove()
+    if (!putListings.initOnce) {
+	var proto = $$('listings-inner div.prototype')
+	$.each(listings, function(idx, listing) {
+	    putListing(listing, proto.clone().addClass('listing-wrapper'))
+	})
+	new SchemaTool().setImages()
+	$('div.listing-wrapper td.item-display div:empty').parent().remove()
+	putListings.initOnce = true
+    }
 }
 
 

@@ -323,7 +323,9 @@ var listingReady = function(id, listing) {
     $.each(['description', 'status'], function(idx, name) {
 	listing[name] ? $$(name).text(listing[name]) : $$(name).parent().parent().slideUp() })
     $.each(['created', 'expires'], function(idx, name) {
-	$$(name).text('' + new Date(listing[name] + ' GMT')) })
+	var d = new Date(listing[name] + ' GMT')
+	$$(name).text(''+d)
+    })
     if (listing.min_bid.length) {
         $.each(listing.min_bid, function(idx, defindex) {
 	    if (!(cells % 5)) {

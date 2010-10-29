@@ -33,8 +33,13 @@ background-color:#2E2B2A;
 border-radius:0.75em; -moz-border-radius:0.75em;
 margin:0;
 padding:0;
-margin-bottom:1em;
-padding:1em;
+margin-bottom:0.5em;
+padding:1em 0.5em 0.25em 1em;
+}
+
+#profile-listings table.chooser td.item-display {
+border-color:transparent;
+background:none !important;
 }
 
 
@@ -58,4 +63,9 @@ border:none;
 #profile-bids .bid-table {
 background-color:#2E2B2A;
 border-radius:0.75em; -moz-border-radius:0.75em;
+}
+
+
+div.init-container > div > a {
+margin-left:2em;
 }

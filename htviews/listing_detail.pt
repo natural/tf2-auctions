@@ -108,7 +108,10 @@
 	    <div id="${slug}-existing-bids">
 		<h1 class="pt05"><span class="hilite"></span><span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids">
-		    <metal:include use-macro="context.table_parts.macros.listing_bids" />
+		    <metal:wrapper tal:define="slug 'profile'; use_view False">
+			<metal:include use-macro="context.table_parts.macros.bids_large" />
+		    </metal:wrapper>
+
 		</div>
 	    </div>
 	</div>

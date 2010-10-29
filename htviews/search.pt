@@ -19,7 +19,7 @@
 
     <div id="controls" class="null">
 	<div class="organizer-view" id="controls-nav">
-	    Page:
+	    <h2>Page:</h2>
 	    <div class="tools" id="search-nav">
 		<div class="navs">
 		    <span class="nonav" id="prev-none">&lt;</span>
@@ -30,7 +30,7 @@
 	    </div>
 	</div>
 	<div id="bsearch" class="null">
-	    <div><a id="bsearch-link" href="" onclick="return false">Basic <span class="hi">&lt;&lt;</span></a></div>
+	    <div><a id="bsearch-link" href="" onclick="return false"><h2>Basic <span class="hi">&lt;&lt;</span></h2></a></div>
 	</div>
 	<div class="null" id="advanced-search-wrapper">
 	    <div class="organizer-view" id="advanced-search-view">
@@ -43,10 +43,10 @@
 		</metal:settings>
 	    </div>
 	</div>
-        <div id="filters">Filters: <div id="filter-inputs"></div></div>
-	<div id="sorts">Sort: <div id="sort-inputs"></div></div>
+        <div id="filters"><h2>Filters:</h2> <div id="filter-inputs"></div></div>
+	<div id="sorts"><h2>Sort:</h2> <div id="sort-inputs"></div></div>
 	<div id="asearch">
-	    <div><a id="asearch-link" href="" onclick="return false">Advanced <span class="hi">&gt;&gt;</span></a></div>
+	    <div><a id="asearch-link" href="" onclick="return false"><h2>Advanced <span class="hi">&gt;&gt;</span></h2></a></div>
 	</div>
     </div>
 

@@ -9,140 +9,9 @@ from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
 from tf2bay.lib import json, user_steam_id, schematools, js_datetime, devel
+from tf2bay.models.feedback import Feedback
+from tf2bay.models.profile import PlayerProfile
 from tf2bay.models.proxyutils import fetch
-
-
-class PlayerItem(polymodel.PolyModel):
-    """ PlayerItem -> simple junction of player item unique ids and the
-        corresponding schema defindex.
-
-    The 'defindex' attribute is indexed for query speed.  This class
-    is a PolyModel so it can be subclassed (see below).
-
-    The 'uniqueid' is the integer decoded key name.
-    """
-    uniqueid = db.IntegerProperty('Item uniqueid', required=True, indexed=True)
-    defindex = db.IntegerProperty('Item defindex', required=True, indexed=True)
-    source = db.StringProperty('Item source data (JSON decodable)')
-
-    def __str__(self):
-	args = (self.uniqueid, self.defindex, )
-	return '<PlayerItem uniqueid=%s, defindex=%s>' % args
-
-    def encode_builtin(self):
-	""" Encode this instance using only built-in types. """
-	item = json.loads(self.source)
-	this = {'uniqueid':self.uniqueid, 'defindex':self.defindex}
-	this.update((k, item.get(k, None)) for k in ('level', 'quantity', 'quality'))
-	return this
-
-    @classmethod
-    def get_by_uid(cls, uniqueid):
-	""" Returns an item by uniqueid. """
-	return cls.all().filter('uniqueid =', uniqueid).get()
-
-    @classmethod
-    def build(cls, uniqueid, defindex, **kwds):
-	""" Returns an item by uniqueid. """
-	return cls.get_or_insert(uniqueid=uniqueid, defindex=defindex, **kwds)
-
-
-class PlayerProfile(db.Expando):
-    """ PlayerProfile -> persistent, server-side storage of player
-        information and backpack contents.
-
-    We don't maintain users directly, but we do need to display some
-    of their attributes and we need to verify their backpack contents
-    (we can't trust them to specify their backpack contents).  Objects
-    of this model can be viewed as cache entries.
-
-    This model is an Expando so we can copy all of the attributes from
-    the steam profile feed.  Note that we also store the keys we copy
-    so that the values can be later extracted.
-
-    The key name of a PlayerProfile is the players id64.
-    """
-    owner = db.UserProperty(required=True, indexed=True)
-    keys = db.StringListProperty('Profile Keys')
-    backpack = db.TextProperty('Backpack Items')
-
-    def __str__(self):
-	return '<PlayerProfile id64=%s>' % (self.id64(), )
-
-    @classmethod
-    def get_by_id64(cls, id64):
-	""" Returns the PlayerProfile for the given id64. """
-	return cls.get_by_key_name(id64)
-
-    @classmethod
-    def get_by_user(cls, user):
-	""" Returns the PlayerProfile for the given user. """
-	return cls.all().filter('owner =', user).get()
-
-    @classmethod
-    def build(cls, owner, id64=None):
-	""" Returns the PlayerProfile for the given user, creating it if necessary. """
-	if id64 is None:
-	    id64 = user_steam_id(owner)
-	def get_or_insert(): ## equiv to get_or_insert, copied from sdk docs.
-	    profile = cls.get_by_key_name(id64)
-	    if profile is None:
-		profile = cls(key_name=id64, owner=owner)
-		profile.put()
-		taskqueue.add(
-		    url='/api/v1/admin/queue/bang-counters',
-		    transactional=True,
-		    queue_name='counters',
-		    params={'players':1})
-	    return profile
-	return db.run_in_transaction(get_or_insert)
-
-    def owns_all(self, item_ids):
-	""" True if this profile owns all of the specified items. """
-	ids = [item['id'] for item in self.items()]
-	return all(item_id in ids for item_id in item_ids)
-
-    def id64(self):
-	try:
-	    return self.key().name()
-    	except (AttributeError, db.NotSavedError, ):
-	    return ''
-
-    def items(self):
-	try:
-	    return json.loads(self.backpack)
-	except:
-	    return []
-
-    def refresh(self, put=False):
-	try:
-	    steam_profile = json.loads(fetch.profile(self.id64()))
-	except (Exception, ), exc:
-	    exception('PlayerProfile.refresh(): %s %s', self, exc)
-	else:
-	    for key in steam_profile:
-		setattr(self, key, steam_profile[key])
-	    self.keys = [k for k in steam_profile]
-	try:
-	    self.backpack = fetch.items(self.id64())
-	except:
-	    exception('PlayerProfile.refresh(): %s %s', self, exc)
-	if put:
-	    self.put()
-	return self
-
-    def encode_builtin(self):
-	""" Encode this instance using only built-in types. """
-	res = {'id64':self.id64()}
-	for key in self.keys:
-	    res[key] = getattr(self, key)
-	return res
-
-
-def future_expires(value):
-    future, now = timedelta(minutes=5), datetime.now()
-    if value < (now + future):
-	raise TypeError('Must expire more than 5 minutes in the future.')
 
 
 class Listing(db.Model):
@@ -153,7 +22,7 @@ class Listing(db.Model):
     """
     owner = db.UserProperty('Owner', required=True, indexed=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
-    expires = db.DateTimeProperty('Expires', required=True) #, validator=future_expires)
+    expires = db.DateTimeProperty('Expires', required=True)
     min_bid = db.ListProperty(long, 'Minimum Bid')
     description = db.StringProperty('Description', default='', multiline=True)
 
@@ -292,10 +161,12 @@ class Listing(db.Model):
 
     def items(self):
 	""" Returns the player items for this listing. """
+	#return self.listingitem_set.filter('class =', 'ListingItem').fetch(limit=100)
 	return ListingItem.all().filter('listing =', self).fetch(limit=100)
 
     def bids(self):
 	""" Returns the bids for this listing. """
+	#return self.bid_set.fetch(limit=100)
 	return Bid.all().filter('listing =', self).fetch(limit=100)
 
     def owner_profile(self):
@@ -317,6 +188,41 @@ class Listing(db.Model):
 	    'status_reason' : self.status_reason,
 	    'bids' : [b.encode_builtin() for b in self.bids()] if bids else (),
 	}
+
+class PlayerItem(polymodel.PolyModel):
+    """ PlayerItem -> simple junction of player item unique ids and the
+        corresponding schema defindex.
+
+    The 'defindex' attribute is indexed for query speed.  This class
+    is a PolyModel so it can be subclassed (see below).
+
+    The 'uniqueid' is the integer decoded key name.
+    """
+    uniqueid = db.IntegerProperty('Item uniqueid', required=True, indexed=True)
+    defindex = db.IntegerProperty('Item defindex', required=True, indexed=True)
+    source = db.StringProperty('Item source data (JSON decodable)')
+
+    def __str__(self):
+	args = (self.uniqueid, self.defindex, )
+	return '<PlayerItem uniqueid=%s, defindex=%s>' % args
+
+    def encode_builtin(self):
+	""" Encode this instance using only built-in types. """
+	item = json.loads(self.source)
+	this = {'uniqueid':self.uniqueid, 'defindex':self.defindex}
+	this.update((k, item.get(k, None)) for k in ('level', 'quantity', 'quality'))
+	return this
+
+    @classmethod
+    def get_by_uid(cls, uniqueid):
+	""" Returns an item by uniqueid. """
+	return cls.all().filter('uniqueid =', uniqueid).get()
+
+    @classmethod
+    def build(cls, uniqueid, defindex, **kwds):
+	""" Returns an item by uniqueid. """
+	return cls.get_or_insert(uniqueid=uniqueid, defindex=defindex, **kwds)
+
 
 
 class ListingItem(PlayerItem):
@@ -435,32 +341,3 @@ class BidItem(PlayerItem):
 
     def __str__(self):
 	return '<BidItem listing=%s, uniqueid=%s, defindex=%s>' % (self.bid, self.uniqueid, self.defindex)
-
-
-class Feedback(db.Model):
-    """ Feedback -> a record of one users rating of another.
-
-    """
-    source = db.UserProperty('Source user (the one rating)', required=True)
-    target = db.UserProperty('Target user (the one rated)', required=True)
-    rating = db.RatingProperty('Rating', required=True)
-    comment = db.StringProperty('Comment', multiline=True)
-    as_bidder = db.BooleanProperty('Rating user as a bidder', required=True)
-    as_lister = db.BooleanProperty('Rating user as a lister', required=True)
-
-    @classmethod
-    def for_user(cls, user):
-	## sum of rating properties for user div. count of ratings for user
-	## return dict {'bidder' :bidder_rating, 'lister' :lister_rating}
-	pass
-
-
-#    ('new', 'New',
-#     lambda q: q.filter('created > ', datetime.now() - timedelta(hours=24)).order('-created')
-#     ),
-
-#    ('ending-soon', 'Ending Soon',
-#     lambda q: q.filter('expires < ', datetime.now() - timedelta(hours=24))
-#    ),
-
-

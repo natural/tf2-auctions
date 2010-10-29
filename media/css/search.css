@@ -1,7 +1,7 @@
 
 #search-listings div.listing-wrapper table.listing-table {
-margin-bottom:1em;
-padding:1.25em;
+margin-bottom:0.5em;
+padding:1em 0.5em 0.25em 1em;
 }
 
 #search-listings div.listing-wrapper table.listing-table {
@@ -68,6 +68,10 @@ text-align:left;
 #controls-nav, #results-inner {
 background-color:#393431;
 border:none;
+}
+
+#controls div.organizer-view {
+padding-left:0;
 }
 
 #backpack-nav-ac {

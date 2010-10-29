@@ -2,15 +2,14 @@
 
 
     <metal:macro define-macro="bids_large">
-	<div id="${slug}-bids" tal:define="use_created use_created|True">
+	<div id="${slug}-bids" tal:define="use_created use_created|True; use_view use_view|True">
 	<div class="null prototype">
             <table class="bid-table w100 mb1">
 		<tbody>
                     <tr>
 			<td tal:attributes="width '70%' if use_created else '100%'">
-			    <div class="${slug}-bid-view-link m05 mb1">
+			    <div class="${slug}-bid-view-link m05 mb1" tal:condition="use_view">
 				<a class="small-button">View</a>
-				<strong>Bid:</strong>
 			    </div>
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
 
@@ -21,7 +20,7 @@
 					<span class="bid-message"></span>
 				    </td>
 				    <td class="w25">
-					<strong class="bid-status-label">Bid Status:</strong>
+					<strong class="bid-status-label">Status:</strong>
 					<span class="bid-status"></span>
 				    </td>
 				    <td class="w50">
@@ -56,7 +55,6 @@
 			<td tal:attributes="width '70%' if use_created else '100%'">
 			    <div class="${slug}-listing-view-link m05 mb1">
 				<a class="small-button">View</a>
-				<strong>Items:</strong>
 			    </div>
 
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
