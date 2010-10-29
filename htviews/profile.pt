@@ -31,10 +31,10 @@
 			   class="small-button" onclick="return false" href="">Show &gt;&gt;</a>
 		    </div>
 		    <div class="organizer-view null" id="profile-listings-inner">
-			<metal:wrapper tal:define="slug 'profile-listings';
+			<metal:wrapper tal:define="slug 'profile';
 						   rows 2; cols 5;
 						   use_created False">
-			    <metal:include use-macro="context.table_parts.macros.listing_large" />
+			    <metal:include use-macro="context.table_parts.macros.listings_large" />
 			</metal:wrapper>
 			<h2 class="null" id="profile-listings-none"></h2>
 		    </div>
@@ -57,8 +57,8 @@
 		    </div>
 		</div>
 		<div class="organizer-view null" id="profile-bids-inner">
-		    <metal:wrapper tal:define="slug 'profile-bids'">
-			<metal:include use-macro="context.table_parts.macros.listing_large" />
+		    <metal:wrapper tal:define="slug 'profile'; use_created False">
+			<metal:include use-macro="context.table_parts.macros.bids_large" />
 		    </metal:wrapper>
 		    <h2 class="null" id="profile-bids-none"></h2>
 		</div>

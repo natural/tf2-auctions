@@ -46,27 +46,34 @@
 		</div>
             </div>
 	    <div id="${slug}-right">
-		<div class="owner">
+		<div class="owner p05">
 		    <label>Created by
 			<span><a id="${slug}-owner-link" href="#"></a></span>
 		    </label>
 		    <div class="centered text-centered m1">
-			<img class="avatar" id="${slug}-owner-avatar" />
+			<a href="#" id="${slug}-owner-profile-link">
+			    <img class="avatar" id="${slug}-owner-avatar" alt="foo" />
+			</a>
                     </div>
 		    <div class="centered text-centered m1">
 			Rating: * * * * *  (96.3% or 17.5/ 100)
                     </div>
 
 		    <div class="owner-links m1-top" id="${slug}-owner-links">
-			<div class="m1">
-			    <div><img src="/media/img/iconAddFriend.gif" />
+			<ul>
+			    <li>
+				<img src="/media/img/iconAddFriend.png" />
 				<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
-			    </div>
-			    <div><img src="/media/img/iconChat.gif" />
+			    </li>
+			    <li>
+				<img src="/media/img/iconChat.png" />
 				<a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
-			    </div>
-			    <div><a href="#">Other Listings</a></div>
-			</div>
+			    </li>
+			    <li>
+				<img src="/media/img/iconListings.png" />
+				<a href="#" id="${slug}-owner-listings">Other Listings</a>
+			    </li>
+			</ul>
 		    </div>
 
 		    <div id="${slug}-owner-controls" class="null centered mtb1">
@@ -83,15 +90,15 @@
 		</div>
 		<div class="mtb1">
 		    <label>Time Left:</label>
-		    <div class="ml1"><strong id="${slug}-timeleft">&nbsp;</strong></div>
+		    <div class="ml1"><strong id="${slug}-timeleft" class="mono">&nbsp;</strong></div>
 		</div>
 		<div class="mb1">
 		    <label>Expires:</label>
-		    <div class="ml1"><strong id="${slug}-expires"></strong></div>
+		    <div class="ml1"><strong id="${slug}-expires" class="mono"></strong></div>
 		</div>
 		<div class="mb1">
 		    <label>Created:</label>
-		    <div class="ml1"><strong id="${slug}-created"></strong></div>
+		    <div class="ml1"><strong id="${slug}-created" class="mono"></strong></div>
 		</div>
             </div>
 	    <div class="clear"></div>

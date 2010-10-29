@@ -2,57 +2,12 @@ var $$ = function(suffix, next) { return $('#profile-'+suffix, next) }
 var id64View = function() { return window.location.pathname.split('/').pop() }
 
 
-var listingFormats = {
-    items: function(v) {
-        var s = $.map(v, function(item, idx) {
-            return '<span class="defindex-lazy">' + item.defindex + '</span>'
-            })
-        return s.join("&nbsp;")
-    },
-    any: function(v) {
-        return "" + v
-    }
-}
-
-
 var setHeadings = function(prefix) {
-    $$('backpack-title').text('{0}Backpack'.fs( prefix ? prefix+' ' : ''))
-    $$('bids-title').text('{0}Recent Bids'.fs( prefix ? prefix+' ' : ''))
-    $$('listings-title').text('{0}Recent Listings'.fs( prefix ? prefix+' ' : ''))
+    $$('backpack-title').text('{0}Backpack'.fs(prefix ? prefix+' ' : ''))
+    $$('bids-title').text('{0}Recent Bids'.fs(prefix ? prefix+' ' : ''))
+    $$('listings-title').text('{0}Recent Listings'.fs(prefix ? prefix+' ' : ''))
 }
 
-var showListing = function(listing, clone) {
-    clone.removeClass('null prototype')
-    if (listing.description) {
-	$('.listing-description', clone).text(listing.description)
-    } else {
-	$('.listing-description-label', clone).empty()
-	$('.listing-description', clone).empty()
-    }
-    $('.listing-owner', clone).text(listing.owner.personaname)
-    $('.listing-avatar', clone).attr('src', listing.owner.avatar)
-    var next = 0
-    $.each(listing.items, function(index, item) {
-	$( $('.item-display div', clone)[next]).append( $.toJSON(item) )
-	next += 1
-    })
-    $$('listings-listings').append(clone)
-}
-
-
-var listingsOkay = function(listings) {
-    var llen = listings.length
-    if (llen > 0) {
-	var proto = $$('listings-inner div.prototype')
-	$.each(listings, function(idx, listing) {
-	    showListing(listing, proto.clone().addClass('listing-wrapper'))
-	})
-    } else {
-	$('#load-own-msg-listings').text("You haven't listed any items yet.")
-    }
-    new SchemaTool().setImages()
-    $('div.listing-wrapper td.item-display div:empty').parent().remove()
-}
 
 //
 // backpack
@@ -74,20 +29,30 @@ var backpackHide = function() {
 }
 
 var backpackReady = function(backpack) {
-    smallMsg('Backpack loaded.')
-    $$('backpack-show').fadeOut(function() { backpackReady__(backpack) })
+    smallMsg('Backpack loaded.').fadeOut()
+    $$('backpack-show').fadeOut(function() {
+	new ListingsLoader({
+	    suffix: id64View(),
+	    success: function(listings) {
+		new BidsLoader({
+		    suffix: id64View(),
+		    success: function(bids) {
+			putBackpack(backpack, listings, bids)
+		    }})
+	    }})
+    })
 }
 
 
 var backpackError = function(request, status, error) { }
 
 
-var backpackReady__ = function(backpack) {
-    if (!backpack.profileInit) {
+var putBackpack = function(backpack, listings, bids) {
+    if (!putBackpack.initOnce) {
 	var schema = new SchemaTool()
 	var tipTool = new TooltipView(schema)
 	var bpNav = new BackpackNavigator('profile')
-	var bpTool = new BackpackItemsTool(backpack,[], [], 'profile')
+	var bpTool = new BackpackItemsTool(backpack, listingItemsUids(listings), bidItemsUids(bids), 'profile')
 	var hoverItem = function(e) {
             tipTool.show(e)
             try {
@@ -104,35 +69,20 @@ var backpackReady__ = function(backpack) {
 	bpNav.init()
 	bpTool.init()
 	schema.setImages()
-	$$('backpack td').hover(hoverItem, unhoverItem)
-	backpack.profileInit = true
+	$$('backpack-inner td').hover(hoverItem, unhoverItem)
+	putBackpack.initOnce = true
     }
     $$('backpack-hide').fadeIn()
     $$('backpack-inner').fadeIn()
-//    $$('backpack-inner').width( $$('backpack-inner table.backpack tbody').first().width() )
 }
-
-
 
 
 //
 // bids
 //
-var bidsReady = function(bids) {
-    smallMsg('Bids loaded.').fadeOut(1000)
-    //$$('bids-wrapper').slideDown()
-    if (!bids.length < 10) {
-	$$('bids-none').text('Nothing recent.').slideDown()
-    }
-}
-
-
-var bidsError = function(request, status, error) {
-}
-
 var bidsShow = function() {
     smallMsg('Loading bids...')
-    //new BidsLoader({suffix: id64View(), success: bidsReady, error: bidsError})
+    new BidsLoader({suffix: id64View(), success: bidsReady, error: bidsError})
 }
 
 var bidsHide = function() {
@@ -143,6 +93,55 @@ var bidsHide = function() {
     })
 }
 
+var bidsReady = function(bids) {
+    smallMsg('Bids loaded.').fadeOut()
+    $$('bids-show').fadeOut(function() {
+	$$('bids-inner').fadeIn(function() {
+	    if (!bids.length) {
+		$$('bids-none').text('Nothing recent.').slideDown()
+		$$('bids-hide').fadeOut()
+	    } else {
+		if (!bidsReady.initOnce) {
+		    bidsReady.initOnce = true
+		    putBids(bids)
+		}
+		$$('bids-hide').fadeIn()
+	    }
+	})
+    })
+}
+
+
+var bidsError = function(request, status, error) {
+}
+
+var putBids = function(bids) {
+    var proto = $$('bids div.prototype')
+    $.each(bids, function(idx, bid) {
+	putBid(bid, proto.clone().addClass('bid-marker'))
+    })
+    $('div.bid-marker td.item-display div:empty').parent().remove()
+    new SchemaTool().setImages()
+}
+
+
+var putBid = function(bid, clone) {
+    clone.removeClass('null prototype')
+    var next = 0
+    $.each(bid.items, function(index, item) {
+	$($('.item-display div', clone)[next]).append($.toJSON(item))
+	next += 1
+    })
+    $('.profile-bid-view-link a', clone).attr('href', '/listing/'+ bid.listing.id)
+    if (bid.message_public) {
+	$('.bid-message', clone).text(bid.message_public)
+    } else {
+	$('.bid-message, .bid-message-label', clone).remove()
+    }
+    $('.bid-status', clone).text(bid.status)
+    $('.bid-created', clone).text('' + new Date(bid.created))
+    $$('bids').append(clone)
+}
 
 //
 // listings
@@ -159,27 +158,55 @@ var listingsHide = function() {
        $$('listings-inner').fadeOut(function() {
 	   $$('listings-hide').fadeOut()
        })
-    })
+   })
 }
 
 var listingsReady = function(listings) {
-    smallMsg('Listings loaded.')
+    smallMsg('Listings loaded.').fadeOut()
     $$('listings-show').fadeOut(function() {
 	$$('listings-inner').fadeIn(function() {
-	    $$('listings-hide').fadeIn()
+	    if (!listings.length) {
+		$$('listings-none').text('Nothing recent.').slideDown()
+	    } else {
+		$$('listings-hide').fadeIn()
+		putListings(listings)
+	    }
 	})
     })
-    if (!listings.length) {
-	$$('listings-none').text('Nothing recent.').slideDown()
-    } else {
-	listingsOkay(listings)
-    }
 }
 
 
 var listingsError = function(request, status, error) {}
 
 
+var putListings = function(listings) {
+    var proto = $$('listings-inner div.prototype')
+    $.each(listings, function(idx, listing) {
+	putListing(listing, proto.clone().addClass('listing-wrapper'))
+    })
+    new SchemaTool().setImages()
+    $('div.listing-wrapper td.item-display div:empty').parent().remove()
+}
+
+
+var putListing = function(listing, clone) {
+    clone.removeClass('null prototype')
+    if (listing.description) {
+	$('.listing-description', clone).text(listing.description)
+    } else {
+	$('.listing-description-label', clone).empty()
+	$('.listing-description', clone).empty()
+    }
+    $('.listing-owner', clone).text(listing.owner.personaname)
+    $('.listing-avatar', clone).attr('src', listing.owner.avatar)
+    var next = 0
+    $.each(listing.items, function(index, item) {
+	$($('.item-display div', clone)[next]).append($.toJSON(item))
+	next += 1
+    })
+    $('.profile-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
+    $$('listings').append(clone)
+}
 
 
 //
@@ -187,10 +214,10 @@ var listingsError = function(request, status, error) {}
 //
 var playerProfileOkay = function(profile) {
     setTitle(profile.personaname)
+    smallMsg().fadeOut()
     $$('title').text(profile.personaname)
     $$('avatar').attr('src', profile.avatarfull)
     $$('badge').slideDown()
-    smallMsg().fadeAway()
     $('.init-container').fadeIn()
 }
 
@@ -198,11 +225,9 @@ var playerProfileError = function(request, status, error) {
     smallMsg().fadeAway()
 }
 
-
-
-
 // auth profile -> maybe load other player profile, load (bids+backpack+listings)
 var authProfileOkay = function(profile) {
+    defaultUserAuthOkay(profile)
     var id64 = id64View()
     if (id64 != profile.id64) {
 	// authorized user viewing another profile; load separately:
@@ -215,30 +240,40 @@ var authProfileOkay = function(profile) {
 	playerProfileOkay(profile)
     }
     showProfile(profile)
-    smallMsg('Loading backpack...')
-    //new BidsLoader({suffix: id64, success: bidsReady, error: bidsError})
 }
-
 
 // auth profile failure -> load player (backpack+bids+listings+profile)
 var authProfileError = function(request, status, error) {
-    var id64 = id64View()
+    defaultUserAuthError(request, status, error)
     if (request.status==401) {
 	setHeadings()
 	smallMsg('Loading profile...')
-	//new BidsLoader({suffix: id64, success: bidsReady, error: bidsError})
-	new ProfileLoader({suffix: id64, success: playerProfileOkay, error: playerProfileError})
+	new ProfileLoader({suffix: id64View(), success: playerProfileOkay, error: playerProfileError})
     }
 }
 
 
-// schema loaded -> maybe load auth profile
-var schemaReady = function(s) {
+// schema loaded -> (maybe) load auth profile
+var schemaReady = function(schema) {
     new AuthProfileLoader({success: authProfileOkay, error:authProfileError})
+
+    var st = new SchemaTool(schema)
+    var tt = new TooltipView(st)
+    var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
+    var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
+
+    $('div.organizer-view td.item-display, #backpack-ac td').live('mouseover', hoverItem)
+    $('div.organizer-view td.item-display, #backpack-ac td').live('mouseout', unhoverItem)
+    $('.listing-table').live('mouseover', function() { $(this).addClass('listing-hover') })
+    $('.listing-table').live('mouseout', function() { $(this).removeClass('listing-hover') })
 }
+
 
 // document loaded -> load schema
 $(document).ready(function() {
+    smallMsg('Loading...')
+    new SchemaLoader({success: schemaReady})
+
     $$('backpack-hide').click(backpackHide)
     $$('backpack-show').click(backpackShow)
     $$('bids-hide').click(bidsHide)
@@ -246,16 +281,6 @@ $(document).ready(function() {
     $$('listings-hide').click(listingsHide)
     $$('listings-show').click(listingsShow)
 
-    smallMsg('Loading...')
-    new SchemaLoader({success: schemaReady})
-
-    if (window.location.search.indexOf("show=listings")>-1) {
-	$$('listings-show').click()
-    }
-
-    if (window.location.search.indexOf("show=backpack")>-1) {
-	$$('backpack-show').click()
-    }
-
-
+    if (window.location.search.indexOf('show=listings')>-1) { listingsShow() }
+    if (window.location.search.indexOf('show=backpack')>-1) { backpackShow() }
 })

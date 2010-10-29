@@ -240,6 +240,7 @@ class Listing(db.Model):
 	    if cat in cats:
 		setattr(listing, 'category_%s' % cat, True)
 	key = listing.put()
+	info('created new listing at: %s', listing.created)
 
 	# 5. assign the items
 	item_types = schematools.item_type_map(schema)
@@ -302,7 +303,7 @@ class Listing(db.Model):
 	""" Returns the player profile for this listing. """
 	return PlayerProfile.get_by_id64(self.owner.nickname())
 
-    def encode_builtin(self, bids=False):
+    def encode_builtin(self, bids=False, items=True):
 	""" Encode this instance using only built-in types. """
 	return {
 	    'id' : self.key().id(),
@@ -312,7 +313,7 @@ class Listing(db.Model):
 	    'description' : self.description,
 	    'bid_count' : self.bid_count,
 	    'min_bid' : self.min_bid,
-	    'items' : [i.encode_builtin() for i in self.items()],
+	    'items' : [i.encode_builtin() for i in self.items()] if items else (),
 	    'status' : self.status,
 	    'status_reason' : self.status_reason,
 	    'bids' : [b.encode_builtin() for b in self.bids()] if bids else (),
@@ -409,6 +410,7 @@ class Bid(db.Model):
 	    'message_public' : self.message_public,
 	    'status' : self.status,
 	    'items' : [i.encode_builtin() for i in self.items()],
+	    'listing' : self.listing.encode_builtin(bids=False, items=False),
 	    }
 
     def items(self):

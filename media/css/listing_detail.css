@@ -30,3 +30,12 @@ a-width:95%;
 padding-top:1.25em;
 padding-bottom:0.25em;
 }
+
+#listing-detail-owner-links ul {
+padding:0.25em;
+list-style: none;
+}
+
+#listing-detail-owner-links ul li {
+padding:0.25em;
+}

@@ -466,10 +466,18 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .pt05 { padding-top:0.5em; }
 
 .w12  { width:12%; }
+.w25  { width:25%; }
+.w33  { width:33%; }
 .w50  { width:50%; }
 .w75  { width:75%; }
 .w88  { width:88%; }
 .w100 { width:100%; }
+.mono { font-family: Andale Mono, monospace }
+.float-left { float:left; }
+.float-right { float:right; }
+.w49 { width:49%; }
+.p1 { padding:1em }
+.p05 { padding:0.5em;}
 
 .owner-links {
 font-family:"TF2Build";
@@ -529,8 +537,4 @@ border-spacing:0;
 
 .listing-table td {
 vertical-align:top;
-
-
 }
-
-

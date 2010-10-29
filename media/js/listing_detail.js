@@ -248,6 +248,7 @@ var listingsError = function(request, status, error)  {
 
 
 var profileReady = function(profile, listing) {
+    defaultUserAuthOkay(profile)
     var ownerid = listing.owner.steamid
     $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
     $$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
@@ -260,6 +261,9 @@ var profileReady = function(profile, listing) {
     } else {
 	if (listing.status == 'active') {
             $$('auth-bid-wrapper').fadeIn()
+	    if ($.inArray(profile.steamid, $(listing.bids).map(function(i, x) { return x.owner })) > -1)  {
+		$$('place-start').text('Place Another Bid')
+	    }
 	    $$('place-start').click(function() {
 		$$('place-bid-wrapper').fadeIn()
 		smallMsg('Loading your backpack...').fadeIn()
@@ -286,6 +290,7 @@ var profileReady = function(profile, listing) {
 
 
 var profileError = function(request, status, error) {
+    defaultUserAuthError(request, status, error)
     if (request.status==401) {
 	// normal and expected if the user isn't currently logged in.
         $$('login-wrapper').fadeIn()
@@ -302,7 +307,15 @@ var listingReady = function(id, listing) {
     var tt = new TooltipView(st)
 
     $$('owner-link').text(listing.owner.personaname)
-    $$('owner-avatar').attr('src', listing.owner.avatarmedium)
+    $$('owner-avatar')
+	.attr('src', listing.owner.avatarmedium)
+
+    $$('owner-profile-link')
+	.attr('href', '/profile/' + listing.owner.id64)
+        .attr('title', 'Profile for ' + listing.owner.personaname)
+
+    $$('owner-listings').attr('href', '/profile/' + listing.owner.id64 + '?show=listings')
+
     $$('content').fadeIn('slow')
     $$('existing-bids-wrapper').fadeIn('slow')
     $.each(['description', 'status'], function(idx, name) {
@@ -345,6 +358,8 @@ var listingReady = function(id, listing) {
     $$('title-wrapper').fadeIn()
     smallMsg('').fadeOut()
     if (listing.status == 'active') {
+	GEXPIRES = listing.expires
+	console.log('expires: ', listing.expires)
 	var timer = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
     } else {
 	$$('place-start').fadeOut()
@@ -378,6 +393,9 @@ $(document).ready(function() {
     $('#backpack-bid td div img').live('dblclick', moveToChooser)
     $('#chooser-add-bid-item td div img').live('dblclick', moveToBackpack)
     $('#add-bid-show-terms').click(showTermsDialog)
+    $('#add-bid-success-view').click(function(){ window.location.reload() })
     smallMsg('Loading...')
     new SchemaLoader({success: schemaReady, error: schemaError})
 })
+
+

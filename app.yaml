@@ -66,7 +66,7 @@ handlers:
   script: tf2bay/scripts/auth/\1/\2.py
   auth_fail_action: unauthorized
 
-- url: /(profile-update)(/.*)
+- url: /(profile-update)(/.*)?
   login: required
   script: tf2bay/scripts/auth/\1.py
   auth_fail_action: unauthorized

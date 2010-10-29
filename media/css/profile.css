@@ -11,12 +11,12 @@ width:100%;
 
 #profile-badge-wrapper {
 float:right;
-width:30%;
+width:22%;
 }
 
 #profile-main-wrapper {
 float:left;
-width:65%;
+width:75%;
 }
 
 
@@ -28,7 +28,7 @@ padding-right:0;
 
 
 
-#profile-listings-listings div.listing-wrapper table.listing-table {
+#profile-listings div.listing-wrapper table.listing-table {
 background-color:#2E2B2A;
 border-radius:0.75em; -moz-border-radius:0.75em;
 margin:0;
@@ -38,8 +38,24 @@ padding:1em;
 }
 
 
-#profile-listings-listings strong {
+#profile-listings strong, #profile-bids strong {
 font-family:"TF2Build";
 }
 
 
+#profile-bids table.bid-table {
+margin-bottom:1em;
+padding:1.25em;
+}
+
+
+#profile-bids-inner {
+background-color:#393431;
+border:none;
+}
+
+
+#profile-bids .bid-table {
+background-color:#2E2B2A;
+border-radius:0.75em; -moz-border-radius:0.75em;
+}

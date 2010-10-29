@@ -277,7 +277,7 @@ var listingsReady = function(listings, bids, profile) {
 
 
 var profileReady = function(profile) {
-    showProfile(profile)
+    defaultUserAuthOkay(profile)
     smallMsg('Profile loaded.  Welcome back, ' + profile['personaname'] + '!')
     var listingsLoaded = function(listings) {
 	new BidsLoader({
@@ -294,7 +294,7 @@ var profileReady = function(profile) {
 
 var schemaReady = function(schema) {
     smallMsg('Loading your profile...')
-    new AuthProfileLoader({success: profileReady})
+    new AuthProfileLoader({success: profileReady, error: defaultUserAuthError})
 }
 
 

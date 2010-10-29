@@ -126,8 +126,7 @@ var showListing = function(listing, clone) {
 	$( $('.item-display div', clone)[next]).append( $.toJSON(item) )
 	next += 1
     })
-    $('.search-view-link a', clone).attr('href', '/listing/'+listing.id)
-    $('.search-listing-id', clone).text(listing.id)
+    $('.search-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
     $$('listings').append(clone)
 }
 
@@ -226,6 +225,7 @@ var schemaReady = function(schema) {
 
 $(document).ready(function() {
     smallMsg('Loading schema...')
+    new AuthProfileLoader({success: defaultUserAuthOkay, error: defaultUserAuthError})
     new SchemaLoader({success: schemaReady})
     console.log('search.js ready')
 })

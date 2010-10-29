@@ -241,7 +241,7 @@ var SchemaTool = function(schema) {
 
 var smallMsg = function(text) {
     if (text) {
-	return $('#site-small-msg').removeClass('null').text(text)
+	return $('#site-small-msg').removeClass('null').fadeIn().text(text)
     } else {
 	return $('#site-small-msg')
     }
@@ -301,30 +301,28 @@ var showTermsDialog = function(e) {
 }
 
 
-var userAuthOkay = function(profile) {
+var defaultUserAuthOkay = function(profile) {
     $('#user-buttons, #logout-button').show()
     $('#login-button').hide()
-    $('#my-bids').attr('href', $('#my-bids').attr('href') + profile.id64)
-    $('#my-listings').attr('href', $('#my-listings').attr('href') + profile.id64)
+    $('#my-profile').attr('href', $('#my-profile').attr('href') + profile.id64)
     showProfile(profile)
 }
 
 
-var userAuthFail = function(request, status, error) {
+var defaultUserAuthError = function(request, status, error) {
     $('#login-button').attr('href', '/login?next=' + encodeURIComponent(window.location.href))
 }
 
 
 var initExtensions = function(jq) {
-    jq.fn.fadeAway = function() { return this.each(function() { jq(this).fadeTo(750, 0) }) }
-    jq.fn.fadeBack = function() { return this.each(function() { jq(this).fadeTo(750, 100) }) }
+    jq.fn.fadeAway = function() { this.each(function() { jq(this).fadeTo(750, 0) }); return this }
+    jq.fn.fadeBack = function() { this.each(function() { jq(this).fadeTo(750, 100) }); return this }
     jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
 }
 initExtensions(jQuery)
 
 
 $(document).ready(function() {
-    new AuthProfileLoader({success: userAuthOkay, error: userAuthFail})
     console.log('tools.js ready')
 })
 

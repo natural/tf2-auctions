@@ -44,8 +44,7 @@
 	    <div id="site-buttons">
 		<span class="null" id="user-buttons">
 		    <span id="avatar"></span>
-		    <a class="big-button" href="/profile/" id="my-bids">My Bids</a>
-		    <a class="big-button" href="/profile/" id="my-listings">My Listings</a>
+		    <a class="big-button" href="/profile/" id="my-profile">My Profile</a>
 		    <a class="big-button mr1" href="/listing/add">Add Listing</a>
 		</span>
 		<a class="button" href="/search">Search</a>

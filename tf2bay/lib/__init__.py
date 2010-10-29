@@ -20,7 +20,9 @@ def is_devel(environ):
 
 
 def js_datetime(dt):
-    fmt = '%a, %d %b %Y %H:%M:%S'
+    ## NB: the timezone is hardcoded because (a) that's what is always
+    ## used on the server and (b) %Z returns ''
+    fmt = '%a, %d %b %Y %H:%M:%S GMT'
     return dt.strftime(fmt)
 
 
