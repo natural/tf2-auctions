@@ -3,6 +3,7 @@ var $$ = function(suffix, next) { return $('#listing-detail-{0}'.fs(suffix), nex
 var listingId = function() { return window.location.pathname.split('/').pop() }
 var timeLeftId = null
 
+
 function updateTimeLeft(expires, selector) {
     expires = new Date(expires)
     return function() {
@@ -31,7 +32,7 @@ function updateTimeLeft(expires, selector) {
 
 var sendListingCancel = function() {
     var cancelOkay = function(results) {
-	window.clearTimer(timeLeftId)
+	window.clearTimeout(timeLeftId)
 	$$('status').text('Cancelled')
 	$$('timeleft').text('Cancelled')
 	$$('owner-controls').slideUp()
@@ -51,10 +52,12 @@ var sendListingCancel = function() {
     })
 }
 
+
 var rescindListingCancel = function() {
     $$('cancel-prompt').fadeIn()
     $$('cancel-confirm').fadeOut()
 }
+
 
 var showCancelConfirm = function(e) {
     $$('cancel-prompt').fadeOut()
@@ -62,25 +65,6 @@ var showCancelConfirm = function(e) {
     $$('cancel-submit').click(sendListingCancel)
     $$('cancel-cancel').click(rescindListingCancel)
     return false
-}
-
-var moveToChooser = function(e) {
-    var source = $(event.target)
-    var target = $("#chooser-listing-detail-add-bid-item td div:empty").first()
-    var cell = source.parent().parent()
-    if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
-    source.data('original-cell', cell)
-    target.prepend(source)
-    // update counts
-}
-
-var moveToBackpack = function(e) {
-    var source = $(event.target)
-    var target = source.data('original-cell')
-    if (target) {
-	$('div', target).prepend(source)
-	// update counts
-    }
 }
 
 
@@ -91,8 +75,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
     smallMsg('').fadeOut()
 
     var itemMoved = function(item) {
-	GITEM = item
-	console.log('item copied:', item)
+	//console.log('item copied:', item)
     }
 
     var bc = new BackpackChooser(
@@ -123,6 +106,25 @@ var backpackReady = function(backpack, listings, bids, profile) {
         $(this).removeClass('outline')
     }
 
+    var moveToChooser = function(e) {
+	var source = $(event.target)
+	var target = $("#listing-detail-add-bid-item-chooser td div:empty").first()
+	var cell = source.parent().parent()
+	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
+	source.data('original-cell', cell)
+	target.prepend(source)
+	bc.updateCount()
+    }
+
+    var moveToBackpack = function(e) {
+	var source = $(event.target)
+	var target = source.data('original-cell')
+	if (target) {
+	    $('div', target).prepend(source)
+	}
+	bc.updateCount()
+    }
+
     var cancelNewBid = function(event) {
 	$$('place-bid-pod').slideUp('slow')
 	$('body').scrollTopAni()
@@ -147,7 +149,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
     var postError = function(req, status, err) {
 	console.error('post error:', req, status, err)
 	$$('add-bid-working').text('Something went wrong.  Check the error below.').fadeIn()
-	$$('add-bid-error').text(req.statusText).fadeIn()
+	$$('add-bid-error').text(req.statusText).parent().fadeIn()
     }
 
     var showErrors = function(errors) {
@@ -177,9 +179,9 @@ var backpackReady = function(backpack, listings, bids, profile) {
     var submitNewBid = function(event) {
 	var errs = []
 	// 1.  bid items
-	var items = $('#chooser-listing-detail-add-bid-item img')
+	var items = $('#listing-detail-add-bid-item-chooser img')
 	if (items.length < 1 || items.length > 10) {
-	    errs.push({id:'#chooser-listing-detail-add-bid-item',
+	    errs.push({id:'#listing-detail-add-bid-item-chooser',
 		       msg:'Select 1-10 items from your backpack.'})
 	}
 	// 2. private msg
@@ -211,7 +213,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
 	return false
     }
 
-    var width = $('#chooser-listing-detail-add-bid-item tbody').width()
+    var width = $('#listing-detail-add-bid-item-chooser tbody').width()
     $$('add-bid-fields').width(width)
     $$('add-bid-fields textarea').width(width).height(width/4).text()
     $$('add-bid-terms-desc').parent().width(width)
@@ -225,6 +227,9 @@ var backpackReady = function(backpack, listings, bids, profile) {
     $$('bid-cancel').click(cancelNewBid)
     $$('bid-submit').click(submitNewBid)
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
+    $('#backpack-listing-detail-bid td div img').live('dblclick',  moveToChooser)
+    $('#unplaced-backpack-listing-detail-bid td div img').live('dblclick', moveToChooser)
+    $('#listing-detail-add-bid-item-chooser td div img').live('dblclick', moveToBackpack)
     setTimeout(function() { $$('place-bid-pod h1').scrollTopAni() }, 500)
 }
 
@@ -318,6 +323,7 @@ var listingReady = function(id, listing) {
 
     $$('owner-listings').attr('href', '/profile/' + listing.owner.id64 + '?show=listings')
 
+
     $$('content').fadeIn('slow')
     $$('existing-bids-pod').fadeIn('slow')
     $.each(['description', 'status'], function(idx, name) {
@@ -354,6 +360,7 @@ var listingReady = function(id, listing) {
 	})
     })
     st.setImages()
+    $('td.item-view div:empty').parent().remove()
 
 	var hoverItem = function(e) {
             tt.show(e)
@@ -372,7 +379,7 @@ var listingReady = function(id, listing) {
 
     $$('items td').mouseenter(hoverItem).mouseleave(unhoverItem)
     $$('min-bid td').mouseenter(hoverItem).mouseleave(unhoverItem)
-    $$('bids td').mouseenter(hoverItem).mouseleave(unhoverItem)
+    $$('bids table.chooser td').mouseenter(hoverItem).mouseleave(unhoverItem)
 
     $$('title').html('Listing ' + id)
     $$('bidcount').text(listing.bid_count ? ('Bids (' + listing.bid_count + ')') : 'No Bids')
@@ -409,9 +416,7 @@ var schemaError = function(request, status, error) {
 
 
 $(document).ready(function() {
-    $('#backpack-listing-detail-bid td div img').live('dblclick', moveToChooser)
-    $('#unplaced-backpack-listing-detail-bid td div img').live('dblclick', moveToChooser)
-    $('#chooser-listing-detail-add-bid-item td div img').live('dblclick', moveToBackpack)
+
     $$('add-bid-show-terms').click(showTermsDialog)
     $$('add-bid-success-view').click(function(){ window.location.reload() })
     smallMsg('Loading...')

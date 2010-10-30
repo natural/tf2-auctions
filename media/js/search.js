@@ -41,7 +41,7 @@ var optionChanged = function() {
 
 
 var chooserQuery = function() {
-    var qs = $('#chooser-advanced-search img')
+    var qs = $('#advanced-search-chooser img')
         .map(function(k, v) { return 'di={0}'.fs( $(v).data('node')['defindex'] ) })
         .toArray()
     return '?' + qs.join('&')
@@ -83,7 +83,7 @@ var showAdvancedSearch = function() {
     }
     var copyToSearchChoice = function(event) {
 	var source = $(event.target)
-	var target = $("#chooser-advanced-search td div:empty").first()
+	var target = $("#advanced-search-chooser td div:empty").first()
 	if (!target.length) { return }
 	var clone = source.clone()
 	clone.data('node', source.data('node'))
@@ -95,9 +95,9 @@ var showAdvancedSearch = function() {
 	$(this).removeClass('selected selected-delete')
 	chooserChanged()
     }
-    $('#backpack-ac td div img').dblclick(copyToSearchChoice)
-    $('#chooser-advanced-search td').hover(hoverSearchChoice, unhoverSearchChoice)
-    $('#chooser-advanced-search td').dblclick(removeSearchChoice)
+    $('#backpack-ac td div img').unbind().dblclick(copyToSearchChoice)
+    $('#advanced-search-chooser td').hover(hoverSearchChoice, unhoverSearchChoice)
+    $('#advanced-search-chooser td').unbind().dblclick(removeSearchChoice)
     $('#search-advanced, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
     $$('basic').fadeIn()
 
@@ -214,8 +214,8 @@ var schemaReady = function(schema) {
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
     $('div.organizer-view td.item-view, #backpack-ac td').live('mouseover', hoverItem)
     $('div.organizer-view td.item-view, #backpack-ac td').live('mouseout', unhoverItem)
-    $('.listing-table').live('mouseover', function() { $(this).addClass('listing-hover') })
-    $('.listing-table').live('mouseout', function() { $(this).removeClass('listing-hover') })
+    $('.listing-view').live('mouseover', function() { $(this).addClass('listing-hover') })
+    $('.listing-view').live('mouseout', function() { $(this).removeClass('listing-hover') })
     $$('advanced-link').click(showAdvancedSearch)
     $$('basic-link').click(showBasicSearch)
     smallMsg('Loading results...')

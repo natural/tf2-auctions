@@ -20,7 +20,7 @@
     <div id="${slug}-pod">
 
 	<div id="${slug}-controls" class="null">
-	    <div class="organizer-view" id="${slug}-controls-nav">
+	    <div id="${slug}-controls-nav">
 		<h2>Page:</h2>
 		<div class="tools" id="${slug}-nav">
 		    <div class="navs">
@@ -32,12 +32,10 @@
 		</div>
 	    </div>
 
-	    <div id="${slug}-basic" class="null">
-		<div>
-		    <a id="${slug}-basic-link" href="" onclick="return false">
-			<h2>Basic <span class="hi">&lt;&lt;</span></h2>
-		    </a>
-		</div>
+	    <div id="${slug}-basic" class="null mb05">
+		<a id="${slug}-basic-link" href="" onclick="return false">
+		    <h2>Basic <span class="hi">&lt;&lt;</span></h2>
+		</a>
 	    </div>
 
 	    <div class="null" id="${slug}-advanced-pod">
@@ -52,25 +50,21 @@
 		</div>
 	    </div>
             <div id="${slug}-filters"><h2>Filters:</h2> <div id="${slug}-filter-inputs"></div></div>
-	    <div id="${slug}-sorts"><h2>Sort:</h2> <div id="${slug}-sort-inputs"></div></div>
-	    <div id="${slug}-advanced">
-		<div>
-		    <a id="${slug}-advanced-link" href="" onclick="return false">
-			<h2>Advanced <span class="hi">&gt;&gt;</span></h2>
-		    </a>
-		</div>
+	    <div id="${slug}-sorts" class="mt1"><h2>Sort:</h2> <div id="${slug}-sort-inputs"></div></div>
+	    <div id="${slug}-advanced" class="mt1">
+		<a id="${slug}-advanced-link" href="" onclick="return false">
+		    <h2>Advanced <span class="hi">&gt;&gt;</span></h2>
+		</a>
 	    </div>
 	</div>
 
 	<div id="${slug}-listing-pod">
-	    <div>
-		<h2 class="null" id="${slug}-no-listings"></h2>
-		<h2 class="null" id="${slug}-some-listings"></h2>
-		    <div class="organizer-view" id="${slug}-results-pod">
-			<metal:include
-			     tal:define="slug 'search'; rows 2; cols 5;"
-			     metal:use-macro="context.table_parts.macros.listings_large" />
-		    </div>
+	    <h2 class="null" id="${slug}-no-listings"></h2>
+	    <h2 class="null mb05" id="${slug}-some-listings"></h2>
+	    <div class="" id="${slug}-results-pod">
+		<metal:include
+		     tal:define="slug 'search'; rows 2; cols 5;"
+		     metal:use-macro="context.table_parts.macros.listings_large" />
 	    </div>
 	</div>
 

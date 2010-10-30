@@ -18,9 +18,9 @@
 </div>
 
 
-<div metal:define-macro="item_chooser" id="chooser-${slug}">
-    <table class="centered chooser">
-	<caption><div class="message null"><div class="error" id="chooser-${slug}-error"></div></div></caption>
+<div metal:define-macro="item_chooser" id="${slug}-chooser">
+    <table class="center chooser">
+	<caption><div class="message null"><div class="error" id="${slug}-chooser-error"></div></div></caption>
         <tbody>
 	    <metal:define tal:define="rows rows | 2; cols cols | 5">
 	    <metal:loop tal:repeat="row range(rows)">
@@ -42,8 +42,8 @@
 	<div></div>
     </div>
     <div id="unplaced-backpack-${slug}" class="null">
-	<label class="centered mt1">New Items:</label>
-	<table class="centered unplaced">
+	<label class="center mt1">New Items:</label>
+	<table class="center unplaced">
 	    <tbody>
 		<tr><!-- prototype  -->
 		    <td><div></div></td>
@@ -56,8 +56,8 @@
 	</table>
     </div>
     <div id="backpack-${slug}">
-	<label class="centered null">Existing Items:</label>
-        <table class="centered backpack">
+	<label class="center null">Existing Items:</label>
+        <table class="center backpack">
             <tbody class="backpack-page-1">
                 <tr><td id="${slug}1"><div></div></td><td id="${slug}2"><div></div></td><td id="${slug}3"><div></div></td><td id="${slug}4"><div></div></td><td id="${slug}5"><div></div></td></tr>
                 <tr><td id="${slug}11"><div></div></td><td id="${slug}12"><div></div></td><td id="${slug}13"><div></div></td><td id="${slug}14"><div></div></td><td id="${slug}15"><div></div></td></tr>
@@ -135,7 +135,7 @@
 	<div></div>
     </div>
     <div id="backpack-${slug}">
-        <table class="centered backpack">
+        <table class="center backpack">
             <tbody class="backpack-page-1">
                 <tr><td id="${slug}1"><div></div></td><td id="${slug}2"><div></div></td><td id="${slug}3"><div></div></td></tr>
                 <tr><td id="${slug}11"><div></div></td><td id="${slug}12"><div></div></td><td id="${slug}13"><div></div></td></tr>
@@ -254,8 +254,8 @@
 	<div></div>
     </div>
     <div id="unplaced-backpack-${slug}" class="null">
-	<label class="centered mt1">New Items:</label>
-	<table class="centered unplaced">
+	<label class="center mt1">New Items:</label>
+	<table class="center unplaced">
 	    <tbody>
 		<tr><!-- prototype  -->
 		    <td><div></div></td>
@@ -273,8 +273,8 @@
 	</table>
     </div>
     <div id="backpack-${slug}">
-	<label class="centered null">Existing Items:</label>
-        <table class="centered backpack">
+	<label class="center null">Existing Items:</label>
+        <table class="center backpack">
             <tbody class="backpack-page-1">
                 <tr><td id="${slug}1"><div></div></td><td id="${slug}2"><div></div></td><td id="${slug}3"><div></div></td><td id="${slug}4"><div></div></td><td id="${slug}5"><div></div></td>      <td id="${slug}6" ><div></div></td><td id="${slug}7" ><div></div></td><td id="${slug}8" ><div></div></td><td id="${slug}9" ><div></div></td><td id="${slug}10"><div></div></td></tr>
                 <tr><td id="${slug}11"><div></div></td><td id="${slug}12"><div></div></td><td id="${slug}13"><div></div></td><td id="${slug}14"><div></div></td><td id="${slug}15"><div></div></td> <td id="${slug}16"><div></div></td><td id="${slug}17"><div></div></td><td id="${slug}18"><div></div></td><td id="${slug}19"><div></div></td><td id="${slug}20"><div></div></td></tr>

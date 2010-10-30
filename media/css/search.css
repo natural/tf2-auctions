@@ -4,30 +4,19 @@ overflow:auto;
 width:100%;
 }
 
-
-
-#search-listings div.listing-seed table.listing-table {
-margin-bottom:0.5em;
-padding:1em 0.5em 0.25em 1em;
-}
-
-#search-listings div.listing-seed table.listing-table {
-background-color:#2E2B2A;
-border-radius:0.75em; -moz-border-radius:0.75em;
-}
-
-#search-listings div.listing-seed table.listing-table img.listing-avatar {
-height:24px !important;
-width:24px !important;
-}
-
-#search-listings strong {
+#search-controls {
 font-family:"TF2Build";
+float:left;
+width:11%;
 }
 
-#search-listings table.chooser td.item-view {
-border-color:transparent;
-background:none !important;
+#search-listing-pod {
+float:right;
+width:87%;
+}
+
+#search-listings div.listing-seed {
+margin-bottom:0.75em;
 }
 
 .listing-owner-seed {
@@ -40,53 +29,16 @@ margin-bottom:0.25em;
 vertical-align:middle;
 }
 
-
-#search-controls {
-font-family:"TF2Build";
-float:left;
-width:11%;
-}
-
-#search-listing-pod {
-float:right;
-width:87%;
-}
-
-
-#search-controls input, div.navs {
+#search-controls input {
 margin-left:0.5em;
 margin-right:0.5em;
 }
 
-div.organizer-view div.navs {
-text-align:left;
-}
-
-
-#search-sorts, #search-advanced { margin-top: 1em; }
-
-
-
-#search-controls-nav, #search-results-pod {
-background-color:#393431;
-border:none;
-}
-
-#search-controls div.organizer-view {
-padding-left:0;
-}
-
-#backpack-nav-ac {
-text-align:right;
-padding-right:0.6em;
+#search-nav .navs {
+text-align:center;
 }
 
 #backpack-nav-ac .pagecount {
 padding-left:0.25em;
 padding-right:0.25em;
-}
-
-
-#search-basic {
-margin-bottom:0.5em;
 }

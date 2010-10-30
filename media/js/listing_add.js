@@ -77,8 +77,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
     self.postError = function(req, status, err) {
 	console.error('post error:', req, status, err)
 	$('#listing-add-working').text('Something went wrong.  Check the error below.').fadeIn()
-	$('#listing-add-error').text(req.statusText).fadeIn()
-
+	$('#listing-add-error').text(req.statusText).parent().fadeIn()
     }
 
     self.addListing = function(input) {
@@ -114,9 +113,9 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	// server will double check our work, too.
 	var errs = []
 	// 1.  listing items: uniqueid + item text
-	var items = $('#chooser-listing-add-item img')
+	var items = $('#listing-add-item-chooser img')
 	if (items.length < 1 || items.length > 10) {
-	    errs.push({id:'#chooser-listing-add-item',
+	    errs.push({id:'#listing-add-item-chooser',
 		       msg:'Select 1-10 items from your backpack.'})
 	}
 	// 2.  description
@@ -135,9 +134,9 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 		       msg:'Invalid duration.  Select 1-30 days.'})
 	}
         // 4.  min bid items: defindexes
-	var min_bid = $('#chooser-listing-add-min-bid td img')
+	var min_bid = $('#listing-add-min-bid-chooser td img')
 	if (min_bid.length > 10) {
-            errs.push({id:'#chooser-listing-add-min-bid',
+            errs.push({id:'#listing-add-min-bid-chooser',
 		       msg:'Too many items. Select 0-10 items as a minimum bid.'})
 	}
 	// 5. agree w/ site terms
@@ -158,7 +157,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 
     self.moveItemToChooser = function(event) {
 	var source = $(event.target)
-	var target = $("#chooser-listing-add-item td div:empty").first()
+	var target = $("#listing-add-item-chooser td div:empty").first()
 	var cell = source.parent().parent()
 	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	source.data('original-cell', cell)
@@ -197,7 +196,7 @@ var showMinBid = function() {
     }
     var copyToMinbidChooser = function(e) {
 	var source = $(event.target)
-	var target = $("#chooser-listing-add-min-bid td div:empty").first()
+	var target = $("#listing-add-min-bid-chooser td div:empty").first()
 	if (!target.length) { return }
 	var clone = source.clone()
 	clone.data('node', source.data('node'))
@@ -205,8 +204,8 @@ var showMinBid = function() {
 	minTool.chooser.updateCount()
     }
     $('#backpack-mb td div img').dblclick(copyToMinbidChooser)
-    $('#chooser-listing-add-min-bid td').hover(hoverMinBidChoice, unhoverMinBidChoice)
-    $('#chooser-listing-add-min-bid td').dblclick(removeMinBidChoice)
+    $('#listing-add-min-bid-chooser td').hover(hoverMinBidChoice, unhoverMinBidChoice)
+    $('#listing-add-min-bid-chooser td').dblclick(removeMinBidChoice)
     $('#listing-add-min-bid-show').slideUp(750)
     $('#listing-add-min-bid-pod').fadeIn('slow')
     return false
@@ -224,7 +223,7 @@ var selectItem = function() {
 var maybeDeselectLast = function() {
     var self = $(this)
     var maybeDeselect = function() {
-	if ($('#chooser-listing-add-min-bid td.selected').length > 10) {
+	if ($('#listing-add-min-bid-chooser td.selected').length > 10) {
 	    self.removeClass('selected')
 	}
     }
@@ -257,7 +256,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
     $('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
     $('#unplaced-backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
-    $('#chooser-listing-add-item td div img').live('dblclick', addTool.moveItemOriginal)
+    $('#listing-add-item-chooser td div img').live('dblclick', addTool.moveItemOriginal)
     smallMsg().fadeAway()
     addTool.show()
 }
@@ -304,7 +303,7 @@ $(document).ready(function() {
     $("#profile-buttons a[href='/listing/add']").parent().fadeAway()
     $('#listing-add-min-bid-show a').click(showMinBid)
     $('div.organizer-view td').live('click', selectItem)
-    $('#chooser-listing-add-min-bid td').live('click', maybeDeselectLast)
+    $('#listing-add-min-bid-chooser td').live('click', maybeDeselectLast)
     $('#listing-add-show-terms').click(showTermsDialog)
     smallMsg('Loading item schema...')
     new SchemaLoader({success: schemaReady})

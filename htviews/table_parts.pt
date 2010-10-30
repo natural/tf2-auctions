@@ -3,8 +3,8 @@
 
     <metal:macro define-macro="bids_large">
 	<div id="${slug}-bids" tal:define="use_created use_created|True; use_view use_view|True">
-	<div class="null prototype">
-            <table class="bid-table w100 mb1">
+	<div class="null prototype organizer-view">
+            <table class="w100">
 		<tbody>
                     <tr>
 			<td tal:attributes="width '70%' if use_created else '100%'">
@@ -48,8 +48,8 @@
 
     <metal:macro define-macro="listings_large">
 	<div id="${slug}-listings" tal:define="use_created use_created|True">
-	<div class="null prototype">
-            <table class="listing-table w100 mb1">
+	<div class="null prototype organizer-view">
+            <table class="listing-view w100 mb1">
 		<tbody>
                     <tr>
 			<td tal:attributes="width '70%' if use_created else '100%'">
@@ -82,7 +82,7 @@
 		<tbody>
                     <tr>
 			<td class="${slug}-view-link" rowspan="2">
-			    <div class="centered text-centered ${slug}-view-summary">
+			    <div class="center text-center ${slug}-view-summary">
 				<div style="white-space:nowrap;">
 				    <img src="" class="bid-avatar" />
 				    <span class="bid-owner"></span>

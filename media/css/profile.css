@@ -1,14 +1,3 @@
-#profile-badge {
-}
-
-
-#profile-content-pod {
-width:100%;
-}
-
-
-
-
 #profile-badge-pod {
 float:right;
 width:22%;
@@ -19,52 +8,9 @@ float:left;
 width:75%;
 }
 
-
-#profile-listings-pod div.organizer-view {
-border-color:transparent;
-background:none !important;
-padding-right:0;
+div.listing-seed, div.bid-marker {
+margin-bottom:0.75em;
 }
-
-
-
-#profile-listings div.listing-seed table.listing-table {
-background-color:#2E2B2A;
-border-radius:0.75em; -moz-border-radius:0.75em;
-margin:0;
-padding:0;
-margin-bottom:0.5em;
-padding:1em 0.5em 0.25em 1em;
-}
-
-#profile-listings table.chooser td.item-view {
-a-border-color:transparent;
-a-background:none !important;
-}
-
-
-#profile-listings strong, #profile-bids strong {
-font-family:"TF2Build";
-}
-
-
-#profile-bids table.bid-table {
-margin-bottom:1em;
-padding:1.25em;
-}
-
-
-#profile-bids-inner {
-background-color:#393431;
-border:none;
-}
-
-
-#profile-bids .bid-table {
-background-color:#2E2B2A;
-border-radius:0.75em; -moz-border-radius:0.75em;
-}
-
 
 div.init-seed > div > a {
 margin-left:2em;

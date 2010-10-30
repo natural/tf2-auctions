@@ -4,7 +4,7 @@
 </head>
 <body>
 <metal:fill fill-slot="main" tal:define="slug 'profile'">
-    <div id="${slug}-content-pod">
+    <div id="${slug}-content-pod" class="w100">
 
 
 	<!-- player profile badge on the right -->
@@ -31,7 +31,7 @@
 			<a id="${slug}-listings-show"
 			   class="small-button" onclick="return false" href="">Show &gt;&gt;</a>
 		    </div>
-		    <div class="organizer-view null" id="${slug}-listings-inner">
+		    <div class="null" id="${slug}-listings-inner">
 			<metal:include
 			     tal:define="rows 2; cols 5; use_created False"
 			     metal:use-macro="context.table_parts.macros.listings_large" />
@@ -55,7 +55,7 @@
 			   class="small-button" onclick="return false" href="">Show &gt;&gt;</a>
 		    </div>
 		</div>
-		<div class="organizer-view null" id="${slug}-bids-inner">
+		<div class="null" id="${slug}-bids-inner">
 		    <metal:include
 			 tal:define="use_created False"
 			 metal:use-macro="context.table_parts.macros.bids_large" />

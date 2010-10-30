@@ -1,9 +1,3 @@
-#listing-detail-content {
-}
-
-#listing-detail-place-bid-pod {
-}
-
 #listing-detail-left {
 float:left;
 width:62%;
@@ -12,16 +6,6 @@ width:62%;
 #listing-detail-right {
 float:right;
 width:33%;
-}
-
-
-
-
-
-
-#listing-detail-existing-bids {
-a-border:1px solid green;
-a-width:95%;
 }
 
 #listing-detail-place-bid-pod > h1:first-child {
@@ -43,4 +27,13 @@ padding:0.25em;
 #listing-detail-cancel-prompt a.button  {
 background-color:#9d302f;
 color:#ece3cb;
+}
+
+
+div.listing-seed, div.bid-marker {
+}
+
+
+#listing-detail-bids > div.organizer-view {
+margin-bottom:0.75em;
 }

@@ -69,6 +69,7 @@ class AdvancedSearch(ListingSearch):
 	    q = ListingItem.all(keys_only=True).filter('status = ', 'active')
 	    q.filter('defindex =', di)
 	    listings += Listing.get(i.parent() for i in q.fetch(self.limit))
+	listings = dict((lst.key(), lst) for lst in listings).values() ## remove dupes
 	listings.sort(key=lambda o:o.expires) ## TODO:  verify this is desired
 	listings = [lst.encode_builtin() for lst in listings]
 	return listings, '', False

@@ -157,7 +157,7 @@ var BackpackChooser = function(options) {
 
     self.updateCount = function() {
 	window.setTimeout(function() {
-	    var len = $('#chooser-' + chooserSlug + ' img').length
+	    var len = $('#' + chooserSlug + '-chooser img').length
 	    var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
 	    $('#' + chooserSlug + '-title-extra').text(txt)
 	}, 150)
@@ -176,7 +176,7 @@ var BackpackChooser = function(options) {
 	    $(this).append(item)
 	    $('img', this).css('margin-top', '0')
 	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
-	    $('#chooser-' + chooserSlug + ' td, #backpack-' + backpackSlug + ' td').removeClass('selected outline')
+	    $('#' + chooserSlug + '-chooser td, #backpack-' + backpackSlug + ' td').removeClass('selected outline')
 	    self.updateCount()
 	    if (options.afterDropMove) { options.afterDropMove(item) }
 	    if (options.copy && options.afterDropCopy) { options.afterDropCopy(item) }
@@ -202,19 +202,19 @@ var BackpackChooser = function(options) {
 
 	$('#backpack-' + backpackSlug + ' td div, #unplaced-backpack-' + backpackSlug + 'td div')
 	    .droppable({
-		accept: '#chooser-' + chooserSlug + ' td',
+		accept: '#' + chooserSlug + '-chooser td',
 		drop: dropMove,
 		out: dropOut,
 		over: dropOver})
 
-	$('#chooser-' + chooserSlug + ' td')
+	$('#' + chooserSlug + '-chooser td')
 	    .draggable({
 		containment: $('#backpack-'+backpackSlug).parent(),
 		cursor: 'move',
 		helper: 'clone',
 		start: dragShow})
 
-	$('#chooser-' + chooserSlug + ' td div')
+	$('#' + chooserSlug + '-chooser td div')
 	    .droppable({
 		accept: '#backpack-' + backpackSlug + ' td, #unplaced-backpack-' + backpackSlug + ' td',
 		drop: dropMove,

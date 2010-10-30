@@ -74,6 +74,9 @@ var putBackpack = function(backpack, listings, bids) {
     }
     $$('backpack-hide').fadeIn()
     $$('backpack-inner').fadeIn()
+    $('#backpack-tools-profile').width(
+	$$('backpack-pod tbody:visible').first().width()
+    )
 }
 
 
@@ -267,8 +270,8 @@ var schemaReady = function(schema) {
 
     $('div.organizer-view td.item-view, #backpack-ac td').live('mouseover', hoverItem)
     $('div.organizer-view td.item-view, #backpack-ac td').live('mouseout', unhoverItem)
-    $('.listing-table').live('mouseover', function() { $(this).addClass('listing-hover') })
-    $('.listing-table').live('mouseout', function() { $(this).removeClass('listing-hover') })
+    $('.listing-view').live('mouseover', function() { $(this).addClass('listing-hover') })
+    $('.listing-view').live('mouseout', function() { $(this).removeClass('listing-hover') })
 }
 
 
