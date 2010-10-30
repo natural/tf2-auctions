@@ -120,7 +120,7 @@ var putBids = function(bids) {
     $.each(bids, function(idx, bid) {
 	putBid(bid, proto.clone().addClass('bid-marker'))
     })
-    $('div.bid-marker td.item-display div:empty').parent().remove()
+    $('div.bid-marker td.item-view div:empty').parent().remove()
     new SchemaTool().setImages()
 }
 
@@ -129,7 +129,7 @@ var putBid = function(bid, clone) {
     clone.removeClass('null prototype')
     var next = 0
     $.each(bid.items, function(index, item) {
-	$($('.item-display div', clone)[next]).append($.toJSON(item))
+	$($('.item-view div', clone)[next]).append($.toJSON(item))
 	next += 1
     })
     $('.profile-bid-view-link a', clone).attr('href', '/listing/'+ bid.listing.id)
@@ -183,10 +183,10 @@ var putListings = function(listings) {
     if (!putListings.initOnce) {
 	var proto = $$('listings-inner div.prototype')
 	$.each(listings, function(idx, listing) {
-	    putListing(listing, proto.clone().addClass('listing-wrapper'))
+	    putListing(listing, proto.clone().addClass('listing-seed'))
 	})
 	new SchemaTool().setImages()
-	$('div.listing-wrapper td.item-display div:empty').parent().remove()
+	$('div.listing-seed td.item-view div:empty').parent().remove()
 	putListings.initOnce = true
     }
 }
@@ -204,7 +204,7 @@ var putListing = function(listing, clone) {
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)
     var next = 0
     $.each(listing.items, function(index, item) {
-	$($('.item-display div', clone)[next]).append($.toJSON(item))
+	$($('.item-view div', clone)[next]).append($.toJSON(item))
 	next += 1
     })
     $('.profile-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
@@ -221,7 +221,7 @@ var playerProfileOkay = function(profile) {
     $$('title').text(profile.personaname)
     $$('avatar').attr('src', profile.avatarfull)
     $$('badge').slideDown()
-    $('.init-container').fadeIn()
+    $('.init-seed').fadeIn()
 }
 
 var playerProfileError = function(request, status, error) {
@@ -265,8 +265,8 @@ var schemaReady = function(schema) {
     var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
 
-    $('div.organizer-view td.item-display, #backpack-ac td').live('mouseover', hoverItem)
-    $('div.organizer-view td.item-display, #backpack-ac td').live('mouseout', unhoverItem)
+    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseover', hoverItem)
+    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseout', unhoverItem)
     $('.listing-table').live('mouseover', function() { $(this).addClass('listing-hover') })
     $('.listing-table').live('mouseout', function() { $(this).removeClass('listing-hover') })
 }

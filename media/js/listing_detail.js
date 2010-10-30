@@ -349,8 +349,8 @@ var listingReady = function(id, listing) {
 	clone.removeClass('null prototype')
 	$$('bids').prepend(clone)
 	$.each(bid.items, function(i, item) {
-	    $('td.item-display:nth-child({0}) div'.fs(i+1), clone).text( $.toJSON(item) )
-	    $('td.item-display:nth-child({0}) div'.fs(i+1), clone).data('node', item)
+	    $('td.item-view:nth-child({0}) div'.fs(i+1), clone).text( $.toJSON(item) )
+	    $('td.item-view:nth-child({0}) div'.fs(i+1), clone).data('node', item)
 	})
     })
     st.setImages()

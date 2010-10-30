@@ -32,7 +32,7 @@
 			</td>
 			<td tal:condition="use_created">
 			    <strong>Created By:</strong>
-			    <div class="bid-owner-wrapper">
+			    <div class="bid-owner-seed">
 				<img src="" class="bid-avatar" />
 				<span class="bid-owner"></span>
 			    </div>
@@ -63,7 +63,7 @@
 			</td>
 			<td tal:condition="use_created">
 			    <strong>Created By:</strong>
-			    <div class="listing-owner-wrapper">
+			    <div class="listing-owner-seed">
 				<img src="" class="listing-avatar" />
 				<span class="listing-owner"></span>
 			    </div>
@@ -91,9 +91,7 @@
 			</td>
 			<td class="w88">
 			    <strong>Bid Items:</strong>
-			    <metal:wrapper>
-				<metal:display use-macro="context.organizer_parts.macros.item_display" />
-			    </metal:wrapper>
+			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
 			</td>
 		    </tr>
 	            <tr>

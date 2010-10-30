@@ -49,7 +49,7 @@
 		    </label>
 		</div>
 
-		<div class="null" id="${slug}-min-bid-wrapper">
+		<div class="null" id="${slug}-min-bid-pod">
 		    <div>
 			Select the minimum items you will consider for
 			a trade. You can select up to 10 items.

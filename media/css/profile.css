@@ -2,25 +2,25 @@
 }
 
 
-#profile-content-wrapper {
+#profile-content-pod {
 width:100%;
 }
 
 
 
 
-#profile-badge-wrapper {
+#profile-badge-pod {
 float:right;
 width:22%;
 }
 
-#profile-main-wrapper {
+#profile-main-pod {
 float:left;
 width:75%;
 }
 
 
-#profile-listings-wrapper div.organizer-view {
+#profile-listings-pod div.organizer-view {
 border-color:transparent;
 background:none !important;
 padding-right:0;
@@ -28,7 +28,7 @@ padding-right:0;
 
 
 
-#profile-listings div.listing-wrapper table.listing-table {
+#profile-listings div.listing-seed table.listing-table {
 background-color:#2E2B2A;
 border-radius:0.75em; -moz-border-radius:0.75em;
 margin:0;
@@ -37,9 +37,9 @@ margin-bottom:0.5em;
 padding:1em 0.5em 0.25em 1em;
 }
 
-#profile-listings table.chooser td.item-display {
-border-color:transparent;
-background:none !important;
+#profile-listings table.chooser td.item-view {
+a-border-color:transparent;
+a-background:none !important;
 }
 
 
@@ -66,6 +66,6 @@ border-radius:0.75em; -moz-border-radius:0.75em;
 }
 
 
-div.init-container > div > a {
+div.init-seed > div > a {
 margin-left:2em;
 }

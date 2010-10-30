@@ -89,7 +89,7 @@ border:0.25em solid #2E2B2A;
 padding:0.5em;
 }
 
-div.organizer-view .outline, div.items-view .outline, div.item-display .outline {
+div.organizer-view .outline, div.items-view .outline, div.item-view .outline {
 border:0.25em solid #847668 !important;
 }
 

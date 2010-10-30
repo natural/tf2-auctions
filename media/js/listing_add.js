@@ -208,7 +208,7 @@ var showMinBid = function() {
     $('#chooser-listing-add-min-bid td').hover(hoverMinBidChoice, unhoverMinBidChoice)
     $('#chooser-listing-add-min-bid td').dblclick(removeMinBidChoice)
     $('#listing-add-min-bid-show').slideUp(750)
-    $('#listing-add-min-bid-wrapper').fadeIn('slow')
+    $('#listing-add-min-bid-pod').fadeIn('slow')
     return false
 }
 

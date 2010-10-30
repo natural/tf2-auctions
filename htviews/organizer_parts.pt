@@ -1,14 +1,14 @@
 <metal:organizers>
 
 
-<div metal:define-macro="item_display" class="item-display">
+<div metal:define-macro="item_display" class="item-view">
     <table class="chooser">
         <tbody>
 	    <metal:define tal:define="rows rows | 1; cols cols | 10">
 		<metal:loop tal:repeat="row range(rows)">
     		    <tr>
 			<metal:loop tal:repeat="col range(cols)">
-			    <td class="item-display"><div class="defindex-lazy"></div></td>
+			    <td class="item-view"><div class="defindex-lazy"></div></td>
 			</metal:loop>
 		    </tr>
 		</metal:loop>

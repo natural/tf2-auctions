@@ -26,10 +26,10 @@ var SearchBackpackTool = function(schema) {
 
 
 var optionsQuery = function() {
-    var qs = $("#controls input[type='checkbox']").map(function(i,v) {
+    var qs = $$("controls input[type='checkbox']").map(function(i,v) {
 	return '{0}={1}'.fs( $(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
     })
-    qs.push('{0}={1}'.fs('sort', $("#controls input[type='radio']:checked").attr('value')))
+    qs.push('{0}={1}'.fs('sort', $$("controls input[type='radio']:checked").attr('value')))
     return '?' + qs.toArray().join('&')
 }
 
@@ -54,20 +54,20 @@ var chooserChanged = function() {
 
 
 var showBasicSearch = function() {
-    $('#advanced-search-wrapper').slideUp()
-    $('#asearch, #sorts, #filters').fadeBack()
-    $('#bsearch').fadeOut()
-    $("#listing-container").animate({width:contentWidths.results}, 400)
-    $("#controls").animate({width:contentWidths.controls} ,400)
-    $("#controls-nav").fadeIn()
+    $$('advanced-pod').slideUp()
+    $('#search-advanced, #search-sorts, #search-filters').fadeBack()
+    $$('basic').fadeOut()
+    $$("listing-pod").animate({width:contentWidths.results}, 400)
+    $$("controls").animate({width:contentWidths.controls} ,400)
+    $$("controls-nav").fadeIn()
 }
 
 
 var showAdvancedSearch = function() {
     var schema = new SchemaTool()
-    if ( !$('#advanced-search-wrapper').data('init') ) {
+    if ( !$$('advanced-pod').data('init') ) {
 	var advSearchTool = new SearchBackpackTool(schema)
-	$('#advanced-search-wrapper').data('init', true)
+	$$('advanced-pod').data('init', true)
     }
     var tipTool = new TooltipView(schema)
     var hoverSearchChoice = function(e) {
@@ -98,14 +98,14 @@ var showAdvancedSearch = function() {
     $('#backpack-ac td div img').dblclick(copyToSearchChoice)
     $('#chooser-advanced-search td').hover(hoverSearchChoice, unhoverSearchChoice)
     $('#chooser-advanced-search td').dblclick(removeSearchChoice)
-    $('#asearch, #sorts, #filters, #controls-nav').fadeOut()
-    $('#bsearch').fadeIn()
+    $('#search-advanced, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
+    $$('basic').fadeIn()
 
-    var width = $('#container-container').width()
-    $("#advanced-search-wrapper").show()
-    $('#controls').animate({width:330} ,400)
-    $("#listing-container").animate({width:width-350}, 400, function() {
-	$('#advanced-search-wrapper').show()
+    var width = $$('pod').width()
+    $("#advanced-search-pod").show()
+    $$('controls').animate({width:330} ,400)
+    $$("listing-pod").animate({width:width-350}, 400, function() {
+	$$('advanced-pod').show()
     })
     return false
 }
@@ -123,7 +123,7 @@ var showListing = function(listing, clone) {
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)
     var next = 0
     $.each(listing.items, function(index, item) {
-	$( $('.item-display div', clone)[next]).append( $.toJSON(item) )
+	$( $('.item-view div', clone)[next]).append( $.toJSON(item) )
 	next += 1
     })
     $('.search-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
@@ -132,25 +132,25 @@ var showListing = function(listing, clone) {
 
 
 var showListings = function(results) {
-    $('div.listing-wrapper').remove()
+    $('div.listing-seed').remove()
     if (!results.listings.length) {
 	$$('no-listings').text('Nothing found.  You should add a listing.').show()
 	$$('some-listings').hide()
-	$('#search-nav').fadeAway()
+	$$('nav').fadeAway()
 	return
     } else {
 	$$('no-listings').hide()
 	$$('some-listings').text('Results:').show()
-	$('#search-nav').fadeBack()
+	$$('nav').fadeBack()
     }
 
     var proto = $$('listings div.prototype')
     $.each(results.listings, function(idx, listing) {
-	showListing(listing, proto.clone().addClass('listing-wrapper'))
+	showListing(listing, proto.clone().addClass('listing-seed'))
     })
 
     if (results.more) {
-	$('#search-next').unbind().click(function(e) {
+	$$('next').unbind().click(function(e) {
 	    var next = function(rs) {
 		previousStack.push(results)
 		showListings(rs)
@@ -158,52 +158,52 @@ var showListings = function(results) {
 	    new SearchLoader({success: next, suffix: '?' + results.next_qs })
 	    return false
 	})
-	$('#next-link').show()
-	$('#next-none').hide()
+	$$('next-link').show()
+	$$('next-none').hide()
     } else {
-	$('#next-link').hide()
-	$('#next-none').show()
+	$$('next-link').hide()
+	$$('next-none').show()
     }
 
     if (previousStack.length) {
-	$('#search-prev').unbind().click(function(e) {
+	$$('prev').unbind().click(function(e) {
 	    showListings(previousStack.pop())
 	    return false
 	})
-	$('#prev-link').show()
-	$('#prev-none').hide()
+	$$('prev-link').show()
+	$$('prev-none').hide()
     } else {
-	$('#prev-link').hide()
-	$('#prev-none').show()
+	$$('prev-link').hide()
+	$$('prev-none').show()
     }
     new SchemaTool().setImages()
-    $('div.listing-wrapper td.item-display div:empty').parent().remove()
+    $('div.listing-seed td.item-view div:empty').parent().remove()
     $('#search-listings').fadeIn()
 }
 
 
 var searchOkay = function(search) {
-    if (!$('#filter-inputs').children().length) {
+    if (! $$('filter-inputs').children().length) {
 	$.each(search.filters, function(idx, filter) {
 	    var input = '<input type="checkbox" name="{0}" />{1}<br />'.fs(filter[0], filter[1])
-	    $('#filter-inputs').append(input)
+	    $$('filter-inputs').append(input)
 	})
-	$('#controls input[type="checkbox"]').click(optionChanged)
+	$$('controls input[type="checkbox"]').click(optionChanged)
     }
-    if (!$('#sort-inputs').children().length) {
+    if (!$$('sort-inputs').children().length) {
 	$.each(search.orders, function(idx, order) {
 	    var input = '<input type="radio" name="sort" value="{0}" />{1}<br />'.fs(order[0], order[1])
-	    $('#sort-inputs').append(input)
+	    $$('sort-inputs').append(input)
 	})
-	$('#controls input[type="radio"]').click(optionChanged)
+	$$('controls input[type="radio"]').click(optionChanged)
 	$('input[name="sort"]').first().click()
     }
     showListings(search)
     smallMsg().fadeAway()
-    $('#controls').fadeIn('fast')
+    $$('controls').fadeIn('fast')
     $$('listings').fadeIn('fast')
-    contentWidths.controls = $('#controls').width()
-    contentWidths.results = $('#listing-container').width()
+    contentWidths.controls = $$('controls').width()
+    contentWidths.results = $$('listing-pod').width()
 }
 
 
@@ -212,12 +212,12 @@ var schemaReady = function(schema) {
     var tt = new TooltipView(st)
     var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
-    $('div.organizer-view td.item-display, #backpack-ac td').live('mouseover', hoverItem)
-    $('div.organizer-view td.item-display, #backpack-ac td').live('mouseout', unhoverItem)
+    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseover', hoverItem)
+    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseout', unhoverItem)
     $('.listing-table').live('mouseover', function() { $(this).addClass('listing-hover') })
     $('.listing-table').live('mouseout', function() { $(this).removeClass('listing-hover') })
-    $('#asearch-link').click(showAdvancedSearch)
-    $('#bsearch-link').click(showBasicSearch)
+    $$('advanced-link').click(showAdvancedSearch)
+    $$('basic-link').click(showBasicSearch)
     smallMsg('Loading results...')
     new SearchLoader({success:searchOkay})
 }

@@ -13,58 +13,68 @@
     </metal:js>
 </head>
 <body>
-<metal:fill fill-slot="main">
-<h1><span class="hilite"></span>Search Listings</h1>
-<div id="container-container">
+<metal:fill fill-slot="main" tal:define="slug 'search'">
 
-    <div id="controls" class="null">
-	<div class="organizer-view" id="controls-nav">
-	    <h2>Page:</h2>
-	    <div class="tools" id="search-nav">
-		<div class="navs">
-		    <span class="nonav" id="prev-none">&lt;</span>
-		    <span class="nav" id="prev-link"><a href="" id="search-prev">&lt;</a></span>
-		    <span class="nav" id="next-link"><a href="" id="search-next">&gt;</a></span>
-		    <span class="nonav" id="next-none">&gt;</span>
+    <h1><span class="hilite"></span>Search Listings</h1>
+
+    <div id="${slug}-pod">
+
+	<div id="${slug}-controls" class="null">
+	    <div class="organizer-view" id="${slug}-controls-nav">
+		<h2>Page:</h2>
+		<div class="tools" id="${slug}-nav">
+		    <div class="navs">
+			<span class="nonav" id="${slug}-prev-none">&lt;</span>
+			<span class="nav" id="${slug}-prev-link"><a href="" id="${slug}-prev">&lt;</a></span>
+			<span class="nav" id="${slug}-next-link"><a href="" id="${slug}-next">&gt;</a></span>
+			<span class="nonav" id="${slug}-next-none">&gt;</span>
+		    </div>
+		</div>
+	    </div>
+
+	    <div id="${slug}-basic" class="null">
+		<div>
+		    <a id="${slug}-basic-link" href="" onclick="return false">
+			<h2>Basic <span class="hi">&lt;&lt;</span></h2>
+		    </a>
+		</div>
+	    </div>
+
+	    <div class="null" id="${slug}-advanced-pod">
+		<div class="organizer-view">
+		    <metal:include
+			 tal:define="slug 'ac'"
+			 metal:use-macro="context.organizer_parts.macros.item_backpack_narrow" />
+		    <label>Your Search:</label>
+		    <metal:include
+			 tal:define="slug 'advanced-search'; rows 1; cols 3"
+			 metal:use-macro="context.organizer_parts.macros.item_chooser" />
+		</div>
+	    </div>
+            <div id="${slug}-filters"><h2>Filters:</h2> <div id="${slug}-filter-inputs"></div></div>
+	    <div id="${slug}-sorts"><h2>Sort:</h2> <div id="${slug}-sort-inputs"></div></div>
+	    <div id="${slug}-advanced">
+		<div>
+		    <a id="${slug}-advanced-link" href="" onclick="return false">
+			<h2>Advanced <span class="hi">&gt;&gt;</span></h2>
+		    </a>
 		</div>
 	    </div>
 	</div>
-	<div id="bsearch" class="null">
-	    <div><a id="bsearch-link" href="" onclick="return false"><h2>Basic <span class="hi">&lt;&lt;</span></h2></a></div>
-	</div>
-	<div class="null" id="advanced-search-wrapper">
-	    <div class="organizer-view" id="advanced-search-view">
-		<metal:settings tal:define="slug 'ac'">
-		    <metal:include use-macro="context.organizer_parts.macros.item_backpack_narrow" />
-		</metal:settings>
-		<label id="advanced-search-label-chooser">Your Search:</label>
-		<metal:settings tal:define="slug 'advanced-search'; rows 1; cols 3">
-		    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
-		</metal:settings>
+
+	<div id="${slug}-listing-pod">
+	    <div>
+		<h2 class="null" id="${slug}-no-listings"></h2>
+		<h2 class="null" id="${slug}-some-listings"></h2>
+		    <div class="organizer-view" id="${slug}-results-pod">
+			<metal:include
+			     tal:define="slug 'search'; rows 2; cols 5;"
+			     metal:use-macro="context.table_parts.macros.listings_large" />
+		    </div>
 	    </div>
 	</div>
-        <div id="filters"><h2>Filters:</h2> <div id="filter-inputs"></div></div>
-	<div id="sorts"><h2>Sort:</h2> <div id="sort-inputs"></div></div>
-	<div id="asearch">
-	    <div><a id="asearch-link" href="" onclick="return false"><h2>Advanced <span class="hi">&gt;&gt;</span></h2></a></div>
-	</div>
-    </div>
 
-    <div id="listing-container">
-	<div>
-	    <h2 class="null" id="search-no-listings"></h2>
-	    <h2 class="null" id="search-some-listings"></h2>
-	    <div id="results-wrapper">
-		<div class="organizer-view" id="results-inner">
-		    <metal:wrapper tal:define="slug 'search'; rows 2; cols 5;">
-			<metal:include use-macro="context.table_parts.macros.listings_large" />
-		    </metal:wrapper>
-		</div>
-	    </div>
-	</div>
     </div>
-</div>
-
 
 </metal:fill>
 </body>
