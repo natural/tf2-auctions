@@ -310,7 +310,7 @@ class Bid(db.Model):
 
     def encode_builtin(self):
 	return {
-	    'owner' : self.owner.nickname(),
+	    'owner' : PlayerProfile.get_by_id64(self.owner.nickname()).encode_builtin(),
 	    'created' : js_datetime(self.created),
 	    'message_public' : self.message_public,
 	    'status' : self.status,

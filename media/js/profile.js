@@ -211,6 +211,7 @@ var putListing = function(listing, clone) {
 	next += 1
     })
     $('.profile-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
+    $('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
     $$('listings').append(clone)
 }
 

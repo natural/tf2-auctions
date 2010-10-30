@@ -354,7 +354,12 @@ border-spacing:0;
 vertical-align:top;
 }
 
-.listing-view img.listing-avatar {
+.valign-top {
+vertical-align:top;
+}
+
+
+.listing-view img.listing-avatar, .bid-owner-seed img.bid-avatar {
 height:24px !important;
 width:24px !important;
 }

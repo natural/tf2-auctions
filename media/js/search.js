@@ -121,6 +121,7 @@ var showListing = function(listing, clone) {
     }
     $('.listing-owner', clone).text(listing.owner.personaname)
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)
+    $('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
     var next = 0
     $.each(listing.items, function(index, item) {
 	$( $('.item-view div', clone)[next]).append( $.toJSON(item) )

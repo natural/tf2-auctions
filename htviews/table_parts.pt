@@ -7,34 +7,33 @@
             <table class="w100">
 		<tbody>
                     <tr>
-			<td tal:attributes="width '70%' if use_created else '100%'">
+			<td tal:attributes="width '70%'">
 			    <div class="${slug}-bid-view-link m05 mb1" tal:condition="use_view">
 				<a class="small-button">View</a>
 			    </div>
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
 
-			    <table class="w100">
-				<tr>
-				    <td class="w25">
-					<strong class="bid-message-label">Message:</strong>
-					<span class="bid-message"></span>
-				    </td>
-				    <td class="w25">
-					<strong class="bid-status-label">Status:</strong>
-					<span class="bid-status"></span>
-				    </td>
-				    <td class="w50">
-					<strong class="bid-created-label">Created:</strong>
-					<span class="bid-created mono"></span>
-				    </td>
-				</tr>
-			    </table>
+			    <div>
+				<strong class="bid-message-label">Message:</strong>
+				<div class="bid-message"></div>
+			    </div>
+
 			</td>
-			<td tal:condition="use_created">
-			    <strong>Created By:</strong>
-			    <div class="bid-owner-seed">
-				<img src="" class="bid-avatar" />
-				<span class="bid-owner"></span>
+			<td class="valign-top">
+			    <div>
+				<strong class="bid-status-label">Status:</strong>
+				<span class="bid-status"></span>
+			    </div>
+			    <div class="mt1">
+				<strong class="bid-created-label">Placed:</strong>
+				<div class="bid-created mono"></div>
+			    </div>
+			    <div tal:condition="use_created" class="mt1">
+				<strong>Created By:</strong>
+				<div class="bid-owner-seed center text-center">
+				    <img src="" class="bid-avatar" />
+				    <div class="bid-owner center"></div>
+				</div>
 			    </div>
 			</td>
 		    </tr>
@@ -52,7 +51,7 @@
             <table class="listing-view w100 mb1">
 		<tbody>
                     <tr>
-			<td tal:attributes="width '70%' if use_created else '100%'">
+			<td tal:attributes="width '70%'">
 			    <div class="${slug}-listing-view-link m05 mb1">
 				<a class="small-button">View</a>
 			    </div>
@@ -61,11 +60,16 @@
 			    <strong class="listing-description-label">Description:</strong>
 			    <div class="listing-description"></div>
 			</td>
-			<td tal:condition="use_created">
-			    <strong>Created By:</strong>
-			    <div class="listing-owner-seed">
-				<img src="" class="listing-avatar" />
-				<span class="listing-owner"></span>
+			<td>
+			    <metal:if tal:condition="use_created">
+				<strong>Created By:</strong>
+				<div class="listing-owner-seed mb1">
+				    <img src="" class="listing-avatar" />
+				    <span class="listing-owner"></span>
+				</div>
+			    </metal:if>
+			    <div>
+				<strong>Bids: <span class="bid-count-seed"></span></strong>
 			    </div>
 			</td>
 		    </tr>

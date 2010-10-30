@@ -268,8 +268,8 @@ var profileReady = function(profile, listing) {
     } else {
 	if (listing.status == 'active') {
             $$('auth-bid-pod').fadeIn()
-	    if ($.inArray(profile.steamid, $(listing.bids).map(function(i, x) { return x.owner })) > -1)  {
-		$$('place-start').text('Place Another Bid')
+	    if ($.inArray(profile.steamid, $(listing.bids).map(function(i, x) { return x.owner.steamid })) > -1)  {
+		$$('place-start').text('Update Your Bid')
 	    }
 	    $$('place-start').click(function() {
 		$$('place-bid-pod').fadeIn()
@@ -358,24 +358,30 @@ var listingReady = function(id, listing) {
 	    $('td.item-view:nth-child({0}) div'.fs(i+1), clone).text( $.toJSON(item) )
 	    $('td.item-view:nth-child({0}) div'.fs(i+1), clone).data('node', item)
 	})
+	$('.bid-status', clone).text(bid.status)
+	$('.bid-created', clone).text('' + new Date(bid.created))
+	$('.bid-avatar', clone).attr('src', bid.owner.avatar)
+	$('.bid-owner', clone).text(bid.owner.personaname)
+	if (bid.message_public) {
+	    $('.bid-message', clone).text(bid.message_public)
+	} else {
+	    $('.bid-message, .bid-message-label', clone).remove()
+	}
     })
     st.setImages()
     $('td.item-view div:empty').parent().remove()
 
-	var hoverItem = function(e) {
-            tt.show(e)
-	    GE = e, GTHIS = this
-            try {
-		var data = $('div', this).data('node')
-        	if (true) {
-	            $(this).addClass('outline')
-                }
-            } catch (e) {}
-	}
-	var unhoverItem = function(e) {
-            tt.hide(e)
-            $(this).removeClass('outline')
-	}
+    var hoverItem = function(e) {
+        tt.show(e)
+        try {
+	    var data = $('div', this).data('node')
+            $(this).addClass('outline')
+        } catch (e) {}
+    }
+    var unhoverItem = function(e) {
+        tt.hide(e)
+        $(this).removeClass('outline')
+    }
 
     $$('items td').mouseenter(hoverItem).mouseleave(unhoverItem)
     $$('min-bid td').mouseenter(hoverItem).mouseleave(unhoverItem)
