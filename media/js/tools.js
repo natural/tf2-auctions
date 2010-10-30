@@ -289,7 +289,7 @@ var showTermsDialog = function(e) {
 	    modal: true,
 	    resizable: false,
 	    show: 'fade',
-	    title: 'Site Rules, Terms and Conditions',
+	    title: 'TF2Bay.com Rules,Terms and Conditions, and Privacy Policy',
 	    width: $(window).width() * 0.9
 	})
     }
