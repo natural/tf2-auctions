@@ -1,9 +1,7 @@
-/* also need moved into distinct css */
-
 #listing-detail-content {
 }
 
-#listing-detail-place-bid-wrapper {
+#listing-detail-place-bid-pod {
 }
 
 #listing-detail-left {
@@ -26,7 +24,7 @@ a-border:1px solid green;
 a-width:95%;
 }
 
-#listing-detail-place-bid-wrapper > h1:first-child {
+#listing-detail-place-bid-pod > h1:first-child {
 padding-top:1.25em;
 padding-bottom:0.25em;
 }
@@ -38,4 +36,11 @@ list-style: none;
 
 #listing-detail-owner-links ul li {
 padding:0.25em;
+}
+
+
+#listing-detail-auth-bid-pod a.button,
+#listing-detail-cancel-prompt a.button  {
+background-color:#9d302f;
+color:#ece3cb;
 }

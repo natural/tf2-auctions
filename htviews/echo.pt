@@ -4,7 +4,7 @@
 </head>
 <body>
     <metal:fill fill-slot="main">
-	<h1 class="message">Request Environment</h1>
+	<h1>Request Environment</h1>
 	<table>
 	    <thead>
 		<tr><th>Key</th><th>Value</th></tr>

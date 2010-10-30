@@ -15,16 +15,12 @@
 </head>
 <body>
     <div metal:fill-slot="main" tal:define="slug 'listing-detail'">
-	<div id="terms-dialog" class="null">
-	    rules, terms, etc.  fetched via ajax, yo.
-        </div>
-
-	<h1 id="${slug}-title-wrapper" class="null mb05">
+	<h1 id="${slug}-title-pod" class="null mb05">
 	    <span class="hilite"></span>
 	    <span id="${slug}-title"></span> (<span id="${slug}-status"></span>)
 	</h1>
 
-	<div id="${slug}-content" class="null centered detail-view">
+	<div id="${slug}-content" class="null center detail-view">
 	    <div id="${slug}-left">
 		<div class="mb1">
 		    <label>Description:</label>
@@ -38,10 +34,10 @@
 		    <label>Minium Bid:</label>
 		    <div class="items-view" id="${slug}-min-bid"><table></table></div>
 		</div>
-		<div id="${slug}-auth-bid-wrapper" class="null mtb1">
-		    <a class="button bid-button" id="${slug}-place-start" href="#">Place Your Bid</a>
+		<div id="${slug}-auth-bid-pod" class="null mtb1">
+		    <a class="button" id="${slug}-place-start" href="#">Place Your Bid</a>
 		</div>
-		<div id="${slug}-login-wrapper" class="null mtb1">
+		<div id="${slug}-login-pod" class="null mtb1">
 		    <h2>You have to login to place a bid for these items.</h2>
 		</div>
             </div>
@@ -50,12 +46,12 @@
 		    <label>Created by
 			<span><a id="${slug}-owner-link" href="#"></a></span>
 		    </label>
-		    <div class="centered text-centered m1">
+		    <div class="center text-center m1">
 			<a href="#" id="${slug}-owner-profile-link">
 			    <img class="avatar" id="${slug}-owner-avatar" alt="foo" />
 			</a>
                     </div>
-		    <div class="centered text-centered m1">
+		    <div class="center text-center m1">
 			Rating: * * * * *  (96.3% or 17.5/ 100)
                     </div>
 
@@ -76,12 +72,12 @@
 			</ul>
 		    </div>
 
-		    <div id="${slug}-owner-controls" class="null centered mtb1">
+		    <div id="${slug}-owner-controls" class="null center mtb1">
 			<div class="m1">You own this listing, so you may cancel it:</div>
-			<div class="centered text-centered" id="${slug}-cancel-prompt">
-			    <a href="#" id="${slug}-cancel-show-confirm" class="button bid-button">Cancel this Listing</a>
+			<div class="center text-center" id="${slug}-cancel-prompt">
+			    <a href="#" id="${slug}-cancel-show-confirm" class="button">Cancel this Listing</a>
 			</div>
-			<div class="centered text-centered null" id="${slug}-cancel-confirm">
+			<div class="center text-center null" id="${slug}-cancel-confirm">
 			    <label class="m1">Are you sure you want to cancel this listing?</label>
 			    <a href="#" class="button" id="${slug}-cancel-submit">Yes, Do It</a>
 			    <a href="#" class="button" id="${slug}-cancel-cancel">No, Don't</a>
@@ -104,75 +100,77 @@
 	    <div class="clear"></div>
         </div>
 
-	<div id="${slug}-existing-bids-wrapper" class="null">
+	<div id="${slug}-existing-bids-pod" class="null">
 	    <div id="${slug}-existing-bids">
 		<h1 class="pt05"><span class="hilite"></span><span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids">
-		    <metal:wrapper tal:define="slug 'profile'; use_view False">
-			<metal:include use-macro="context.table_parts.macros.bids_large" />
-		    </metal:wrapper>
-
+		    <metal:include
+			tal:define="slug slug+'profile'; use_view False"
+			metal:use-macro="context.table_parts.macros.bids_large" />
 		</div>
 	    </div>
 	</div>
 
 
-	<div id="${slug}-place-bid-wrapper" class="null centered">
+	<div id="${slug}-place-bid-pod" class="null center">
             <h1><span class="hilite"></span>Place Your Bid</h1>
 	    <div class="organizer-view null" id="${slug}-own-backpack">
-		<metal:settings tal:define="include_unplaced True; slug 'bid'">
-		    <span id="${slug}-msg-backpack"></span>
-		    <metal:include use-macro="context.organizer_parts.macros.item_backpack" />
-		</metal:settings>
-		<h3 id="${slug}-title">
-		    Your Bid <span id="add-bid-item-title-extra">(0 items)</span>
-		</h3>
-		<metal:settings tal:define="slug 'add-bid-item'">
-		    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
-		</metal:settings>
+		<metal:include
+		     tal:define="include_unplaced True; slug slug+'-bid'"
+		     metal:use-macro="context.organizer_parts.macros.item_backpack" />
 
-		<div id="add-bid-fields" class="centered">
+		<h3 id="${slug}-title">
+		    Your Bid <span id="${slug}-add-bid-item-title-extra">(0 items)</span>
+		</h3>
+		<metal:include
+		     tal:define="slug slug+'-add-bid-item'"
+		     metal:use-macro="context.organizer_parts.macros.item_chooser" />
+
+		<div id="${slug}-add-bid-fields" class="center">
 		<label>Private Message (Optional):</label>
-		<div class="null" id="bid-private-msg-default">You can enter a private message for the listing owner here.</div>
- 		<div class="message null"><div class="error" id="bid-private-msg-error"></div></div>
-		<textarea id="bid-private-msg" name="bid-private-msg"></textarea>
+		<div class="null" id="${slug}-bid-private-msg-default">You can enter a private message for the listing owner here.</div>
+ 		<div class="message null"><div class="error" id="${slug}-bid-private-msg-error"></div></div>
+		<textarea id="${slug}-bid-private-msg" name="bid-private-msg"></textarea>
 
 		<label>Public Message (Optional):</label>
-		<div class="null" id="bid-public-msg-default">You can also enter a message with your bid that will be visible to everyone.</div>
- 		<div class="message null"><div class="error" id="bid-public-msg-error"></div></div>
-		<textarea id="bid-public-msg" name="bid-public-msg"></textarea>
+		<div class="null" id="${slug}-bid-public-msg-default">You can also enter a message with your bid that will be visible to everyone.</div>
+ 		<div class="message null"><div class="error" id="${slug}-bid-public-msg-error"></div></div>
+		<textarea id="${slug}-bid-public-msg" name="bid-public-msg"></textarea>
 		</div>
 
 
-		<div class="centered mt2">
-                    <label for="" id="add-bid-terms-desc">Site Rules, Terms and Conditions:</label>
+		<div class="center mt2">
+                    <label for="" id="${slug}-add-bid-terms-desc">Site Rules, Terms and Conditions:</label>
  		    <div class="message null">
-			<div class="error" id="add-bid-terms-error"></div>
+			<div class="error" id="${slug}-add-bid-terms-error"></div>
 		    </div>
 		    <div class="mt05">
-			<input type="checkbox" id="add-bid-terms" />
+			<input type="checkbox" id="${slug}-add-bid-terms" />
 			I Agree to follow the Site Rules and Terms of Use.
-                        <span><a href="#" id="add-bid-show-terms">(Click here to show them)</a></span>
+                        <span><a href="#" id="${slug}-add-bid-show-terms">(Click here to show them)</a></span>
 		    </div>
                 </div>
 
-		<div id="${slug}-bid-buttons" class="centered text-centered m1">
-		    <span class="submit button mr05">
+		<div id="${slug}-bid-buttons" class="center text-center m1">
+		    <span class="button mr05">
 			<a href="#" id="${slug}-bid-submit">Place Bid</a>
 		    </span>
-		    <span class="cancel button">
+		    <span class="button">
 			<a href="#" id="${slug}-bid-cancel">Cancel</a>
 		    </span>
 		</div>
 
-	    <div id="add-bid-response" class="centered text-centered">
-		<div id="add-bid-working" class="m1 null"></div>
-		<div id="add-bid-success" class="m1 null">
-		    <span class="button mr05">
-			<a href="#" id="add-bid-success-view">View Bid</a>
+	    <div id="${slug}-add-bid-response" class="center text-center">
+		<div id="${slug}-add-bid-working" class="m1 null"></div>
+		<div id="${slug}-add-bid-success" class="m1 null">
+		    <span class="mr05">
+			<a href="#" id="${slug}-add-bid-success-view"
+			   class="button">View Bid</a>
 		    </span>
 		</div>
-		<div id="add-bid-error" class="error m1 null"></div>
+		<div class="message null">
+		    <div id="${slug}-add-bid-error" class="error m1"></div>
+		</div>
             </div>
 
 

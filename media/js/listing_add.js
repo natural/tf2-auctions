@@ -9,7 +9,7 @@ var MinbidListingTool = function(schema) {
 	listingUids: [],
 	bidUids: [],
 	backpackSlug: 'mb',
-	chooserSlug: 'add-listing-min-bid',
+	chooserSlug: 'listing-add-min-bid',
 	title:'',
 	help:''
     })
@@ -29,31 +29,31 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	listingUids: listingUids,
 	bidUids: bidUids,
 	backpackSlug: 'a',
-	chooserSlug: 'add-listing-item',
+	chooserSlug: 'listing-add-item',
 	help:'Drag items from your backpack into the Listing Items area below.'
     })
     bpNav.init()
     bpChs.init()
 
     self.show = function() {
-	$('#add-listing-intro').fadeAway().slideUp(750)
-	$('#add-listing-own-backpack').fadeBack()
+	$('#listing-add-intro').fadeAway().slideUp(750)
+	$('#listing-add-own-backpack').fadeBack()
 	var width = $('#backpack-a tbody').width()
-	$('#add-listing-fields textarea').width(width).height(width/4).text(defDesc)
-	$('#add-listing-fields').width( $('#backpack-a tbody').width())
+	$('#listing-add-fields textarea').width(width).height(width/4).text(defDesc)
+	$('#listing-add-fields').width( $('#backpack-a tbody').width())
 	// dupes:
 	$('#backpack-tools-a').width(width - 10)
 	$('#backpack-a label').width(width)
 	$('#unplaced-backpack-a label').width(width)
-	$('#add-listing-cancel').click(self.cancel)
-	$('#add-listing-submit').click(self.submit)
-	$('#add-listing-description').focusin(function() {
+	$('#listing-add-cancel').click(self.cancel)
+	$('#listing-add-submit').click(self.submit)
+	$('#listing-add-description').focusin(function() {
 	    if ($(this).text() == defDesc) { $(this).text('') }
 	})
-	var slider = $("#add-listing-duration-slider").slider(
+	var slider = $("#listing-add-duration-slider").slider(
 	    {animate: true, max: 30, min:1, value: 30, change: function(event, ui) {
 		var v = ui.value
-		$("#add-listing-duration").text(v + " day" + (v==1 ? "" : "s"))
+		$("#listing-add-duration").text(v + " day" + (v==1 ? "" : "s"))
 	    }}
 	)
 	return false
@@ -61,23 +61,23 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 
     self.cancel = function() {
 	// TODO: reveal nav away/start again
-	$('#add-listing-own-backpack').fadeAway()
-	$('#add-listing-intro').fadeBack().slideDown(750)
+	$('#listing-add-own-backpack').fadeAway()
+	$('#listing-add-intro').fadeBack().slideDown(750)
 	$('html body').animate({scrollTop: 0})
 	return false
     }
 
     self.postOkay = function(data, status, req) {
 	console.log('post okay:', data, status, req)
-	$('#add-listing-working').text('Complete.  Click the link to view your listing.')
-	$('#add-listing-success a').attr('href', '/listing/'+data.key)
-	$('#add-listing-success').fadeIn()
+	$('#listing-add-working').text('Complete.  Click the link to view your listing.')
+	$('#listing-add-success a').attr('href', '/listing/'+data.key)
+	$('#listing-add-success').fadeIn()
     }
 
     self.postError = function(req, status, err) {
 	console.error('post error:', req, status, err)
-	$('#add-listing-working').text('Something went wrong.  Check the error below.').fadeIn()
-	$('#add-listing-error').text(req.statusText).fadeIn()
+	$('#listing-add-working').text('Something went wrong.  Check the error below.').fadeIn()
+	$('#listing-add-error').text(req.statusText).fadeIn()
 
     }
 
@@ -114,43 +114,43 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	// server will double check our work, too.
 	var errs = []
 	// 1.  listing items: uniqueid + item text
-	var items = $('#chooser-add-listing-item img')
+	var items = $('#chooser-listing-add-item img')
 	if (items.length < 1 || items.length > 10) {
-	    errs.push({id:'#chooser-add-listing-item',
+	    errs.push({id:'#chooser-listing-add-item',
 		       msg:'Select 1-10 items from your backpack.'})
 	}
 	// 2.  description
-	var desc = $('#add-listing-description').val()
+	var desc = $('#listing-add-description').val()
 	desc = (desc == defDesc ? '' : desc)
 	if (desc.length > 400) {
-	    errs.push({id:'#add-listing-description',
+	    errs.push({id:'#listing-add-description',
 		       msg:'Too much text.  Make your description shorter.'})
 	}
         // 3.  duration
-	var days = $('#add-listing-duration-slider').slider('value')
+	var days = $('#listing-add-duration-slider').slider('value')
 	if (days < 1 || days > 30) {
 	    // this can only happen if the user is twiddling data
 	    // outside of the form.
-	    errs.push({id:'#add-listing-duration-slider',
+	    errs.push({id:'#listing-add-duration-slider',
 		       msg:'Invalid duration.  Select 1-30 days.'})
 	}
         // 4.  min bid items: defindexes
-	var min_bid = $('#chooser-add-listing-min-bid td img')
+	var min_bid = $('#chooser-listing-add-min-bid td img')
 	if (min_bid.length > 10) {
-            errs.push({id:'#chooser-add-listing-min-bid',
+            errs.push({id:'#chooser-listing-add-min-bid',
 		       msg:'Too many items. Select 0-10 items as a minimum bid.'})
 	}
 	// 5. agree w/ site terms
-	if (! $('#add-listing-terms').attr('checked')) {
-	    errs.push({id: '#add-listing-terms',
+	if (! $('#listing-add-terms').attr('checked')) {
+	    errs.push({id: '#listing-add-terms',
 		       msg:'You must read and agree with site rules, terms, and conditions.'})
 	}
 
 	if (errs.length) {
 	    self.showErrors(errs)
 	} else {
-	    $('#add-listing-buttons').slideUp('slow')
-	    $('#add-listing-working').removeClass('null').text('Working...').fadeIn('fast')
+	    $('#listing-add-buttons').slideUp('slow')
+	    $('#listing-add-working').removeClass('null').text('Working...').fadeIn('fast')
 	    self.addListing({items: items, desc: desc, days: days, min_bid: min_bid})
 	}
 	return false
@@ -158,7 +158,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 
     self.moveItemToChooser = function(event) {
 	var source = $(event.target)
-	var target = $("#chooser-add-listing-item td div:empty").first()
+	var target = $("#chooser-listing-add-item td div:empty").first()
 	var cell = source.parent().parent()
 	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	source.data('original-cell', cell)
@@ -197,7 +197,7 @@ var showMinBid = function() {
     }
     var copyToMinbidChooser = function(e) {
 	var source = $(event.target)
-	var target = $("#chooser-add-listing-min-bid td div:empty").first()
+	var target = $("#chooser-listing-add-min-bid td div:empty").first()
 	if (!target.length) { return }
 	var clone = source.clone()
 	clone.data('node', source.data('node'))
@@ -205,10 +205,10 @@ var showMinBid = function() {
 	minTool.chooser.updateCount()
     }
     $('#backpack-mb td div img').dblclick(copyToMinbidChooser)
-    $('#chooser-add-listing-min-bid td').hover(hoverMinBidChoice, unhoverMinBidChoice)
-    $('#chooser-add-listing-min-bid td').dblclick(removeMinBidChoice)
-    $('#add-listing-min-bid-show').slideUp(750)
-    $('#add-listing-min-bid-wrapper').fadeIn('slow')
+    $('#chooser-listing-add-min-bid td').hover(hoverMinBidChoice, unhoverMinBidChoice)
+    $('#chooser-listing-add-min-bid td').dblclick(removeMinBidChoice)
+    $('#listing-add-min-bid-show').slideUp(750)
+    $('#listing-add-min-bid-wrapper').fadeIn('slow')
     return false
 }
 
@@ -224,7 +224,7 @@ var selectItem = function() {
 var maybeDeselectLast = function() {
     var self = $(this)
     var maybeDeselect = function() {
-	if ($('#chooser-add-listing-min-bid td.selected').length > 10) {
+	if ($('#chooser-listing-add-min-bid td.selected').length > 10) {
 	    self.removeClass('selected')
 	}
     }
@@ -257,7 +257,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
     $('div.organizer-view td').hover(hoverItem, unhoverItem)
     $('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
     $('#unplaced-backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
-    $('#chooser-add-listing-item td div img').live('dblclick', addTool.moveItemOriginal)
+    $('#chooser-listing-add-item td div img').live('dblclick', addTool.moveItemOriginal)
     smallMsg().fadeAway()
     addTool.show()
 }
@@ -302,10 +302,10 @@ var schemaReady = function(schema) {
 
 $(document).ready(function() {
     $("#profile-buttons a[href='/listing/add']").parent().fadeAway()
-    $('#add-listing-min-bid-show a').click(showMinBid)
+    $('#listing-add-min-bid-show a').click(showMinBid)
     $('div.organizer-view td').live('click', selectItem)
-    $('#chooser-add-listing-min-bid td').live('click', maybeDeselectLast)
-    $('#add-listing-show-terms').click(showTermsDialog)
+    $('#chooser-listing-add-min-bid td').live('click', maybeDeselectLast)
+    $('#listing-add-show-terms').click(showTermsDialog)
     smallMsg('Loading item schema...')
     new SchemaLoader({success: schemaReady})
 })

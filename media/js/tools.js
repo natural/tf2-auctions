@@ -54,7 +54,9 @@ var setTitle = function(name) { $('title').append(' -- ' + name) }
 
 
 var showProfile = function(profile) {
-    $('#avatar').html(makeImg({src: profile.avatar, width: 32, height: 32})).show()
+    $('#content-avatar-pod')
+        .html(makeImg({src: profile.avatar, width: 32, height: 32}))
+        .show()
 }
 
 
@@ -241,9 +243,9 @@ var SchemaTool = function(schema) {
 
 var smallMsg = function(text) {
     if (text) {
-	return $('#site-small-msg').removeClass('null').fadeIn().text(text)
+	return $('#content-site-message').removeClass('null').fadeIn().text(text)
     } else {
-	return $('#site-small-msg')
+	return $('#content-site-message')
     }
 }
 
@@ -282,7 +284,7 @@ var bidItemsUids = function(src) {
 
 var showTermsDialog = function(e) {
     var okay = function(text) {
-	$('#terms-dialog').html(text).dialog({
+	$('#content-terms-dialog').html(text).dialog({
 	    dialogClass: 'dialog-test',
 	    modal: true,
 	    resizable: false,
@@ -302,15 +304,17 @@ var showTermsDialog = function(e) {
 
 
 var defaultUserAuthOkay = function(profile) {
-    $('#user-buttons, #logout-button').show()
-    $('#login-button').hide()
-    $('#my-profile').attr('href', $('#my-profile').attr('href') + profile.id64)
+    $('#content-user-buttons, #content-logout-link, #content-search-link').fadeIn()
+    $('#content-player-profile-link').attr('href', '/profile/'+profile.id64)
     showProfile(profile)
 }
 
 
 var defaultUserAuthError = function(request, status, error) {
-    $('#login-button').attr('href', '/login?next=' + encodeURIComponent(window.location.href))
+    $('#content-login-link')
+	.attr('href', '/login?next=' + encodeURIComponent(window.location.href))
+        .fadeIn()
+    $('#content-search-link').fadeIn()
 }
 
 

@@ -13,97 +13,93 @@
     </metal:js>
 </head>
 <body>
-    <metal:main fill-slot="main">
-	<div id="terms-dialog" class="null">
-	    rules, terms, etc.  fetched via ajax, yo.
-        </div>
-
+    <metal:main fill-slot="main" tal:define="slug 'listing-add'">
 	<h1 class="mt1 mb05"><span class="hilite"></span>Add a New Listing</h1>
-	<div class="organizer-view null" id="add-listing-own-backpack">
-	    <metal:settings tal:define="include_unplaced True; slug 'a'">
-		<metal:include use-macro="context.organizer_parts.macros.item_backpack" />
-	    </metal:settings>
-
-	    <h3 id="add-listing-title">
-		Your Listing <span id="add-listing-item-title-extra">(0 items)</span>
+	<div class="organizer-view null" id="${slug}-own-backpack">
+	    <metal:include
+		 tal:define="include_unplaced True; slug 'a'"
+		 metal:use-macro="context.organizer_parts.macros.item_backpack" />
+	    <h3 id="${slug}-title">
+		Your Listing <span id="${slug}-item-title-extra">(0 items)</span>
 	    </h3>
-	    <metal:settings tal:define="slug 'add-listing-item'">
-		<metal:include use-macro="context.organizer_parts.macros.item_chooser" />
-	    </metal:settings>
+	    <metal:include
+		 tal:define="slug slug+'-item'"
+		 metal:use-macro="context.organizer_parts.macros.item_chooser" />
 
-
-	    <div id="add-listing-fields" class="centered">
-		<label for="add-listing-fields">Description:</label>
- 		<div class="message null"><div class="error" id="add-listing-description-error"></div></div>
-		<textarea id="add-listing-description" name="add-listing-description"></textarea>
-		<label for="add-listing-duration">Duration:</label>
- 		<div class="message null"><div class="error" id="add-listing-duration-slider-error"></div></div>
-		<div class="centered">
-		    <div id="add-listing-duration">30 days</div>
-		    <div id="add-listing-duration-slider" name="duration"></div>
+	    <div id="${slug}-fields" class="center">
+		<label for="${slug}-fields">Description:</label>
+ 		<div class="message null"><div class="error" id="${slug}-description-error"></div></div>
+		<textarea id="${slug}-description" name="${slug}-description"></textarea>
+		<label for="${slug}-duration">Duration:</label>
+ 		<div class="message null"><div class="error" id="${slug}-duration-slider-error"></div></div>
+		<div class="center">
+		    <div id="${slug}-duration">30 days</div>
+		    <div id="${slug}-duration-slider" name="duration"></div>
 		    <div class="clear"></div>
 		</div>
 
-		<div class="centered">
-                    <label for="add-listing-min-bid" id="add-listing-min-bid-label">
+		<div class="center">
+                    <label for="${slug}-min-bid" id="${slug}-min-bid-label">
 			Minimum Bid (Optional):
 		    </label>
                 </div>
-		<div class="centered text-centered">
-		    <label id="add-listing-min-bid-show">
+		<div class="center text-center">
+		    <label id="${slug}-min-bid-show">
 			<a href="#">Click to Show Items</a>
 		    </label>
 		</div>
 
-		<div class="null" id="add-listing-min-bid-wrapper">
+		<div class="null" id="${slug}-min-bid-wrapper">
 		    <div>
 			Select the minimum items you will consider for
 			a trade. You can select up to 10 items.
 		    </div>
-		    <div class="organizer-view" id="add-listing-min-bid">
-			<metal:settings tal:define="slug 'mb'">
-			    <metal:include use-macro="context.organizer_parts.macros.item_backpack" />
-			</metal:settings>
-			<label id="add-listing-min-bid-title">
-			    Minimum Bid <span id="add-listing-min-bid-title-extra">(0 items)</span>
+		    <div class="organizer-view" id="${slug}-min-bid">
+			<metal:include
+			     tal:define="slug 'mb'"
+			     metal:use-macro="context.organizer_parts.macros.item_backpack" />
+			<label id="${slug}-min-bid-title">
+			    Minimum Bid <span id="${slug}-min-bid-title-extra">(0 items)</span>
 			</label>
-			<metal:settings tal:define="slug 'add-listing-min-bid'">
-			    <metal:include use-macro="context.organizer_parts.macros.item_chooser" />
-			</metal:settings>
+			<metal:include
+			     tal:define="slug 'listing-add-min-bid'"
+			     metal:use-macro="context.organizer_parts.macros.item_chooser" />
 		    </div>
 		</div>
 
-		<div class="centered mt2">
-                    <label for="" id="add-listing-terms-desc">Site Rules, Terms and Conditions:</label>
+		<div class="center mt2">
+                    <label for="" id="${slug}-terms-desc">Site Rules, Terms and Conditions:</label>
  		    <div class="message null">
-			<div class="error" id="add-listing-terms-error"></div>
+			<div class="error" id="${slug}-terms-error"></div>
 		    </div>
 		    <div class="mt05">
-			<input type="checkbox" id="add-listing-terms" />
+			<input type="checkbox" id="${slug}-terms" />
 			I Agree to follow the Site Rules and Terms of Use.
-                        <span><a href="#" id="add-listing-show-terms">(Click here to show them)</a></span>
+                        <span><a href="#" id="${slug}-show-terms">(Click here to show them)</a></span>
 		    </div>
                 </div>
 
 	    </div>
 
-	    <div id="add-listing-buttons" class="centered text-centered m2">
-		<span class="submit button mr05">
-		    <a href="#" id="add-listing-submit">OK, Post It</a>
+	    <div id="${slug}-buttons" class="center text-center m2">
+		<span class="mr05">
+		    <a href="#" id="${slug}-submit" class="button">OK, Post It</a>
 		</span>
-		<span class="cancel button">
-		    <a href="#" id="add-listing-cancel">Nah, Cancel</a>
+		<span class="">
+		    <a href="#" id="${slug}-cancel" class="button">Nah, Cancel</a>
 		</span>
 	    </div>
 
-	    <div id="add-listing-response" class="centered text-centered">
-		<div id="add-listing-working" class="m1 null"></div>
-		<div id="add-listing-success" class="m1 null">
-		    <span class="button mr05">
-			<a href="#" id="add-listing-success-view">View Listing</a>
+	    <div id="${slug}-response" class="center text-center">
+		<div id="${slug}-working" class="m1 null"></div>
+		<div id="${slug}-success" class="m1 null">
+		    <span class="mr05">
+			<a id="${slug}-success-view" class="button" href="#">View Listing</a>
 		    </span>
 		</div>
-		<div id="add-listing-error" class="error m1 null"></div>
+		<div class="message null">
+		    <div id="${slug}-error" class="error m1"></div>
+		</div>
             </div>
 
 

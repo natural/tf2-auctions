@@ -1,7 +1,7 @@
 <metal:organizers>
 
 
-<div metal:define-macro="item_display">
+<div metal:define-macro="item_display" class="item-display">
     <table class="chooser">
         <tbody>
 	    <metal:define tal:define="rows rows | 1; cols cols | 10">

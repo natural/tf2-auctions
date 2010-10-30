@@ -4,7 +4,7 @@
 </head>
 <body>
     <metal:fill fill-slot="main">
-	<div id="login">
+	<div id="login-content" class="w50 centered mt1">
 	    <h1 class="message"><span class="hilite"></span>Login.  It's Safe.</h1>
 	    <div class="m1">
 		Click the link to sign in
@@ -12,7 +12,7 @@
 		username or your password so you're pretty safe - at
 		least from us.
 	    </div>
-	    <div  class="login-link">
+	    <div id="login-link" class="w50 centered mt1">
 	    <a href="${controller.login_url()}">
 		<img src="http://steamcommunity.com/public/images/signinthroughsteam/sits_small.png" />
 	    </a>

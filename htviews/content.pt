@@ -24,7 +24,7 @@
 </head>
 
 
-<body metal:fill-slot="body">
+<body metal:fill-slot="body" tal:define="slug 'content'">
     <div id="tooltip" class="null">
         <div id="tooltip-top-shim"></div>
         <div id="tooltip-inner">
@@ -35,39 +35,41 @@
             <div class="negative">negative text</div>
         </div>
     </div>
+    <div id="${slug}-terms-dialog" class="null"></div>
 
-    <div id="header-wrapper">
-	<div id="header" metal:fill-slot="header">
-	    <div id="main-logo">
+
+    <div id="${slug}-header-pod">
+	<div id="${slug}-header" metal:fill-slot="header">
+	    <div id="${slug}-main-logo">
 		<a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
 	    </div>
-	    <div id="site-buttons">
-		<span class="null" id="user-buttons">
-		    <span id="avatar"></span>
-		    <a class="big-button" href="/profile/" id="my-profile">My Profile</a>
-		    <a class="big-button mr1" href="/listing/add">Add Listing</a>
+	    <div id="${slug}-site-buttons">
+		<span class="null" id="${slug}-user-buttons">
+		    <span id="${slug}-avatar-pod"></span>
+		    <a id="${slug}-player-profile-link" class="big-button" href="#">My Profile</a>
+		    <a id="${slug}-add-listing-link" class="big-button mr1" href="/listing/add">Add Listing</a>
 		</span>
-		<a class="button" href="/search">Search</a>
-		<a class="button login-button" href="/login" id="login-button">Login</a>
-		<a class="button logout-button null" href="${controller.logout_url()}" id="logout-button">Logout</a>
+		<a id="${slug}-search-link" class="button null" href="/search">Search</a>
+		<a id="${slug}-login-link" class="button null" href="/login">Login</a>
+		<a id="${slug}-logout-link" class="button null" href="${controller.logout_url()}">Logout</a>
 	    </div>
-	    <div id="site-small-msg" class="null"></div>
+	    <div id="${slug}-site-message" class="null"></div>
 	</div>
     </div>
 
-    <div id="content" metal:fill-slot="main">
+    <div id="${slug}-main-pod" metal:fill-slot="main">
 	<metal:slot define-slot="main" />
 	<div class="clear"></div>
     </div>
 
-    <div id="footer" metal:fill-slot="footer">
+    <div id="${slug}-footer-pod" metal:fill-slot="footer">
 	<metal:slot define-slot="footer" />
-	<div class="text-centered">
+	<div class="text-center">
 	    <a href="#">about</a> |
 	    <a href="#">faq</a> |
 	    <a href="#">terms of service</a> | etc...
 	</div>
-	<div class="text-centered">
+	<div class="text-center">
 	    Powered by <a href="http://steampowered.com">Steam</a>
 	    (but we don't have anything to do with Valve or Steam)
 	</div>
