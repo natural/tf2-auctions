@@ -8,8 +8,8 @@
 		<tbody>
                     <tr>
 			<td tal:attributes="width '70%'">
-			    <div class="${slug}-bid-view-link m05 mb1" tal:condition="use_view">
-				<a class="small-button">View</a>
+			    <div class="${slug}-bid-view-link m05" tal:condition="use_view">
+				<a class="small-button small-item-button">View</a>
 			    </div>
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
 
@@ -52,8 +52,8 @@
 		<tbody>
                     <tr>
 			<td tal:attributes="width '70%'">
-			    <div class="${slug}-listing-view-link m05 mb1">
-				<a class="small-button">View</a>
+			    <div class="${slug}-listing-view-link m05">
+				<a class="small-button small-item-button">View</a>
 			    </div>
 
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />

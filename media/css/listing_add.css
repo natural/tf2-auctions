@@ -1,0 +1,24 @@
+#listing-add-duration-slider {
+margin:0.5em 0 1em 0;
+width:75%;
+float:right;
+}
+
+#listing-add-duration {
+width:20%;
+float:left;
+padding-top:2%;
+}
+
+#add-bid-fields label, #listing-add-fields label {
+margin-top:0.5em;
+}
+
+#add-bid-fields textarea, #listing-add-fields textarea {
+margin-bottom:1em;
+}
+
+#listing-add-fields label a {
+text-decoration:underline;
+}
+

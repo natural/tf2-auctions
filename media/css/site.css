@@ -65,6 +65,15 @@ line-height:1em;
 padding:0.35em 1.5em 0.25em 1.5em;
 }
 
+.small-item-button {
+width:5.05em !important;
+padding-left:0;
+padding-right:0;
+display:block;
+height:1em;
+vertical-align:middle;
+}
+
 .big-button {
 background-color:#9a8b6b;
 background: -moz-linear-gradient(top, #dcd2ba, #9a8b6b);
@@ -270,6 +279,7 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 
 .m1   { margin:1em; }
 .m2   { margin:2em; }
+.m05  { margin:0.5em; }
 .mb05 { margin-bottom:0.5em; }
 .mb1  { margin-bottom:1em; }
 .ml1  { margin-left:1em; }

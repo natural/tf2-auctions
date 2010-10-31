@@ -254,34 +254,6 @@ class Bid(db.Model):
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
 
     @classmethod
-    def build_update(cls, **kwds):
-	owner = users.get_current_user()
-	if not owner:
-	    raise ValueError('No owner specified.')
-	listing_id = int(kwds.pop('listing_id'))
-	listing = kwds['listing'] = Listing.get_by_id(listing_id)
-	if not listing:
-	    raise TypeError('Invalid listing.')
-	bid = kwds['bid'] = cls.all().filter('owner =', owner).filter('listing =', listing).get()
-	if not bid:
-	    raise ValueError('No existing bid to update.')
-	kwds['owner'] = owner
-	kwds['profile'] = PlayerProfile.get_by_id64(user_steam_id(owner))
-	item_ids = kwds['item_ids']
-	for uid, item in item_ids:
-	    q = ListingItem.all(keys_only=True)
-	    if q.filter('uniqueid', uid).filter('status', 'active').get():
-		raise TypeError('Item already in an active auction.')
-	    q = BidItem.all(keys_only=True)
-	    if q.filter('uniqueid', uid).filter('status', 'active').get():
-		raise TypeError('Item already in an active bid.')
-	if listing.status != 'active':
-	    raise TypeError('Invalid listing status.')
-	key = db.run_in_transaction(cls.build_update_transaction, **kwds)
-	return key
-
-
-    @classmethod
     def build(cls, **kwds):
 	owner = users.get_current_user()
 	if not owner:
@@ -298,6 +270,8 @@ class Bid(db.Model):
 		raise TypeError('Item already in an active bid.')
 	listing_id = int(kwds.pop('listing_id'))
 	listing = kwds['listing'] = Listing.get_by_id(listing_id)
+	## TODO: check for existing bid by owner and disallow creating
+	## multiple bids.
 	if not listing:
 	    raise TypeError('Invalid listing.')
 	if listing.status != 'active':
@@ -335,6 +309,32 @@ class Bid(db.Model):
 	    params={'bids':1, 'bid_items':len(item_ids)})
 	return key
 
+    @classmethod
+    def build_update(cls, **kwds):
+	owner = users.get_current_user()
+	if not owner:
+	    raise ValueError('No owner specified.')
+	listing_id = int(kwds.pop('listing_id'))
+	listing = kwds['listing'] = Listing.get_by_id(listing_id)
+	if not listing:
+	    raise TypeError('Invalid listing.')
+	bid = kwds['bid'] = cls.all().filter('owner =', owner).filter('listing =', listing).get()
+	if not bid:
+	    raise ValueError('No existing bid to update.')
+	kwds['owner'] = owner
+	kwds['profile'] = PlayerProfile.get_by_id64(user_steam_id(owner))
+	item_ids = kwds['item_ids']
+	for uid, item in item_ids:
+	    q = ListingItem.all(keys_only=True)
+	    if q.filter('uniqueid', uid).filter('status', 'active').get():
+		raise TypeError('Item already in an active auction.')
+	    q = BidItem.all(keys_only=True)
+	    if q.filter('uniqueid', uid).filter('status', 'active').get():
+		raise TypeError('Item already in an active bid.')
+	if listing.status != 'active':
+	    raise TypeError('Invalid listing status.')
+	key = db.run_in_transaction(cls.build_update_transaction, **kwds)
+	return key
 
     @classmethod
     def build_update_transaction(cls, owner, profile, listing, bid, item_ids, public_msg, private_msg):
@@ -343,7 +343,6 @@ class Bid(db.Model):
 	    ## backpack feed into this site for that to work.
 	    raise ValueError('Incorrect ownership.')
 	schema = json.loads(fetch.schema())
-	
 	bid.message_public = public_msg
 	bid.message_private = private_msg
 	bid.put()

@@ -11,9 +11,9 @@
 	<div id="${slug}-badge-pod">
 	    <div id="${slug}-badge" class="null owner">
 		<div class="center text-center">
-		    <h2 class="null mt1" id="${slug}-is-you"></h2>
+		    <h1 class="m05" id="${slug}-title"></h1>
 		    <img id="${slug}-avatar" class="m1" />
-		    <h1 class="mb1" id="${slug}-title"></h1>
+		    <h2 class="null m05" id="${slug}-is-you"></h2>
 		</div>
 	    </div>
 	</div>

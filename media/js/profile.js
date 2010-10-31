@@ -223,7 +223,7 @@ var playerProfileOkay = function(profile) {
     setTitle(profile.personaname)
     smallMsg().fadeOut()
     $$('title').text(profile.personaname)
-    $$('avatar').attr('src', profile.avatarfull)
+    $$('avatar').attr('src', profile.avatarmedium)
     $$('badge').slideDown()
     $('.init-seed').fadeIn()
 }

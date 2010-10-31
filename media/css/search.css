@@ -41,3 +41,7 @@ text-align:center;
 padding-left:0.25em;
 padding-right:0.25em;
 }
+
+/*
+$$("listings a.small-button:contains('View')").width( $$('listings td.item-view:visible').first().width() )
+*/

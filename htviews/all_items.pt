@@ -1,0 +1,12 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">TF2Bay.com -- All Items</title>
+</head>
+<body>
+    <metal:fill fill-slot="main" tal:define="slug 'all-items'">
+	<h1>All Items</h1>
+
+
+    </metal:fill>
+</body>
+</html>

@@ -74,7 +74,7 @@ handlers:
 - url: /(listing|profile)/\d{1,20}
   script: tf2bay/scripts/public/\1.py
 
-- url: /(search|login|terms)
+- url: /(search|login|terms|all-items)
   script: tf2bay/scripts/public/\1.py
 
 - url: /
