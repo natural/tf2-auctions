@@ -37,6 +37,7 @@ var lazy = function(def) {
     }
 }
 
+var pathTail = function() { return window.location.pathname.split('/').pop() }
 
 var makeImg = function(options) {
     var src = options['src'] ? options['src'] : '/media/img/missing.png'

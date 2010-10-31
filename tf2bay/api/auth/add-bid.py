@@ -14,7 +14,14 @@ class AddBid(ApiHandler):
 		raise TypeError('Missing item identifiers.')
 	    public_msg = bid['public_msg'][0:400]
 	    private_msg = bid['private_msg'][0:400]
-	    key = Bid.build(item_ids=item_ids, public_msg=public_msg, private_msg=private_msg, listing_id=bid['id'])
+	    if bid.get('update'):
+		key = Bid.build_update(
+		    item_ids=item_ids, public_msg=public_msg, private_msg=private_msg,
+		    listing_id=bid['id'])
+	    else:
+		key = Bid.build(
+		    item_ids=item_ids, public_msg=public_msg, private_msg=private_msg,
+		    listing_id=bid['id'])
 	except (Exception, ), exc:
 	    self.error(500)
 	    exc = exc.message if hasattr(exc, 'message') else str(exc)
@@ -29,3 +36,4 @@ main = ApiHandler.make_main(AddBid)
 
 if __name__ == '__main__':
     main()
+

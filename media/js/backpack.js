@@ -211,6 +211,7 @@ var BackpackChooser = function(options) {
 	    .draggable({
 		containment: $('#backpack-'+backpackSlug).parent(),
 		cursor: 'move',
+		drag: dragFromBackpack,
 		helper: 'clone',
 		start: dragShow})
 

@@ -1,6 +1,5 @@
-// slug '#listing-detail-' defined in browse.pt
+// slug '#listing-detail-' defined in listing_detail.pt
 var $$ = function(suffix, next) { return $('#listing-detail-{0}'.fs(suffix), next) }
-var listingId = function() { return window.location.pathname.split('/').pop() }
 var timeLeftId = null
 
 
@@ -11,7 +10,7 @@ function updateTimeLeft(expires, selector) {
 	if (delta < 0) {
 	    selector.text('Expired')
 	} else {
-	    var days=0, hours=0, mins=0, secs=0, out=''
+	    var days=0, hours=0, mins=0, secs=0, text=''
 	    delta = Math.floor(delta/1000)
 	    days = Math.floor(delta/86400)
 	    delta = delta % 86400
@@ -20,11 +19,11 @@ function updateTimeLeft(expires, selector) {
 	    mins = Math.floor(delta/60)
 	    delta = delta % 60
 	    secs = Math.floor(delta)
-	    if(days != 0) { out += days +'d ' }
-	    if(days != 0 || hours != 0) { out += hours + 'h '}
-	    if(days != 0 || hours != 0 || mins != 0){out += mins +'m '}
-	    out += secs +'s'
-	    selector.text(out)
+	    if (days != 0) { text += days +'d ' }
+	    if (days != 0 || hours != 0) { text += hours + 'h ' }
+	    if (days != 0 || hours != 0 || mins != 0) { text += mins +'m ' }
+	    text += secs +'s'
+	    selector.text(text)
 	}
     }
 }
@@ -45,7 +44,7 @@ var sendListingCancel = function() {
     $.ajax({
 	url: '/api/v1/auth/cancel-listing',
 	type: 'POST',
-	data: $.toJSON({id: listingId()}),
+	data: $.toJSON({id: pathTail()}),
 	dataType: 'json',
 	success: cancelOkay,
 	error: cancelError
@@ -68,7 +67,7 @@ var showCancelConfirm = function(e) {
 }
 
 
-var backpackReady = function(backpack, listings, bids, profile) {
+var backpackReady = function(backpack, listings, bids, profile, update) {
     $$('msg-backpack').fadeOut()
     $$('own-backpack').fadeIn()
     $$('place-start').fadeOut()
@@ -162,9 +161,20 @@ var backpackReady = function(backpack, listings, bids, profile) {
     }
 
     var addBid = function(input) {
-	var output = {id: listingId(), private_msg: input.private_msg, public_msg: input.public_msg}
+	var output = {
+	    id: pathTail(),
+	    private_msg: input.private_msg,
+	    public_msg: input.public_msg,
+	    update:update
+        }
 	var items = output.items = []
-	$.each(input.items, function(idx, img) { items.push( $(img).data('node')) })
+	$.each(input.items, function(idx, img) {
+	    if ( ! $(img).parents('td').hasClass('cannot-trade') ) {
+		items.push( $(img).data('node') )
+	    }
+	})
+        // TODO: check the length on the items array to make sure
+        // we're posting at least 1 item or 1 new item.
         console.log(input, output)
 	$.ajax({
 	    url: '/api/v1/auth/add-bid',
@@ -213,6 +223,26 @@ var backpackReady = function(backpack, listings, bids, profile) {
 	return false
     }
 
+    if (update) {
+	try {
+	    var current = $(bids).filter(function (idx, item) { return item.listing.id == pathTail() })[0]
+	    var currentIds = $(current.items).map(function (idx, item) { return item.uniqueid })
+	    $.each($('td.active-bid'), function(idx, existing) {
+		var data = $('img', existing).data('node')
+		if ( $.inArray(data.id, currentIds) > -1 ) {
+		    console.log('moving item ', existing, 'to chooser')
+		    var img = $('img', existing)
+		    img.detach()
+		    $(existing).removeClass('active-bid cannot-trade')
+	    	    var target = $('#listing-detail-add-bid-item-chooser td div:empty').first()
+		    target.prepend(img).parent().addClass('active-bid cannot-trade')
+		}
+	    })
+	} catch (e) {
+	    console.error(e)
+	}
+    }
+
     var width = $('#listing-detail-add-bid-item-chooser tbody').width()
     $$('add-bid-fields').width(width)
     $$('add-bid-fields textarea').width(width).height(width/4).text()
@@ -242,7 +272,9 @@ var backpackError = function(request, status, error) {
 var listingsReady = function(listings, bids, profile) {
     smallMsg('Loading your backpack...')
     new BackpackLoader({
-	success: function (backpack) { backpackReady(backpack, listings, bids, profile) },
+	success: function (backpack) {
+	    backpackReady(backpack, listings, bids, profile, $$('place-start').data('update'))
+	},
 	error: backpackError,
 	suffix: profile.id64
     })
@@ -269,7 +301,9 @@ var profileReady = function(profile, listing) {
 	if (listing.status == 'active') {
             $$('auth-bid-pod').fadeIn()
 	    if ($.inArray(profile.steamid, $(listing.bids).map(function(i, x) { return x.owner.steamid })) > -1)  {
-		$$('place-start').text('Update Your Bid')
+		$$('place-start').text('Update Your Bid').data('update', true)
+	    } else {
+		$$('place-start').data('update', false)
 	    }
 	    $$('place-start').click(function() {
 		$$('place-bid-pod').fadeIn()
@@ -406,7 +440,7 @@ var listingError = function(request, status, error) {
 
 
 var schemaReady = function(schema) {
-    var id = listingId()
+    var id = pathTail()
     document.title += ' ' + id
     new ListingLoader({
 	success: function(ls) { listingReady(id, ls) },

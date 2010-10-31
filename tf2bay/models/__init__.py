@@ -253,6 +253,33 @@ class Bid(db.Model):
     status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
 
+    @classmethod
+    def build_update(cls, **kwds):
+	owner = users.get_current_user()
+	if not owner:
+	    raise ValueError('No owner specified.')
+	listing_id = int(kwds.pop('listing_id'))
+	listing = kwds['listing'] = Listing.get_by_id(listing_id)
+	if not listing:
+	    raise TypeError('Invalid listing.')
+	bid = kwds['bid'] = cls.all().filter('owner =', owner).filter('listing =', listing).get()
+	if not bid:
+	    raise ValueError('No existing bid to update.')
+	kwds['owner'] = owner
+	kwds['profile'] = PlayerProfile.get_by_id64(user_steam_id(owner))
+	item_ids = kwds['item_ids']
+	for uid, item in item_ids:
+	    q = ListingItem.all(keys_only=True)
+	    if q.filter('uniqueid', uid).filter('status', 'active').get():
+		raise TypeError('Item already in an active auction.')
+	    q = BidItem.all(keys_only=True)
+	    if q.filter('uniqueid', uid).filter('status', 'active').get():
+		raise TypeError('Item already in an active bid.')
+	if listing.status != 'active':
+	    raise TypeError('Invalid listing status.')
+	key = db.run_in_transaction(cls.build_update_transaction, **kwds)
+	return key
+
 
     @classmethod
     def build(cls, **kwds):
@@ -307,6 +334,38 @@ class Bid(db.Model):
 	    queue_name='counters',
 	    params={'bids':1, 'bid_items':len(item_ids)})
 	return key
+
+
+    @classmethod
+    def build_update_transaction(cls, owner, profile, listing, bid, item_ids, public_msg, private_msg):
+	if not profile.owns_all(uid for uid, item in item_ids):
+	    ## TODO: re-fetch backpack.  will probably need to move
+	    ## backpack feed into this site for that to work.
+	    raise ValueError('Incorrect ownership.')
+	schema = json.loads(fetch.schema())
+	
+	bid.message_public = public_msg
+	bid.message_private = private_msg
+	bid.put()
+	item_types = schematools.item_type_map(schema)
+	for uid, item in item_ids:
+	    bid_item = BidItem(
+		parent=bid,
+		uniqueid=uid,
+		defindex=item['defindex'],
+		source=json.dumps(item),
+		item_type_name=item_types[item['defindex']],
+		listing=listing,
+		bid=bid)
+	    bid_item.put()
+	taskqueue.add(
+	    url='/api/v1/admin/queue/bang-counters',
+	    transactional=True,
+	    queue_name='counters',
+	    params={'bid_items':len(item_ids)})
+	return bid.key()
+
+
 
     def encode_builtin(self):
 	return {
