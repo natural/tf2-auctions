@@ -139,15 +139,17 @@
 		</div>
 
 
-		<div class="center mt2">
+		<div class="center mt2" id="${slug}-terms-pod">
                     <label for="" id="${slug}-add-bid-terms-desc">Site Rules, Terms and Conditions:</label>
  		    <div class="message null">
 			<div class="error" id="${slug}-add-bid-terms-error"></div>
 		    </div>
 		    <div class="mt05">
 			<input type="checkbox" id="${slug}-add-bid-terms" />
-			I Agree to follow the Site Rules and Terms of Use.
-                        <span><a href="#" id="${slug}-add-bid-show-terms">(Click here to show them)</a></span>
+			I Agree to
+                        <strong>
+			    <a href="#" id="${slug}-add-bid-show-terms">the Site Rules and Terms of Use</a>.
+			</strong>
 		    </div>
                 </div>
 

@@ -74,11 +74,12 @@
 		    </div>
 		    <div class="mt05">
 			<input type="checkbox" id="${slug}-terms" />
-			I Agree to follow the Site Rules and Terms of Use.
-                        <span><a href="#" id="${slug}-show-terms">(Click here to show them)</a></span>
+			I Agree to
+                        <strong>
+			    <a href="#" id="${slug}-show-terms">the Site Rules and Terms of Use</a>.
+			</strong>
 		    </div>
                 </div>
-
 	    </div>
 
 	    <div id="${slug}-buttons" class="center text-center m2">

@@ -37,3 +37,7 @@ div.listing-seed, div.bid-marker {
 #listing-detail-bids > div.organizer-view {
 margin-bottom:0.75em;
 }
+
+#listing-detail-terms-pod a {
+text-decoration:underline;
+}
