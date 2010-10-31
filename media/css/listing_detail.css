@@ -1,11 +1,11 @@
 #listing-detail-left {
 float:left;
-width:62%;
+width:68%;
 }
 
 #listing-detail-right {
 float:right;
-width:33%;
+width:30%;
 }
 
 #listing-detail-place-bid-pod > h1:first-child {

@@ -157,18 +157,25 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 
     self.moveItemToChooser = function(event) {
 	var source = $(event.target)
-	var target = $("#listing-add-item-chooser td div:empty").first()
+	var target = $('#listing-add-item-chooser td div:empty').first()
 	var cell = source.parent().parent()
 	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	source.data('original-cell', cell)
+	var others = $('span.equipped, span.quantity', cell)
 	target.prepend(source)
+	target.append(others)
 	bpChs.updateCount()
     }
 
     self.moveItemOriginal = function(event) {
 	var source = $(event.target)
 	var target = $('div', source.data('original-cell'))
-	target.append(source)
+	if (target.length==1) {
+    	    var others = $('span.equipped, span.quantity', source.parent())
+	    target.append(source)
+	    target.append(others)
+	    bpChs.updateCount()
+	}
     }
 
 }

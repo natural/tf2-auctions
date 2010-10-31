@@ -174,8 +174,10 @@ var BackpackChooser = function(options) {
 		var item = $('div img', ui.draggable)
 	    }
 	    $(this).append(item)
+	    item.data('original-cell', ui.draggable)
 	    $('img', this).css('margin-top', '0')
-	    $("span.equipped:only-child, span.quantity:only-child").hide().detach()
+	    var others = $("span.equipped:only-child, span.quantity:only-child", ui.draggable)
+	    $(this).append(others)
 	    $('#' + chooserSlug + '-chooser td, #backpack-' + backpackSlug + ' td').removeClass('selected outline')
 	    self.updateCount()
 	    if (options.afterDropMove) { options.afterDropMove(item) }

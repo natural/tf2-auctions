@@ -112,16 +112,19 @@ var backpackReady = function(backpack, listings, bids, profile, update) {
 	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	source.data('original-cell', cell)
 	target.prepend(source)
+	target.append($('span.equipped, span.quantity', cell))
 	bc.updateCount()
     }
 
-    var moveToBackpack = function(e) {
+    var moveToBackpack = function(event) {
 	var source = $(event.target)
-	var target = source.data('original-cell')
-	if (target) {
-	    $('div', target).prepend(source)
+	var target = $('div', source.data('original-cell'))
+	if (target.length==1) {
+    	    var others = $('span.equipped, span.quantity', source.parent())
+	    target.append(source)
+	    target.append(others)
+	    bc.updateCount()
 	}
-	bc.updateCount()
     }
 
     var cancelNewBid = function(event) {
