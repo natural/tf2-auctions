@@ -200,7 +200,7 @@ var searchOkay = function(search) {
 	$('input[name="sort"]').first().click()
     }
     showListings(search)
-    smallMsg().fadeAway()
+    siteMessage().fadeAway()
     $$('controls').fadeIn('fast')
     $$('listings').fadeIn('fast')
     contentWidths.controls = $$('controls').width()
@@ -219,13 +219,13 @@ var schemaReady = function(schema) {
     $('.listing-view').live('mouseout', function() { $(this).removeClass('listing-hover') })
     $$('advanced-link').click(showAdvancedSearch)
     $$('basic-link').click(showBasicSearch)
-    smallMsg('Loading results...')
+    siteMessage('Loading results...')
     new SearchLoader({success:searchOkay})
 }
 
 
 $(document).ready(function() {
-    smallMsg('Loading schema...')
+    siteMessage('Loading schema...')
     new AuthProfileLoader({success: defaultUserAuthOkay, error: defaultUserAuthError})
     new SchemaLoader({success: schemaReady})
     console.log('search.js ready')

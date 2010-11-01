@@ -242,7 +242,7 @@ var SchemaTool = function(schema) {
 }
 
 
-var smallMsg = function(text) {
+var siteMessage = function(text) {
     if (text) {
 	return $('#content-site-message').removeClass('null').fadeIn().text(text)
     } else {

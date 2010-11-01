@@ -58,7 +58,7 @@
 
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
 			    <strong class="listing-description-label">Description:</strong>
-			    <div class="listing-description"></div>
+			    <div class="listing-description desc"></div>
 			</td>
 			<td>
 			    <metal:if tal:condition="use_created">

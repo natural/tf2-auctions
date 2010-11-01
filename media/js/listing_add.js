@@ -264,7 +264,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
     $('#backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
     $('#unplaced-backpack-a td div img').live('dblclick', addTool.moveItemToChooser)
     $('#listing-add-item-chooser td div img').live('dblclick', addTool.moveItemOriginal)
-    smallMsg().fadeAway()
+    siteMessage().fadeAway()
     addTool.show()
 }
 
@@ -275,7 +275,7 @@ var listingsError = function(err) {
 
 
 var listingsReady = function(listings, bids, profile) {
-    smallMsg('Loading your backpack...')
+    siteMessage('Loading your backpack...')
     new BackpackLoader({
 	success: function (backpack) { backpackReady(backpack, listings, bids, profile) },
         suffix: profile.id64
@@ -285,7 +285,7 @@ var listingsReady = function(listings, bids, profile) {
 
 var profileReady = function(profile) {
     defaultUserAuthOkay(profile)
-    smallMsg('Profile loaded.  Welcome back, ' + profile['personaname'] + '!')
+    siteMessage('Profile loaded.  Welcome back, ' + profile['personaname'] + '!')
     var listingsLoaded = function(listings) {
 	new BidsLoader({
 	    success: function(bids) { listingsReady(listings, bids, profile) },
@@ -300,7 +300,7 @@ var profileReady = function(profile) {
 
 
 var schemaReady = function(schema) {
-    smallMsg('Loading your profile...')
+    siteMessage('Loading your profile...')
     new AuthProfileLoader({success: profileReady, error: defaultUserAuthError})
 }
 
@@ -312,6 +312,6 @@ $(document).ready(function() {
     $('div.organizer-view td').live('click', selectItem)
     $('#listing-add-min-bid-chooser td').live('click', maybeDeselectLast)
     $('#listing-add-show-terms').click(showTermsDialog)
-    smallMsg('Loading item schema...')
+    siteMessage('Loading item schema...')
     new SchemaLoader({success: schemaReady})
 })

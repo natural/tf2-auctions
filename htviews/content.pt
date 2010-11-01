@@ -41,7 +41,10 @@
     <div id="${slug}-header-pod">
 	<div id="${slug}-header" metal:fill-slot="header">
 	    <div id="${slug}-main-logo">
-		<a href="/"><img src="/media/img/tf2bay-logo.png" /></a>
+		<a href="/" title="TF2Bay.com">
+		    <img alt="TF2Bay.com" src="/media/img/tf2bay-logo.png"
+			 height="74" width="256" />
+		</a>
 	    </div>
 	    <div id="${slug}-site-buttons">
 		<span class="null" id="${slug}-user-buttons">

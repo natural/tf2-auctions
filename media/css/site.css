@@ -36,6 +36,9 @@ visibility: hidden;
 .text-right { text-align:right; }
 
 .defindex-lazy { display:none; }
+.desc { white-space:pre; }
+
+
 .null { display:none; }
 
 .button, .small-button {

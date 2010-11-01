@@ -24,7 +24,9 @@
 	    <div id="${slug}-left">
 		<div class="mb1">
 		    <label>Description:</label>
-		    <div class="m1"><strong id="${slug}-description"></strong></div>
+		    <div class="m1">
+			<div class="desc" id="${slug}-description"></div>
+		    </div>
 		</div>
 		<div>
 		    <label>Items:</label>
@@ -73,14 +75,31 @@
 		    </div>
 
 		    <div id="${slug}-owner-controls" class="null center mtb1">
-			<div class="m1">You own this listing, so you may cancel it:</div>
-			<div class="center text-center" id="${slug}-cancel-prompt">
-			    <a href="#" id="${slug}-cancel-show-confirm" class="button">Cancel this Listing</a>
+			<div id="${slug}-owner-controls-cancel" class="null">
+			    <div class="m1">You own this listing, so you may cancel it:</div>
+			    <div class="center text-center" id="${slug}-cancel-prompt">
+				<a href="#" id="${slug}-cancel-show-confirm" class="button">Cancel this Listing</a>
+			    </div>
+			    <div class="center text-center null" id="${slug}-cancel-confirm">
+				<label class="m1">Are you sure you want to cancel this listing?</label>
+				<a href="#" class="button" id="${slug}-cancel-submit">Yes, Do It</a>
+				<a href="#" class="button" id="${slug}-cancel-cancel">No, Don't</a>
+			    </div>
 			</div>
-			<div class="center text-center null" id="${slug}-cancel-confirm">
-			    <label class="m1">Are you sure you want to cancel this listing?</label>
-			    <a href="#" class="button" id="${slug}-cancel-submit">Yes, Do It</a>
-			    <a href="#" class="button" id="${slug}-cancel-cancel">No, Don't</a>
+			<div id="${slug}-owner-controls-choose-winner" class="null">
+			    <div class="m1">
+				You own this listing, and it's over,
+				so you may choose a winner.  Select a
+				winning bid and then press this button:
+			    </div>
+			    <div class="center text-center" id="${slug}-choose-prompt">
+				<a href="#" id="${slug}-cancel-show-confirm" class="button">Confirm Winner</a>
+			    </div>
+			    <div class="center text-center null" id="${slug}-choose-confirm">
+				<label class="m1">Are you sure you want to choose this winner?</label>
+				<a href="#" class="button" id="${slug}-choose-submit">Yes, Do It</a>
+				<a href="#" class="button" id="${slug}-choose-cancel">No, Don't</a>
+			    </div>
 			</div>
                     </div>
 		</div>
@@ -102,7 +121,7 @@
 
 	<div id="${slug}-existing-bids-pod" class="null">
 	    <div id="${slug}-existing-bids">
-		<h1 class="pt05"><span class="hilite"></span><span id="${slug}-bidcount"></span></h1>
+		<h1 class="pt05"><span class="hilite"></span>&nbsp;<span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids">
 		    <metal:include
 			tal:define="slug slug+'profile'; use_view False"
@@ -122,6 +141,11 @@
 		<h3 id="${slug}-title">
 		    Your Bid <span id="${slug}-add-bid-item-title-extra">(0 items)</span>
 		</h3>
+
+ 		<div class="message center">
+		    <div class="warning null" id="${slug}-add-bid-min-bid-warn"></div>
+		</div>
+
 		<metal:include
 		     tal:define="slug slug+'-add-bid-item'"
 		     metal:use-macro="context.organizer_parts.macros.item_chooser" />

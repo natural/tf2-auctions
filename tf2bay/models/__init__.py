@@ -27,7 +27,7 @@ class Listing(db.Model):
     description = db.StringProperty('Description', default='', multiline=True)
 
     ## non-normalized:  listing status and reason
-    status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
+    status = db.StringProperty('Status', required=True, default='active', indexed=True)
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
 
     ## non-normalized: specific categories for fast searches
@@ -79,8 +79,9 @@ class Listing(db.Model):
 	## 2. check the date
 	if days not in cls.valid_days:
 	    raise ValueError('Invalid number of days until expiration.')
+
 	## regulation 46a:
-	delta = timedelta(hours=days) if devel else timedelta(days=days)
+	delta = timedelta(minutes=days) if devel else timedelta(days=days)
 	expires = datetime.now() + delta
 
 	## 3.  extract and create categories for the ListingItem
@@ -138,35 +139,52 @@ class Listing(db.Model):
 
     valid_days = range(1, 31) # 1-30
 
-    def set_status(self, status, reason):
+    def set_status(self, status, reason, set_items=True, set_bids=True):
 	self.status = status
 	self.status_reason = reason
 	self.put()
-	for item in self.items():
-	    item.status = status
-	    item.put()
-	for bid in self.bids():
-	    bid.set_status(status, reason)
-	    bid.put()
+	if set_items:
+	    for item in self.items():
+		item.status = status
+		item.put()
+	if set_bids:
+	    for bid in self.bids():
+		bid.set_status(status, reason)
+		bid.put()
 
     def cancel(self, reason):
-	self.set_status('cancelled', reason)
+	status = self.status
+	if status == 'active':
+	    self.set_status('cancelled', reason, set_items=True, set_bids=True)
 
-    def time_left(self):
-	return self.expires - datetime.now()
-
-    def users_other_listings(self):
-	## query for other listings by the owner of this listing.
-	pass
+    def expire(self, reason):
+	status = self.status
+	if status == 'active':
+	    if self.bid_count:
+		## can't release the listing items or bid items yet
+		## because no winner has been choosen:
+		self.set_status('ended', reason, set_items=False, set_bids=False)
+	    else:
+		## release the listing items because there aren't any bids:
+		self.set_status('ended', reason, set_items=True, set_bids=False)
+	elif status == 'cancelled':
+	    ## there is nothing to do.
+	    pass
 
     def items(self):
-	""" Returns the player items for this listing. """
-	#return self.listingitem_set.filter('class =', 'ListingItem').fetch(limit=100)
+	""" Returns the player items for this listing.
+
+	Clients can't use self.listingitem_set because it returns the
+	bid items, too.
+	"""
 	return ListingItem.all().filter('listing =', self).fetch(limit=100)
 
     def bids(self):
-	""" Returns the bids for this listing. """
-	#return self.bid_set.fetch(limit=100)
+	""" Returns the bids for this listing.
+
+	Clients can't use self.biditem_set because it returns the
+	listing items, too.
+	"""
 	return Bid.all().filter('listing =', self).fetch(limit=100)
 
     def owner_profile(self):
@@ -188,6 +206,7 @@ class Listing(db.Model):
 	    'status_reason' : self.status_reason,
 	    'bids' : [b.encode_builtin() for b in self.bids()] if bids else (),
 	}
+
 
 class PlayerItem(polymodel.PolyModel):
     """ PlayerItem -> simple junction of player item unique ids and the
@@ -231,7 +250,7 @@ class ListingItem(PlayerItem):
     """
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True, indexed=True)
     ## non-normalized:
-    status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
+    status = db.StringProperty('Status', required=True, default='active', indexed=True)
     ## non-normalized:
     item_type_name = db.StringProperty('Item type name (schema value)', required=True, indexed=True)
 
@@ -250,7 +269,7 @@ class Bid(db.Model):
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True)
     message_private = db.StringProperty('Private message', multiline=True)
     message_public = db.StringProperty('Public message', multiline=True)
-    status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
+    status = db.StringProperty('Status', required=True, default='active', indexed=True)
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
 
     @classmethod
@@ -365,7 +384,6 @@ class Bid(db.Model):
 	return bid.key()
 
 
-
     def encode_builtin(self):
 	return {
 	    'owner' : PlayerProfile.get_by_id64(self.owner.nickname()).encode_builtin(),
@@ -395,7 +413,7 @@ class BidItem(PlayerItem):
     ## non-normalized:
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True, indexed=True)
     ## non-normalized:
-    status = db.CategoryProperty('Status', required=True, default=db.Category('active'), indexed=True)
+    status = db.StringProperty('Status', required=True, default='active', indexed=True)
 
     def __str__(self):
 	return '<BidItem listing=%s, uniqueid=%s, defindex=%s>' % (self.bid, self.uniqueid, self.defindex)

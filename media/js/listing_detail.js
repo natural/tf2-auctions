@@ -67,14 +67,25 @@ var showCancelConfirm = function(e) {
 }
 
 
-var backpackReady = function(backpack, listings, bids, profile, update) {
+var backpackReady = function(backpack, listing, listings, bids, profile, update) {
     $$('msg-backpack').fadeOut()
     $$('own-backpack').fadeIn()
     $$('place-start').fadeOut()
-    smallMsg('').fadeOut()
+    siteMessage('').fadeOut()
 
     var itemMoved = function(item) {
-	//console.log('item copied:', item)
+	var items = $('#listing-detail-add-bid-item-chooser img')
+	var minItems = items.length >= listing.min_bid.length
+	var defItems = $.map(items, function(i, v) { return $(items[v]).data('node').defindex })
+	var metBid = true
+	$.each(listing.min_bid, function(i, v) {
+	    if ($.inArray(v, defItems) == -1 ) { metBid = false }
+	})
+	if (minItems && metBid) {
+	    $$('add-bid-min-bid-warn').slideUp()
+	} else {
+	    $$('add-bid-min-bid-warn').text('Warning: Minimum bid not met').slideDown()
+	}
     }
 
     var bc = new BackpackChooser(
@@ -113,6 +124,7 @@ var backpackReady = function(backpack, listings, bids, profile, update) {
 	source.data('original-cell', cell)
 	target.prepend(source)
 	target.append($('span.equipped, span.quantity', cell))
+	itemMoved(source)
 	bc.updateCount()
     }
 
@@ -123,6 +135,7 @@ var backpackReady = function(backpack, listings, bids, profile, update) {
     	    var others = $('span.equipped, span.quantity', source.parent())
 	    target.append(source)
 	    target.append(others)
+	    itemMoved(source)
 	    bc.updateCount()
 	}
     }
@@ -135,21 +148,18 @@ var backpackReady = function(backpack, listings, bids, profile, update) {
 	    $$('msg-backpack').fadeOut()
 	    $$('own-backpack').fadeIn()
 	    $$('place-start').fadeOut()
-	    smallMsg('').fadeOut()
+	    siteMessage('').fadeOut()
 	    setTimeout(function() { $$('place-bid-pod h1').scrollTopAni() }, 500)
 	})
 	return false
     }
 
     var postOkay = function(data, status, req) {
-	console.log('post okay:', data, status, req)
 	$$('add-bid-working').text('Complete.  Click the link to view your bid.')
-	//$$('add-bid-success a').attr('href', '/listing/'+data.key)
 	$$('add-bid-success').fadeIn()
     }
 
     var postError = function(req, status, err) {
-	console.error('post error:', req, status, err)
 	$$('add-bid-working').text('Something went wrong.  Check the error below.').fadeIn()
 	$$('add-bid-error').text(req.statusText).parent().fadeIn()
     }
@@ -250,6 +260,7 @@ var backpackReady = function(backpack, listings, bids, profile, update) {
     $$('add-bid-fields').width(width)
     $$('add-bid-fields textarea').width(width).height(width/4).text()
     $$('add-bid-terms-desc').parent().width(width)
+    $$('add-bid-min-bid-warn').parent().width(width)
     $.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
 	$('#listing-detail-{0}'.fs(value)).text( $('#listing-detail-{0}-default'.fs(value)).text() )
 	$('#listing-detail-{0}'.fs(value)).focusin(function() {
@@ -272,11 +283,11 @@ var backpackError = function(request, status, error) {
 }
 
 
-var listingsReady = function(listings, bids, profile) {
-    smallMsg('Loading your backpack...')
+var listingsReady = function(listing, listings, bids, profile) {
+    siteMessage('Loading your backpack...')
     new BackpackLoader({
 	success: function (backpack) {
-	    backpackReady(backpack, listings, bids, profile, $$('place-start').data('update'))
+	    backpackReady(backpack, listing, listings, bids, profile, $$('place-start').data('update'))
 	},
 	error: backpackError,
 	suffix: profile.id64
@@ -295,10 +306,15 @@ var profileReady = function(profile, listing) {
     $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
     $$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
     if (profile.steamid == ownerid) {
-	$$('owner-links').slideUp()
+	$$('owner-links').fadeAway()
+        $$('owner-controls').slideDown()
+
 	if (listing.status == 'active') {
-            $$('owner-controls').slideDown()
+	    $$('owner-controls-cancel').slideDown()
 	    $$('cancel-show-confirm').click(showCancelConfirm)
+	}
+	if (listing.status == 'ended') {
+	    $$('owner-controls-choose-winner').slideDown()
 	}
     } else {
 	if (listing.status == 'active') {
@@ -310,13 +326,13 @@ var profileReady = function(profile, listing) {
 	    }
 	    $$('place-start').click(function() {
 		$$('place-bid-pod').fadeIn()
-		smallMsg('Loading your backpack...').fadeIn()
+		siteMessage('Loading your backpack...').fadeIn()
 		var bidsError = function(request, status, error) {
 		    console.log('bid load error:', request, status, error)
 		}
 		var listingsOk = function(listings) {
 		    new BidsLoader({
-			success: function(bids) { listingsReady(listings, bids, profile) },
+			success: function(bids) { listingsReady(listing, listings, bids, profile) },
 			error: bidsError,
 			suffix: profile.id64
 		    })
@@ -358,8 +374,8 @@ var listingReady = function(id, listing) {
 	.attr('href', '/profile/' + listing.owner.id64)
         .attr('title', 'Profile for ' + listing.owner.personaname)
 
-    $$('owner-listings').attr('href', '/profile/' + listing.owner.id64 + '?show=listings')
-
+    $$('owner-listings')
+	.attr('href', '/profile/' + listing.owner.id64 + '?show=listings')
 
     $$('content').fadeIn('slow')
     $$('existing-bids-pod').fadeIn('slow')
@@ -367,7 +383,7 @@ var listingReady = function(id, listing) {
 	listing[name] ? $$(name).text(listing[name]) : $$(name).parent().parent().slideUp() })
     $.each(['created', 'expires'], function(idx, name) {
 	var d = new Date(listing[name] + ' GMT')
-	$$(name).text(''+d)
+	$$(name).text('' + d)
     })
     if (listing.min_bid.length) {
         $.each(listing.min_bid, function(idx, defindex) {
@@ -423,14 +439,18 @@ var listingReady = function(id, listing) {
     $$('items td').mouseenter(hoverItem).mouseleave(unhoverItem)
     $$('min-bid td').mouseenter(hoverItem).mouseleave(unhoverItem)
     $$('bids table.chooser td').mouseenter(hoverItem).mouseleave(unhoverItem)
-
     $$('title').html('Listing ' + id)
     $$('bidcount').text(listing.bid_count ? ('Bids (' + listing.bid_count + ')') : 'No Bids')
     $$('title-pod').fadeIn()
-    smallMsg('').fadeOut()
+    siteMessage('').fadeOut()
+
     if (listing.status == 'active') {
 	timeLeftId = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
-    } else {
+    } else if (listing.status == 'ended') {
+	// display the 'select winner' bits for the user
+	// or display the 'leave feedback' bits for any authorized bidder
+    }
+    if (listing.status != 'active') {
 	$$('place-start').fadeOut()
 	$$('timeleft').text(listing.status)
     }
@@ -459,11 +479,8 @@ var schemaError = function(request, status, error) {
 
 
 $(document).ready(function() {
-
     $$('add-bid-show-terms').click(showTermsDialog)
     $$('add-bid-success-view').click(function(){ window.location.reload() })
-    smallMsg('Loading...')
+    siteMessage('Loading...')
     new SchemaLoader({success: schemaReady, error: schemaError})
 })
-
-

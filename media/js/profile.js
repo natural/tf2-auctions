@@ -13,7 +13,7 @@ var setHeadings = function(prefix) {
 // backpack
 //
 var backpackShow = function() {
-    smallMsg('Loading backpack...')
+    siteMessage('Loading backpack...')
     new BackpackLoader({
 	suffix: id64View(), success: backpackReady, error: backpackError
     })
@@ -29,7 +29,7 @@ var backpackHide = function() {
 }
 
 var backpackReady = function(backpack) {
-    smallMsg('Backpack loaded.').fadeOut()
+    siteMessage('Backpack loaded.').fadeOut()
     $$('backpack-show').fadeOut(function() {
 	new ListingsLoader({
 	    suffix: id64View(),
@@ -84,7 +84,7 @@ var putBackpack = function(backpack, listings, bids) {
 // bids
 //
 var bidsShow = function() {
-    smallMsg('Loading bids...')
+    siteMessage('Loading bids...')
     new BidsLoader({suffix: id64View(), success: bidsReady, error: bidsError})
 }
 
@@ -97,7 +97,7 @@ var bidsHide = function() {
 }
 
 var bidsReady = function(bids) {
-    smallMsg('Bids loaded.').fadeOut()
+    siteMessage('Bids loaded.').fadeOut()
     $$('bids-show').fadeOut(function() {
 	$$('bids-inner').fadeIn(function() {
 	    if (!bids.length) {
@@ -150,7 +150,7 @@ var putBid = function(bid, clone) {
 // listings
 //
 var listingsShow = function() {
-    smallMsg('Loading listings...')
+    siteMessage('Loading listings...')
     new ListingsLoader({
 	suffix: id64View(), success: listingsReady, error: listingsError
     })
@@ -165,7 +165,7 @@ var listingsHide = function() {
 }
 
 var listingsReady = function(listings) {
-    smallMsg('Listings loaded.').fadeOut()
+    siteMessage('Listings loaded.').fadeOut()
     $$('listings-show').fadeOut(function() {
 	$$('listings-inner').fadeIn(function() {
 	    if (!listings.length) {
@@ -221,7 +221,7 @@ var putListing = function(listing, clone) {
 //
 var playerProfileOkay = function(profile) {
     setTitle(profile.personaname)
-    smallMsg().fadeOut()
+    siteMessage().fadeOut()
     $$('title').text(profile.personaname)
     $$('avatar').attr('src', profile.avatarmedium)
     $$('badge').slideDown()
@@ -229,7 +229,7 @@ var playerProfileOkay = function(profile) {
 }
 
 var playerProfileError = function(request, status, error) {
-    smallMsg().fadeAway()
+    siteMessage().fadeAway()
 }
 
 // auth profile -> maybe load other player profile, load (bids+backpack+listings)
@@ -254,7 +254,7 @@ var authProfileError = function(request, status, error) {
     defaultUserAuthError(request, status, error)
     if (request.status==401) {
 	setHeadings()
-	smallMsg('Loading profile...')
+	siteMessage('Loading profile...')
 	new ProfileLoader({suffix: id64View(), success: playerProfileOkay, error: playerProfileError})
     }
 }
@@ -278,7 +278,7 @@ var schemaReady = function(schema) {
 
 // document loaded -> load schema
 $(document).ready(function() {
-    smallMsg('Loading...')
+    siteMessage('Loading...')
     new SchemaLoader({success: schemaReady})
 
     $$('backpack-hide').click(backpackHide)

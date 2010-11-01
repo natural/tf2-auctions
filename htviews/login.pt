@@ -13,8 +13,9 @@
 		least from us.
 	    </div>
 	    <div id="login-link" class="w50 center mt1">
-	    <a href="${controller.login_url()}">
-		<img src="http://steamcommunity.com/public/images/signinthroughsteam/sits_small.png" />
+	    <a href="${controller.login_url()}" title="Sign in through Steam">
+		<img alt="Sign in through Steam" width="154" height="23"
+		     src="http://steamcommunity.com/public/images/signinthroughsteam/sits_small.png" />
 	    </a>
 	    </div>
 	</div>

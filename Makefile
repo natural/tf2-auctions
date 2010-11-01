@@ -1,12 +1,11 @@
 version := $(shell python -c "import yaml;d=yaml.load(open('app.yaml')); print d['version']")
 dist_dir := dist-$(version)
-
-##dist_css := $(addprefix $(dist_dir)/media/css/, $(notdir $(wildcard media/css/*.css)))
-##dist_js := $(addprefix $(dist_dir)/media/js/, $(notdir $(wildcard media/js/*.js)))
 dist_css := $(wildcard media/css/*.css)
 dist_js  := $(wildcard media/js/*.js)
 
+
 .PHONY:	all dist bump_version $(dist_css) $(dist_js)
+
 
 all:
 	@echo "try make bump_version && make dist"
