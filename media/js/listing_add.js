@@ -109,7 +109,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	console.error('validation errors:', errors)
 	$.each(errors, function(index, error) {
 	    var ele = $('{0}-error'.fs(error.id))
-	    ele.text('Error: {0}'.fs(error.msg)).parent().fadeIn()
+	    ele.text('Error: {0}'.fs(error.msg)).parent().slideDown()
 	    if (index==0) { ele.parent().scrollTopAni() }
 	})
     }
@@ -128,6 +128,11 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	var desc = $('#listing-add-description').val()
 	desc = (desc == defDesc ? '' : desc)
 	if (desc.length > 400) {
+	    $("#listing-add-description").keyup(function (a) {
+		if ( $(this).val().length <= 400) {
+		    $('#listing-add-description-error:visible').slideUp()
+		}
+	    })
 	    errs.push({id:'#listing-add-description',
 		       msg:'Too much text.  Make your description shorter.'})
 	}
@@ -147,6 +152,9 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	}
 	// 5. agree w/ site terms
 	if (! $('#listing-add-terms').attr('checked')) {
+	    $('#listing-add-terms').click(function (e) {
+		$('#listing-add-terms-error').slideToggle()
+	    })
 	    errs.push({id: '#listing-add-terms',
 		       msg:'You must read and agree with site rules, terms, and conditions.'})
 	}
@@ -171,6 +179,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	target.prepend(source)
 	target.append(others)
 	bpChs.updateCount()
+	$('#listing-add-item-chooser-error').parent().slideUp()
     }
 
     self.moveItemOriginal = function(event) {

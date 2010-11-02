@@ -126,7 +126,7 @@ class Listing(db.Model):
 
 	## 6.  submit an item to the expiration task queue.
 	taskqueue.add(
-	    url='/api/v1/admin/queue/expire-listing',
+	    url='/api/v1/admin/queue/end-listing',
 	    transactional=True,
 	    queue_name='expiration',
 	    eta=expires,
@@ -158,21 +158,31 @@ class Listing(db.Model):
 	if status == 'active':
 	    self.set_status('cancelled', reason, set_items=True, set_bids=True)
 
-    def expire(self, reason):
+    def end(self, reason):
 	status = self.status
 	if status == 'active':
 	    if self.bid_count:
 		## can't release the listing items or bid items yet
 		## because no winner has been choosen:
 		self.set_status('ended', reason, set_items=False, set_bids=False)
+		taskqueue.add(
+		    url='/api/v1/admin/queue/expire-listing',
+		    queue_name='expiration',
+		    eta=datetime.now() + timedelta(days=1),
+		    params={'key' : str(self.key()) }
+		    )
+	    else:
+		self.status = 'ended'
+		self.expire('Expired with no bids')
+
+    def expire(self, reason):
+	status = self.status
+	if status == 'ended':
+	    if self.bid_count:
+		self.set_status('expired', reason, set_items=True, set_bids=True)
 	    else:
 		## release the listing items because there aren't any bids:
-		self.set_status('ended', reason, set_items=True, set_bids=False)
-	    ## TODO:  add task to move from 'expired' to 'ended'
-
-	elif status == 'cancelled':
-	    ## there is nothing to do.
-	    pass
+		self.set_status('expired', reason, set_items=True, set_bids=False)
 
     def winner(self, bid_details):
 	status = self.status

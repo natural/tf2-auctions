@@ -139,6 +139,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	target.append($('span.equipped, span.quantity', cell))
 	itemMoved(source)
 	bc.updateCount()
+	$$('add-bid-item-chooser-error').parent().slideUp()
     }
 
     var moveToBackpack = function(event) {
@@ -224,6 +225,11 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	var private_msg = $$('bid-private-msg').val()
 	private_msg = (private_msg ==  $$('bid-private-msg-default').text() ? '' : private_msg)
 	if (private_msg.length > 400) {
+	    $$("bid-private-msg").keyup(function (a) {
+		if ( $(this).val().length <= 400) {
+		    $$('bid-private-msg-error:visible').slideUp()
+		}
+	    })
 	    errs.push({id:'#listing-detail-bid-private-msg',
 		       msg:'Too much text.  Make your message shorter.'})
 	}
@@ -231,11 +237,19 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	var public_msg = $$('bid-public-msg').val()
 	public_msg = (public_msg ==  $$('bid-public-msg-default').text() ? '' : public_msg)
 	if (public_msg.length > 400) {
+	    $$("bid-public-msg").keyup(function (a) {
+		if ( $(this).val().length <= 400) {
+		    $$('bid-public-msg-error:visible').slideUp()
+		}
+	    })
 	    errs.push({id:'#listing-detail-bid-public-msg',
 		       msg:'Too much text.  Make your message shorter.'})
 	}
 	// 5. agree w/ site terms
 	if (! $$('add-bid-terms').attr('checked')) {
+	    $$('add-bid-terms').click(function (e) {
+		$$('add-bid-terms-error').slideToggle()
+	    })
 	    errs.push({id: '#listing-detail-add-bid-terms',
 		       msg:'You must read and agree with site rules, terms, and conditions.'})
 	}

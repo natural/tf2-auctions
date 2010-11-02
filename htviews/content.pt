@@ -67,9 +67,10 @@
     <div id="${slug}-footer-pod" metal:fill-slot="footer">
 	<metal:slot define-slot="footer" />
 	<div class="text-center">
-	    <a href="#">about</a> |
-	    <a href="#">faq</a> |
-	    <a href="#">terms of service</a> | etc...
+	    <a href="#">About this Site</a> &middot;
+	    <a href="#">FAQ</a> &middot;
+	    <a href="#">Rules, Terms &amp; Privacy Policy</a> &middot;
+	    <a href="#">Contact</a>
 	</div>
 	<div class="text-center">
 	    Powered by <a href="http://steampowered.com">Steam</a>

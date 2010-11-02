@@ -196,8 +196,8 @@ var searchOkay = function(search) {
 	    var input = '<input type="radio" name="sort" value="{0}" />{1}<br />'.fs(order[0], order[1])
 	    $$('sort-inputs').append(input)
 	})
-	$$('controls input[type="radio"]').click(optionChanged)
 	$('input[name="sort"]').first().click()
+	$$('controls input[type="radio"]').click(optionChanged)
     }
     showListings(search)
     siteMessage().fadeAway()
