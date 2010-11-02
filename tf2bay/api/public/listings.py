@@ -11,7 +11,7 @@ class PlayerListings(ApiHandler):
 	try:
 	    id64 = self.path_tail()
 	    q = Listing.all()
-	    q.filter('owner = ', users.User(id64))
+	    q.filter('owner = ', id64)
 	    q.filter('status = ', 'active') ## TODO:  get status from query parameter
 	    rs = [r.encode_builtin() for r in q.fetch(limit=100)]
 	    self.write_json(rs)

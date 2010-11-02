@@ -9,10 +9,15 @@ from tf2bay.models import PlayerProfile
 class CurrentUserProfile(ApiHandler):
     def get(self):
 	try:
-	    profile = PlayerProfile.get_by_user(users.get_current_user())
+	    user = users.get_current_user()
+	    if not user:
+		self.error(401)
+		return
+	    profile = PlayerProfile.get_by_user(user)
 	    self.write_json(profile.encode_builtin())
 	except (Exception, ), exc:
 	    self.error(500)
+	    raise
 	    self.write_json({'exception':str(exc)})
 
 

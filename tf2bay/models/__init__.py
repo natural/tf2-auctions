@@ -20,7 +20,7 @@ class Listing(db.Model):
     There's still some work to be done on, well, reading, writing,
     updating and deleting.
     """
-    owner = db.UserProperty('Owner', required=True, indexed=True)
+    owner = db.StringProperty('Owner', required=True, indexed=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
     expires = db.DateTimeProperty('Expires', required=True)
     min_bid = db.ListProperty(long, 'Minimum Bid')
@@ -50,8 +50,8 @@ class Listing(db.Model):
 	owner = users.get_current_user()
 	if not owner:
 	    raise ValueError('No owner specified.')
-	kwds['owner'] = owner
-	kwds['profile'] = PlayerProfile.get_by_id64(user_steam_id(owner))
+	kwds['owner'] = user_steam_id(owner)
+	kwds['profile'] = PlayerProfile.get_by_user(user_steam_id(owner))
 
 	## this check has to be performed outside of the transaction
 	## because its against items outside the new listing ancestry:
@@ -171,6 +171,18 @@ class Listing(db.Model):
 	    ## there is nothing to do.
 	    pass
 
+    def winner(self, bid_details):
+	status = self.status
+	if status == 'ended':
+	    bid = Bid.get(bid_details['key'])
+	    bid.status = 'awarded'
+	    bid.put()
+	    for other in self.bids():
+		other.status = 'lost'
+		other.put()
+	    self.status = 'awarded'
+	    self.put()
+
     def items(self):
 	""" Returns the player items for this listing.
 
@@ -189,7 +201,7 @@ class Listing(db.Model):
 
     def owner_profile(self):
 	""" Returns the player profile for this listing. """
-	return PlayerProfile.get_by_id64(self.owner.nickname())
+	return PlayerProfile.get_by_user(self.owner)
 
     def encode_builtin(self, bids=False, items=True):
 	""" Encode this instance using only built-in types. """
@@ -264,7 +276,7 @@ class Bid(db.Model):
     """ Bid -> a bid on a listing.
 
     """
-    owner = db.UserProperty('Owner', required=True)
+    owner = db.StringProperty('Owner', required=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True)
     message_private = db.StringProperty('Private message', multiline=True)
@@ -277,8 +289,8 @@ class Bid(db.Model):
 	owner = users.get_current_user()
 	if not owner:
 	    raise ValueError('No owner specified.')
-	kwds['owner'] = owner
-	kwds['profile'] = PlayerProfile.get_by_id64(user_steam_id(owner))
+	kwds['owner'] = user_steam_id(owner)
+	kwds['profile'] = PlayerProfile.get_by_user(owner)
 	item_ids = kwds['item_ids']
 	for uid, item in item_ids:
 	    q = ListingItem.all(keys_only=True)
@@ -337,11 +349,11 @@ class Bid(db.Model):
 	listing = kwds['listing'] = Listing.get_by_id(listing_id)
 	if not listing:
 	    raise TypeError('Invalid listing.')
-	bid = kwds['bid'] = cls.all().filter('owner =', owner).filter('listing =', listing).get()
+	bid = kwds['bid'] = cls.all().filter('owner =', user_steam_id(owner)).filter('listing =', listing).get()
 	if not bid:
 	    raise ValueError('No existing bid to update.')
-	kwds['owner'] = owner
-	kwds['profile'] = PlayerProfile.get_by_id64(user_steam_id(owner))
+	kwds['owner'] = user_steam_id(owner)
+	kwds['profile'] = PlayerProfile.get_by_user(owner)
 	item_ids = kwds['item_ids']
 	for uid, item in item_ids:
 	    q = ListingItem.all(keys_only=True)
@@ -386,12 +398,13 @@ class Bid(db.Model):
 
     def encode_builtin(self):
 	return {
-	    'owner' : PlayerProfile.get_by_id64(self.owner.nickname()).encode_builtin(),
+	    'owner' : PlayerProfile.get_by_user(self.owner).encode_builtin(),
 	    'created' : js_datetime(self.created),
 	    'message_public' : self.message_public,
 	    'status' : self.status,
 	    'items' : [i.encode_builtin() for i in self.items()],
 	    'listing' : self.listing.encode_builtin(bids=False, items=False),
+	    'key' : str(self.key()),
 	    }
 
     def items(self):

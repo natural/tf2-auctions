@@ -28,6 +28,19 @@ function updateTimeLeft(expires, selector) {
     }
 }
 
+var sendListingWinner = function(bid, success) {
+    var winnerError = function(request, status, error) {
+	console.error('winner choose failed', request, status, error)
+    }
+    $.ajax({
+	url: '/api/v1/auth/choose-winner',
+	type: 'POST',
+	data: $.toJSON({id: pathTail(), bid: bid}),
+	dataType: 'json',
+	success: success,
+	error: winnerError
+    })
+}
 
 var sendListingCancel = function() {
     var cancelOkay = function(results) {
@@ -315,6 +328,29 @@ var profileReady = function(profile, listing) {
 	}
 	if (listing.status == 'ended') {
 	    $$('owner-controls-choose-winner').slideDown()
+	    $('.listing-detail-profile-bid-view-select-winner-link').fadeIn()
+	    $('.listing-detail-profile-bid-view-select-winner-link > a').click(function (e) {
+		GTHIS = $(this)
+		$('span', $(this).parent()).fadeIn()
+		console.log('selected: ', e, $(this))
+	    })
+	    $('.listing-detail-profile-choose-winner-cancel').click(function (e) {
+		$(this).parents('.listing-detail-profile-choose-confirm').fadeOut()
+	    })
+	    $('.listing-detail-profile-choose-winner-submit').click(function (e) {
+		var self = $(this)
+		self.parents('.listing-detail-profile-choose-confirm').fadeOut()
+		var bid = self.parents('div.organizer-view').data('bid')
+		GBID = bid
+		if (bid) {
+		    var cb = function(response) {
+			self.parents('.listing-detail-profile-bid-view-select-winner-link').fadeOut()
+			$('div.winner', self.parents('div.organizer-view')).fadeIn()
+		    }
+		    sendListingWinner(bid, cb)
+		}
+	    })
+
 	}
     } else {
 	if (listing.status == 'active') {
@@ -415,6 +451,7 @@ var listingReady = function(id, listing) {
 	$('.bid-created', clone).text('' + new Date(bid.created))
 	$('.bid-avatar', clone).attr('src', bid.owner.avatar)
 	$('.bid-owner', clone).text(bid.owner.personaname)
+	clone.data('bid', bid)
 	if (bid.message_public) {
 	    $('.bid-message', clone).text(bid.message_public)
 	} else {

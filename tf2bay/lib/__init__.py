@@ -3,7 +3,7 @@
 from cgi import parse_qs
 from logging import info
 from os import environ
-from re import match
+from re import search
 from urllib import quote as quote_url
 
 from google.appengine.api import users
@@ -31,10 +31,14 @@ info('tf2bay.lib.__init__.devel=%s', devel)
 
 
 def user_steam_id(user):
+    if hasattr(user, 'nickname'):
+	name = user.nickname()
+    else:
+	name = user
     try:
-	nick = user.nickname().strip()
-	m = match('\d{17}$', nick)
-	return nick[m.start():m.end()]
+	name = name.strip()
+	match = search('\d{17}$', name)
+	return name[match.start():match.end()]
     except (Exception, ), exc:
 	pass
 

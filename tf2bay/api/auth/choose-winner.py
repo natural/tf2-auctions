@@ -6,7 +6,7 @@ from tf2bay.lib import ApiHandler, user_steam_id
 from tf2bay.models import Listing
 
 
-class CancelListing(ApiHandler):
+class ChooseWinner(ApiHandler):
     def post(self):
 	try:
 	    post = self.body_json()
@@ -15,12 +15,11 @@ class CancelListing(ApiHandler):
 	    if not listing:
 		self.error(404)
 		return
+	    bid = post['bid']
 	    current_user = users.get_current_user()
 	    if current_user and (listing.owner == user_steam_id(current_user.nickname())):
-		db_result = listing.cancel('Cancelled by user.')
+		db_result = listing.winner(bid)
 	    else:
-		import logging
-		logging.warn('wtf %s %s %s', user_steam_id(current_user.nickname()), listing.owner, current_user.nickname()==listing.owner)
 		self.error(401)
 		return
 	    result = {'msg':'okay', 'result':db_result}
@@ -31,7 +30,7 @@ class CancelListing(ApiHandler):
 	return self.write_json(result)
 
 
-main = ApiHandler.make_main(CancelListing)
+main = ApiHandler.make_main(ChooseWinner)
 
 
 if __name__ == '__main__':

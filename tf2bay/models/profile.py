@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from logging import exception
+from logging import exception, info
 
 from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
@@ -24,7 +24,7 @@ class PlayerProfile(db.Expando):
 
     The key name of a PlayerProfile is the players id64.
     """
-    owner = db.UserProperty(required=True, indexed=True)
+    owner = db.StringProperty(required=True, indexed=True)
     keys = db.StringListProperty('Profile Keys')
     backpack = db.TextProperty('Backpack Items')
 
@@ -34,30 +34,38 @@ class PlayerProfile(db.Expando):
     @classmethod
     def get_by_id64(cls, id64):
 	""" Returns the PlayerProfile for the given id64. """
-	return cls.get_by_key_name(id64)
+	return cls.all().filter('owner =', id64).get()
+
 
     @classmethod
     def get_by_user(cls, user):
 	""" Returns the PlayerProfile for the given user. """
-	return cls.all().filter('owner =', user).get()
+	info('%s : %s', cls, user)
+	if hasattr(user, 'nickname'):
+	    id64 = user_steam_id(user)
+	else:
+	    id64 = user
+	info('%s : %s : %s', cls, user, id64)
+	pp = cls.all().filter('owner =', id64).get()
+	info('%s : %s : %s : %s', cls, user, id64, pp)
+	return pp
 
     @classmethod
     def build(cls, owner, id64=None):
 	""" Returns the PlayerProfile for the given user, creating it if necessary. """
 	if id64 is None:
 	    id64 = user_steam_id(owner)
-	def get_or_insert(): ## equiv to get_or_insert, copied from sdk docs.
-	    profile = cls.get_by_key_name(id64)
-	    if profile is None:
-		profile = cls(key_name=id64, owner=owner)
-		profile.put()
-		taskqueue.add(
-		    url='/api/v1/admin/queue/bang-counters',
-		    transactional=True,
-		    queue_name='counters',
-		    params={'players':1})
-	    return profile
-	return db.run_in_transaction(get_or_insert)
+	if not id64:
+	    return
+	profile = cls.all().filter('owner =', id64).get()
+	if profile is None:
+	    profile = cls(owner=id64)
+	    profile.put()
+	    taskqueue.add(
+		url='/api/v1/admin/queue/bang-counters',
+		queue_name='counters',
+		params={'players':1})
+	return profile
 
     def owns_all(self, item_ids):
 	""" True if this profile owns all of the specified items. """
@@ -66,7 +74,7 @@ class PlayerProfile(db.Expando):
 
     def id64(self):
 	try:
-	    return self.key().name()
+	    return self.owner
     	except (AttributeError, db.NotSavedError, ):
 	    return ''
 

@@ -4,6 +4,7 @@
     <metal:macro define-macro="bids_large">
 	<div id="${slug}-bids" tal:define="use_created use_created|True; use_view use_view|True">
 	<div class="null prototype organizer-view">
+	    <div class="null winner">Winner!</div>
             <table class="w100">
 		<tbody>
                     <tr>
@@ -11,13 +12,19 @@
 			    <div class="${slug}-bid-view-link m05" tal:condition="use_view">
 				<a class="small-button small-item-button">View</a>
 			    </div>
+			    <div class="${slug}-bid-view-select-winner-link m05 null">
+				<a href="#" onclick="return false" class="small-button">Select Winner</a>
+				<span class="${slug}-choose-confirm null">
+				    <span class="m1">Are you sure?</span>
+				    <a href="#" class="small-button ${slug}-choose-winner-submit" onclick="return false">Yes</a>
+				    <a href="#" class="small-button ${slug}-choose-winner-cancel" onclick="return false">No</a>
+			        </span>
+			    </div>
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
-
 			    <div>
 				<strong class="bid-message-label">Message:</strong>
 				<div class="bid-message"></div>
 			    </div>
-
 			</td>
 			<td class="valign-top">
 			    <div>
