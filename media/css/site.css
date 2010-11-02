@@ -11,7 +11,7 @@ font-family:"TF2secondary", Verdana, Arial, Sans-Serif;
 font-size:1em;
 }
 
-a { color:#ece3cb; text-decoration:none; }
+a { color:#ece3cb; text-decoration:none; outline-style:none; }
 h1, h2, h3, h4 { font-family:"TF2Build"; }
 h1 { color:#ebe2ca; font-size:135%; }
 h2 { color:#827868; font-size:110%; }
@@ -34,11 +34,8 @@ visibility: hidden;
 */
 .text-center { text-align:center; }
 .text-right { text-align:right; }
-
 .defindex-lazy { display:none; }
-.desc { white-space:pre; }
-
-
+.desc { overflow:auto; }
 .null { display:none; }
 
 .button, .small-button {
@@ -265,7 +262,7 @@ padding:0.5em;
 text-align:center;
 }
 
-.error {
+.error, .winner {
 background-color:rgba(157, 48, 47, 0.15);
 border:0.25em solid rgba(189, 58, 58, 0.75);
 }
@@ -340,13 +337,11 @@ div.organizer-view .active-listing img {
 opacity:0.33;
 }
 
-
-.dialog-test {
+.terms-dialog {
 margin:1em;
 padding:1em;
 color:black;
 background-color:white;
-border:1px solid blue;
 }
 
 .owner {
@@ -515,3 +510,5 @@ width:100%;
 
 #content-footer-pod a { color:#c8bba2; }
 #content-footer-pod a:hover { border-bottom:0.125em solid #c8bba2; }
+
+

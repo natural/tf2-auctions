@@ -129,7 +129,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
         $(this).removeClass('outline')
     }
 
-    var moveToChooser = function(e) {
+    var moveToChooser = function(event) {
 	var source = $(event.target)
 	var target = $("#listing-detail-add-bid-item-chooser td div:empty").first()
 	var cell = source.parent().parent()
@@ -330,9 +330,8 @@ var profileReady = function(profile, listing) {
 	    $$('owner-controls-choose-winner').slideDown()
 	    $('.listing-detail-profile-bid-view-select-winner-link').fadeIn()
 	    $('.listing-detail-profile-bid-view-select-winner-link > a').click(function (e) {
-		GTHIS = $(this)
+		$('.listing-detail-profile-choose-confirm').fadeOut()
 		$('span', $(this).parent()).fadeIn()
-		console.log('selected: ', e, $(this))
 	    })
 	    $('.listing-detail-profile-choose-winner-cancel').click(function (e) {
 		$(this).parents('.listing-detail-profile-choose-confirm').fadeOut()
@@ -451,6 +450,9 @@ var listingReady = function(id, listing) {
 	$('.bid-created', clone).text('' + new Date(bid.created))
 	$('.bid-avatar', clone).attr('src', bid.owner.avatar)
 	$('.bid-owner', clone).text(bid.owner.personaname)
+	if (bid.status == 'awarded') {
+	    $('.winner', clone).text('Winner!').parent().show()
+	}
 	clone.data('bid', bid)
 	if (bid.message_public) {
 	    $('.bid-message', clone).text(bid.message_public)

@@ -4,7 +4,7 @@
     <metal:macro define-macro="bids_large">
 	<div id="${slug}-bids" tal:define="use_created use_created|True; use_view use_view|True">
 	<div class="null prototype organizer-view">
-	    <div class="null winner">Winner!</div>
+	    <div class="null message"><div class="winner">Winner!</div></div>
             <table class="w100">
 		<tbody>
                     <tr>

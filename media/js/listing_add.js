@@ -50,12 +50,18 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	$('#listing-add-description').focusin(function() {
 	    if ($(this).text() == defDesc) { $(this).text('') }
 	})
-	var slider = $("#listing-add-duration-slider").slider(
-	    {animate: true, max: 30, min:1, value: 30, change: function(event, ui) {
-		var v = ui.value
-		$("#listing-add-duration").text(v + " day" + (v==1 ? "" : "s"))
-	    }}
-	)
+	var sliderChange = function(event, ui) {
+	    var v = ui.value
+	    $("#listing-add-duration").text(v + " day" + (v==1 ? "" : "s"))
+	}
+	var slider = $("#listing-add-duration-slider").slider({
+	    animate: true,
+	    max: 30,
+	    min:1,
+	    value: 30,
+	    change: sliderChange,
+	    slide: sliderChange
+	})
 	return false
     }
 

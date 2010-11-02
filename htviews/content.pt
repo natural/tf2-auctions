@@ -36,8 +36,6 @@
         </div>
     </div>
     <div id="${slug}-terms-dialog" class="null"></div>
-
-
     <div id="${slug}-header-pod">
 	<div id="${slug}-header" metal:fill-slot="header">
 	    <div id="${slug}-main-logo">

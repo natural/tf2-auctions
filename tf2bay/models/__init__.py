@@ -167,6 +167,8 @@ class Listing(db.Model):
 	    else:
 		## release the listing items because there aren't any bids:
 		self.set_status('ended', reason, set_items=True, set_bids=False)
+	    ## TODO:  add task to move from 'expired' to 'ended'
+
 	elif status == 'cancelled':
 	    ## there is nothing to do.
 	    pass
@@ -174,14 +176,12 @@ class Listing(db.Model):
     def winner(self, bid_details):
 	status = self.status
 	if status == 'ended':
-	    bid = Bid.get(bid_details['key'])
-	    bid.status = 'awarded'
-	    bid.put()
-	    for other in self.bids():
-		other.status = 'lost'
-		other.put()
-	    self.status = 'awarded'
-	    self.put()
+	    k = bid_details['key']
+	    bid = Bid.get(k)
+	    bid.set_status('awarded', 'Bid chosen as winner.')
+	    for other in [b for b in self.bids() if str(b.key()) != k]:
+		other.set_status('lost', 'Bid not chosen as winner.')
+	    self.set_status('awarded', 'Listing awarded to chosen bid.', set_items=True, set_bids=False)
 
     def items(self):
 	""" Returns the player items for this listing.

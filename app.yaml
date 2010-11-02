@@ -16,6 +16,9 @@ handlers:
 -   static_files: media/img/favicon.ico
     upload: media/img/favicon.ico
     url: /favicon.ico
+-   static_files: media/robots.txt
+    upload: media/robots.txt
+    url: /robots.txt
 -   login: admin
     script: tf2bay/api/admin/\1/\2.py
     url: /api/v1/admin/(.*?)/(.*)
@@ -54,4 +57,4 @@ handlers:
 -   script: tf2bay/scripts/public/404.py
     url: .*
 runtime: python
-version: 18
+version: 19

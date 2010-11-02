@@ -286,13 +286,17 @@ var bidItemsUids = function(src) {
 var showTermsDialog = function(e) {
     var okay = function(text) {
 	$('#content-terms-dialog').html(text).dialog({
-	    dialogClass: 'dialog-test',
+	    dialogClass: 'terms-dialog',
 	    modal: true,
 	    resizable: false,
 	    show: 'fade',
+	    height: 400,
 	    title: 'TF2Bay.com Rules,Terms and Conditions, and Privacy Policy',
-	    width: $(window).width() * 0.9
+	    width: $(window).width() * 0.9,
+	    position: 'top'
 	})
+	DIALOG = $('#content-terms-dialog')
+	console.log(	$('#content-terms-dialog').dialog('option', 'position'))
     }
     var error = function(request, status, error) {}
     $.ajax({url: '/terms',

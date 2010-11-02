@@ -21,6 +21,7 @@ dist: $(dist_css) $(dist_js)
 	@mkdir -p $(dist_dir)/media/ttf
 	@cp -r media/ttf/* $(dist_dir)/media/ttf
 	@cp -r tf2bay $(dist_dir)
+	@cd $(dist_dir) && appcfg.py update .
 
 
 $(dist_css):

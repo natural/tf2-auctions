@@ -8,7 +8,7 @@ list-style-position:inside;
 margin: 1em 0 1em 0;
 }
 
-h1, h2 { margin: 1em 0 1em 0; color:black; }
+h1.local, h2.local { margin: 1em 0 1em 0; color:black; }
 
 
 
@@ -16,7 +16,7 @@ h1, h2 { margin: 1em 0 1em 0; color:black; }
 
 <div>
 
-<h1>Rules</h1>
+<h1 class="local">Rules</h1>
 
 <p>
 By creating a listing you agree to the following:
@@ -39,9 +39,9 @@ By creating a bid you agree to the following:
 </p>
 
 
-<h1>Terms and Conditions of Use</h1>
+<h1 class="local">Terms and Conditions of Use</h1>
 
-<h2>1. Terms</h2>
+<h2 class="local">1. Terms</h2>
 
 <p>
 By accessing this web site, you are agreeing to be bound by these web
@@ -53,7 +53,7 @@ in this web site are protected by applicable copyright and trade mark
 law.
 </p>
 
-<h2>2. Use License</h2>
+<h2 class="local">2. Use License</h2>
 
 
 <ol type="a">
@@ -89,7 +89,7 @@ possession whether in electronic or printed format.
 </li>
 </ol>
 
-<h2>3. Disclaimer</h2>
+<h2 class="local">3. Disclaimer</h2>
 <ol type="a">
 <li>
 The materials on TF2Bay.com's web site are provided "as
@@ -106,7 +106,7 @@ linked to this site.
 </ol>
 
 
-<h2>4. Limitations</h2>
+<h2 class="local">4. Limitations</h2>
 <p>
 In no event shall TF2Bay.com or its suppliers be liable for any
 damages (including, without limitation, damages for loss of data or
@@ -120,7 +120,7 @@ these limitations may not apply to you.
 </p>
 
 
-<h2>5. Revisions and Errata</h2>
+<h2 class="local">5. Revisions and Errata</h2>
 <p>
 The materials appearing on TF2Bay.com's web site could include technical,
 typographical, or photographic errors. TF2Bay.com does not warrant that any of
@@ -131,7 +131,7 @@ update the materials.
 </p>
 
 
-<h2>6. Links</h2>
+<h2 class="local">6. Links</h2>
 <p>
 TF2Bay.com has not reviewed all of the sites linked to its Internet
 web site and is not responsible for the contents of any such linked
@@ -141,7 +141,7 @@ user's own risk.
 </p>
 
 
-<h2>7. Site Terms of Use Modifications</h2>
+<h2 class="local">7. Site Terms of Use Modifications</h2>
 <p>
 TF2Bay.com may revise these terms of use for its web site at any time
 without notice. By using this web site you are agreeing to be bound by
@@ -150,7 +150,7 @@ the then current version of these Terms and Conditions of Use.
 
 
 
-<h2>8. Governing Law</h2>
+<h2 class="local">8. Governing Law</h2>
 <p>
 <ul>
 <li>
@@ -167,7 +167,7 @@ General Terms and Conditions applicable to Use of a Web Site.
 
 
 
-<h1>Privacy Policy</h1>
+<h1 class="local">Privacy Policy</h1>
 <p>
 Your privacy is very important to us. Accordingly, we have developed
 this Policy in order for you to understand how we collect, use,
