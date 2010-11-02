@@ -14,7 +14,7 @@
 </head>
 <body>
     <metal:main fill-slot="main" tal:define="slug 'listing-add'">
-	<h1 class="mt1 mb05"><span class="hilite"></span>Add a New Listing</h1>
+	<h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Add a New Listing</h1>
 	<div class="organizer-view null" id="${slug}-own-backpack">
 	    <metal:include
 		 tal:define="include_unplaced True; slug 'a'"

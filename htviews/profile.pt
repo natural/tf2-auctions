@@ -25,7 +25,7 @@
 	    <div id="${slug}-listings-pod">
 		<div class="init-seed null">
 		    <h1>
-			<span class="hilite"></span><span id="${slug}-listings-title"></span>
+			<span class="hilite">&nbsp;</span><span id="${slug}-listings-title"></span>
 		    </h1>
 		    <div class="mt05">
 			<a id="${slug}-listings-show"
@@ -48,7 +48,7 @@
 	    <div id="${slug}-bids-pod" class="mt2">
 		<div class="init-seed null">
 		    <h1>
-			<span class="hilite"></span><span id="${slug}-bids-title"></span>
+			<span class="hilite">&nbsp;</span><span id="${slug}-bids-title"></span>
 		    </h1>
 		    <div class="mt05">
 			<a id="${slug}-bids-show"
@@ -71,7 +71,7 @@
 	    <div id="${slug}-backpack-pod" class="mt2">
 		<div class="init-seed null">
 		    <h1>
-			<span class="hilite"></span><span id="${slug}-backpack-title"></span>
+			<span class="hilite">&nbsp;</span><span id="${slug}-backpack-title"></span>
 		    </h1>
 		    <div class="mt05">
 			<a id="${slug}-backpack-show"

@@ -15,7 +15,7 @@
 <body>
 <metal:fill fill-slot="main" tal:define="slug 'search'">
 
-    <h1><span class="hilite"></span>Search Listings</h1>
+    <h1><span class="hilite">&nbsp;</span>Search Listings</h1>
 
     <div id="${slug}-pod">
 

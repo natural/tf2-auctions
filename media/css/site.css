@@ -53,9 +53,13 @@ white-space:nowrap !important;
 }
 
 .button:hover, .small-button:hover {
-background-color:#5b7a8c;
 background-color:#9d302f;
 color:#ece3cb;
+}
+
+
+.button:active, .small-button:active {
+color:#2e2b2a;
 }
 
 .small-button {
@@ -194,7 +198,7 @@ width:2em;
 }
 
 span.hilite, span.hi { color:#c8503c; }
-span.hilite:before { content:">> "; }
+span.hilite:before { content:">>"; }
 
 
 img.equipped { margin-top:-4px; }

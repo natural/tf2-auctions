@@ -16,7 +16,7 @@
 <body>
     <div metal:fill-slot="main" tal:define="slug 'listing-detail'">
 	<h1 id="${slug}-title-pod" class="null mb05">
-	    <span class="hilite"></span>
+	    <span class="hilite">&nbsp;</span>
 	    <span id="${slug}-title"></span> (<span id="${slug}-status"></span>)
 	</h1>
 
@@ -113,7 +113,7 @@
 
 	<div id="${slug}-existing-bids-pod" class="null">
 	    <div id="${slug}-existing-bids">
-		<h1 class="pt05"><span class="hilite"></span>&nbsp;<span id="${slug}-bidcount"></span></h1>
+		<h1 class="pt05"><span class="hilite">&nbsp;</span>&nbsp;<span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids">
 		    <metal:include
 			tal:define="slug slug+'-profile'; use_view False"
@@ -124,7 +124,7 @@
 
 
 	<div id="${slug}-place-bid-pod" class="null center">
-            <h1><span class="hilite"></span>Place Your Bid</h1>
+            <h1><span class="hilite">&nbsp;</span>Place Your Bid</h1>
 	    <div class="organizer-view null" id="${slug}-own-backpack">
 		<metal:include
 		     tal:define="include_unplaced True; slug slug+'-bid'"

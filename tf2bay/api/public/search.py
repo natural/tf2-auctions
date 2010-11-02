@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from cgi import parse_qs
+
 from tf2bay.lib import ApiHandler
 from tf2bay.models import Listing, ListingItem
 

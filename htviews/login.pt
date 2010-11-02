@@ -5,7 +5,7 @@
 <body>
     <metal:fill fill-slot="main">
 	<div id="login-content" class="w50 center mt1">
-	    <h1 class="message"><span class="hilite"></span>Login.  It's Safe.</h1>
+	    <h1 class="message"><span class="hilite">&nbsp;</span>Login.  It's Safe.</h1>
 	    <div class="m1">
 		Click the link to sign in
 		with your Steam account.  This site never gets your

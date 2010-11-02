@@ -85,7 +85,7 @@ var putBackpack = function(backpack, listings, bids) {
 //
 var bidsShow = function() {
     siteMessage('Loading bids...')
-    new BidsLoader({suffix: id64View(), success: bidsReady, error: bidsError})
+    new BidsLoader({suffix: id64View()+'?ext=1', success: bidsReady, error: bidsError})
 }
 
 var bidsHide = function() {
@@ -152,7 +152,7 @@ var putBid = function(bid, clone) {
 var listingsShow = function() {
     siteMessage('Loading listings...')
     new ListingsLoader({
-	suffix: id64View(), success: listingsReady, error: listingsError
+	suffix: id64View()+'?ext=1', success: listingsReady, error: listingsError
     })
 }
 
