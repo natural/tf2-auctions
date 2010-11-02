@@ -41,3 +41,13 @@ margin-bottom:0.75em;
 #listing-detail-terms-pod a {
 text-decoration:underline;
 }
+
+.bid-owner-seed img {
+vertical-align:middle;
+}
+
+
+.bid-owner-seed {
+vertical-align:middle;
+margin-top:0.25em;
+}

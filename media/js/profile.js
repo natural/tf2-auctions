@@ -279,15 +279,16 @@ var schemaReady = function(schema) {
 // document loaded -> load schema
 $(document).ready(function() {
     siteMessage('Loading...')
-    new SchemaLoader({success: schemaReady})
+    new SchemaLoader({success: function(schema) {
+	schemaReady(schema)
+	$$('backpack-hide').click(backpackHide)
+	$$('backpack-show').click(backpackShow)
+	$$('bids-hide').click(bidsHide)
+	$$('bids-show').click(bidsShow)
+	$$('listings-hide').click(listingsHide)
+	$$('listings-show').click(listingsShow)
 
-    $$('backpack-hide').click(backpackHide)
-    $$('backpack-show').click(backpackShow)
-    $$('bids-hide').click(bidsHide)
-    $$('bids-show').click(bidsShow)
-    $$('listings-hide').click(listingsHide)
-    $$('listings-show').click(listingsShow)
-
-    if (window.location.search.indexOf('show=listings')>-1) { listingsShow() }
-    if (window.location.search.indexOf('show=backpack')>-1) { backpackShow() }
+	if (window.location.search.indexOf('show=listings')>-1) { listingsShow() }
+	if (window.location.search.indexOf('show=backpack')>-1) { backpackShow() }
+    }})
 })

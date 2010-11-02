@@ -1,10 +1,25 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
     <title metal:fill-slot="title">TF2Bay.com -- All Items</title>
+    <metal:js fill-slot="script">
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"
+		type="text/javascript"></script>
+        <metal:slot define-slot="script" />
+    </metal:js>
 </head>
 <body>
     <metal:fill fill-slot="main" tal:define="slug 'all-items'">
-	<h1>All Items</h1>
+	<div id="${slug}-content-pod">
+	    <h1 class="mb05"><span class="hilite">&nbsp;</span>All Items</h1>
+	    <div class="null prototype mb1">
+		<div class="group-proto-seed organizer-view mb1">
+		    <h2 class="group-title-seed"></h2>
+		    <table class="center backpack group-items-seed"></table>
+		</div>
+	    </div>
+	</div>
+	<div id="${slug}-group-target-pod">
+	</div>
 
 
     </metal:fill>

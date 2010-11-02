@@ -232,7 +232,7 @@
                 <tr><td id="${slug}170"><div></div></td></tr>
                 <tr><td id="${slug}180"><div></div></td></tr>
                 <tr><td id="${slug}190"><div></div></td></tr>
-                <tr><td id="${slug}200"><div></div></td></tr>
+                <tr><td id="${slug}200"><div></div></td></tr><!-- ug. -->
 	    </tbody>
         </table>
         <div id="backpack-tools-${slug}" class="tools">

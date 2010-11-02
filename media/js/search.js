@@ -120,7 +120,11 @@ var showListing = function(listing, clone) {
 	$('.listing-description', clone).empty()
     }
     $('.listing-owner', clone).text(listing.owner.personaname)
+    $('.listing-owner', clone).parent().attr('href', '/profile/'+listing.owner.id64)
+
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)
+    $('.listing-avatar', clone).parent().attr('href', '/profile/'+listing.owner.id64)
+
     $('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
     var next = 0
     $.each(listing.items, function(index, item) {

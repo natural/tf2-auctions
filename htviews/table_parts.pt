@@ -38,8 +38,12 @@
 			    <div tal:condition="use_created" class="mt1">
 				<strong>Created By:</strong>
 				<div class="bid-owner-seed center text-center">
-				    <img src="" class="bid-avatar" />
-				    <div class="bid-owner center"></div>
+				    <a href="#">
+					<img src="" class="bid-avatar" />
+				    </a>
+				    <a href="#">
+					<span class="bid-owner center"></span>
+				    </a>
 				</div>
 			    </div>
 			</td>
@@ -71,8 +75,12 @@
 			    <metal:if tal:condition="use_created">
 				<strong>Created By:</strong>
 				<div class="listing-owner-seed mb1">
-				    <img src="" class="listing-avatar" />
-				    <span class="listing-owner"></span>
+				    <a href="#">
+					<img src="" class="listing-avatar" />
+				    </a>
+				    <a href="#">
+					<span class="listing-owner"></span>
+				    </a>
 				</div>
 			    </metal:if>
 			    <div>
@@ -95,8 +103,12 @@
 			<td class="${slug}-view-link" rowspan="2">
 			    <div class="center text-center ${slug}-view-summary">
 				<div style="white-space:nowrap;">
-				    <img src="" class="bid-avatar" />
-				    <span class="bid-owner"></span>
+				    <a href="#">
+					<img src="" class="bid-avatar" />
+				    </a>
+				    <a href="#">
+					<span class="bid-owner"></span>
+				    </a>
 				</div>
 			    </div>
 			</td>

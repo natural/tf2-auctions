@@ -462,8 +462,13 @@ var listingReady = function(id, listing) {
 	})
 	$('.bid-status', clone).text(bid.status)
 	$('.bid-created', clone).text('' + new Date(bid.created))
+
 	$('.bid-avatar', clone).attr('src', bid.owner.avatar)
+	$('.bid-avatar', clone).parent().attr('href', '/profile/'+bid.owner.id64)
+
 	$('.bid-owner', clone).text(bid.owner.personaname)
+	$('.bid-owner', clone).parent().attr('href', '/profile/'+bid.owner.id64)
+
 	if (bid.status == 'awarded') {
 	    $('.winner', clone).text('Winner!').parent().show()
 	}
