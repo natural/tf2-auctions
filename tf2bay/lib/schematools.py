@@ -3,7 +3,12 @@
 
 
 known_categories = [
-    'craft_bar', 'craft_token', 'hat', 'supply_crate', 'tool', 'weapon',
+    ('hat', 'Hats'),
+    ('weapon', 'Weapons'),
+    ('tool', 'Tools'),
+    ('craft_bar', 'Metal'),
+    ('craft_token', 'Tokens'),
+    ('supply_crate', 'Crates'),
 ]
 
 

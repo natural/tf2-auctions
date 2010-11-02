@@ -31,12 +31,14 @@ class Listing(db.Model):
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
 
     ## non-normalized: specific categories for fast searches
-    category_craft_bar = db.BooleanProperty(indexed=True, default=False)
-    category_craft_token = db.BooleanProperty(indexed=True, default=False)
-    category_hat = db.BooleanProperty(indexed=True, default=False)
-    category_supply_crate = db.BooleanProperty(indexed=True, default=False)
-    category_tool = db.BooleanProperty(indexed=True, default=False)
-    category_weapon = db.BooleanProperty(indexed=True, default=False)
+    categories = db.StringListProperty(indexed=True)
+
+    #category_craft_bar = db.BooleanProperty(indexed=True, default=False)
+    #category_craft_token = db.BooleanProperty(indexed=True, default=False)
+    #category_hat = db.BooleanProperty(indexed=True, default=False)
+    #category_supply_crate = db.BooleanProperty(indexed=True, default=False)
+    #category_tool = db.BooleanProperty(indexed=True, default=False)
+    #category_weapon = db.BooleanProperty(indexed=True, default=False)
 
     ## non-normalized: bid counter
     bid_count = db.IntegerProperty('Bid Count', default=0)
@@ -105,9 +107,8 @@ class Listing(db.Model):
 
 	## 4a.  derive categories
 	cats = schematools.item_categories([i for u, i in item_ids], schema)
-	for cat in schematools.known_categories:
-	    if cat in cats:
-		setattr(listing, 'category_%s' % cat, True)
+	listing.categories =\
+	    [cat for cat, ttl in schematools.known_categories if cat in cats]
 	key = listing.put()
 	info('created new listing at: %s', listing.created)
 

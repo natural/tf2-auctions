@@ -3,6 +3,7 @@
 from cgi import parse_qs
 
 from tf2bay.lib import ApiHandler
+from tf2bay.lib.schematools import known_categories
 from tf2bay.models import Listing, ListingItem
 
 
@@ -12,7 +13,7 @@ class ListingSearch(object):
 	'created' : ('New', lambda q:q.order('-created')),
 	'expires' : ('Expires', lambda q:q.order('expires')),
     }
-    filters = (
+    __filters = (
 	('hat', 'Hats', lambda q: q.filter('category_hat = ', True)),
 	('weapon', 'Weapons',  lambda q: q.filter('category_weapon = ', True)),
 	('tool', 'Tools', lambda q: q.filter('category_tool = ', True)),
@@ -25,7 +26,7 @@ class ListingSearch(object):
 	self.qs = query_string
 
     def filter_items(self):
-	return [(k, t) for k, t, f in self.filters]
+	return known_categories
 
     def order_items(self):
 	return [(k, t) for k, (t, f) in sorted(self.orders.items())]
@@ -43,9 +44,9 @@ class BasicSearch(ListingSearch):
     def run(self):
 	q = Listing.all().filter('status = ', 'active')
 	qs = self.qs
-	for key, title, filt in self.filters:
+	for key, title in self.filter_items():
 	    if qs.get(key, [''])[0] == 'on':
-		filt(q)
+		q.filter('categories =', key)
 	sort = qs.get('sort', ['created'])[0]
 	title, order = self.orders.get(sort, self.orders['created'])
 	if order:
