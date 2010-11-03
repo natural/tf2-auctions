@@ -41,7 +41,7 @@
 	<div id="${slug}-header" metal:fill-slot="header">
 	    <div id="${slug}-main-logo">
 		<a href="/" title="TF2Bay.com">
-		    <img alt="TF2Bay.com" src="/media/img/tf2bay-logo.png"
+		    <img alt="TF2Bay.com" src="/media/img/tf2auctions-logo.png"
 			 height="74" width="256" />
 		</a>
 	    </div>

@@ -1,5 +1,5 @@
 api_version: 1
-application: tf2bay
+application: tf2auctions
 builtins:
 -   datastore_admin: true
 -   appstats: true
@@ -20,43 +20,43 @@ handlers:
     upload: media/robots.txt
     url: /robots.txt
 -   login: admin
-    script: tf2bay/api/admin/\1/\2.py
+    script: tf2auctions/api/admin/\1/\2.py
     url: /api/v1/admin/(.*?)/(.*)
 -   auth_fail_action: unauthorized
     login: required
-    script: tf2bay/api/auth/\1.py
+    script: tf2auctions/api/auth/\1.py
     url: /api/v1/auth/(.*?)/\d{17}
 -   auth_fail_action: unauthorized
     login: required
-    script: tf2bay/api/auth/\1.py
+    script: tf2auctions/api/auth/\1.py
     url: /api/v1/auth/(.*)
--   script: tf2bay/api/public/\1.py
+-   script: tf2auctions/api/public/\1.py
     url: /api/v1/public/(.*)/\d+
--   script: tf2bay/api/public/\1.py
+-   script: tf2auctions/api/public/\1.py
     url: /api/v1/public/(.*)
 -   login: admin
-    script: tf2bay/scripts/admin/\1.py
+    script: tf2auctions/scripts/admin/\1.py
     url: /(echo)
 -   login: admin
-    script: tf2bay/scripts/admin/shell.py
+    script: tf2auctions/scripts/admin/shell.py
     url: /shell.*
 -   auth_fail_action: unauthorized
     login: required
-    script: tf2bay/scripts/auth/\1/\2.py
+    script: tf2auctions/scripts/auth/\1/\2.py
     url: /(listing)/(add)
 -   auth_fail_action: unauthorized
     login: required
-    script: tf2bay/scripts/auth/\1.py
+    script: tf2auctions/scripts/auth/\1.py
     url: /(profile-update)(/.*)?
--   script: tf2bay/scripts/public/\1.py
+-   script: tf2auctions/scripts/public/\1.py
     url: /(listing|profile)/\d{1,20}
 
--   script: tf2bay/scripts/public/\1.py
+-   script: tf2auctions/scripts/public/\1.py
     url: /(search|login|terms|all-items|about|contact|faq)
 
--   script: tf2bay/scripts/public/front.py
+-   script: tf2auctions/scripts/public/front.py
     url: /
--   script: tf2bay/scripts/public/404.py
+-   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
 version: 22

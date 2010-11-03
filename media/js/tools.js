@@ -113,13 +113,13 @@ var ProfileLoader = makeLoader({
 var BackpackLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/items/',
     dataType: 'jsonp',
-    jsonpCallback: 'tf2bayBackpackLoader',
+    jsonpCallback: 'tf2auctionsBackpackLoader',
     name: 'BackpackLoader'})
 
 var SchemaLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
     dataType: 'jsonp',
-    jsonpCallback: 'tf2baySchemaLoader',
+    jsonpCallback: 'tf2auctionsSchemaLoader',
     name: 'SchemaLoader'})
 
 var ListingLoader = makeLoader({

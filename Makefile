@@ -20,7 +20,7 @@ dist: $(dist_css) $(dist_js)
 	@cp -r media/img/* $(dist_dir)/media/img
 	@mkdir -p $(dist_dir)/media/ttf
 	@cp -r media/ttf/* $(dist_dir)/media/ttf
-	@cp -r tf2bay $(dist_dir)
+	@cp -r tf2auctions $(dist_dir)
 	@cd $(dist_dir) && appcfg.py update .
 
 

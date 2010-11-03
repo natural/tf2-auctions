@@ -16,7 +16,7 @@ if 0:
 config, matcher = dev_appserver.LoadAppConfig(".", {})
 dev_appserver.SetupStubs(config.application, **option_dict)
 
-import tf2bay.models
+import tf2auctions.models
 
 
 #from webtest import TestApp
