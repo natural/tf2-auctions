@@ -1,7 +1,7 @@
 <html metal:extend-macro="context.base.macros.layout" metal:define-macro="layout">
 <head>
     <metal:slot fill-slot="title">
-	<metal:slot define-slot="title"><title>TF2Bay.com</title></metal:slot>
+	<metal:slot define-slot="title"><title>TF2Auctions.com</title></metal:slot>
     </metal:slot>
     <metal:slot define-slot="title" />
     <metal:slot fill-slot="meta">
@@ -22,6 +22,18 @@
 	</metal:assoc>
         <metal:slot define-slot="script" />
     </metal:slot>
+    <metal:slot fill-slot="analytics">
+        <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-576026-7']);
+        _gaq.push(['_trackPageview']);
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+        </script>
+    </metal:slot>
 </head>
 
 
@@ -40,8 +52,8 @@
     <div id="${slug}-header-pod">
 	<div id="${slug}-header" metal:fill-slot="header">
 	    <div id="${slug}-main-logo">
-		<a href="/" title="TF2Bay.com">
-		    <img alt="TF2Bay.com" src="/media/img/tf2auctions-logo.png"
+		<a href="/" title="TF2Auctions.com">
+		    <img alt="TF2Auctions.com" src="/media/img/tf2auctions-logo.png"
 			 height="74" width="256" />
 		</a>
 	    </div>

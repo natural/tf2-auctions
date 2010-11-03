@@ -1,6 +1,6 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
-    <title metal:fill-slot="title">TF2Bay.com -- All Items</title>
+    <title metal:fill-slot="title">TF2Auctions.com -- All Items</title>
     <metal:js fill-slot="script">
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"
 		type="text/javascript"></script>

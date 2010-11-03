@@ -291,7 +291,7 @@ var showTermsDialog = function(e) {
 	    resizable: false,
 	    show: 'fade',
 	    height: 400,
-	    title: 'TF2Bay.com Rules,Terms and Conditions, and Privacy Policy',
+	    title: 'TF2Auctions.com Rules,Terms and Conditions, and Privacy Policy',
 	    width: $(window).width() * 0.9,
 	    position: 'top'
 	})

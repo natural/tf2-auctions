@@ -50,13 +50,11 @@ handlers:
     url: /(profile-update)(/.*)?
 -   script: tf2auctions/scripts/public/\1.py
     url: /(listing|profile)/\d{1,20}
-
 -   script: tf2auctions/scripts/public/\1.py
     url: /(search|login|terms|all-items|about|contact|faq)
-
 -   script: tf2auctions/scripts/public/front.py
     url: /
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 22
+version: 23
