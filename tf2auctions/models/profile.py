@@ -28,6 +28,12 @@ class PlayerProfile(db.Expando):
     keys = db.StringListProperty('Profile Keys')
     backpack = db.TextProperty('Backpack Items')
 
+    rating_pos_sum = db.IntegerProperty(default=0)
+    rating_pos_count = db.IntegerProperty(default=0)
+
+    rating_neg_sum = db.IntegerProperty(default=0)
+    rating_neg_count = db.IntegerProperty(default=0)
+
     def __str__(self):
 	return '<PlayerProfile id64=%s>' % (self.id64(), )
 
@@ -35,7 +41,6 @@ class PlayerProfile(db.Expando):
     def get_by_id64(cls, id64):
 	""" Returns the PlayerProfile for the given id64. """
 	return cls.all().filter('owner =', id64).get()
-
 
     @classmethod
     def get_by_user(cls, user):
@@ -99,7 +104,24 @@ class PlayerProfile(db.Expando):
 
     def encode_builtin(self):
 	""" Encode this instance using only built-in types. """
-	res = {'id64':self.id64()}
+	res = {'id64':self.id64(), 'rating':self.get_rating()}
 	for key in self.keys:
 	    res[key] = getattr(self, key)
 	return res
+
+    def add_rating(self, value):
+	if value > 0:
+	    self.rating_pos_sum = self.rating_pos_sum + value
+	    self.rating_pos_count += 1
+	    self.put()
+	elif value < 0:
+	    self.rating_neg_sum = self.rating_neg_sum + value
+	    self.rating_neg_count += 1
+	    self.put()
+	## not saving 0 values
+
+    def get_rating(self):
+	return (
+	    self.rating_pos_sum, self.rating_pos_count,
+	    self.rating_neg_sum, self.rating_neg_count
+	)

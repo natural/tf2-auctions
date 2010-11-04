@@ -9,9 +9,16 @@ from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
 from tf2auctions.lib import json_dumps, json_loads, user_steam_id, schematools, js_datetime, devel
-from tf2auctions.models.feedback import Feedback
 from tf2auctions.models.profile import PlayerProfile
 from tf2auctions.models.proxyutils import fetch
+
+
+def add_filters(query, keys, values):
+    for k, v in zip(keys, values):
+	## could check k for operator instead of using '=' for
+	## everything:
+	query.filter('%s =' % k, v)
+    return query
 
 
 class Listing(db.Model):
@@ -216,8 +223,10 @@ class Listing(db.Model):
 
     def encode_builtin(self, bids=False, items=True):
 	""" Encode this instance using only built-in types. """
+	key = self.key()
 	return {
-	    'id' : self.key().id(),
+	    'id' : key.id(),
+	    'key': str(key),
 	    'owner' : PlayerProfile.get_by_user(self.owner).encode_builtin(),
 	    'created' : js_datetime(self.created),
 	    'expires' : js_datetime(self.expires),
@@ -408,6 +417,7 @@ class Bid(db.Model):
 
 
     def encode_builtin(self):
+	lfb = Feedback.get_by_source(self, self.listing, self.listing.owner)
 	return {
 	    'owner' : PlayerProfile.get_by_user(self.owner).encode_builtin(),
 	    'created' : js_datetime(self.created),
@@ -416,6 +426,7 @@ class Bid(db.Model):
 	    'items' : [i.encode_builtin() for i in self.items()],
 	    'listing' : self.listing.encode_builtin(bids=False, items=False),
 	    'key' : str(self.key()),
+	    'feedback': lfb.encode_builtin() if lfb else None,
 	    }
 
     def items(self):
@@ -441,3 +452,41 @@ class BidItem(PlayerItem):
 
     def __str__(self):
 	return '<BidItem listing=%s, uniqueid=%s, defindex=%s>' % (self.bid, self.uniqueid, self.defindex)
+
+
+class Feedback(db.Model):
+    """ Feedback -> a record of one users rating of another.
+
+    """
+    bid = db.ReferenceProperty(Bid, indexed=True, required=True)
+    listing = db.ReferenceProperty(Listing, indexed=True, required=True)
+    rating = db.IntegerProperty(required=True)
+    comment = db.StringProperty(multiline=True)
+
+    source = db.StringProperty(indexed=True, required=True)
+    target = db.StringProperty(indexed=True, required=True)
+
+    created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
+
+    @classmethod
+    def get_by_source(cls, bid, listing, source):
+	q = add_filters(cls.all(), ('bid', 'listing', 'source'), (bid, listing, source))
+	return q.get()
+
+    @classmethod
+    def build(cls, bid, listing, source, target, rating, comment):
+	obj = cls(bid=bid, listing=listing, source=source, target=target, rating=rating, comment=comment)
+	obj.put()
+	PlayerProfile.get_by_id64(target).add_rating(rating)
+	return obj
+
+    def encode_builtin(self):
+	return {
+	    'bid' : str(self.bid.key()),
+	    'comment' : self.comment,
+	    'created' : js_datetime(self.created),
+	    'listing' : str(self.listing.key()),
+	    'rating' : self.rating,
+	    'source' : self.source,
+	    'target' : self.target,
+	}

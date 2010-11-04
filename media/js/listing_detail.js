@@ -28,6 +28,27 @@ function updateTimeLeft(expires, selector) {
     }
 }
 
+
+var putListerFeedback = function(feedback, context) {
+    $('.lister-feedback-seed', context).slideUp()
+    $('.lister-rating', context).text(feedback.rating)
+    $('.lister-rating-text', context).html(feedback.comment)
+    $('.lister-rating-seed', context).slideDown()
+}
+
+
+var listerFeedbackSuccess = function(results) {
+    // swap text and hide
+    putListerFeedback(results, results.element)
+    console.log(results)
+}
+
+
+var listerFeedbackError = function(request, status, error) {
+    console.error('feedback submit failed', request, status, error)
+}
+
+
 var sendListingWinner = function(bid, success) {
     var winnerError = function(request, status, error) {
 	console.error('winner choose failed', request, status, error)
@@ -382,7 +403,9 @@ var profileReady = function(profile, listing) {
 	    $.each($$('bids div.organizer-view'), function(idx, element) {
 		element = $(element)
 		var bid = element.data('bid')
-		if (bid && bid.status == 'awarded' && !bid.lister_feedback) {
+		if (bid && bid.status == 'awarded' && bid.feedback) {
+		    putListerFeedback(bid.feedback, element)
+		} else if (bid && bid.status == 'awarded' && !bid.feedback) {
 		    var sliderChange = function(event, ui) {
 			var v = ui.value
 			$(".lister-rating", element).text('Rating: ' + v)
@@ -399,8 +422,21 @@ var profileReady = function(profile, listing) {
 		    $('.lister-feedback-help').text('Enter your feedback for this bid and the player who posted it.')
 		    $('.lister-feedback-seed', element).slideDown()
 		    $('a.save-button', element).click(function () {
-			// submit
-			console.log('sending your feedback')
+			var data = {
+			    bid: bid.key,
+			    listing: listing.key,
+			    rating: slider.slider('value'),
+			    source: 'lister',
+			    text: $('.lister-feedback-text').val().slice(0,400)
+			}
+			$.ajax({
+			    url: '/api/v1/auth/add-feedback',
+			    type: 'POST',
+			    data: $.toJSON(data),
+			    dataType: 'json',
+			    success: function (r) { r.element = element; listerFeedbackSuccess(r) },
+			    error: listerFeedbackError
+			})
 		    })
 		    $('a.cancel-button', element).click(function () {
 			$('.lister-feedback-seed').slideUp()
@@ -431,7 +467,6 @@ var profileReady = function(profile, listing) {
 	    $('.bidder-feedback-help').text('Enter your feedback for this listing and the player who posted it.')
 	    $('.bidder-feedback-seed', element).slideDown()
 	    $('a.save-button', element).click(function () {
-		// submit
 		console.log('sending your feedback')
 	    })
 	    $('a.cancel-button', element).click(function () {

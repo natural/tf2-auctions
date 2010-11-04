@@ -2,6 +2,14 @@
 
 
 <metal:macro define-macro="leave_feedback" tal:define="default_feedback default_feedback|''">
+    <div class="${slug}-rating-seed w100 null">
+	<div class="mt1">
+	    <strong class="${slug}-rating-label">Comments and Rating:</strong>
+	</div>
+	<div class="${slug}-rating"></div>
+	<div class="${slug}-rating-text desc"></div>
+	<div>left by FU on DATE</div>
+    </div>
     <div class="${slug}-feedback-seed w100 null">
 	<div class="mt1">
 	    <strong class="${slug}-feedback-label">Leave Your Feedback:</strong>
@@ -9,7 +17,7 @@
 	<div class="${slug}-feedback-value null">text</div>
 	<div class="${slug}-feedback-controls">
 	    <div class="${slug}-feedback-help">Enter your feedback:</div>
-	    <div><textarea>${default_feedback}</textarea></div>
+	    <div><textarea class="${slug}-feedback-text">${default_feedback}</textarea></div>
 	    <div class="mt1 mb1">
 		<div class="${slug}-rating w25"></div>
 		<div class="${slug}-rating-slider w25 mt05 mr1" name="duration"></div>
