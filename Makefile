@@ -15,6 +15,9 @@ dist: $(dist_css) $(dist_js)
 	@mkdir -p $(dist_dir)
 	@cp *.yaml $(dist_dir)
 	@cp -r ext $(dist_dir)
+	@cp -r aetycoon $(dist_dir)
+	@cp -r chameleon $(dist_dir)
+	@cp -r simplejson $(dist_dir)
 	@cp -r htviews $(dist_dir)
 	@mkdir -p $(dist_dir)/media/img
 	@cp -r media/img/* $(dist_dir)/media/img
