@@ -4,19 +4,26 @@ from cgi import parse_qs
 from logging import info
 from os import environ
 from re import search
-from urllib import quote as quote_url
+from time import time
 
+from google.appengine.api import memcache
 from google.appengine.api import users
-from google.appengine.ext.webapp import RequestHandler, WSGIApplication, Request, Response
+from google.appengine.ext.webapp import RequestHandler, Request, Response
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-import simplejson as json
+from simplejson import dumps as json_dumps, loads as json_loads
 from chameleon.zpt.loader import TemplateLoader
 from tf2auctions import template_dir
 
 
 def is_devel(environ):
     return environ.get('SERVER_SOFTWARE', '').startswith('Dev')
+
+
+always_cache = False
+devel = is_devel(environ)
+info('tf2auctions.lib.always_cache = %s', always_cache)
+info('tf2auctions.lib.devel = %s', devel)
 
 
 def js_datetime(dt):
@@ -26,11 +33,8 @@ def js_datetime(dt):
     return dt.strftime(fmt)
 
 
-devel = is_devel(environ)
-info('tf2auctions.lib.__init__.devel=%s', devel)
-
-
 def user_steam_id(user):
+    ## TODO:  make user optional and default it to users.get_current_user()
     if hasattr(user, 'nickname'):
 	name = user.nickname()
     else:
@@ -43,6 +47,32 @@ def user_steam_id(user):
 	pass
 
 
+def cache(key, ttl=60):
+    def deco(func):
+	def wrapper(*args, **kwds):
+	    mkey = key(*args, **kwds) if callable(key) else key
+	    value = memcache.get(mkey)
+	    if value is not None:
+		return value
+	    start = time()
+	    value = func(*args, **kwds)
+	    finish = time()
+	    try:
+		memcache.set(mkey, value, ttl)
+	    except (Exception, ), exc:
+		error('%s', exc)
+	    else:
+		info('cache miss: %s; %2.2fs to compute', mkey, finish-start)
+	    return value
+	return wrapper if (always_cache or not devel) else func
+    return deco
+
+
+@cache(lambda b, **c:b.filename, ttl=60*60)
+def render_body(template, **kwds):
+    return template.render(**kwds)
+
+
 class ContextLoader(object):
     def __init__(self, loader):
 	self.load = loader.load
@@ -51,7 +81,7 @@ class ContextLoader(object):
 	return self.load(key + '.pt')
 
     @classmethod
-    def build(cls, template_prefix, auto_reload=True):
+    def build(cls, template_prefix, auto_reload=devel):
 	tpl = TemplateLoader(template_prefix, auto_reload=auto_reload)
 	return cls(tpl), tpl
 
@@ -72,10 +102,10 @@ class LocalHandler(RequestHandler):
 
 class ApiHandler(LocalHandler):
     def write_json(self, value, indent=4):
-	self.response.out.write(json.dumps(value, indent=indent))
+	self.response.out.write(json_dumps(value, indent=indent))
 
     def body_json(self):
-	return json.loads(self.request.body)
+	return json_loads(self.request.body)
 
 
 class View(LocalHandler):
@@ -129,7 +159,7 @@ class View(LocalHandler):
 	params.update(self.default_context())
 	params.update(self.extra_context())
 	params.update(kwds)
-	self.response.out.write(template.render(**params))
+	self.response.out.write(render_body(template, **params))
 
     def template(self, name=None):
 	return self.template_loader.load(self.template_name if name is None else name)
@@ -167,8 +197,10 @@ def template_main(template_name, related_css=None, related_js=None, debug=devel)
 
 
 def basic_view(template_name, related_css=None, related_js=None):
+
     class Basic(View):
 	pass
+
     Basic.template_name = template_name
     if related_css is not None:
 	if isinstance(related_css, (basestring, )):
@@ -179,3 +211,12 @@ def basic_view(template_name, related_css=None, related_js=None):
 	    related_js = (related_js, )
         Basic.related_js = related_js
     return Basic
+
+
+##
+# copied from django.
+def slugify(val):
+    import re, unicodedata
+    val = unicodedata.normalize('NFKD', unicode(val)).encode('ascii', 'ignore')
+    val = unicode(re.sub('[^\w\s-]', '', val).strip().lower())
+    return re.sub('[-\s]+', '-', val)

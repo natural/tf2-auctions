@@ -13,8 +13,20 @@ indexes:
 - kind: Bid
   properties:
   - name: owner
+  - name: created
+    direction: desc
+
+- kind: Bid
+  properties:
+  - name: owner
   - name: status
   - name: created
+    direction: desc
+
+- kind: BlogEntry
+  properties:
+  - name: published
+  - name: created_at
     direction: desc
 
 - kind: Listing

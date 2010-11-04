@@ -21,8 +21,27 @@ var statsLoaded = function(stats) {
 }
 
 
+var blogLoaded = function(entries) {
+    $.each(entries, function(idx, entry) {
+	var clone = $$('blog div.blog-seed').clone()
+	clone.removeClass('blog-seed null prototype')
+	$('.blog-title-seed', clone).text(entry.title)
+	$('.blog-intro-seed', clone).html(entry.intro)
+	$$('blog').append(clone)
+	// categories, creator, link to entry, etc.
+    })
+    $$('blog').slideDown()
+}
+
+
+var BlogLoader = makeLoader({
+    prefix: '/api/v1/public/blog-entries',
+    name: 'BlogLoader'})
+
+
 $(document).ready(function() {
     new AuthProfileLoader({success: userAuthOkay, error: userAuthError})
     new StatsLoader({success: statsLoaded })
+    new BlogLoader({success: blogLoaded })
 
 })

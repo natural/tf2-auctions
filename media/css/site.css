@@ -53,7 +53,7 @@ white-space:nowrap !important;
 }
 
 .button:hover, .small-button:hover {
-background-color:#9d302f;
+background-color:#924738;
 color:#ece3cb;
 }
 
@@ -266,7 +266,12 @@ padding:0.5em;
 text-align:center;
 }
 
-.error, .winner {
+.winner {
+background-color:rgba(146, 71, 56, 0.5);
+border:0.25em solid rgba(146, 71, 56, 1);
+}
+
+.error {
 background-color:rgba(157, 48, 47, 0.15);
 border:0.25em solid rgba(189, 58, 58, 0.75);
 }

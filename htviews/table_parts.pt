@@ -1,10 +1,32 @@
 <metal:parts>
 
 
-    <metal:macro define-macro="bids_large">
-	<div id="${slug}-bids" tal:define="use_created use_created|True; use_view use_view|True">
+<metal:macro define-macro="leave_feedback" tal:define="default_feedback default_feedback|''">
+    <div class="${slug}-feedback-seed w100 null">
+	<div class="mt1">
+	    <strong class="${slug}-feedback-label">Leave Your Feedback:</strong>
+	</div>
+	<div class="${slug}-feedback-value null">text</div>
+	<div class="${slug}-feedback-controls">
+	    <div class="${slug}-feedback-help">Enter your feedback:</div>
+	    <div><textarea>${default_feedback}</textarea></div>
+	    <div class="mt1 mb1">
+		<div class="${slug}-rating w25"></div>
+		<div class="${slug}-rating-slider w25 mt05 mr1" name="duration"></div>
+		<div class="float-right mt05 ml1">
+		    <a href="#" onclick="return false" class="small-button save-button">Save</a>
+		    <a href="#" onclick="return false" class="small-button cancel-button">Cancel</a>
+		</div>
+	    </div>
+	    <div class="clear"></div>
+	</div>
+    </div>
+</metal:macro>
+
+
+<metal:macro define-macro="bids_large">
+    <div id="${slug}-bids" tal:define="use_created use_created|True; use_view use_view|True">
 	<div class="null prototype organizer-view">
-	    <div class="null message"><div class="winner">Winner!</div></div>
             <table class="w100">
 		<tbody>
                     <tr>
@@ -25,19 +47,24 @@
 				<strong class="bid-message-label">Message:</strong>
 				<div class="bid-message"></div>
 			    </div>
+			    <metal:macro tal:define="slug 'lister'"
+				 metal:use-macro="macros.leave_feedback" />
 			</td>
 			<td class="valign-top">
 			    <div>
 				<strong class="bid-status-label">Status:</strong>
-				<span class="bid-status"></span>
+				<div class="ml1">
+				    <span class="bid-status"></span>
+				</div>
+				<div class="null message"><div class="winner">Winner!</div></div>
 			    </div>
 			    <div class="mt1">
 				<strong class="bid-created-label">Placed:</strong>
-				<div class="bid-created mono"></div>
+				<div class="bid-created ml1 mono"></div>
 			    </div>
 			    <div tal:condition="use_created" class="mt1">
 				<strong>Created By:</strong>
-				<div class="bid-owner-seed center text-center">
+				<div class="bid-owner-seed">
 				    <a href="#">
 					<img src="" class="bid-avatar" />
 				    </a>
@@ -51,13 +78,13 @@
 		</tbody>
             </table>
 	</div>
-	</div>
-    </metal:macro>
+    </div>
+</metal:macro>
 
 
 
-    <metal:macro define-macro="listings_large">
-	<div id="${slug}-listings" tal:define="use_created use_created|True">
+<metal:macro define-macro="listings_large">
+    <div id="${slug}-listings" tal:define="use_created use_created|True">
 	<div class="null prototype organizer-view">
             <table class="listing-view w100 mb1">
 		<tbody>
@@ -91,42 +118,42 @@
 		</tbody>
             </table>
 	</div>
-	</div>
-    </metal:macro>
+    </div>
+</metal:macro>
 
 
-    <metal:macro define-macro="listing_bids">
-	<div class="null prototype">
-            <table class="bid-table w100">
-		<tbody>
-                    <tr>
-			<td class="${slug}-view-link" rowspan="2">
-			    <div class="center text-center ${slug}-view-summary">
-				<div style="white-space:nowrap;">
-				    <a href="#">
-					<img src="" class="bid-avatar" />
-				    </a>
-				    <a href="#">
-					<span class="bid-owner"></span>
-				    </a>
-				</div>
+<metal:macro define-macro="listing_bids">
+    <div class="null prototype">
+        <table class="bid-table w100">
+	    <tbody>
+                <tr>
+		    <td class="${slug}-view-link" rowspan="2">
+			<div class="center text-center ${slug}-view-summary">
+			    <div style="white-space:nowrap;">
+				<a href="#">
+				    <img src="" class="bid-avatar" />
+				</a>
+				<a href="#">
+				    <span class="bid-owner"></span>
+				</a>
 			    </div>
-			</td>
-			<td class="w88">
-			    <strong>Bid Items:</strong>
-			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
-			</td>
-		    </tr>
-	            <tr>
-			<td>
-			    <strong>Message:</strong>
-			    <div class="bid-message"></div>
-			</td>
-                    </tr>
-		</tbody>
-            </table>
-	</div>
-    </metal:macro>
+			</div>
+		    </td>
+		    <td class="w88">
+			<strong>Bid Items:</strong>
+			<metal:display use-macro="context.organizer_parts.macros.item_display" />
+		    </td>
+		</tr>
+		<tr>
+		    <td>
+			<strong>Message:</strong>
+			<div class="bid-message"></div>
+		    </td>
+                </tr>
+	    </tbody>
+        </table>
+    </div>
+</metal:macro>
 
 
 </metal:parts>

@@ -4,25 +4,33 @@
 </head>
 <body>
     <metal:fill fill-slot="main">
-	<div id="front-no-auth" class="null">
+	<div id="front-no-auth" class="null center text-center">
 	    <h1>Lookin to Trade?</h1>
 	    <div class="m1">You've gotta login to bid or make listing.</div>
 	</div>
 
-	<div id="front-auth" class="null">
-	    <h1>Good to See Ya!</h1>
-	    <div class="m1">
+	<div id="front-auth" class="null center text-center">
+	    <h1>Welcome!</h1>
+	    <div class="mb1">
 		Now that you're logged in, you can create listings and
 		bids.
 	    </div>
 	</div>
 
-	<div id="front-stats" class="null">
-	    <h3>Players: <span id="front-players"></span></h3>
-	    <h3>Listings: <span id="front-listings"></span></h3>
-	    <h3>Listed Items: <span id="front-listing-items"></span></h3>
-	    <h3>Bids: <span id="front-bids"></span></h3>
-	    <h3>Bid Items: <span id="front-bid-items"></span></h3>
+	<div id="front-blog" class="null mb1">
+	    <div class="blog-seed null prototype mb1">
+		<h2 class="blog-title-seed"></h2>
+		<div class="blog-intro-seed"></div>
+            </div>
+        </div>
+
+	<div id="front-stats" class="null mb1">
+	    <h2>Some Silly Site Stats:</h2>
+	    <h4>Players: <span id="front-players"></span></h4>
+	    <h4>Listings: <span id="front-listings"></span></h4>
+	    <h4>Listed Items: <span id="front-listing-items"></span></h4>
+	    <h4>Bids: <span id="front-bids"></span></h4>
+	    <h4>Bid Items: <span id="front-bid-items"></span></h4>
 	</div>
 	<div id="front-auth" class="null">
 	    <h1>Howdy there, pardner!</h1>

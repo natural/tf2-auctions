@@ -8,7 +8,7 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
-from tf2auctions.lib import json, user_steam_id, schematools, js_datetime, devel
+from tf2auctions.lib import json_dumps, json_loads, user_steam_id, schematools, js_datetime, devel
 from tf2auctions.models.feedback import Feedback
 from tf2auctions.models.profile import PlayerProfile
 from tf2auctions.models.proxyutils import fetch
@@ -88,7 +88,7 @@ class Listing(db.Model):
 
 	## 3.  extract and create categories for the ListingItem
 	## item types and for the min_bid defindex checks.
-	schema = json.loads(fetch.schema())
+	schema = json_loads(fetch.schema())
 
 	## 4. verify the min_bid values are present in the schema.
 	min_bid = min_bid or []
@@ -119,7 +119,7 @@ class Listing(db.Model):
 		parent=listing,
 		uniqueid=uid,
 		defindex=item['defindex'],
-		source=json.dumps(item),
+		source=json_dumps(item),
 		item_type_name=item_types[item['defindex']],
 		listing=listing)
 	    listing_item.put()
@@ -250,7 +250,7 @@ class PlayerItem(polymodel.PolyModel):
 
     def encode_builtin(self):
 	""" Encode this instance using only built-in types. """
-	item = json.loads(self.source)
+	item = json_loads(self.source)
 	this = {'uniqueid':self.uniqueid, 'defindex':self.defindex}
 	this.update((k, item.get(k, None)) for k in ('level', 'quantity', 'quality'))
 	return this
@@ -330,7 +330,7 @@ class Bid(db.Model):
 	    ## TODO: re-fetch backpack.  will probably need to move
 	    ## backpack feed into this site for that to work.
 	    raise ValueError('Incorrect ownership.')
-	schema = json.loads(fetch.schema())
+	schema = json_loads(fetch.schema())
 	bid = cls(owner=owner, listing=listing, message_private=private_msg, message_public=public_msg)
 	key = bid.put()
 	item_types = schematools.item_type_map(schema)
@@ -339,7 +339,7 @@ class Bid(db.Model):
 		parent=bid,
 		uniqueid=uid,
 		defindex=item['defindex'],
-		source=json.dumps(item),
+		source=json_dumps(item),
 		item_type_name=item_types[item['defindex']],
 		listing=listing,
 		bid=bid)
@@ -384,7 +384,7 @@ class Bid(db.Model):
 	    ## TODO: re-fetch backpack.  will probably need to move
 	    ## backpack feed into this site for that to work.
 	    raise ValueError('Incorrect ownership.')
-	schema = json.loads(fetch.schema())
+	schema = json_loads(fetch.schema())
 	bid.message_public = public_msg
 	bid.message_private = private_msg
 	bid.put()
@@ -394,7 +394,7 @@ class Bid(db.Model):
 		parent=bid,
 		uniqueid=uid,
 		defindex=item['defindex'],
-		source=json.dumps(item),
+		source=json_dumps(item),
 		item_type_name=item_types[item['defindex']],
 		listing=listing,
 		bid=bid)

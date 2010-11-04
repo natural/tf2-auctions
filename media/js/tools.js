@@ -295,8 +295,6 @@ var showTermsDialog = function(e) {
 	    width: $(window).width() * 0.9,
 	    position: 'top'
 	})
-	DIALOG = $('#content-terms-dialog')
-	console.log(	$('#content-terms-dialog').dialog('option', 'position'))
     }
     var error = function(request, status, error) {}
     $.ajax({url: '/terms',
@@ -307,6 +305,22 @@ var showTermsDialog = function(e) {
     return false
 }
 
+
+var makeHovers = function(tool) {
+    return {
+	enter: function(event) {
+            tool.show(event)
+            try {
+		var data = $('div', this).data('node')
+		$(this).addClass('outline')
+            } catch (e) {}
+	},
+	leave: function(event) {
+            tool.hide(event)
+            $(this).removeClass('outline')
+	}
+    }
+}
 
 var defaultUserAuthOkay = function(profile) {
     $('#content-user-buttons, #content-logout-link, #content-search-link').fadeIn()

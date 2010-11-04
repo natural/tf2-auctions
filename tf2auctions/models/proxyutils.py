@@ -3,7 +3,6 @@
 import logging
 import re
 import urllib
-from tf2auctions.lib import json
 from google.appengine.api import memcache
 
 

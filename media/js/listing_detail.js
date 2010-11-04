@@ -326,12 +326,26 @@ var listingsError = function(request, status, error)  {
     console.error('listings fetch failure', request, status, error)
 }
 
+var bidData = function() {
+    return $$('bids div.organizer-view').map(
+	function(idx, ele) { return $(ele).data('bid') }
+    )
+}
+
+var profileIsWinner = function(profile) {
+    return $.grep(bidData(), function(bid, idx) {
+	return (bid.owner.steamid==profile.steamid) && (bid.status=='awarded') }
+    )[0]
+}
+
 
 var profileReady = function(profile, listing) {
     defaultUserAuthOkay(profile)
     var ownerid = listing.owner.steamid
     $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
     $$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
+
+    /* auth profile owner is also listing owner */
     if (profile.steamid == ownerid) {
 	$$('owner-links').fadeAway()
         $$('owner-controls').slideDown()
@@ -354,7 +368,6 @@ var profileReady = function(profile, listing) {
 		var self = $(this)
 		self.parents('.listing-detail-profile-choose-confirm').fadeOut()
 		var bid = self.parents('div.organizer-view').data('bid')
-		GBID = bid
 		if (bid) {
 		    var cb = function(response) {
 			self.parents('.listing-detail-profile-bid-view-select-winner-link').fadeOut()
@@ -365,6 +378,69 @@ var profileReady = function(profile, listing) {
 	    })
 
 	}
+	if (listing.status == 'awarded') {
+	    $.each($$('bids div.organizer-view'), function(idx, element) {
+		element = $(element)
+		var bid = element.data('bid')
+		if (bid && bid.status == 'awarded' && !bid.lister_feedback) {
+		    var sliderChange = function(event, ui) {
+			var v = ui.value
+			$(".lister-rating", element).text('Rating: ' + v)
+		    }
+		    var slider = $(".lister-rating-slider", element).slider({
+			animate: true,
+			max: 100,
+			min:-100,
+			value: 100,
+			change: sliderChange,
+			slide: sliderChange
+		    })
+		    $('.lister-rating').text('Rating: 100')
+		    $('.lister-feedback-help').text('Enter your feedback for this bid and the player who posted it.')
+		    $('.lister-feedback-seed', element).slideDown()
+		    $('a.save-button', element).click(function () {
+			// submit
+			console.log('sending your feedback')
+		    })
+		    $('a.cancel-button', element).click(function () {
+			$('.lister-feedback-seed').slideUp()
+		    })
+
+		}
+	    })
+	}
+    } else if ( profileIsWinner(profile) ) {
+	$('.winner:contains("Winner!")').text('You Won!')
+	var bid = profileIsWinner(profile)
+	if (listing.status == 'awarded' && !listing.bidder_feedback) {
+	    var element = $$('left')
+	    $('.bidder-feedback-seed').slideDown()
+	    var sliderChange = function(event, ui) {
+		var v = ui.value
+		$(".bidder-rating", element).text('Rating: ' + v)
+	    }
+	    var slider = $(".bidder-rating-slider", element).slider({
+		animate: true,
+		max: 100,
+		min:-100,
+		value: 100,
+		change: sliderChange,
+		slide: sliderChange
+	    })
+	    $('.bidder-rating').text('Rating: 100')
+	    $('.bidder-feedback-help').text('Enter your feedback for this listing and the player who posted it.')
+	    $('.bidder-feedback-seed', element).slideDown()
+	    $('a.save-button', element).click(function () {
+		// submit
+		console.log('sending your feedback')
+	    })
+	    $('a.cancel-button', element).click(function () {
+		$('.bidder-feedback-seed').slideUp()
+	    })
+	}
+
+
+    /* auth profile owner is not the listing owner or winning bid owner */
     } else {
 	if (listing.status == 'active') {
             $$('auth-bid-pod').fadeIn()
@@ -403,37 +479,35 @@ var profileError = function(request, status, error) {
     if (request.status==401) {
 	// normal and expected if the user isn't currently logged in.
         $$('login-pod').fadeIn()
+
     }
 }
 
 
-var listingReady = function(id, listing) {
-    var pl = new AuthProfileLoader({
-         success: function (p) { profileReady(p, listing)},
-         error: profileError })
-    var cells = 0
+var listingReady = function(listing) {
     var st = new SchemaTool()
     var tt = new TooltipView(st)
 
     $$('owner-link').text(listing.owner.personaname)
-    $$('owner-avatar')
-	.attr('src', listing.owner.avatarmedium)
-
+    $$('owner-avatar').attr('src', listing.owner.avatarmedium)
+    $$('owner-listings')
+	.attr('href', '/profile/' + listing.owner.id64 + '?show=listings')
     $$('owner-profile-link')
 	.attr('href', '/profile/' + listing.owner.id64)
         .attr('title', 'Profile for ' + listing.owner.personaname)
-
-    $$('owner-listings')
-	.attr('href', '/profile/' + listing.owner.id64 + '?show=listings')
-
-    $$('content').fadeIn('slow')
-    $$('existing-bids-pod').fadeIn('slow')
+    $$('content').fadeIn()
+    $$('existing-bids-pod').fadeIn()
     $.each(['description', 'status'], function(idx, name) {
-	listing[name] ? $$(name).text(listing[name]) : $$(name).parent().parent().slideUp() })
-    $.each(['created', 'expires'], function(idx, name) {
-	var d = new Date(listing[name] + ' GMT')
-	$$(name).text('' + d)
+	if (listing[name]) {
+            $$(name).text(listing[name])
+	} else {
+	    $$(name).parent().parent().slideUp()
+	}
     })
+    $.each(['created', 'expires'], function(idx, name) {
+	$$(name).text('' + new Date(listing[name] + ' GMT'))
+    })
+    var cells = 0
     if (listing.min_bid.length) {
         $.each(listing.min_bid, function(idx, defindex) {
 	    if (!(cells % 5)) {
@@ -471,6 +545,7 @@ var listingReady = function(id, listing) {
 
 	if (bid.status == 'awarded') {
 	    $('.winner', clone).text('Winner!').parent().show()
+	    $('.bid-status', clone).text('')
 	}
 	clone.data('bid', bid)
 	if (bid.message_public) {
@@ -482,31 +557,18 @@ var listingReady = function(id, listing) {
     st.setImages()
     $('td.item-view div:empty').parent().remove()
 
-    var hoverItem = function(e) {
-        tt.show(e)
-        try {
-	    var data = $('div', this).data('node')
-            $(this).addClass('outline')
-        } catch (e) {}
-    }
-    var unhoverItem = function(e) {
-        tt.hide(e)
-        $(this).removeClass('outline')
-    }
+    var hover = makeHovers(tt)
+    $$('items td').mouseenter(hover.enter).mouseleave(hover.leave)
+    $$('min-bid td').mouseenter(hover.enter).mouseleave(hover.leave)
+    $$('bids table.chooser td').mouseenter(hover.enter).mouseleave(hover.leave)
 
-    $$('items td').mouseenter(hoverItem).mouseleave(unhoverItem)
-    $$('min-bid td').mouseenter(hoverItem).mouseleave(unhoverItem)
-    $$('bids table.chooser td').mouseenter(hoverItem).mouseleave(unhoverItem)
-    $$('title').html('Listing ' + id)
+    $$('title').html('Listing ' + pathTail())
     $$('bidcount').text(listing.bid_count ? ('Bids (' + listing.bid_count + ')') : 'No Bids')
     $$('title-pod').fadeIn()
     siteMessage('').fadeOut()
 
     if (listing.status == 'active') {
 	timeLeftId = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
-    } else if (listing.status == 'ended') {
-	// display the 'select winner' bits for the user
-	// or display the 'leave feedback' bits for any authorized bidder
     }
     if (listing.status != 'active') {
 	$$('place-start').fadeOut()
@@ -520,11 +582,22 @@ var listingError = function(request, status, error) {
 }
 
 
+var orderedLoad = function(listing) {
+    var pl = new AuthProfileLoader({
+         success: function (profile) {
+	     listingReady(listing)
+	     profileReady(profile, listing)
+	 },
+        error: function (r, s, e) { profileError(r, s, e); listingReady(listing) }
+    })
+}
+
+
 var schemaReady = function(schema) {
     var id = pathTail()
     document.title += ' ' + id
     new ListingLoader({
-	success: function(ls) { listingReady(id, ls) },
+	success: orderedLoad,
 	error: listingError,
 	suffix:id
     })

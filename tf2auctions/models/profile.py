@@ -5,7 +5,7 @@ from logging import exception, info
 from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 
-from tf2auctions.lib import json, user_steam_id
+from tf2auctions.lib import json_dumps, json_loads, user_steam_id
 from tf2auctions.models.proxyutils import fetch
 
 
@@ -40,15 +40,11 @@ class PlayerProfile(db.Expando):
     @classmethod
     def get_by_user(cls, user):
 	""" Returns the PlayerProfile for the given user. """
-	info('%s : %s', cls, user)
 	if hasattr(user, 'nickname'):
 	    id64 = user_steam_id(user)
 	else:
 	    id64 = user
-	info('%s : %s : %s', cls, user, id64)
-	pp = cls.all().filter('owner =', id64).get()
-	info('%s : %s : %s : %s', cls, user, id64, pp)
-	return pp
+	return cls.all().filter('owner =', id64).get()
 
     @classmethod
     def build(cls, owner, id64=None):
@@ -80,13 +76,13 @@ class PlayerProfile(db.Expando):
 
     def items(self):
 	try:
-	    return json.loads(self.backpack)
+	    return json_loads(self.backpack)
 	except:
 	    return []
 
     def refresh(self, put=False):
 	try:
-	    steam_profile = json.loads(fetch.profile(self.id64()))
+	    steam_profile = json_loads(fetch.profile(self.id64()))
 	except (Exception, ), exc:
 	    exception('PlayerProfile.refresh(): %s %s', self, exc)
 	else:

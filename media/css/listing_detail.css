@@ -50,4 +50,28 @@ vertical-align:middle;
 .bid-owner-seed {
 vertical-align:middle;
 margin-top:0.25em;
+margin-left:0.5em;
+}
+
+
+
+.lister-feedback-seed {}
+.lister-feedback-label {}
+.lister-feedback-controls {
+margin-right:10%;
+}
+
+.lister-feedback-controls > div > textarea, .bidder-feedback-controls > div > textarea {
+width:100%;
+height:10em;
+}
+
+.lister-rating, .bidder-rating {
+float:left;
+padding-top:0.5em;
+}
+
+.lister-rating-slider, .bidder-rating-slider {
+margin:0.5em 0 1em 0;
+float:left;
 }
