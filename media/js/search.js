@@ -76,7 +76,7 @@ var showAdvancedSearch = function() {
         	if (!data.flag_cannot_trade) {
 	            $(this).addClass('selected-delete')
                 }
-        } catch (e) {}
+        } catch (e) { }
     }
     var unhoverSearchChoice = function(e) {
 	$(this).removeClass('selected-delete')
@@ -95,17 +95,29 @@ var showAdvancedSearch = function() {
 	$(this).removeClass('selected selected-delete')
 	chooserChanged()
     }
+    var resetAdvancedSearch = function () {
+	$.each( $('#advanced-search-chooser td'), function(idx, cell) {
+	    $('img', cell).fadeOut().remove()
+	    $(cell).removeClass('selected selected-delete')
+	})
+	chooserChanged()
+    }
+
     $('#backpack-ac td div img').unbind().dblclick(copyToSearchChoice)
-    $('#advanced-search-chooser td').hover(hoverSearchChoice, unhoverSearchChoice)
     $('#advanced-search-chooser td').unbind().dblclick(removeSearchChoice)
+    $('#advanced-search-chooser td').hover(hoverSearchChoice, unhoverSearchChoice)
     $('#search-advanced, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
+    $$('advanced-reset').click(resetAdvancedSearch)
     $$('basic').fadeIn()
 
     var width = $$('pod').width()
     $("#advanced-search-pod").show()
     $$('controls').animate({width:330} ,400)
     $$("listing-pod").animate({width:width-350}, 400, function() {
-	$$('advanced-pod').show()
+	$$('advanced-pod').show( function () {
+	    $("#backpack-tools-ac")
+		.width($("#backpack-ac .backpack-page-1").width() - 10)
+	})
     })
     return false
 }

@@ -31,11 +31,34 @@ function updateTimeLeft(expires, selector) {
 
 var putListerFeedback = function(feedback, context) {
     $('.lister-feedback-seed', context).slideUp()
-    $('.lister-rating', context).text(feedback.rating)
-    $('.lister-rating-text', context).html(feedback.comment)
+    $('.lister-rating', context).text('{0}{1}'.fs( feedback.rating > 0 ? '+' : '', feedback.rating))
+    $('.lister-rating-text', context).text(feedback.comment)
+    $('.lister-rating-label', context).text('Feedback from Listing Owner:')
     $('.lister-rating-seed', context).slideDown()
+
 }
 
+
+var putBidderFeedback = function(feedback, context) {
+    $('.bidder-feedback-seed', context).slideUp()
+    $('.bidder-rating', context).text('{0}{1}'.fs( feedback.rating > 0 ? '+' : '', feedback.rating))
+    $('.bidder-rating-text', context).text(feedback.comment)
+    $('.bidder-rating-label', context).text('Feedback from Winning Bidder:')
+    $('.bidder-rating-seed', context).slideDown()
+}
+
+
+
+var bidderFeedbackSuccess = function(results) {
+    // swap text and hide
+    putBidderFeedback(results, results.element)
+    console.log(results)
+}
+
+
+var bidderFeedbackError = function(request, status, error) {
+    console.error('feedback submit failed', request, status, error)
+}
 
 var listerFeedbackSuccess = function(results) {
     // swap text and hide
@@ -448,7 +471,7 @@ var profileReady = function(profile, listing) {
     } else if ( profileIsWinner(profile) ) {
 	$('.winner:contains("Winner!")').text('You Won!')
 	var bid = profileIsWinner(profile)
-	if (listing.status == 'awarded' && !listing.bidder_feedback) {
+	if (listing.status == 'awarded' && !listing.feedback) {
 	    var element = $$('left')
 	    $('.bidder-feedback-seed').slideDown()
 	    var sliderChange = function(event, ui) {
@@ -467,7 +490,21 @@ var profileReady = function(profile, listing) {
 	    $('.bidder-feedback-help').text('Enter your feedback for this listing and the player who posted it.')
 	    $('.bidder-feedback-seed', element).slideDown()
 	    $('a.save-button', element).click(function () {
-		console.log('sending your feedback')
+		var data = {
+		    bid: bid.key,
+		    listing: listing.key,
+		    rating: slider.slider('value'),
+		    source: 'bidder',
+		    text: $('.bidder-feedback-text').val().slice(0,400)
+		}
+		$.ajax({
+		    url: '/api/v1/auth/add-feedback',
+		    type: 'POST',
+		    data: $.toJSON(data),
+		    dataType: 'json',
+		    success: function (r) { r.element = element; bidderFeedbackSuccess(r) },
+		    error: bidderFeedbackError
+		})
 	    })
 	    $('a.cancel-button', element).click(function () {
 		$('.bidder-feedback-seed').slideUp()
@@ -513,8 +550,8 @@ var profileError = function(request, status, error) {
     defaultUserAuthError(request, status, error)
     if (request.status==401) {
 	// normal and expected if the user isn't currently logged in.
+	// TODO:  this should wait for the listing...
         $$('login-pod').fadeIn()
-
     }
 }
 
@@ -530,6 +567,25 @@ var listingReady = function(listing) {
     $$('owner-profile-link')
 	.attr('href', '/profile/' + listing.owner.id64)
         .attr('title', 'Profile for ' + listing.owner.personaname)
+
+    var possum = listing.owner.rating[0]
+    var poscnt = listing.owner.rating[1]
+    var negsum = listing.owner.rating[2]
+    var negcnt = listing.owner.rating[3]
+
+    var pos = poscnt > 0 ? possum / poscnt : 0
+    var neg = negcnt > 0 ? negsum / negcnt : 0
+
+    $$('owner-pos-label').text('{0}% Positive'.fs( pos ))
+    $$('owner-pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
+    $('div.padding', $$('owner-pos-bar').parent()).width('{0}%'.fs(100-pos) )
+
+    $$('owner-neg-label').text('{0}% Negative'.fs( neg ))
+    $$('owner-neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
+    $('div.padding', $$('owner-neg-bar').parent()).width('{0}%'.fs(100-neg) )
+
+
+
     $$('content').fadeIn()
     $$('existing-bids-pod').fadeIn()
     $.each(['description', 'status'], function(idx, name) {
@@ -608,6 +664,11 @@ var listingReady = function(listing) {
     if (listing.status != 'active') {
 	$$('place-start').fadeOut()
 	$$('timeleft').text(listing.status)
+	$$('login-pod').fadeOut()
+	$$('min-bid-pod').fadeOut()
+    }
+    if (listing.status == 'awarded' && listing.feedback) {
+	putBidderFeedback(listing.feedback, $$('left'))
     }
 }
 

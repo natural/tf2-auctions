@@ -31,18 +31,18 @@
 		    <label>Items:</label>
 		    <div class="items-view" id="${slug}-items"><table></table></div>
 		</div>
-		<div class="mt1">
+		<div class="mt1" id="${slug}-min-bid-pod">
 		    <label>Minium Bid:</label>
 		    <div class="items-view" id="${slug}-min-bid"><table></table></div>
 		</div>
 		<div id="${slug}-auth-bid-pod" class="null mtb1">
 		    <a class="button" id="${slug}-place-start" href="#">Place Your Bid</a>
 		</div>
+		<metal:macro tal:define="slug 'bidder'"
+		     metal:use-macro="context.table_parts.macros.leave_feedback" />
 		<div id="${slug}-login-pod" class="null mtb1">
 		    <h2>You have to login to place a bid for these items.</h2>
 		</div>
-		<metal:macro tal:define="slug 'bidder'"
-		     metal:use-macro="context.table_parts.macros.leave_feedback" />
             </div>
 	    <div id="${slug}-right">
 		<div class="owner p05">
@@ -54,8 +54,31 @@
 			    <img class="avatar" id="${slug}-owner-avatar" alt="foo" />
 			</a>
                     </div>
-		    <div class="center text-center m1">
-			Rating: * * * * *  (96.3% or 17.5/ 100)
+
+		    <label>Rating:</label>
+		    <div class="center text-center">
+			<table class="w100" id="${slug}-owner-rating">
+			    <tr>
+				<td class="w50">
+				    <div class="padding float-left"></div>
+				    <div class="float-right" id="${slug}-owner-neg-bar"></div>
+				    <div class="clear"></div>
+				</td>
+				<td>
+				    <div id="${slug}-owner-pos-bar" class="float-left"></div>
+				    <div class="float-right padding"></div>
+				    <div class="clear"></div>
+				</td>
+			    </tr>
+			    <tr>
+				<td class="w50">
+				    <div id="${slug}-owner-neg-label" class="float-right mono">Negative</div>
+				</td>
+				<td>
+				    <div id="${slug}-owner-pos-label" class="mono">Positive</div>
+				</td>
+			    </tr>
+			</table>
                     </div>
 
 		    <div class="owner-links m1-top" id="${slug}-owner-links">

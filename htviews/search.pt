@@ -34,19 +34,26 @@
 
 	    <div id="${slug}-basic" class="null mb05">
 		<a id="${slug}-basic-link" href="" onclick="return false">
-		    <h2>Basic <span class="hi">&lt;&lt;</span></h2>
+		    <h2>Back to Basic Search <span class="hi">&lt;&lt;</span></h2>
 		</a>
 	    </div>
 
 	    <div class="null" id="${slug}-advanced-pod">
 		<div class="organizer-view">
+		    <label>Tradable Items:</label>
+		    <span class="help">Drag items to the search area below.  Double click works, too.
+		    </span>
 		    <metal:include
 			 tal:define="slug 'ac'"
 			 metal:use-macro="context.organizer_parts.macros.item_backpack_narrow" />
 		    <label>Your Search:</label>
+		    <span class="help">Double click an item to remove it or
+			<a href="#" id="${slug}-advanced-reset" onclick="return false">remove all</a>.
+		    </span>
 		    <metal:include
 			 tal:define="slug 'advanced-search'; rows 1; cols 3"
 			 metal:use-macro="context.organizer_parts.macros.item_chooser" />
+
 		</div>
 	    </div>
             <div id="${slug}-filters"><h2>Filters:</h2> <div id="${slug}-filter-inputs"></div></div>

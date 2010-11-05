@@ -8,16 +8,16 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
-from tf2auctions.lib import json_dumps, json_loads, user_steam_id, schematools, js_datetime, devel
+from tf2auctions.lib import devel, json_dumps, json_loads, js_datetime
+from tf2auctions.lib import schematools, user_steam_id
 from tf2auctions.models.profile import PlayerProfile
 from tf2auctions.models.proxyutils import fetch
 
 
 def add_filters(query, keys, values):
-    for k, v in zip(keys, values):
-	## could check k for operator instead of using '=' for
-	## everything:
-	query.filter('%s =' % k, v)
+    for key, value in zip(keys, values):
+        key = '%s =' % key if not key.endswith('=') else key
+	query.filter(key, value)
     return query
 
 
@@ -32,23 +32,12 @@ class Listing(db.Model):
     expires = db.DateTimeProperty('Expires', required=True)
     min_bid = db.ListProperty(long, 'Minimum Bid')
     description = db.StringProperty('Description', default='', multiline=True)
-
-    ## non-normalized:  listing status and reason
     status = db.StringProperty('Status', required=True, default='active', indexed=True)
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
-
-    ## non-normalized: specific categories for fast searches
     categories = db.StringListProperty(indexed=True)
-
-    #category_craft_bar = db.BooleanProperty(indexed=True, default=False)
-    #category_craft_token = db.BooleanProperty(indexed=True, default=False)
-    #category_hat = db.BooleanProperty(indexed=True, default=False)
-    #category_supply_crate = db.BooleanProperty(indexed=True, default=False)
-    #category_tool = db.BooleanProperty(indexed=True, default=False)
-    #category_weapon = db.BooleanProperty(indexed=True, default=False)
-
-    ## non-normalized: bid counter
     bid_count = db.IntegerProperty('Bid Count', default=0)
+
+    valid_days = range(1, 31) # 1-30
 
     @classmethod
     def build(cls, **kwds):
@@ -145,27 +134,20 @@ class Listing(db.Model):
 	    params={'listings':1, 'listing_items':len(item_ids)})
 	return key
 
-    valid_days = range(1, 31) # 1-30
-
-    def set_status(self, status, reason, set_items=True, set_bids=True):
-	self.status = status
-	self.status_reason = reason
-	self.put()
-	if set_items:
-	    for item in self.items():
-		item.status = status
-		item.put()
-	if set_bids:
-	    for bid in self.bids():
-		bid.set_status(status, reason)
-		bid.put()
-
     def cancel(self, reason):
+	""" Workflow function to cancel a listing.  Called by the user
+	    via a script.
+
+	"""
 	status = self.status
 	if status == 'active':
 	    self.set_status('cancelled', reason, set_items=True, set_bids=True)
 
     def end(self, reason):
+	""" Workflow function to end a listing.  Called by the task
+	    queue when the listing goes past it's expiration time.
+
+	"""
 	status = self.status
 	if status == 'active':
 	    if self.bid_count:
@@ -183,6 +165,9 @@ class Listing(db.Model):
 		self.expire('Expired with no bids')
 
     def expire(self, reason):
+	""" Workflow function to expire a listing.  Called by the task
+	    queue sometime after the auction has ended.
+	"""
 	status = self.status
 	if status == 'ended':
 	    if self.bid_count:
@@ -192,6 +177,10 @@ class Listing(db.Model):
 		self.set_status('expired', reason, set_items=True, set_bids=False)
 
     def winner(self, bid_details):
+	""" Workflow function to award a listing.  Called by the user
+	    via a script.
+
+	"""
 	status = self.status
 	if status == 'ended':
 	    k = bid_details['key']
@@ -200,6 +189,22 @@ class Listing(db.Model):
 	    for other in [b for b in self.bids() if str(b.key()) != k]:
 		other.set_status('lost', 'Bid not chosen as winner.')
 	    self.set_status('awarded', 'Listing awarded to chosen bid.', set_items=True, set_bids=False)
+
+    def set_status(self, status, reason, set_items=True, set_bids=True):
+	""" Common workflow transition routine.
+
+	"""
+	self.status = status
+	self.status_reason = reason
+	self.put()
+	if set_items:
+	    for item in self.items():
+		item.status = status
+		item.put()
+	if set_bids:
+	    for bid in self.bids():
+		bid.set_status(status, reason)
+		bid.put()
 
     def items(self):
 	""" Returns the player items for this listing.
@@ -218,12 +223,20 @@ class Listing(db.Model):
 	return Bid.all().filter('listing =', self).fetch(limit=100)
 
     def owner_profile(self):
-	""" Returns the player profile for this listing. """
+	""" Returns the player profile for this listing.
+
+	"""
 	return PlayerProfile.get_by_user(self.owner)
 
     def encode_builtin(self, bids=False, items=True):
-	""" Encode this instance using only built-in types. """
-	key = self.key()
+	""" Encode this instance using only built-in types.
+
+	"""
+	key, bfb = self.key(), None
+	bids = self.bids() if bids else ()
+	wins = [b for b in bids if b.status == 'awarded']
+	if wins:
+	    bfb = Feedback.get_by_source(wins[0], self, wins[0].owner)
 	return {
 	    'id' : key.id(),
 	    'key': str(key),
@@ -236,7 +249,8 @@ class Listing(db.Model):
 	    'items' : [i.encode_builtin() for i in self.items()] if items else (),
 	    'status' : self.status,
 	    'status_reason' : self.status_reason,
-	    'bids' : [b.encode_builtin() for b in self.bids()] if bids else (),
+	    'bids' : [b.encode_builtin() for b in bids],
+	    'feedback' : bfb.encode_builtin() if bfb else None,
 	}
 
 
@@ -275,15 +289,12 @@ class PlayerItem(polymodel.PolyModel):
 	return cls.get_or_insert(uniqueid=uniqueid, defindex=defindex, **kwds)
 
 
-
 class ListingItem(PlayerItem):
     """ ListingItem -> player items associated with a Listing.
 
     """
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True, indexed=True)
-    ## non-normalized:
     status = db.StringProperty('Status', required=True, default='active', indexed=True)
-    ## non-normalized:
     item_type_name = db.StringProperty('Item type name (schema value)', required=True, indexed=True)
 
     def __str__(self):
@@ -445,9 +456,7 @@ class BidItem(PlayerItem):
 
     """
     bid = db.ReferenceProperty(Bid, 'Parent Bid', required=True, indexed=True)
-    ## non-normalized:
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True, indexed=True)
-    ## non-normalized:
     status = db.StringProperty('Status', required=True, default='active', indexed=True)
 
     def __str__(self):

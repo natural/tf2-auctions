@@ -75,3 +75,33 @@ padding-top:0.5em;
 margin:0.5em 0 1em 0;
 float:left;
 }
+
+
+#listing-detail-owner-neg-bar {
+background-color:#9d302f;
+}
+
+#listing-detail-owner-pos-bar {
+background-color:#385c78;
+}
+
+
+#listing-detail-owner-rating td {
+padding:0.25em;
+}
+
+.rating-badge {
+color:#fff;
+font-family:"TF2Build";
+font-size:2em;
+padding:0.5em 0.25em 0.25em 0.25em;
+text-align:center;
+vertical-align:middle;
+width:3em;
+}
+
+
+.rating-view {
+background-color:#3C352E;
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
+}

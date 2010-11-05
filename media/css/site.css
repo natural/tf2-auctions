@@ -521,3 +521,9 @@ width:100%;
 #content-footer-pod a:hover { border-bottom:0.125em solid #c8bba2; }
 
 
+.help {
+color:#827868;
+font-size:0.9em;
+font-family:"TF2secondary", Verdana, Arial, Sans-Serif;
+}
+

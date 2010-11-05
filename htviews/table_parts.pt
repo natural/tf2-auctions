@@ -2,13 +2,25 @@
 
 
 <metal:macro define-macro="leave_feedback" tal:define="default_feedback default_feedback|''">
-    <div class="${slug}-rating-seed w100 null">
-	<div class="mt1">
+    <div class="${slug}-rating-seed w75 null p1 mt05 rating-view">
+	<div class="">
 	    <strong class="${slug}-rating-label">Comments and Rating:</strong>
 	</div>
-	<div class="${slug}-rating"></div>
-	<div class="${slug}-rating-text desc"></div>
-	<div>left by FU on DATE</div>
+	<table class="">
+	    <tr>
+		<td class="w25">
+		    <div class="${slug}-rating rating-badge"></div>
+		</td>
+		<td class="w75">
+		    <div class="${slug}-rating-text desc"></div>
+		</td>
+	    </tr>
+	    <!--
+	    <tr>
+		<td colspan="2"><div class="help desc">left by FU on DATE</div></td>
+	    </tr>
+	    -->
+	</table>
     </div>
     <div class="${slug}-feedback-seed w100 null">
 	<div class="mt1">
