@@ -29,6 +29,11 @@ indexes:
   - name: created_at
     direction: desc
 
+- kind: FaqEntry
+  properties:
+  - name: category
+  - name: relative_order
+
 - kind: Listing
   properties:
   - name: categories

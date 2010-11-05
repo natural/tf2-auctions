@@ -3,7 +3,10 @@ application: tf2auctions
 builtins:
 -   datastore_admin: true
 -   appstats: true
+
 handlers:
+-   url: /remote_api
+    script: tf2auctions/api/admin/remote.py
 -   expiration: 1d 1h
     mime_type: font/ttf
     static_files: media/ttf/\1

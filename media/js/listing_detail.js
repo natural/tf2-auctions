@@ -416,6 +416,10 @@ var profileReady = function(profile, listing) {
 		    var cb = function(response) {
 			self.parents('.listing-detail-profile-bid-view-select-winner-link').fadeOut()
 			$('div.winner', self.parents('div.organizer-view')).fadeIn()
+			var ele = self.parents('table')
+			$('.bid-status', ele).text('')
+			$('.winner', ele).text('Winner!').parent().show()
+			// show button to leave feedback (refresh)
 		    }
 		    sendListingWinner(bid, cb)
 		}
@@ -573,8 +577,8 @@ var listingReady = function(listing) {
     var negsum = listing.owner.rating[2]
     var negcnt = listing.owner.rating[3]
 
-    var pos = poscnt > 0 ? possum / poscnt : 0
-    var neg = negcnt > 0 ? negsum / negcnt : 0
+    var pos = Math.round(poscnt > 0 ? possum / poscnt : 0)
+    var neg = Math.round(negcnt > 0 ? negsum / negcnt : 0)
 
     $$('owner-pos-label').text('{0}% Positive'.fs( pos ))
     $$('owner-pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')

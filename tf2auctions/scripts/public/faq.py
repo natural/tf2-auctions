@@ -3,7 +3,7 @@
 from tf2auctions.lib import template_main
 
 
-main = template_main('contact.pt', related_js='contact.js')
+main = template_main('faq.pt', related_js='faq.js')
 
 
 if __name__ == '__main__':

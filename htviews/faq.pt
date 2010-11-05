@@ -1,0 +1,31 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">TF2Auctions.com -- All of the eBay&reg; Suck and None of the TF2 Goodness!</title>
+</head>
+<body>
+    <metal:fill fill-slot="main" tal:define="slug 'faq'">
+<style type="text/css">
+h2 { padding-top: 0.5em; }
+
+.title {
+padding-left:1em;
+}
+.entry {
+padding-left:1em;
+}
+</style>
+	<div class="null prototype category-seed">
+	    <h2></h2>
+	</div>
+
+	<div class="null prototype entry-seed">
+	    <div>Question: <div class="title"></div></div>
+	    <div>Answer:  <div class="entry"></div></div>
+	</div>
+
+	<div class="null" id="${slug}-content-pod">
+	    <h1>Ye Olde Frequently Asked Questions</h1>
+	</div>
+    </metal:fill>
+</body>
+</html>
