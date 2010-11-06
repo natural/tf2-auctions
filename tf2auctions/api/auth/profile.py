@@ -14,6 +14,10 @@ class CurrentUserProfile(ApiHandler):
 		self.error(401)
 		return
 	    profile = PlayerProfile.get_by_user(user)
+	    if not profile:
+		self.error(401)
+		return
+	    profile.refresh()
 	    self.write_json(profile.encode_builtin())
 	except (Exception, ), exc:
 	    self.error(500)

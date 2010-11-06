@@ -10,8 +10,9 @@ class Profile(ApiHandler):
 	profile = PlayerProfile.get_by_id64(id64)
 	if not profile:
 	    self.error(404)
-	    return
-	self.write_json(profile.encode_builtin())
+	else:
+	    profile.refresh()
+	    self.write_json(profile.encode_builtin())
 
 
 main = ApiHandler.make_main(Profile)

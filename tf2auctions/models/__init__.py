@@ -49,7 +49,8 @@ class Listing(db.Model):
 	if not owner:
 	    raise ValueError('No owner specified.')
 	kwds['owner'] = user_steam_id(owner)
-	kwds['profile'] = PlayerProfile.get_by_user(user_steam_id(owner))
+	kwds['profile'] = profile = PlayerProfile.get_by_user(user_steam_id(owner))
+	profile.refresh()
 
 	## this check has to be performed outside of the transaction
 	## because its against items outside the new listing ancestry:
@@ -70,8 +71,6 @@ class Listing(db.Model):
 	## 1.  check the user, get their backpack and verify the
 	## inidicated items belong to them.
 	if not profile.owns_all(uid for uid, item in item_ids):
-	    ## TODO: re-fetch backpack.  will probably need to move
-	    ## backpack feed into this site for that to work.
 	    raise ValueError('Incorrect ownership.')
 
 	## 2. check the date
@@ -321,7 +320,8 @@ class Bid(db.Model):
 	if not owner:
 	    raise ValueError('No owner specified.')
 	kwds['owner'] = user_steam_id(owner)
-	kwds['profile'] = PlayerProfile.get_by_user(owner)
+	kwds['profile'] = profile = PlayerProfile.get_by_user(owner)
+	profile.refresh()
 	item_ids = kwds['item_ids']
 	for uid, item in item_ids:
 	    q = ListingItem.all(keys_only=True)
@@ -347,8 +347,6 @@ class Bid(db.Model):
     @classmethod
     def build_transaction(cls, owner, profile, listing, item_ids, public_msg, private_msg):
 	if not profile.owns_all(uid for uid, item in item_ids):
-	    ## TODO: re-fetch backpack.  will probably need to move
-	    ## backpack feed into this site for that to work.
 	    raise ValueError('Incorrect ownership.')
 	schema = json_loads(fetch.schema())
 	bid = cls(owner=owner, listing=listing, message_private=private_msg, message_public=public_msg)

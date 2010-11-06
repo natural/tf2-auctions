@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from logging import exception
+from logging import error
 from google.appengine.api import users
 from tf2auctions.lib import View
 from tf2auctions.models import PlayerProfile
@@ -16,9 +16,9 @@ class ProfileUpdate(View):
 	user = users.get_current_user()
 	try:
 	    profile = PlayerProfile.build(user)
-	    profile.refresh(put=True)
+	    profile.refresh()
 	except (Exception, ), exc:
-    	    exception('player profile refresh: %s', exc)
+    	    error('player profile refresh: %s', exc)
 	    self.error(500)
 	else:
 	    paths = self.request.environ['PATH_INFO'].split('/')
@@ -27,7 +27,7 @@ class ProfileUpdate(View):
 		try:
 		    redirect_url = paths[-1].decode('base64')
 		except (Exception, ), exc:
-		    exception('player profile redirect decoding exception: %s', exc)
+		    error('player profile redirect decoding exception: %s', exc)
 	    self.redirect(redirect_url)
 
 

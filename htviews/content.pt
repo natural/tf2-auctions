@@ -77,16 +77,18 @@
     </div>
 
     <div id="${slug}-footer-pod" metal:fill-slot="footer">
-	<metal:slot define-slot="footer" />
-	<div class="text-center">
-	    <a href="#">About this Site</a> &middot;
-	    <a href="#">FAQ</a> &middot;
-	    <a href="#">Rules, Terms &amp; Privacy Policy</a> &middot;
-	    <a href="#">Contact</a>
-	</div>
-	<div class="text-center">
-	    Powered by <a href="http://steampowered.com">Steam</a>
-	    (but we don't have anything to do with Valve or Steam)
+	<div class="p1">
+	    <metal:slot define-slot="footer" />
+	    <div class="text-center">
+		<a href="#" class="nice">About this Site</a> &middot;
+		<a href="/faq" class="nice">FAQ</a> &middot;
+		<a href="#" class="nice">Rules, Terms &amp; Privacy Policy</a> &middot;
+		<a href="/contact" class="nice">Contact &amp; Feedback</a>
+	    </div>
+	    <div class="text-center m05 mb1">
+		Powered by <a href="http://steampowered.com" class="nice">Steam</a>
+		(but we don't have anything to do with Valve or Steam)
+	    </div>
 	</div>
     </div>
 

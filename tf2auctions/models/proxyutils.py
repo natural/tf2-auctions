@@ -27,15 +27,15 @@ class fetch:
 	url = cls.config.url_profile % id64
 	val = memcache.get(url)
 	if val:
-	    return val
+	    return True, val
 	try:
 	    val = urllib.urlopen(url).read()
 	    memcache.set(url, val, ttl)
 	    logging.info('fetch.profile local cache miss: %s', url)
-	    return val
+	    return False, val
 	except (Exception, ), exc:
 	    logging.exception('fetch.profile: %s', exc)
-	    return default
+	    return False, default
 
     @classmethod
     def schema(cls, lang=None, ttl=60*60, default='{}'):
@@ -58,15 +58,15 @@ class fetch:
 	url = cls.config.url_items % id64
 	val = memcache.get(url)
 	if val:
-	    return val
+	    return True, val
 	try:
 	    val = urllib.urlopen(url).read()
 	    memcache.set(url, val, ttl)
 	    logging.info('fetch.items local cache miss: %s', url)
-	    return val
+	    return False, val
 	except (Exception, ), exc:
 	    logging.exception('fetch.items: %s', exc)
-	    return default
+	    return False, default
 
     @classmethod
     def player_status(cls, id64, ttl=60*5, default='{}'):

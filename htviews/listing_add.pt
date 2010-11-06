@@ -43,10 +43,10 @@
 			Minimum Bid (Optional):
 		    </label>
                 </div>
-		<div class="center text-center">
-		    <label id="${slug}-min-bid-show">
-			<a href="#">Click to Show Items</a>
-		    </label>
+		<div class="center text-center mt05">
+		    <span id="${slug}-min-bid-show">
+			<a href="#" class="nice">Click to Show Items</a>
+		    </span>
 		</div>
 
 		<div class="null" id="${slug}-min-bid-pod">
@@ -75,9 +75,9 @@
 		    <div class="mt05">
 			<input type="checkbox" id="${slug}-terms" />
 			I Agree to
-                        <strong>
-			    <a href="#" id="${slug}-show-terms">the Site Rules and Terms of Use</a>.
-			</strong>
+                        <span>
+			    <a href="#" class="nice" id="${slug}-show-terms">the Site Rules and Terms of Use</a>.
+			</span>
 		    </div>
                 </div>
 	    </div>

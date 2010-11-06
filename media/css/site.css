@@ -314,16 +314,18 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .p1 { padding:1em }
 .p05 { padding:0.5em;}
 
+
 .owner-links {
 font-family:"TF2Build";
 margin:0.5em auto 0.5em auto;
 }
 
-.owner-links a {
+a.nice, .owner-links a {
+
 border-bottom:1px solid;
 }
 
-.owner-links a:hover {
+a.nice:hover, .owner-links a:hover {
 color:#c8503c;
 border-bottom:none;
 }
@@ -517,8 +519,6 @@ a-position:relative;
 width:100%;
 }
 
-#content-footer-pod a { color:#c8bba2; }
-#content-footer-pod a:hover { border-bottom:0.125em solid #c8bba2; }
 
 
 .help {

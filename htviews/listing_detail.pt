@@ -187,13 +187,13 @@
 		    <div class="mt05">
 			<input type="checkbox" id="${slug}-add-bid-terms" />
 			I Agree to
-                        <strong>
-			    <a href="#" id="${slug}-add-bid-show-terms">the Site Rules and Terms of Use</a>.
-			</strong>
+                        <span>
+			    <a href="#" class="nice" id="${slug}-add-bid-show-terms">the Site Rules and Terms of Use</a>.
+			</span>
 		    </div>
                 </div>
 
-		<div id="${slug}-bid-buttons" class="center text-center m1">
+		<div id="${slug}-bid-buttons" class="center text-center m1 mt2">
 		    <span class="button mr05">
 			<a href="#" id="${slug}-bid-submit">Place Bid</a>
 		    </span>

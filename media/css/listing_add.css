@@ -17,8 +17,3 @@ margin-top:0.5em;
 #add-bid-fields textarea, #listing-add-fields textarea {
 margin-bottom:1em;
 }
-
-#listing-add-fields label a, #listing-add-fields strong a {
-text-decoration:underline;
-}
-

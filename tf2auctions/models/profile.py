@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from logging import exception, info
+from datetime import datetime, timedelta
+from logging import error, info
 
 from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
@@ -27,6 +28,7 @@ class PlayerProfile(db.Expando):
     owner = db.StringProperty(required=True, indexed=True)
     keys = db.StringListProperty('Profile Keys')
     backpack = db.TextProperty('Backpack Items')
+    updated = db.DateTimeProperty('Last Update')
 
     rating_pos_sum = db.IntegerProperty(default=0)
     rating_pos_count = db.IntegerProperty(default=0)
@@ -45,11 +47,7 @@ class PlayerProfile(db.Expando):
     @classmethod
     def get_by_user(cls, user):
 	""" Returns the PlayerProfile for the given user. """
-	if hasattr(user, 'nickname'):
-	    id64 = user_steam_id(user)
-	else:
-	    id64 = user
-	return cls.all().filter('owner =', id64).get()
+	return cls.get_by_id64(user_steam_id(user) if hasattr(user, 'nickname') else user)
 
     @classmethod
     def build(cls, owner, id64=None):
@@ -85,22 +83,37 @@ class PlayerProfile(db.Expando):
 	except:
 	    return []
 
-    def refresh(self, put=False):
+    def refresh(self, delta=timedelta(minutes=10)):
+	start, updated = datetime.now(), self.updated
+	if updated and (updated + delta) > start:
+	    msg = 'profile refresh: profile current as of %s - update at %s'
+	    info(msg, start, updated + delta)
+	    return
+	put, id64 = False, self.id64()
 	try:
-	    steam_profile = json_loads(fetch.profile(self.id64()))
+	    cached, raw_profile = fetch.profile(id64)
+	    if not cached:
+		steam_profile = json_loads(raw_profile)
+		for key in steam_profile:
+		    setattr(self, key, steam_profile[key])
+		self.keys = [k for k in steam_profile]
+		put = True
+		info('profile refresh: fetched backpack for %s', id64)
 	except (Exception, ), exc:
-	    exception('PlayerProfile.refresh(): %s %s', self, exc)
-	else:
-	    for key in steam_profile:
-		setattr(self, key, steam_profile[key])
-	    self.keys = [k for k in steam_profile]
+	    error('profile refresh: %s - %s', exc, id64)
 	try:
-	    self.backpack = fetch.items(self.id64())
-	except:
-	    exception('PlayerProfile.refresh(): %s %s', self, exc)
+	    cached, raw_backpack = fetch.items(id64)
+	    if not cached:
+		self.backpack = raw_backpack
+		put = True
+		info('profile refresh: fetched items for %s', id64)
+	except (Exception, ), exc:
+	    error('profile refresh: %s - %s', exc, id64)
 	if put:
+	    duration = (datetime.now() - start).seconds
+	    info('profile refresh: fetched data for %s in %s sec', id64, duration)
+	    self.updated = datetime.now()
 	    self.put()
-	return self
 
     def encode_builtin(self):
 	""" Encode this instance using only built-in types. """

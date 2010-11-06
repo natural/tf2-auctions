@@ -25,10 +25,18 @@ padding:0.25em;
 
 #listing-detail-auth-bid-pod a.button,
 #listing-detail-cancel-prompt a.button  {
-background-color:#9d302f;
+background-color:#385c78;
 color:#ece3cb;
 }
 
+#listing-detail-auth-bid-pod a.button:hover,
+#listing-detail-cancel-prompt a.button:hover {
+background-color:#9d302f;
+}
+
+
+#listing-detail-auth-bid-pod a.button:active,
+#listing-detail-cancel-prompt a.button:active { color:#2e2b2a; }
 
 div.listing-seed, div.bid-marker {
 }
@@ -36,10 +44,6 @@ div.listing-seed, div.bid-marker {
 
 #listing-detail-bids > div.organizer-view {
 margin-bottom:0.75em;
-}
-
-#listing-detail-terms-pod a {
-text-decoration:underline;
 }
 
 .bid-owner-seed img {

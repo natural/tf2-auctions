@@ -408,18 +408,25 @@ var profileReady = function(profile, listing) {
 	    $('.listing-detail-profile-choose-winner-cancel').click(function (e) {
 		$(this).parents('.listing-detail-profile-choose-confirm').fadeOut()
 	    })
+
+	    // WRONG: this (a) doesn't hide all of the other "Select
+	    // Winner" divs and also shows "Leave Feedback" in too
+	    // many places
+
 	    $('.listing-detail-profile-choose-winner-submit').click(function (e) {
 		var self = $(this)
 		self.parents('.listing-detail-profile-choose-confirm').fadeOut()
 		var bid = self.parents('div.organizer-view').data('bid')
 		if (bid) {
 		    var cb = function(response) {
-			self.parents('.listing-detail-profile-bid-view-select-winner-link').fadeOut()
+			$('.listing-detail-profile-bid-view-select-winner-link').fadeOut()
 			$('div.winner', self.parents('div.organizer-view')).fadeIn()
 			var ele = self.parents('table')
 			$('.bid-status', ele).text('')
 			$('.winner', ele).text('Winner!').parent().show()
-			// show button to leave feedback (refresh)
+			$('.listing-detail-profile-bid-view-refresh', ele).fadeIn()
+			$('.listing-detail-profile-bid-view-refresh a.leave-feedback', ele)
+			    .click(function () { window.location.reload() })
 		    }
 		    sendListingWinner(bid, cb)
 		}

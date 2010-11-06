@@ -62,6 +62,12 @@
 				    <a href="#" class="small-button ${slug}-choose-winner-cancel" onclick="return false">No</a>
 			        </span>
 			    </div>
+			    <div class="${slug}-bid-view-refresh null m05">
+				<a href="#" class="small-button leave-feedback" onclick="return false">
+				Leave Feedback
+				</a>
+			    </div>
+
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
 			    <div>
 				<strong class="bid-message-label">Message:</strong>
