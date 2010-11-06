@@ -80,9 +80,9 @@
 	<div class="p1">
 	    <metal:slot define-slot="footer" />
 	    <div class="text-center">
-		<a href="#" class="nice">About this Site</a> &middot;
+		<a href="/about" class="nice">About this Site</a> &middot;
 		<a href="/faq" class="nice">FAQ</a> &middot;
-		<a href="#" class="nice">Rules, Terms &amp; Privacy Policy</a> &middot;
+		<a href="/terms" class="nice">Rules, Terms &amp; Privacy Policy</a> &middot;
 		<a href="/contact" class="nice">Contact &amp; Feedback</a>
 	    </div>
 	    <div class="text-center m05 mb1">

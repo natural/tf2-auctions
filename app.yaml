@@ -3,10 +3,9 @@ application: tf2auctions
 builtins:
 -   datastore_admin: true
 -   appstats: true
-
 handlers:
--   url: /remote_api
-    script: tf2auctions/api/admin/remote.py
+-   script: tf2auctions/api/admin/remote.py
+    url: /remote_api
 -   expiration: 1d 1h
     mime_type: font/ttf
     static_files: media/ttf/\1
@@ -54,10 +53,10 @@ handlers:
 -   script: tf2auctions/scripts/public/\1.py
     url: /(listing|profile)/\d{1,20}
 -   script: tf2auctions/scripts/public/\1.py
-    url: /(search|login|terms|all-items|about|contact|faq)
+    url: /(search|login|terms|terms-dialog|all-items|about|contact|faq)
 -   script: tf2auctions/scripts/public/front.py
     url: /
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 29
+version: 30

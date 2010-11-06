@@ -24,7 +24,7 @@ padding-left:1em;
 	</div>
 
 	<div class="null" id="${slug}-content-pod">
-	    <h1>Ye Olde Frequently Asked Questions</h1>
+	    <h1><span class="hilite">&nbsp;</span>Ye Olde Frequently Asked Questions</h1>
 	</div>
     </metal:fill>
 </body>

@@ -1,0 +1,8 @@
+<div>
+<style type="text/css">
+h1.local, h2.local { color:black; }
+</style>
+
+	    <metal:include
+		 metal:use-macro="context.terms_part.macros.terms" />
+</div>

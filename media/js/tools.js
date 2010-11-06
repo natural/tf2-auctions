@@ -297,7 +297,7 @@ var showTermsDialog = function(e) {
 	})
     }
     var error = function(request, status, error) {}
-    $.ajax({url: '/terms',
+    $.ajax({url: '/terms-dialog',
 	    cache: true,
 	    success: okay,
 	    error: error
