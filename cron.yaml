@@ -1,0 +1,24 @@
+cron:
+- description: prime cache with /search template
+  url: /search
+  schedule: every 10 minutes
+
+- description: prime cache with /profile/<id64> template
+  url: /profile/76561197992805111
+  schedule: every 10 minutes
+
+- description: prime cache with / template
+  url: /
+  schedule: every 10 minutes
+
+- description: prime cache with /api/v1/public/search data
+  url: /api/v1/public/search
+  schedule: every 10 minutes
+
+- description: prime cache with /api/v1/public/search data
+  url: /api/v1/public/search
+  schedule: every 10 minutes
+
+- description: prime cache with /api/v1/public/stats data
+  url: /api/v1/public/stats
+  schedule: every 10 minutes

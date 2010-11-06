@@ -656,7 +656,7 @@ var listingReady = function(listing) {
 	    $('.bid-message, .bid-message-label', clone).remove()
 	}
 	if (bid.message_private) {
-	    $('.bid-message-private', clone).text(bid.message_private)
+	    $('.bid-message-private', clone).text(bid.message_private).parent().fadeIn()
 	} else {
 	    $('.bid-message-private', clone).parent().remove()
 	}

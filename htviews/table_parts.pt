@@ -70,7 +70,7 @@
 
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
 
-			    <div class="mb1">
+			    <div class="mb1 null">
 				<strong class="bid-message-label-private">Private Message:</strong>
 				<div class="bid-message-private"></div>
 			    </div>

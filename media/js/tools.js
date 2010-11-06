@@ -51,7 +51,9 @@ var makeImg = function(options) {
 }
 
 
-var setTitle = function(name) { $('title').append(' -- ' + name) }
+var setTitle = function(name) {
+    document.title = document.title + ' -- ' + name
+}
 
 
 var showProfile = function(profile) {
@@ -292,16 +294,14 @@ var showTermsDialog = function(e) {
 	    show: 'fade',
 	    height: 400,
 	    title: 'TF2Auctions.com Rules,Terms and Conditions, and Privacy Policy',
-	    width: $(window).width() * 0.9,
-	    position: 'top'
-	})
-    }
+	    width: $(window).width() * 0.9, position: 'top' });
+    };
     var error = function(request, status, error) {}
     $.ajax({url: '/terms-dialog',
 	    cache: true,
 	    success: okay,
 	    error: error
-    })
+	   });
     return false
 }
 

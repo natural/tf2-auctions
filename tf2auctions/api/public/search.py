@@ -8,7 +8,7 @@ from tf2auctions.models import Listing, ListingItem
 
 
 class ListingSearch(object):
-    limit = 5
+    limit = 20
     orders = {
 	'created' : ('New', lambda q:q.order('-created')),
 	'expires' : ('Expires', lambda q:q.order('expires')),

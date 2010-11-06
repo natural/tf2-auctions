@@ -54,8 +54,9 @@
 	    <div id="${slug}-main-logo">
 		<a href="/" title="TF2Auctions.com">
 		    <img alt="TF2Auctions.com" src="/media/img/tf2auctions-logo.png"
-			 height="74" width="256" />
+			 height="48" width="340" />
 		</a>
+		<div class="help">The logo is lame.  Make us a new one and be famous forever!</div>
 	    </div>
 	    <div id="${slug}-site-buttons">
 		<span class="null" id="${slug}-user-buttons">
@@ -92,12 +93,13 @@
 	</div>
     </div>
 
-<metal:iesucks tal:condition="not controller.is_devel()">
+<metal:iesucks>
 <!--[if lt IE 9]>
 <script type="text/javascript">var isIE=true</script>
 <![endif]-->
 <script type="text/javascript" tal:define="v python:'$buoop'">
-var ${v} = {vs:{i:9,f:5,o:10.01,s:3,n:9}, test:typeof(isIE)!='undefined'}
+var ${v} = {vs:{i:9,f:5,o:10.01,s:3,n:9,}, test:typeof(isIE)!='undefined'
+}
 ${v}.ol = window.onload;
 window.onload=function(){
 if (${v}.ol) ${v}.ol();
