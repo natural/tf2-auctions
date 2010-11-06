@@ -22,13 +22,14 @@ var statsLoaded = function(stats) {
 
 
 var blogLoaded = function(entries) {
-    $.each(entries, function(idx, entry) {
+    $.each(entries, function(idx, blogpost) {
 	var clone = $$('blog div.blog-seed').clone()
 	clone.removeClass('blog-seed null prototype')
-	$('.blog-title-seed', clone).text(entry.title)
-	$('.blog-intro-seed', clone).html(entry.intro)
+	$('.blog-title-seed', clone).text(blogpost.title)
+	$('.blog-intro-seed', clone).html(blogpost.intro)
+	$('.blog-encoded-seed', clone).html(blogpost.entry)
 	$$('blog').append(clone)
-	// categories, creator, link to entry, etc.
+
     })
     $$('blog').slideDown()
 }

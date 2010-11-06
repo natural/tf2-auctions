@@ -21,6 +21,7 @@
 	    <div class="blog-seed null prototype mb1">
 		<h2 class="blog-title-seed"></h2>
 		<div class="blog-intro-seed"></div>
+		<div class="blog-encoded-seed"></div>
             </div>
         </div>
 
