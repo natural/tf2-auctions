@@ -655,6 +655,11 @@ var listingReady = function(listing) {
 	} else {
 	    $('.bid-message, .bid-message-label', clone).remove()
 	}
+	if (bid.message_private) {
+	    $('.bid-message-private', clone).text(bid.message_private)
+	} else {
+	    $('.bid-message-private', clone).parent().remove()
+	}
     })
     st.setImages()
     $('td.item-view div:empty').parent().remove()

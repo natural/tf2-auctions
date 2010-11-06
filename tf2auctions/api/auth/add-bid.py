@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from tf2auctions.lib import ApiHandler
+from tf2auctions.lib import ApiHandler, devel
 from tf2auctions.models import Bid
 
 
@@ -24,6 +24,8 @@ class AddBid(ApiHandler):
 		    listing_id=bid['id'])
 	except (Exception, ), exc:
 	    self.error(500)
+	    if devel:
+		raise
 	    exc = exc.message if hasattr(exc, 'message') else str(exc)
 	    result = {'msg':'error', 'description':exc}
 	else:

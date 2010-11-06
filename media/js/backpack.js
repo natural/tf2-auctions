@@ -145,10 +145,14 @@ var BackpackChooser = function(options) {
     self.initBackpack = function() {
 	var title = (typeof(options.title)=='undefined') ? 'Your Backpack' : options.title
 	var help = (typeof(options.help)=='undefined') ? 'Drag items from your backpack into the area below.' : options.help
+	var chooserHelp = (typeof(options.chooserHelp)=='undefined') ? 'To remove items, drag them to your backpack.  Double click removes, too.' : options.chooserHelp
+
 	var width = $('#backpack-' + backpackSlug + ' tbody').width()
 
 	$('#backpack-header-'  + backpackSlug + ' h3').first().html(title)
 	$('#backpack-header-' + backpackSlug + ' div').first().html(help)
+	$('#' + chooserSlug + '-chooser div').first().html(chooserHelp)
+
 	$('#backpack-tools-' + backpackSlug).width(width - 10)
 	$('#backpack-' + backpackSlug + ' label').width(width)
 	$('#unplaced-backpack-' + backpackSlug + ' label').width(width)

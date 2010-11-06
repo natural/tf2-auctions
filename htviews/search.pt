@@ -51,7 +51,7 @@
 			<a href="#" id="${slug}-advanced-reset" onclick="return false">remove all</a>.
 		    </span>
 		    <metal:include
-			 tal:define="slug 'advanced-search'; rows 1; cols 3"
+			 tal:define="slug 'advanced-search'; rows 1; cols 4"
 			 metal:use-macro="context.organizer_parts.macros.item_chooser" />
 
 		</div>

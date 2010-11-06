@@ -14,6 +14,7 @@ all:
 dist: $(dist_css) $(dist_js)
 	@mkdir -p $(dist_dir)
 	@cp *.yaml $(dist_dir)
+	@cp admin_key.nodist $(dist_dir)
 	@cp -r ext $(dist_dir)
 	@cp -r aetycoon $(dist_dir)
 	@cp -r chameleon $(dist_dir)

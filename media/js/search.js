@@ -112,8 +112,8 @@ var showAdvancedSearch = function() {
 
     var width = $$('pod').width()
     $("#advanced-search-pod").show()
-    $$('controls').animate({width:330} ,400)
-    $$("listing-pod").animate({width:width-350}, 400, function() {
+    $$('controls').animate({width:400} ,400)
+    $$("listing-pod").animate({width:width-450}, 400, function() {
 	$$('advanced-pod').show( function () {
 	    $("#backpack-tools-ac")
 		.width($("#backpack-ac .backpack-page-1").width() - 10)

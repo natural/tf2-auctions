@@ -69,10 +69,19 @@
 			    </div>
 
 			    <metal:display use-macro="context.organizer_parts.macros.item_display" />
+
+			    <div class="mb1">
+				<strong class="bid-message-label-private">Private Message:</strong>
+				<div class="bid-message-private"></div>
+			    </div>
+
 			    <div>
 				<strong class="bid-message-label">Message:</strong>
 				<div class="bid-message"></div>
 			    </div>
+
+
+
 			    <metal:macro tal:define="slug 'lister'"
 				 metal:use-macro="macros.leave_feedback" />
 			</td>

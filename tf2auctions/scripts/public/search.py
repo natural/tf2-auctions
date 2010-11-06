@@ -1,9 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from tf2auctions.lib import template_main
+import itertools
+from tf2auctions.lib import View, make_main
 
 
-main = template_main('search.pt', related_css='search.css', related_js=('search.js', 'backpack.js'))
+class Search(View):
+    template_name = 'search.pt'
+    related_css = ('search.css', )
+    related_js = ('search.js', 'backpack.js')
+
+    def extra_context(self):
+	return (
+	    ('itertools', itertools),
+	)
+
+
+main = make_main(Search)
 
 
 if __name__ == '__main__':

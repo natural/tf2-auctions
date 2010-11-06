@@ -30,7 +30,8 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	bidUids: bidUids,
 	backpackSlug: 'a',
 	chooserSlug: 'listing-add-item',
-	help:'Drag items from your backpack into the Listing Items area below.'
+	help:'Drag items from your backpack into the area below.  Double click works, too.',
+	chooserHelp:'Remove items by dragging them to your backpack.  Double click will remove, too.'
     })
     bpNav.init()
     bpChs.init()

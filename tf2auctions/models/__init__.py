@@ -58,6 +58,7 @@ class Listing(db.Model):
 	item_ids = kwds['item_ids']
 	for uid, item in item_ids:
 	    q = ListingItem.all(keys_only=True)
+	    uid = str(uid)
 	    if q.filter('uniqueid', uid).filter('status', 'active').get():
 		raise TypeError('Item already in an active auction.')
 	    q = BidItem.all(keys_only=True)
@@ -110,6 +111,7 @@ class Listing(db.Model):
 	# 5. assign the items
 	item_types = schematools.item_type_map(schema)
 	for uid, item in item_ids:
+	    uid = str(uid)
 	    listing_item = ListingItem(
 		parent=listing,
 		uniqueid=uid,
@@ -236,6 +238,10 @@ class Listing(db.Model):
 	wins = [b for b in bids if b.status == 'awarded']
 	if wins:
 	    bfb = Feedback.get_by_source(wins[0], self, wins[0].owner)
+	user = users.get_current_user()
+	private = False
+	if bids and user and user_steam_id(user) == self.owner:
+	    private = True
 	return {
 	    'id' : key.id(),
 	    'key': str(key),
@@ -248,7 +254,7 @@ class Listing(db.Model):
 	    'items' : [i.encode_builtin() for i in self.items()] if items else (),
 	    'status' : self.status,
 	    'status_reason' : self.status_reason,
-	    'bids' : [b.encode_builtin() for b in bids],
+	    'bids' : [b.encode_builtin(listing=False, private=private) for b in bids],
 	    'feedback' : bfb.encode_builtin() if bfb else None,
 	}
 
@@ -259,10 +265,8 @@ class PlayerItem(polymodel.PolyModel):
 
     The 'defindex' attribute is indexed for query speed.  This class
     is a PolyModel so it can be subclassed (see below).
-
-    The 'uniqueid' is the integer decoded key name.
     """
-    uniqueid = db.IntegerProperty('Item uniqueid', required=True, indexed=True)
+    uniqueid = db.StringProperty('Item uniqueid', required=True, indexed=True)
     defindex = db.IntegerProperty('Item defindex', required=True, indexed=True)
     source = db.StringProperty('Item source data (JSON decodable)')
 
@@ -280,12 +284,12 @@ class PlayerItem(polymodel.PolyModel):
     @classmethod
     def get_by_uid(cls, uniqueid):
 	""" Returns an item by uniqueid. """
-	return cls.all().filter('uniqueid =', uniqueid).get()
+	return cls.all().filter('uniqueid =', str(uniqueid)).get()
 
     @classmethod
     def build(cls, uniqueid, defindex, **kwds):
 	""" Returns an item by uniqueid. """
-	return cls.get_or_insert(uniqueid=uniqueid, defindex=defindex, **kwds)
+	return cls.get_or_insert(uniqueid=str(uniqueid), defindex=defindex, **kwds)
 
 
 class ListingItem(PlayerItem):
@@ -324,6 +328,7 @@ class Bid(db.Model):
 	profile.refresh()
 	item_ids = kwds['item_ids']
 	for uid, item in item_ids:
+	    uid = str(uid)
 	    q = ListingItem.all(keys_only=True)
 	    if q.filter('uniqueid', uid).filter('status', 'active').get():
 		raise TypeError('Item already in an active auction.')
@@ -353,6 +358,7 @@ class Bid(db.Model):
 	key = bid.put()
 	item_types = schematools.item_type_map(schema)
 	for uid, item in item_ids:
+	    uid = str(uid)
 	    bid_item = BidItem(
 		parent=bid,
 		uniqueid=uid,
@@ -385,6 +391,7 @@ class Bid(db.Model):
 	kwds['profile'] = PlayerProfile.get_by_user(owner)
 	item_ids = kwds['item_ids']
 	for uid, item in item_ids:
+	    uid = str(uid)
 	    q = ListingItem.all(keys_only=True)
 	    if q.filter('uniqueid', uid).filter('status', 'active').get():
 		raise TypeError('Item already in an active auction.')
@@ -408,6 +415,7 @@ class Bid(db.Model):
 	bid.put()
 	item_types = schematools.item_type_map(schema)
 	for uid, item in item_ids:
+	    uid = str(uid)
 	    bid_item = BidItem(
 		parent=bid,
 		uniqueid=uid,
@@ -425,15 +433,20 @@ class Bid(db.Model):
 	return bid.key()
 
 
-    def encode_builtin(self):
+    def encode_builtin(self, listing=True, private=False):
 	lfb = Feedback.get_by_source(self, self.listing, self.listing.owner)
+	if not private:
+	    user = users.get_current_user()
+	    if user and user_steam_id(user) == self.owner:
+		private = True
 	return {
 	    'owner' : PlayerProfile.get_by_user(self.owner).encode_builtin(),
 	    'created' : js_datetime(self.created),
 	    'message_public' : self.message_public,
+	    'message_private' : self.message_private if private else None,
 	    'status' : self.status,
 	    'items' : [i.encode_builtin() for i in self.items()],
-	    'listing' : self.listing.encode_builtin(bids=False, items=False),
+	    'listing' : self.listing.encode_builtin(bids=False, items=False) if listing else None,
 	    'key' : str(self.key()),
 	    'feedback': lfb.encode_builtin() if lfb else None,
 	    }
