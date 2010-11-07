@@ -1,0 +1,1 @@
+appcfg.py download_data --application=tf2auctions --url=http://tf2auctions.appspot.com/remote_api --filename=FOO.db

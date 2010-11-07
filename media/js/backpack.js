@@ -306,6 +306,8 @@ var TooltipView = function(schema) {
 	    $.each(schemaItem['attributes']['attribute'], function(aidx, schemaAttr) {
 		var attrDef = schema.attributesByName()[schemaAttr['name']]
 		if (!attrDef) { return }
+		if (attrDef['description_string']=='I made this!') { return }
+		if (attrDef['description_string']=='%s1% damage done' && attrDef['attribute_class']=='always_tradable') { return }
 		if (attrDef['description_string']=='unused') { return }
 		if (attrDef['attribute_class']=='set_employee_number') { return }
 		var extra = formatSchemaAttr(attrDef, schemaAttr['value'])

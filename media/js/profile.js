@@ -226,6 +226,11 @@ var playerProfileOkay = function(profile) {
     $$('avatar').attr('src', profile.avatarmedium)
     $$('badge').slideDown()
     $('.init-seed').fadeIn()
+
+    var ownerid = profile.steamid
+    $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
+    $$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
+
 }
 
 var playerProfileError = function(request, status, error) {

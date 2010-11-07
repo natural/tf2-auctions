@@ -23,18 +23,21 @@ padding:0.25em;
 }
 
 
+.listing-detail-profile-bid-cancel-link a.small-button,
 #listing-detail-auth-bid-pod a.button,
 #listing-detail-cancel-prompt a.button  {
 background-color:#385c78;
 color:#ece3cb;
 }
 
+.listing-detail-profile-bid-cancel-link a.small-button:hover,
 #listing-detail-auth-bid-pod a.button:hover,
 #listing-detail-cancel-prompt a.button:hover {
 background-color:#9d302f;
 }
 
 
+.listing-detail-profile-bid-cancel-link a.small-button:active,
 #listing-detail-auth-bid-pod a.button:active,
 #listing-detail-cancel-prompt a.button:active { color:#2e2b2a; }
 

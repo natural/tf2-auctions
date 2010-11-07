@@ -14,6 +14,20 @@
 		    <h1 class="m05" id="${slug}-title"></h1>
 		    <img id="${slug}-avatar" class="m1" />
 		    <h2 class="null m05" id="${slug}-is-you"></h2>
+
+		    <div class="owner-links m1-top" id="${slug}-owner-links">
+			<ul>
+			    <li>
+				<img src="/media/img/iconAddFriend.png" />
+				<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
+			    </li>
+			    <li>
+				<img src="/media/img/iconChat.png" />
+				<a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
+			    </li>
+			</ul>
+		    </div>
+
 		</div>
 	    </div>
 	</div>

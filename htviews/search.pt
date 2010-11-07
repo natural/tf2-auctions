@@ -70,11 +70,24 @@
 	    <h2 class="null mb05" id="${slug}-some-listings"></h2>
 	    <div class="" id="${slug}-results-pod">
 		<metal:include
-		     tal:define="slug 'search'; rows 2; cols 5;"
+		     tal:define="slug 'search'; use_minbid True; rows 2; cols 5"
 		     metal:use-macro="context.table_parts.macros.listings_large" />
+		<div class="w100 null" id="${slug}-nav-extra">
+		    <div class="float-right tools w100" id="${slug}-bottom-nav">
+			<div class="navs">
+			<span class="nonav" id="${slug}-bottom-prev-none">&lt;</span>
+			<span class="nav" id="${slug}-bottom-prev-link"><a href="" id="${slug}-bottom-prev">&lt;</a></span>
+			<span class="nav" id="${slug}-bottom-next-link"><a href="" id="${slug}-bottom-next">&gt;</a></span>
+			<span class="nonav" id="${slug}-bottom-next-none">&gt;</span>
+			</div>
+		    </div>
+		    <div class="clear"></div>
+		</div>
 	    </div>
-	</div>
 
+
+
+	</div>
     </div>
 
 </metal:fill>

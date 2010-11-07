@@ -45,7 +45,9 @@
 
 
 <metal:macro define-macro="bids_large">
-    <div id="${slug}-bids" tal:define="use_created use_created|True; use_view use_view|True">
+    <div id="${slug}-bids" tal:define="use_created use_created | True;
+				       use_view use_view | True;
+				       use_cancel use_cancel | False">
 	<div class="null prototype organizer-view">
             <table class="w100">
 		<tbody>
@@ -53,6 +55,9 @@
 			<td tal:attributes="width '70%'">
 			    <div class="${slug}-bid-view-link m05" tal:condition="use_view">
 				<a class="small-button small-item-button">View</a>
+			    </div>
+			    <div class="${slug}-bid-cancel-link m05" tal:condition="use_cancel">
+				<a class="small-button small-item-button">Cancel</a>
 			    </div>
 			    <div class="${slug}-bid-view-select-winner-link m05 null">
 				<a href="#" onclick="return false" class="small-button">Select Winner</a>
@@ -119,7 +124,7 @@
 
 
 <metal:macro define-macro="listings_large">
-    <div id="${slug}-listings" tal:define="use_created use_created|True">
+    <div id="${slug}-listings" tal:define="use_created use_created|True; use_minbid use_minbid|False">
 	<div class="null prototype organizer-view">
             <table class="listing-view w100 mb1">
 		<tbody>
@@ -150,6 +155,19 @@
 			    </div>
 			</td>
 		    </tr>
+
+                    <tr>
+			<td tal:attributes="width '70%'">
+			    <div class="${slug}-listing-view-min-bid">
+				<label>Minimum Bid:</label>
+				<metal:display
+				     tal:define="rows 2; cols 5"
+				     use-macro="context.organizer_parts.macros.item_display" />
+			    </div>
+			</td>
+			<td></td>
+		    </tr>
+
 		</tbody>
             </table>
 	</div>

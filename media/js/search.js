@@ -143,6 +143,17 @@ var showListing = function(listing, clone) {
 	$( $('.item-view div', clone)[next]).append( $.toJSON(item) )
 	next += 1
     })
+    if (listing.min_bid.length) {
+	var next = 0
+	$.each(listing.min_bid, function(index, defindex) {
+            $( $('.search-listing-view-min-bid .item-view div', clone)[next] ).append(
+		$.toJSON({defindex:defindex, quality:6})
+	    )
+	    next += 1
+	})
+    } else {
+        $('.search-listing-view-min-bid', clone).hide()
+    }
     $('.search-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
     $$('listings').append(clone)
 }
@@ -154,11 +165,13 @@ var showListings = function(results) {
 	$$('no-listings').text('Nothing found.  You should add a listing.').show()
 	$$('some-listings').hide()
 	$$('nav').fadeAway()
+	$$('bottom-nav').fadeAway()
 	return
     } else {
 	$$('no-listings').hide()
 	$$('some-listings').text('Results:').show()
 	$$('nav').fadeBack()
+	$$('bottom-nav').fadeBack()
     }
 
     var proto = $$('listings div.prototype')
@@ -167,7 +180,7 @@ var showListings = function(results) {
     })
 
     if (results.more) {
-	$$('next').unbind().click(function(e) {
+	$('#search-next, #search-bottom-next').unbind().click(function(e) {
 	    var next = function(rs) {
 		previousStack.push(results)
 		showListings(rs)
@@ -175,27 +188,40 @@ var showListings = function(results) {
 	    new SearchLoader({success: next, suffix: '?' + results.next_qs })
 	    return false
 	})
-	$$('next-link').show()
-	$$('next-none').hide()
+	$('#search-bottom-next').click(function(e) {
+	    $('body').scrollTopAni()
+	    $$('listings').fadeOut()
+	    $$('some-listings').text('Loading...')
+	})
+	$('#search-next-link, #search-bottom-next-link').show()
+	$('#search-next-none, #search-bottom-next-none').hide()
     } else {
-	$$('next-link').hide()
-	$$('next-none').show()
+	$('#search-next-link, #search-bottom-next-link').hide()
+	$('#search-next-none, #search-bottom-next-none').show()
     }
 
     if (previousStack.length) {
-	$$('prev').unbind().click(function(e) {
+	$('#search-prev, #search-bottom-prev').unbind().click(function(e) {
 	    showListings(previousStack.pop())
 	    return false
 	})
-	$$('prev-link').show()
-	$$('prev-none').hide()
+	$('#search-bottom-prev').click(function(e) {
+	    $('body').scrollTopAni()
+	    $$('listings').fadeOut()
+	    $$('some-listings').text('Loading...')
+	})
+	$('#search-prev-link, #search-bottom-prev-link').show()
+	$('#search-prev-none, #search-bottom-prev-none').hide()
     } else {
-	$$('prev-link').hide()
-	$$('prev-none').show()
+	$('#search-prev-link, #search-bottom-prev-link').hide()
+	$('#search-prev-none, #search-bottom-prev-none').show()
     }
     new SchemaTool().setImages()
     $('div.listing-seed td.item-view div:empty').parent().remove()
-    $('#search-listings').fadeIn()
+    $$('listings').fadeIn()
+    $$('nav-extra').fadeIn()
+
+
 }
 
 

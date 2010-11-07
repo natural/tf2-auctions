@@ -32,7 +32,7 @@
 		    <div class="items-view" id="${slug}-items"><table></table></div>
 		</div>
 		<div class="mt1" id="${slug}-min-bid-pod">
-		    <label>Minium Bid:</label>
+		    <label>Minimum Bid:</label>
 		    <div class="items-view" id="${slug}-min-bid"><table></table></div>
 		</div>
 		<div id="${slug}-auth-bid-pod" class="null mtb1">
@@ -140,7 +140,7 @@
 		<h1 class="pt05"><span class="hilite">&nbsp;</span>&nbsp;<span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids">
 		    <metal:include
-			tal:define="slug slug+'-profile'; use_view False"
+			tal:define="slug slug+'-profile'; use_view False; use_cancel False"
 			metal:use-macro="context.table_parts.macros.bids_large" />
 		</div>
 	    </div>

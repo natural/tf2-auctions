@@ -1,11 +1,11 @@
 #profile-badge-pod {
 float:right;
-width:14%;
+width:18%;
 }
 
 #profile-main-pod {
 float:left;
-width:84%;
+width:70%;
 }
 
 div.listing-seed, div.bid-marker {
@@ -14,4 +14,13 @@ margin-bottom:0.75em;
 
 div.init-seed > div > a {
 margin-left:2em;
+}
+
+#profile-owner-links ul {
+padding:0.25em;
+list-style: none;
+}
+
+#profile-owner-links ul li {
+padding:0.25em;
 }

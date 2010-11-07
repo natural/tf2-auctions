@@ -53,6 +53,7 @@ def cache(key, ttl=60):
 	    mkey = key(*args, **kwds) if callable(key) else key
 	    value = memcache.get(mkey)
 	    if value is not None:
+		#info('cache hit: %s', mkey)
 		return value
 	    start = time()
 	    value = func(*args, **kwds)
