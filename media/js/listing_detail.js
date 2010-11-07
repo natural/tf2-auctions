@@ -128,6 +128,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
     $$('msg-backpack').fadeOut()
     $$('own-backpack').fadeIn()
     $$('place-start').fadeOut()
+    $$('existing-bid-cancel').fadeOut()
     siteMessage('').fadeOut()
 
     var itemMoved = function(item) {
@@ -382,6 +383,12 @@ var profileIsWinner = function(profile) {
     )[0]
 }
 
+var profileBid = function(profile) {
+    return $.grep(bidData(), function(bid, idx) {
+	return (bid.owner.steamid==profile.steamid) }
+    )[0]
+}
+
 
 var profileReady = function(profile, listing) {
     defaultUserAuthOkay(profile)
@@ -529,6 +536,7 @@ var profileReady = function(profile, listing) {
             $$('auth-bid-pod').fadeIn()
 	    if ($.inArray(profile.steamid, $(listing.bids).map(function(i, x) { return x.owner.steamid })) > -1)  {
 		$$('place-start').text('Update Your Bid').data('update', true)
+		$$('existing-bid-cancel').text('Cancel Your Bid').data('cancel', true).parent().fadeIn()
 	    } else {
 		$$('place-start').data('update', false)
 	    }
@@ -551,6 +559,34 @@ var profileReady = function(profile, listing) {
 		    suffix: profile.id64
 		})
 		return false
+	    })
+	    $$('existing-bid-cancel').click(function() {
+		$$('existing-bid-cancel').fadeAway()
+		$$('existing-bid-confirm').fadeIn()
+		$$('existing-bid-cancel-yes').click(function() {
+		    var bid = profileBid(profile)
+		    $$('existing-bid-confirm').fadeOut()
+		    $.ajax({
+			url: '/api/v1/auth/cancel-bid',
+			type: 'POST',
+			data: $.toJSON({key:bid.key}),
+			dataType: 'json',
+			success: function (results) {
+			    $$('auth-bid-pod').fadeOut()
+			    $$('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
+			    $.each($$('bids div.organizer-view'), function(idx, ele) {
+				ele = $(ele)
+				if (ele.data('bid') && ele.data('bid').key == bid.key) {
+				    ele.slideUp()
+				}
+			    })
+			}
+		    })
+		})
+		$$('existing-bid-cancel-no').click(function() {
+		    $$('existing-bid-confirm').fadeOut()
+		    $$('existing-bid-cancel').fadeBack()
+		})
 	    })
 	}
     }

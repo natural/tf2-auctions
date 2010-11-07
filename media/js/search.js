@@ -151,6 +151,7 @@ var showListing = function(listing, clone) {
 	    )
 	    next += 1
 	})
+        $('.search-listing-view-min-bid', clone).removeClass('null')
     } else {
         $('.search-listing-view-min-bid', clone).hide()
     }

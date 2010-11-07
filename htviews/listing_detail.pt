@@ -35,11 +35,22 @@
 		    <label>Minimum Bid:</label>
 		    <div class="items-view" id="${slug}-min-bid"><table></table></div>
 		</div>
+		<div id="${slug}-auth-bid-cancelled" class="null"></div>
 		<div id="${slug}-auth-bid-pod" class="null mtb1">
 		    <a class="button" id="${slug}-place-start" href="#">Place Your Bid</a>
+		    <span class="null">
+			<a class="button" id="${slug}-existing-bid-cancel" href="#"></a>
+			<span class="null" id="${slug}-existing-bid-confirm">
+			    Are you sure you want to cancel your bid?
+			    <a class="button" href="#" id="${slug}-existing-bid-cancel-yes">Yes</a>
+			    <a class="button" href="#" id="${slug}-existing-bid-cancel-no">No</a>
+			</span>
+		    </span>
 		</div>
+
 		<metal:macro tal:define="slug 'bidder'"
 		     metal:use-macro="context.table_parts.macros.leave_feedback" />
+		<!-- move this -->
 		<div id="${slug}-login-pod" class="null mtb1">
 		    <h2>You have to login to place a bid for these items.</h2>
 		</div>
@@ -140,7 +151,7 @@
 		<h1 class="pt05"><span class="hilite">&nbsp;</span>&nbsp;<span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids">
 		    <metal:include
-			tal:define="slug slug+'-profile'; use_view False; use_cancel False"
+			tal:define="slug slug+'-profile'; use_view False"
 			metal:use-macro="context.table_parts.macros.bids_large" />
 		</div>
 	    </div>

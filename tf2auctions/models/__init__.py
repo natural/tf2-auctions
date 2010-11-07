@@ -461,6 +461,11 @@ class Bid(db.Model):
 	    bid_item.status = status
 	    bid_item.put()
 
+    def cancel(self):
+	self.listing.bid_count = max(0, self.listing.bid_count-1)
+	self.listing.put()
+	self.delete()
+
 
 class BidItem(PlayerItem):
     """ BidItem -> player items associated with a Bid.
