@@ -1,6 +1,6 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
-    <title metal:fill-slot="title">TF2Auctions.com Login</title>
+    <title metal:fill-slot="title">TF2Auctions.com - Login</title>
 </head>
 <body>
     <metal:fill fill-slot="main">

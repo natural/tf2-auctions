@@ -52,7 +52,7 @@ var makeImg = function(options) {
 
 
 var setTitle = function(name) {
-    document.title = document.title + ' -- ' + name
+    document.title = document.title + ' - ' + name
 }
 
 

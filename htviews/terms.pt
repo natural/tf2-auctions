@@ -1,6 +1,6 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
-    <title metal:fill-slot="title">TF2Auctions.com -- All of the eBay&reg; Suck and None of the TF2 Goodness!</title>
+    <title metal:fill-slot="title">TF2Auctions.com - Rules, Terms, and Conditions</title>
 </head>
 <body>
     <metal:fill fill-slot="main" tal:define="slug 'terms'">

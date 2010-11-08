@@ -18,9 +18,16 @@ handlers:
 -   static_files: media/img/favicon.ico
     upload: media/img/favicon.ico
     url: /favicon.ico
+
 -   static_files: media/robots.txt
     upload: media/robots.txt
     url: /robots.txt
+
+-   static_files: media/sitemap.gz
+    upload: media/sitemap.gz
+    url: /sitemap.gz
+
+
 -   login: admin
     script: tf2auctions/api/admin/\1/\2.py
     url: /api/v1/admin/(.*?)/(.*)
@@ -59,4 +66,4 @@ handlers:
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 36
+version: 37
