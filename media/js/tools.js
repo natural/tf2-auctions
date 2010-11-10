@@ -60,6 +60,9 @@ var showProfile = function(profile) {
     $('#content-avatar-pod')
         .html(makeImg({src: profile.avatar, width: 32, height: 32}))
         .show()
+    $('#content-avatar-pod img').addClass(profile.online_state)
+    $('#content-avatar-pod img').addClass('profile-status')
+
 }
 
 
@@ -322,10 +325,14 @@ var makeHovers = function(tool) {
     }
 }
 
-var defaultUserAuthOkay = function(profile) {
+var defaultProfileUrl = function (p) {
+    return p.custom_name ? '/id/{0}'.fs(p.custom_name) : '/profile/{0}'.fs(p.id64)
+}
+
+var defaultUserAuthOkay = function(p) {
     $('#content-user-buttons, #content-logout-link, #content-search-link').fadeIn()
-    $('#content-player-profile-link').attr('href', '/profile/'+profile.id64)
-    showProfile(profile)
+    $('#content-player-profile-link').attr('href', defaultProfileUrl(p))
+    showProfile(p)
 }
 
 

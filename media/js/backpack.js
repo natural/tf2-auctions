@@ -1,3 +1,21 @@
+// haven't found these definitions anywhere in the source files:
+itemEffects = {
+    6:  'Green Confetti',
+    7:  'Purple Confetti',
+    8:  'Haunted Ghosts',
+    9:  'Green Energy',
+    10: 'Purple Energy',
+    11: 'Circling TF Logo',
+    12: 'Massed Flies',
+    13: 'Burning Flames',
+    14: 'Scorching Flames',
+    15: 'Searing Plasma',
+    16: 'Vivid Plasma',
+    17: 'Sunbeams',
+    18: 'Circling Peace Sign'
+}
+
+
 var itemUtil = function(item, schema) {
     return {
 	canTrade: function() {
@@ -11,7 +29,23 @@ var itemUtil = function(item, schema) {
 			    style:'display:none', width:64, height:64})
 	},
 	isEquipped: function() { return (item['inventory'] & 0xff0000) != 0 },
-	pos:  function() { return (item.pos) ? item.pos : item['inventory'] & 0xFFFF  }
+	pos:  function() { return (item.pos) ? item.pos : item['inventory'] & 0xFFFF  },
+	painted: function () {
+	    var attrs = (item.attributes || {}).attribute || []
+	    var paint = 0
+	    $.each( $(attrs), function (idx, attr) {
+		if (attr.defindex==142) { paint = attr.float_value }
+	    })
+	    return paint
+	},
+	effect: function() {
+	    var attrs = (item.attributes || {}).attribute || []
+	    var effect = 0
+	    $.each( $(attrs), function (idx, attr) {
+		if (attr.defindex==134) { effect = attr.float_value }
+	    })
+	    return effect
+	}
     }
 }
 
@@ -49,6 +83,10 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 			ele.parent('td').addClass('active-bid')
 		    }
 		}
+		var paintColor = iutil.painted()
+		if (paintColor) {
+		    img.before('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
+		}
 	    } else {
 		newIdx += 1
 		if ($('#unplaced-backpack-' + slug + ' table.unplaced td:not(:has(img))').length == 0) {
@@ -67,9 +105,7 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		    } else if (item.flag_active_bid) {
 			ele.parents('td').addClass('active-bid')
 		    }
-
 		}
-
 	    }
 	    if ((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) {
 		img.before('<span class="quantity">' + item['quantity'] + '</span>')
@@ -88,7 +124,8 @@ var BackpackNavigator = function(slug) {
     var current = 1, count = $('#backpack-' + slug + ' table.backpack tbody').length
 
     self.navigate = function(event, offset) {
-	if (event.detail != 1) { return false }
+	// this borks ie:
+	//if (event && event.detail != 1) { return false }
 	if ((current + offset) > 0 && (current + offset <= count)) {
 	    $('#backpack-' + slug + ' .backpack-page-' + current).fadeOut(250, function() {
 		current += offset
@@ -259,9 +296,7 @@ var TooltipView = function(schema) {
 	return line.indexOf('Attrib_') > -1 ? '' : line
     }
 
-    self.hide = function(event) {
-	$('#tooltip').hide()//.css({left: 0, top: 0})
-    }
+    self.hide = function(event) { $('#tooltip').hide() }
 
     self.show = function(event) {
 	var tooltip = $('#tooltip'), cell = (this==self ? $(event.currentTarget) : $(this))
@@ -279,16 +314,27 @@ var TooltipView = function(schema) {
 	var schemaItem = schema.itemDefs()[type]
 
 	// set the main title and maybe adjust its style and prefix
-	var h4 = $('#tooltip h4'), desc = schemaItem['item_name']
+	var h4 = $('#tooltip h4'), desc = playerItem['custom_name'] ? '"{0}"'.fs(playerItem['custom_name']) : schemaItem['item_name']
 	h4.text(desc)
 	h4.attr('class', 'quality-'+playerItem['quality'])
 	if (playerItem['quality'] in prefixCheckMap) {
 	    h4.text(quals[playerItem['quality']] + ' ' + h4.text())
 	}
 
+	$('#tooltip .ctrl').html(
+            event.ctrlKey ? '<pre>{0}</pre>'.fs(
+		'item:  {0}\n\nschema:  {1}'.fs(
+		    JSON.stringify(playerItem, null, 2),
+		    JSON.stringify(schemaItem, null, 2)
+		)
+	    ) : ''
+	)
+
 	// set the level; this doesn't match the game behavior exactly, but it is nice.
 	var level = playerItem['level']
-	var levelType = schemaItem['item_type_name'].replace('TF_Wearable_Hat', 'Hat')
+	var levelType = schemaItem['item_type_name']
+	    .replace('TF_Wearable_Hat', 'Wearable Item')
+	    .replace('TF_LockedCrate', 'Crate')
 	$('#tooltip .level').text(level ? 'Level ' + level + ' ' + levelType : '')
 
 	// clear and set the extra text
@@ -298,6 +344,9 @@ var TooltipView = function(schema) {
 		var attrDef = schema.attributesById()[itemAttr['defindex']]
 		var extra = formatSchemaAttr(attrDef, itemAttr['value'])
 		var etype = effectTypeMap[attrDef['effect_type']]
+		if (itemAttr['defindex'] == 134) {
+		    extra = formatSchemaAttr(attrDef, itemEffects[itemAttr['float_value']])
+		}
 		var current = $('#tooltip .' + etype).html()
 		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
 	    })
@@ -318,7 +367,7 @@ var TooltipView = function(schema) {
 	}
 	// position and show
 	tooltip.css({
-	    left: cell.offset().left - (tooltip.width()/2) + (cell.width()/2),
+	    left: Math.max(0, cell.offset().left - (tooltip.width()/2) + (cell.width()/2)),
 	    top: cell.offset().top + cell.height() + 14
 	})
 	tooltip.show()

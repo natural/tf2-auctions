@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from tf2auctions.lib import ApiHandler
+from tf2auctions.lib import ApiHandler, search_id64
 from tf2auctions.models import PlayerProfile
 
 
 class Profile(ApiHandler):
     def get(self):
-	id64 = self.path_tail()
-	profile = PlayerProfile.get_by_id64(id64)
+	name = self.path_tail()
+	try:
+	    profile = PlayerProfile.get_by_id64(search_id64(name))
+	except (Exception, ), exc:
+	    profile = PlayerProfile.get_by_name(name)
 	if not profile:
 	    self.error(404)
 	else:

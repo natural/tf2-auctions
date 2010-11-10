@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
+import itertools
+
 from cgi import parse_qs
 from logging import info
-from os import environ
 from re import search
 from time import time
 
@@ -21,9 +23,9 @@ def is_devel(environ):
 
 
 always_cache = False
-devel = is_devel(environ)
-info('tf2auctions.lib.always_cache = %s', always_cache)
-info('tf2auctions.lib.devel = %s', devel)
+devel = is_devel(os.environ)
+info('startup: tf2auctions.lib.always_cache = %s', always_cache)
+info('startup: tf2auctions.lib.devel = %s', devel)
 
 
 def js_datetime(dt):
@@ -33,6 +35,12 @@ def js_datetime(dt):
     return dt.strftime(fmt)
 
 
+def search_id64(value):
+    value = value.strip()
+    match = search('\d{17}$', value)
+    return value[match.start():match.end()]
+
+
 def user_steam_id(user):
     ## TODO:  make user optional and default it to users.get_current_user()
     if hasattr(user, 'nickname'):
@@ -40,9 +48,7 @@ def user_steam_id(user):
     else:
 	name = user
     try:
-	name = name.strip()
-	match = search('\d{17}$', name)
-	return name[match.start():match.end()]
+	return search_id64(name)
     except (Exception, ), exc:
 	pass
 
@@ -122,6 +128,7 @@ class View(LocalHandler):
 	    ('controller', self),
 	    ('environ', self.request.environ),
 	    ('errors', {}),
+    	    ('itertools', itertools),
 	    ('user', users.get_current_user()),
 	)
 

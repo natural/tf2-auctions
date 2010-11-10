@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from logging import error, info
+from re import match
 
 from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 
 from tf2auctions.lib import json_dumps, json_loads, user_steam_id
-from tf2auctions.models.proxyutils import fetch
+from tf2auctions.lib.proxyutils import fetch
 
 
 class PlayerProfile(db.Expando):
@@ -20,13 +21,13 @@ class PlayerProfile(db.Expando):
     of this model can be viewed as cache entries.
 
     This model is an Expando so we can copy all of the attributes from
-    the steam profile feed.  Note that we also store the keys we copy
-    so that the values can be later extracted.
+    the steam profile feed.
 
     The key name of a PlayerProfile is the players id64.
     """
     owner = db.StringProperty(required=True, indexed=True)
-    keys = db.StringListProperty('Profile Keys')
+    custom_name = db.StringProperty(indexed=True)
+
     backpack = db.TextProperty('Backpack Items')
     updated = db.DateTimeProperty('Last Update')
 
@@ -43,6 +44,11 @@ class PlayerProfile(db.Expando):
     def get_by_id64(cls, id64):
 	""" Returns the PlayerProfile for the given id64. """
 	return cls.all().filter('owner =', id64).get()
+
+    @classmethod
+    def get_by_name(cls, name):
+	""" Returns the PlayerProfile for the given name. """
+	return cls.all().filter('custom_name =', name).get()
 
     @classmethod
     def get_by_user(cls, user):
@@ -96,7 +102,10 @@ class PlayerProfile(db.Expando):
 		steam_profile = json_loads(raw_profile)
 		for key in steam_profile:
 		    setattr(self, key, steam_profile[key])
-		self.keys = [k for k in steam_profile]
+		custom_name = custom_profile_name(steam_profile.get('profileurl'))
+		if custom_name:
+		    self.custom_name = custom_name
+		# http://steamcommunity.com/id/propeller_headz/
 		put = True
 		info('profile refresh: fetched backpack for %s', id64)
 	except (Exception, ), exc:
@@ -117,9 +126,19 @@ class PlayerProfile(db.Expando):
 
     def encode_builtin(self):
 	""" Encode this instance using only built-in types. """
-	res = {'id64':self.id64(), 'rating':self.get_rating()}
-	for key in self.keys:
+	id64 = self.id64()
+	res = {'id64':id64, 'rating':self.get_rating(), 'custom_name':self.custom_name}
+	for key in self.dynamic_properties():
 	    res[key] = getattr(self, key)
+	try:
+	    status = fetch.player_status(id64)
+	    if isinstance(status, (basestring, )):
+		status = {} # huh?
+	except (Exception, ), exc:
+	    ## already logged by fetch class
+	    status = {}
+	res['online_state'] = status.get('online_state', 'offline')
+	res['message_state'] = status.get('message_state', '')
 	return res
 
     def add_rating(self, value):
@@ -138,3 +157,11 @@ class PlayerProfile(db.Expando):
 	    self.rating_pos_sum, self.rating_pos_count,
 	    self.rating_neg_sum, self.rating_neg_count
 	)
+
+
+def custom_profile_name(value):
+    try:
+	return match('.*?/id/(.*?)/', value).groups()[0]
+    except (Exception, ):
+	pass
+

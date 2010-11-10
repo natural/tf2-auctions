@@ -11,23 +11,19 @@ handlers:
     static_files: media/ttf/\1
     upload: media/ttf/(.*\.(ttf|eot))
     url: /media/ttf/(.*\.(ttf|eot))
--   expiration: 1d 1h
+-   expiration: 1h
     static_files: media/\1
     upload: media/(.*\.(css|js|png|gif))
     url: /media/(.*\.(css|js|png|gif))
 -   static_files: media/img/favicon.ico
     upload: media/img/favicon.ico
     url: /favicon.ico
-
 -   static_files: media/robots.txt
     upload: media/robots.txt
     url: /robots.txt
-
 -   static_files: media/sitemap.gz
     upload: media/sitemap.gz
     url: /sitemap.gz
-
-
 -   login: admin
     script: tf2auctions/api/admin/\1/\2.py
     url: /api/v1/admin/(.*?)/(.*)
@@ -41,6 +37,8 @@ handlers:
     url: /api/v1/auth/(.*)
 -   script: tf2auctions/api/public/\1.py
     url: /api/v1/public/(.*)/\d+
+-   script: tf2auctions/api/public/profile.py
+    url: /api/v1/public/profile/(.*)
 -   script: tf2auctions/api/public/\1.py
     url: /api/v1/public/(.*)
 -   login: admin
@@ -59,6 +57,8 @@ handlers:
     url: /(profile-update)(/.*)?
 -   script: tf2auctions/scripts/public/\1.py
     url: /(listing|profile)/\d{1,20}
+-   script: tf2auctions/scripts/public/profile.py
+    url: /id/(.{1,32})
 -   script: tf2auctions/scripts/public/\1.py
     url: /(search|login|terms|terms-dialog|all-items|about|contact|faq)
 -   script: tf2auctions/scripts/public/front.py
@@ -66,4 +66,4 @@ handlers:
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 37
+version: 50

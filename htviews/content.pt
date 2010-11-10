@@ -42,6 +42,7 @@
         <div id="tooltip-top-shim"></div>
         <div id="tooltip-inner">
             <h4>title</h4>
+            <div class="ctrl"></div>
             <div class="level">level</div>
             <div class="alt">alt text</div>
             <div class="positive">positive text</div>
@@ -52,11 +53,12 @@
     <div id="${slug}-header-pod">
 	<div id="${slug}-header" metal:fill-slot="header">
 	    <div id="${slug}-main-logo">
-		<a href="/" title="TF2Auctions.com">
-		    <img alt="TF2Auctions.com" src="/media/img/tf2auctions-logo.png"
-			 height="48" width="340" />
+		<a href="/" title="TF2Auctions.com - random logo by lenzo">
+		    <img alt="TF2Auctions.com" src="/media/img/tf2auctions-logo-1c.png"
+			 height="82" width="340" />
+		    <!-- <img alt="TF2Auctions.com" src="/media/img/tf2auctions-logo.png"
+			 height="48" width="340" /> -->
 		</a>
-		<div class="help">The logo is lame.  Make us a new one and be famous forever!</div>
 	    </div>
 	    <div id="${slug}-site-buttons">
 		<span class="null" id="${slug}-user-buttons">
@@ -91,7 +93,7 @@
 		(but we don't have anything to do with Valve or Steam)
 	    </div>
 	    <div class="text-center m05">
-		Site created and operated by <a href="/profiles/76561197992805111">pnatural</a>
+		Site created and operated by <a href="/profile/76561197992805111">pnatural</a>
 	    </div>
 	</div>
     </div>

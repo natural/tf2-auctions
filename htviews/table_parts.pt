@@ -120,12 +120,15 @@
 
 
 <metal:macro define-macro="listings_large">
-    <div id="${slug}-listings" tal:define="use_created use_created|True; use_minbid use_minbid|False">
+    <div id="${slug}-listings"
+	 tal:define="use_created use_created | True;
+		     use_bids use_bids | True;
+		     use_minbid use_minbid | False">
 	<div class="null prototype organizer-view">
             <table class="listing-view w100">
 		<tbody>
                     <tr>
-			<td tal:attributes="width '70%'">
+			<td tal:attributes="width '70%' if use_bids else '100%'">
 			    <div class="${slug}-listing-view-link m05">
 				<a class="small-button small-item-button">View</a>
 			    </div>
@@ -134,7 +137,7 @@
 			    <strong class="listing-description-label">Description:</strong>
 			    <div class="listing-description desc"></div>
 			</td>
-			<td>
+			<td tal:condition="use_bids">
 			    <metal:if tal:condition="use_created">
 				<strong>Created By:</strong>
 				<div class="listing-owner-seed mb1">
@@ -153,7 +156,7 @@
 		    </tr>
 
                     <tr>
-			<td tal:attributes="width '70%'">
+			<td tal:attributes="width '70%' if use_bids else '100%'">
 			    <div class="${slug}-listing-view-min-bid null mt1">
 				<label>Minimum Bid:</label>
 				<metal:display

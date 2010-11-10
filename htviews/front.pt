@@ -3,40 +3,57 @@
     <title metal:fill-slot="title">TF2Auctions.com - Get Stuff for TF2</title>
 </head>
 <body>
-    <metal:fill fill-slot="main">
-	<div id="front-no-auth" class="null center text-center">
-	    <h1>Lookin to Trade?</h1>
-	    <div class="m1">You've gotta login to bid or make listing.</div>
-	</div>
+    <metal:fill fill-slot="main" tal:define="slug 'front'">
+	<div id="${slug}-col2" class="w40 float-right">
+	    <div id="${slug}-no-auth" class="null mb1">
+		<h1>Lookin to Trade?</h1>
+		<div class="mt05">You've gotta login to bid or make listing.</div>
+	    </div>
 
-	<div id="front-auth" class="null center text-center">
-	    <h1>Welcome!</h1>
-	    <div class="mb1">
-		Now that you're logged in, you can create listings and
-		bids.
+	    <div id="${slug}-auth" class="null">
+		<h1>Welcome!</h1>
+		<div class="mb1">
+		    Now that you're logged in, you can create listings and
+		    bids.
+		</div>
+	    </div>
+
+	    <div id="${slug}-new-listings-pod" class="null">
+		<h2 class="null mb05" id="${slug}-no-listings"></h2>
+		<h2 class="null mb05" id="${slug}-some-listings"></h2>
+		<div class="" id="${slug}-results-pod">
+		    <metal:include
+			 tal:define="use_minbid True;
+				     rows 2; cols 5;
+				     slug 'new-listings';
+				     use_created False;
+				     use_bids False"
+			 metal:use-macro="context.table_parts.macros.listings_large" />
+		</div>
 	    </div>
 	</div>
 
-	<div id="front-blog" class="null mb1">
+	<div id="${slug}-blog" class="null mb1 float-left w59">
 	    <div class="blog-seed null prototype mb1">
-		<h2 class="blog-title-seed"></h2>
+		<h1>
+		    <span class="hilite">&nbsp;</span><span class="blog-title-seed"></span>
+		</h1>
 		<div class="blog-intro-seed"></div>
 		<div class="blog-encoded-seed"></div>
             </div>
         </div>
+	<div class="clear"></div>
 
-	<div id="front-stats" class="null mb1">
+
+	<div id="${slug}-stats" class="null mb1">
 	    <h2>Some Silly Site Stats:</h2>
-	    <h4>Players: <span id="front-players"></span></h4>
-	    <h4>Listings: <span id="front-listings"></span></h4>
-	    <h4>Listed Items: <span id="front-listing-items"></span></h4>
-	    <h4>Bids: <span id="front-bids"></span></h4>
-	    <h4>Bid Items: <span id="front-bid-items"></span></h4>
+	    <h4>Players: <span id="${slug}-players"></span></h4>
+	    <h4>Listings: <span id="${slug}-listings"></span></h4>
+	    <h4>Listed Items: <span id="${slug}-listing-items"></span></h4>
+	    <h4>Bids: <span id="${slug}-bids"></span></h4>
+	    <h4>Bid Items: <span id="${slug}-bid-items"></span></h4>
 	</div>
-	<div id="front-auth" class="null">
-	    <h1>Howdy there, pardner!</h1>
-	    <div>Get to tradin' yer stuff for other stuff!</div>
-	</div>
+
     </metal:fill>
 </body>
 </html>

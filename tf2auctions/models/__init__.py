@@ -8,10 +8,10 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
-from tf2auctions.lib import devel, json_dumps, json_loads, js_datetime
-from tf2auctions.lib import schematools, user_steam_id
+from tf2auctions.lib import devel, json_dumps, json_loads, js_datetime, user_steam_id
+from tf2auctions.lib.proxyutils import fetch
+from tf2auctions.lib.schematools import item_categories, item_type_map, known_categories
 from tf2auctions.models.profile import PlayerProfile
-from tf2auctions.models.proxyutils import fetch
 
 
 def add_filters(query, keys, values):
@@ -102,14 +102,14 @@ class Listing(db.Model):
 	    description=desc)
 
 	## 4a.  derive categories
-	cats = schematools.item_categories([i for u, i in item_ids], schema)
+	cats = item_categories([i for u, i in item_ids], schema)
 	listing.categories =\
-	    [cat for cat, ttl in schematools.known_categories if cat in cats]
+	    [cat for cat, ttl in known_categories if cat in cats]
 	key = listing.put()
 	info('created new listing at: %s', listing.created)
 
 	# 5. assign the items
-	item_types = schematools.item_type_map(schema)
+	item_types = item_type_map(schema)
 	for uid, item in item_ids:
 	    uid = str(uid)
 	    listing_item = ListingItem(
@@ -278,7 +278,8 @@ class PlayerItem(polymodel.PolyModel):
 	""" Encode this instance using only built-in types. """
 	item = json_loads(self.source)
 	this = {'uniqueid':self.uniqueid, 'defindex':self.defindex}
-	this.update((k, item.get(k, None)) for k in ('level', 'quantity', 'quality'))
+	this.update((k, item.get(k)) for k in
+		    ('attributes', 'level', 'quantity', 'quality'))
 	return this
 
     @classmethod
@@ -356,7 +357,7 @@ class Bid(db.Model):
 	schema = json_loads(fetch.schema())
 	bid = cls(owner=owner, listing=listing, message_private=private_msg, message_public=public_msg)
 	key = bid.put()
-	item_types = schematools.item_type_map(schema)
+	item_types = item_type_map(schema)
 	for uid, item in item_ids:
 	    uid = str(uid)
 	    bid_item = BidItem(
@@ -413,7 +414,7 @@ class Bid(db.Model):
 	bid.message_public = public_msg
 	bid.message_private = private_msg
 	bid.put()
-	item_types = schematools.item_type_map(schema)
+	item_types = item_type_map(schema)
 	for uid, item in item_ids:
 	    uid = str(uid)
 	    bid_item = BidItem(

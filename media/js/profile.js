@@ -1,5 +1,6 @@
 var $$ = function(suffix, next) { return $('#profile-'+suffix, next) }
-var id64View = function() { return window.location.pathname.split('/').pop() }
+var id64Internal = null
+var id64View = function() { return id64Internal || pathTail() }
 
 
 var setHeadings = function(prefix) {
@@ -74,8 +75,10 @@ var putBackpack = function(backpack, listings, bids) {
     }
     $$('backpack-hide').fadeIn()
     $$('backpack-inner').fadeIn()
+    // stupid tweaks:
+    $$('backpack-pod').width($$('backpack-pod').width()+32)
     $('#backpack-tools-profile').width(
-	$$('backpack-pod tbody:visible').first().width()
+	$$('backpack-pod tbody:visible').first().width()-12
     )
 }
 
@@ -222,12 +225,16 @@ var putListing = function(listing, clone) {
 var playerProfileOkay = function(profile) {
     setTitle(profile.personaname)
     siteMessage().fadeOut()
+
     $$('title').text(profile.personaname)
-    $$('avatar').attr('src', profile.avatarmedium)
+    $$('avatar').attr('src', profile.avatarmedium).addClass(profile.online_state)
+    $$('status').html(profile.message_state).addClass(profile.online_state).slideDown()
+
     $$('badge').slideDown()
     $('.init-seed').fadeIn()
 
     var ownerid = profile.steamid
+    id64Internal = profile.steamid
     $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
     $$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
 
@@ -241,7 +248,7 @@ var playerProfileError = function(request, status, error) {
 var authProfileOkay = function(profile) {
     defaultUserAuthOkay(profile)
     var id64 = id64View()
-    if (id64 != profile.id64) {
+    if (id64 != profile.id64 && id64 != profile.custom_name ) {
 	// authorized user viewing another profile; load separately:
 	setHeadings()
 	new ProfileLoader({suffix: id64, success: playerProfileOkay, error: playerProfileError})
@@ -260,6 +267,7 @@ var authProfileError = function(request, status, error) {
     if (request.status==401) {
 	setHeadings()
 	siteMessage('Loading profile...')
+	// internal not set, fallback to path tail, works because profile loader works
 	new ProfileLoader({suffix: id64View(), success: playerProfileOkay, error: playerProfileError})
     }
 }

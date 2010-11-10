@@ -606,14 +606,18 @@ var profileError = function(request, status, error) {
 var listingReady = function(listing) {
     var st = new SchemaTool()
     var tt = new TooltipView(st)
+    var owner = listing.owner
 
-    $$('owner-link').text(listing.owner.personaname)
-    $$('owner-avatar').attr('src', listing.owner.avatarmedium)
+    $$('owner-link').text(owner.personaname)
+    $$('owner-avatar')
+	.attr('src', owner.avatarmedium)
+        .addClass('profile-status ' + owner.online_state)
+    $$('owner-status').html(owner.message_state).addClass(owner.online_state)
     $$('owner-listings')
-	.attr('href', '/profile/' + listing.owner.id64 + '?show=listings')
+	.attr('href', '/profile/' + owner.id64 + '?show=listings')
     $$('owner-profile-link')
-	.attr('href', '/profile/' + listing.owner.id64)
-        .attr('title', 'Profile for ' + listing.owner.personaname)
+	.attr('href', defaultProfileUrl(owner))
+        .attr('title', 'Profile for ' + owner.personaname)
 
     var possum = listing.owner.rating[0]
     var poscnt = listing.owner.rating[1]
@@ -630,8 +634,6 @@ var listingReady = function(listing) {
     $$('owner-neg-label').text('{0}% Negative'.fs( neg ))
     $$('owner-neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
     $('div.padding', $$('owner-neg-bar').parent()).width('{0}%'.fs(100-neg) )
-
-
 
     $$('content').fadeIn()
     $$('existing-bids-pod').fadeIn()
@@ -675,7 +677,10 @@ var listingReady = function(listing) {
 	$('.bid-status', clone).text(bid.status)
 	$('.bid-created', clone).text('' + new Date(bid.created))
 
-	$('.bid-avatar', clone).attr('src', bid.owner.avatar)
+	$('.bid-avatar', clone)
+            .attr('src', bid.owner.avatar)
+	    .addClass('profile-status ' + bid.owner.online_state)
+
 	$('.bid-avatar', clone).parent().attr('href', '/profile/'+bid.owner.id64)
 
 	$('.bid-owner', clone).text(bid.owner.personaname)

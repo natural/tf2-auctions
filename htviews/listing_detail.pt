@@ -64,6 +64,7 @@
 			<a href="#" id="${slug}-owner-profile-link">
 			    <img class="avatar" id="${slug}-owner-avatar" alt="foo" />
 			</a>
+			<div class="mt05" id="${slug}-owner-status"></div>
                     </div>
 
 		    <label>Rating:</label>

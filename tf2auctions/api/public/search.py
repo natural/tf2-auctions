@@ -8,19 +8,11 @@ from tf2auctions.models import Listing, ListingItem
 
 
 class ListingSearch(object):
-    limit = 20
+    limit = 10
     orders = {
 	'created' : ('New', lambda q:q.order('-created')),
 	'expires' : ('Expires', lambda q:q.order('expires')),
     }
-    __filters = (
-	('hat', 'Hats', lambda q: q.filter('category_hat = ', True)),
-	('weapon', 'Weapons',  lambda q: q.filter('category_weapon = ', True)),
-	('tool', 'Tools', lambda q: q.filter('category_tool = ', True)),
-	('craft_bar', 'Metal', lambda q: q.filter('category_craft_bar = ', True)),
-	('craft_token', 'Tokens', lambda q: q.filter('category_craft_token = ', True)),
-	('supply_crate', 'Crates', lambda q: q.filter('category_supply_crate = ', True)),
-    )
 
     def __init__(self, query_string, raw_query_string):
 	self.qs = query_string
@@ -45,7 +37,7 @@ class BasicSearch(ListingSearch):
     def run(self):
 	q = Listing.all().filter('status = ', 'active')
 	qs = self.qs
-	@cache(self.rqs, ttl=90)
+	@cache(self.rqs, ttl=180)
 	def inner_search():
 	    for key, title in self.filter_items():
 		if qs.get(key, [''])[0] == 'on':
@@ -56,18 +48,22 @@ class BasicSearch(ListingSearch):
 		order(q)
 	    if 'c' in qs:
 		q.with_cursor(qs['c'][0])
-	    listings = [lst.encode_builtin() for lst in q.fetch(self.limit)]
+	    try:
+		limit = min(self.limit, int(qs['limit'][0]))
+	    except (Exception, ), exc:
+		limit = self.limit
+	    listings = [lst.encode_builtin() for lst in q.fetch(limit)]
 	    return listings, self.next_qs(q, qs), self.more(q)
 
 	return inner_search()
 
 
 class AdvancedSearch(ListingSearch):
-    limit = 100
+    limit = 20
     max_defs = 4
 
     def run(self):
-	@cache(self.rqs, ttl=90)
+	@cache(self.rqs, ttl=180)
 	def inner_search():
 	    listings, qs = [], self.qs
 	    for di in qs.get('di', [])[0:self.max_defs]:

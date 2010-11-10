@@ -56,8 +56,8 @@
 		    </div>
 		    <div class="organizer-view" id="${slug}-min-bid">
 			<metal:include
-			     tal:define="slug 'mb'"
-			     metal:use-macro="context.organizer_parts.macros.item_backpack" />
+			     tal:define="slug 'mb'; rows 5; cols 5"
+			     metal:use-macro="context.organizer_parts.macros.item_backpack_narrow" />
 			<label id="${slug}-min-bid-title">
 			    Minimum Bid <span id="${slug}-min-bid-title-extra">(0 items)</span>
 			</label>

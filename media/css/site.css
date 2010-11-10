@@ -17,7 +17,9 @@ h1 { color:#ebe2ca; font-size:135%; }
 h2 { color:#827868; font-size:110%; }
 img { border:none; }
 label { display:block; font-family:"TF2Build"; }
+p { color:#827868; font-size:120%; margin-bottom:1em; }
 strong { font-family:"TF2Build"; }
+
 
 
 .center { margin:0 auto 0 auto; }
@@ -302,8 +304,10 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 
 .w12  { width:12%; }
 .w25  { width:25%; }
-.w33  { width:33%; }
+.w40  { width:40%; }
+.w49  { width:49%; }
 .w50  { width:50%; }
+.w59  { width:59%; }
 .w75  { width:75%; }
 .w88  { width:88%; }
 .w100 { width:100%; }
@@ -432,6 +436,7 @@ font-size:11pt;
 
 #tooltip .level { color:#756b5e; }
 #tooltip .vintage { color:#476291; }
+#tooltip .ctrl { color:#fff; text-align:left; }
 #tooltip .alt { color:#e4dbc4; }
 #tooltip .positive { color:#8dbceb; }
 #tooltip .negative { color:#eb3b3b; }
@@ -477,8 +482,8 @@ width:38px;
 }
 
 #content-avatar-pod img {
-border:0.2em solid #847668 !important;
-border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
+a-border:0.2em solid #847668 !important;
+a-border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
 }
 
 
@@ -526,4 +531,62 @@ color:#827868;
 font-size:0.9em;
 font-family:"TF2secondary", Verdana, Arial, Sans-Serif;
 }
+
+
+table.backpack > tbody > tr > td > div {
+position:relative;
+}
+
+.jewel {
+height:26px !important;
+width:26px !important;
+background-repeat:no-repeat;
+position:absolute;
+right:2px;
+top:2px;
+}
+
+.jewel-10843461 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/10843461.png'); }
+.jewel-12955537 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/12955537.png'); }
+.jewel-1315860 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/1315860.png'); }
+.jewel-13595446 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/13595446.png'); }
+.jewel-14204632 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/14204632.png'); }
+.jewel-15132390 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/15132390.png'); }
+.jewel-15185211 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/15185211.png'); }
+.jewel-4345659 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/4345659.png'); }
+.jewel-5322826 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/5322826.png'); }
+.jewel-6901050 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/6901050.png'); }
+.jewel-7511618 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/7511618.png'); }
+.jewel-8154199 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8154199.png'); }
+.jewel-8208497 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8208497.png'); }
+.jewel-8289918 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8289918.png'); }
+
+
+.profile-status {
+border:4px solid;
+border-radius:0.25em; -moz-border-radius:0.25em; -webkit-border-radius:0.25em;
+}
+
+#content-avatar-pod img.profile-status,
+.bid-owner-seed img.profile-status,
+.listing-owner-seed img.profile-status {
+border:2px solid;
+border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
+}
+
+.in-game { /* green */
+border-color: #B1FB50;
+color: #B1FB50;
+}
+
+.online { /* blue */
+border-color:#6FBDFF;
+color:#6FBDFF;
+}
+
+.offline { /* gray */
+border-color:#898989;
+color:#898989;
+}
+
 

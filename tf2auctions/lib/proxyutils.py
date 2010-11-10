@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import logging
-import re
-import urllib
+from logging import error, info
+from re import search
+from urllib import urlopen
 from google.appengine.api import memcache
 
 
@@ -29,12 +29,12 @@ class fetch:
 	if val:
 	    return True, val
 	try:
-	    val = urllib.urlopen(url).read()
+	    val = urlopen(url).read()
 	    memcache.set(url, val, ttl)
-	    logging.info('fetch.profile local cache miss: %s', url)
+	    info('fetch.profile local cache miss: %s', url)
 	    return False, val
 	except (Exception, ), exc:
-	    logging.exception('fetch.profile: %s', exc)
+	    error('fetch.profile: %s', exc)
 	    return False, default
 
     @classmethod
@@ -45,12 +45,12 @@ class fetch:
 	if val:
 	    return val
 	try:
-	    val = urllib.urlopen(url).read()
+	    val = urlopen(url).read()
 	    memcache.set(url, val, ttl)
-	    logging.info('fetch.schema local cache miss: %s', url)
+	    info('fetch.schema local cache miss: %s', url)
 	    return val
 	except (Exception, ), exc:
-	    logging.exception('fetch.schema: %s', exc)
+	    error('fetch.schema: %s', exc)
 	    return default
 
     @classmethod
@@ -60,31 +60,31 @@ class fetch:
 	if val:
 	    return True, val
 	try:
-	    val = urllib.urlopen(url).read()
+	    val = urlopen(url).read()
 	    memcache.set(url, val, ttl)
-	    logging.info('fetch.items local cache miss: %s', url)
+	    info('fetch.items local cache miss: %s', url)
 	    return False, val
 	except (Exception, ), exc:
-	    logging.exception('fetch.items: %s', exc)
+	    error('fetch.items: %s', exc)
 	    return False, default
 
     @classmethod
-    def player_status(cls, id64, ttl=60*5, default='{}'):
+    def player_status(cls, id64, ttl=60*10, default='{}'):
 	url = cls.config.url_player_status % id64
 	val = memcache.get(url)
 	if val:
 	    return val
 	try:
-	    chunk = urllib.urlopen(url).read(1024)
+	    chunk = urlopen(url).read(1024)
 	    val = {}
 	    for name, rx in cls.config.status_rxs:
 		try:
-		    val[name] = re.search(rx, chunk).groups()[0]
+		    val[name] = search(rx, chunk).groups()[0]
 		except (AttributeError, IndexError, ):
 		    pass
 	    memcache.set(url, val, ttl)
-	    logging.info('fetch.player_status local cache miss: %s', url)
+	    info('fetch.player_status local cache miss: %s', url)
 	    return val
 	except (Exception, ), exc:
-	    logging.exception('fetch.player_status: %s', exc)
+	    error('fetch.player_status: %s', exc)
 	    return default
