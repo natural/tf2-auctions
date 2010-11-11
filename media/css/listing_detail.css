@@ -49,6 +49,11 @@ div.listing-seed, div.bid-marker {
 margin-bottom:0.75em;
 }
 
+div.detail-view, div.organizer-view {
+padding:1em;
+}
+
+
 .bid-owner-seed img {
 vertical-align:middle;
 }

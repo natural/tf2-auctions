@@ -257,7 +257,13 @@ var siteMessage = function(text) {
 
 
 var asPlayerItem = function(i) {
-    return {defindex:i.defindex, level:i.level||'', quality:i.quality||i.item_quality}
+    return {
+	attributes: i.attributes || {'attribute':[]},
+	defindex: i.defindex,
+	level: i.level || '',
+	quality: i.quality || i.item_quality,
+	quantity: i.quantity || 1
+    }
 }
 
 

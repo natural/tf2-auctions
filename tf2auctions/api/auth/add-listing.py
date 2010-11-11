@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from tf2auctions.lib import ApiHandler, devel
+from logging import error
+
+from tf2auctions.lib import ApiHandler
 from tf2auctions.models import Listing
 
 
@@ -19,9 +21,8 @@ class AddListing(ApiHandler):
 	    min_bid = [b+0 for b in listing['min_bid']] # again, force an exception
 	    key = Listing.build(item_ids=item_ids, desc=desc, days=days, min_bid=min_bid)
 	except (Exception, ), exc:
+	    error('add listing: %s', exc)
 	    self.error(500)
-	    if devel:
-		raise
 	    exc = exc.message if hasattr(exc, 'message') else str(exc)
 	    result = {'msg':'error', 'description':exc}
 	else:

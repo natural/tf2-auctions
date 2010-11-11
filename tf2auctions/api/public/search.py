@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 from cgi import parse_qs
 
+from tf2auctions import features
 from tf2auctions.lib import ApiHandler, cache
 from tf2auctions.lib.schematools import known_categories
 from tf2auctions.models import Listing, ListingItem
 
 
 class ListingSearch(object):
-    limit = 10
+    limit = 5 if features.devel else 10
     orders = {
 	'created' : ('New', lambda q:q.order('-created')),
 	'expires' : ('Expires', lambda q:q.order('expires')),

@@ -244,6 +244,14 @@ var playerProfileError = function(request, status, error) {
     siteMessage().fadeAway()
 }
 
+
+var otherProfileOkay = function(profile) {
+    $$('leave-msg-title').text('Leave a message for {0}:'.fs(profile.personaname))
+    $$('leave-msg-pod').slideDown()
+    playerProfileOkay(profile)
+}
+
+
 // auth profile -> maybe load other player profile, load (bids+backpack+listings)
 var authProfileOkay = function(profile) {
     defaultUserAuthOkay(profile)
@@ -251,11 +259,13 @@ var authProfileOkay = function(profile) {
     if (id64 != profile.id64 && id64 != profile.custom_name ) {
 	// authorized user viewing another profile; load separately:
 	setHeadings()
-	new ProfileLoader({suffix: id64, success: playerProfileOkay, error: playerProfileError})
+	new ProfileLoader({suffix: id64, success: otherProfileOkay, error: playerProfileError})
     } else {
 	// authorized user viewing their own profile
 	setHeadings('My')
 	$$('is-you').text('This is you!').slideDown()
+	$$('view-msg-title').text('Messages for you:')
+	$$('view-msg-pod').slideDown()
 	playerProfileOkay(profile)
     }
     showProfile(profile)
@@ -301,6 +311,7 @@ $(document).ready(function() {
 	$$('listings-hide').click(listingsHide)
 	$$('listings-show').click(listingsShow)
 
+	// stupid fracking browsers don't do this right.  arg.
 	if (window.location.search.indexOf('show=listings')>-1) { listingsShow() }
 	if (window.location.search.indexOf('show=backpack')>-1) { backpackShow() }
     }})

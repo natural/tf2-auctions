@@ -12,6 +12,9 @@ div.listing-seed, div.bid-marker {
 margin-bottom:0.75em;
 }
 
+
+#profile-leave-msg-pod > div,
+#profile-view-msg-pod > div,
 div.init-seed > div > a {
 margin-left:2em;
 }

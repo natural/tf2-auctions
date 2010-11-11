@@ -8,7 +8,8 @@ from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
-from tf2auctions.lib import devel, json_dumps, json_loads, js_datetime, user_steam_id
+from tf2auctions import features
+from tf2auctions.lib import json_dumps, json_loads, js_datetime, user_steam_id
 from tf2auctions.lib.proxyutils import fetch
 from tf2auctions.lib.schematools import item_categories, item_type_map, known_categories
 from tf2auctions.models.profile import PlayerProfile
@@ -79,7 +80,7 @@ class Listing(db.Model):
 	    raise ValueError('Invalid number of days until expiration.')
 
 	## regulation 46a:
-	delta = timedelta(minutes=days) if devel else timedelta(days=days)
+	delta = timedelta(minutes=days) if features.devel else timedelta(days=days)
 	expires = datetime.now() + delta
 
 	## 3.  extract and create categories for the ListingItem
@@ -465,6 +466,8 @@ class Bid(db.Model):
     def cancel(self):
 	self.listing.bid_count = max(0, self.listing.bid_count-1)
 	self.listing.put()
+	for item in self.items():
+	    item.delete()
 	self.delete()
 
 

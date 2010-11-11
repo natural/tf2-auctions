@@ -7,8 +7,9 @@ from google.appengine.ext.remote_api import handler
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 
-import tf2auctions
-secret_key = open(os.path.join(tf2auctions.app_dir, 'admin_key.nodist')).read().strip()
+from tf2auctions import features
+
+secret_key = open(os.path.join(features.app_dir, 'admin_key.nodist')).read().strip()
 cookie_re = re.compile('^"([^:]+):.*"$')
 
 

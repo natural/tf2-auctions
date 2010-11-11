@@ -162,6 +162,51 @@ var showListing = function(listing, clone) {
 }
 
 
+var configNext = function(results) {
+    var navNext = function(e) {
+	$$('some-listings').text('Loading...')
+	$$('nav-extra').slideUp(function() {
+	    $$('listings').slideUp(function() {
+		previousStack.push(results)
+		var innerNext = function(rs) {
+		    showListings(rs)
+		}
+		new SearchLoader({success: innerNext, suffix: '?'+results.next_qs})
+	    })
+	})
+	return false
+    }
+    var navNextBottom = function(e) {
+	$('body').scrollTopAni()
+	navNext(e)
+	return false
+    }
+    $('#search-next').unbind().click(navNext)
+    $('#search-bottom-next').unbind().click(navNextBottom)
+}
+
+
+var configPrev = function(results) {
+    var navPrev = function(e) {
+	$$('some-listings').text('Loading...')
+	$$('nav-extra').slideUp(function() {
+	    $$('listings').slideUp(function() {
+		showListings(previousStack.pop())
+	    })
+	})
+	return false
+    }
+    var navPrevBottom = function(e) {
+	$('body').scrollTopAni()
+	navPrev(e)
+	return false
+    }
+    $('#search-prev').unbind().click(navPrev)
+    $('#search-bottom-prev').unbind().click(navPrevBottom)
+}
+
+
+
 var showListings = function(results) {
     $('div.listing-seed').remove()
     if (!results.listings.length) {
@@ -183,19 +228,7 @@ var showListings = function(results) {
     })
 
     if (results.more) {
-	$('#search-next, #search-bottom-next').unbind().click(function(e) {
-	    var next = function(rs) {
-		previousStack.push(results)
-		showListings(rs)
-	    }
-	    new SearchLoader({success: next, suffix: '?' + results.next_qs })
-	    return false
-	})
-	$('#search-bottom-next').click(function(e) {
-	    $('body').scrollTopAni()
-	    $$('listings').fadeOut()
-	    $$('some-listings').text('Loading...')
-	})
+	configNext(results)
 	$('#search-next-link, #search-bottom-next-link').show()
 	$('#search-next-none, #search-bottom-next-none').hide()
     } else {
@@ -204,15 +237,7 @@ var showListings = function(results) {
     }
 
     if (previousStack.length) {
-	$('#search-prev, #search-bottom-prev').unbind().click(function(e) {
-	    showListings(previousStack.pop())
-	    return false
-	})
-	$('#search-bottom-prev').click(function(e) {
-	    $('body').scrollTopAni()
-	    $$('listings').fadeOut()
-	    $$('some-listings').text('Loading...')
-	})
+	configPrev(results)
 	$('#search-prev-link, #search-bottom-prev-link').show()
 	$('#search-prev-none, #search-bottom-prev-none').hide()
     } else {
@@ -223,8 +248,6 @@ var showListings = function(results) {
     $('div.listing-seed td.item-view div:empty').parent().remove()
     $$('listings').fadeIn()
     $$('nav-extra').fadeIn()
-
-
 }
 
 
@@ -273,5 +296,5 @@ $(document).ready(function() {
     siteMessage('Loading schema...')
     new AuthProfileLoader({success: defaultUserAuthOkay, error: defaultUserAuthError})
     new SchemaLoader({success: schemaReady})
-    console.log('search.js ready')
+    console.log('search.js version {0} ready'.fs(43))
 })

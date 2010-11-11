@@ -310,12 +310,17 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 
     if (update) {
 	try {
-	    var current = $(bids).filter(function (idx, item) { return item.listing.id == pathTail() })[0]
-	    var currentIds = $(current.items).map(function (idx, item) { return item.uniqueid })
+	    var current = $(bids).filter(function (idx, item) {
+		return item.listing.id == pathTail()
+	    })[0]
+
+	    var currentIds = $(current.items).map(function (idx, item) {
+		return item.uniqueid
+	    })
+
 	    $.each($('td.active-bid'), function(idx, existing) {
 		var data = $('img', existing).data('node')
-		if ( $.inArray(data.id, currentIds) > -1 ) {
-		    console.log('moving item ', existing, 'to chooser')
+		if ( $.inArray(''+data.id, currentIds) > -1 ) {
 		    var img = $('img', existing)
 		    img.detach()
 		    $(existing).removeClass('active-bid cannot-trade')
@@ -665,6 +670,8 @@ var listingReady = function(listing) {
         cells += 1
         $$('items table tr:last').append(makeCell($.toJSON(item)))
         $$('items table tr td:last div').data('node', item)
+//	console.log(item, $.toJSON(item), $$('items table tr td:last div').data('node'))
+
     })
     $.each(listing.bids, function(idx, bid) {
 	var clone = $$('bids .prototype').clone()

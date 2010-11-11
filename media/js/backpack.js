@@ -344,9 +344,16 @@ var TooltipView = function(schema) {
 		var attrDef = schema.attributesById()[itemAttr['defindex']]
 		var extra = formatSchemaAttr(attrDef, itemAttr['value'])
 		var etype = effectTypeMap[attrDef['effect_type']]
+
+		// 134:  set effect name
 		if (itemAttr['defindex'] == 134) {
 		    extra = formatSchemaAttr(attrDef, itemEffects[itemAttr['float_value']])
+		} else
+		// 142:  don't use 'i made this'
+		if (itemAttr['defindex'] == 142) {
+		    extra = ''
 		}
+
 		var current = $('#tooltip .' + etype).html()
 		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
 	    })

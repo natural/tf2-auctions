@@ -4,7 +4,7 @@ import os
 import itertools
 
 from cgi import parse_qs
-from logging import info
+from logging import info, warn
 from re import search
 from time import time
 
@@ -15,17 +15,8 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 
 from simplejson import dumps as json_dumps, loads as json_loads
 from chameleon.zpt.loader import TemplateLoader
-from tf2auctions import template_dir
 
-
-def is_devel(environ):
-    return environ.get('SERVER_SOFTWARE', '').startswith('Dev')
-
-
-always_cache = False
-devel = is_devel(os.environ)
-info('startup: tf2auctions.lib.always_cache = %s', always_cache)
-info('startup: tf2auctions.lib.devel = %s', devel)
+from tf2auctions import features
 
 
 def js_datetime(dt):
@@ -53,13 +44,14 @@ def user_steam_id(user):
 	pass
 
 
-def cache(key, ttl=60):
+def cache(key, ttl=60, verbose=False):
     def deco(func):
 	def wrapper(*args, **kwds):
 	    mkey = key(*args, **kwds) if callable(key) else key
 	    value = memcache.get(mkey)
 	    if value is not None:
-		#info('cache hit: %s', mkey)
+		if verbose:
+		    info('cache hit: %s', mkey)
 		return value
 	    start = time()
 	    value = func(*args, **kwds)
@@ -69,14 +61,19 @@ def cache(key, ttl=60):
 	    except (Exception, ), exc:
 		error('%s', exc)
 	    else:
-		info('cache miss: %s; %2.2fs to compute', mkey, finish-start)
+		if verbose:
+		    info('cache miss: %s; %2.2fs to compute', mkey, finish-start)
 	    return value
-	return wrapper if (always_cache or not devel) else func
+	return wrapper if (features.always_cache or not features.devel) else func
     return deco
 
 
-@cache(lambda b, **c:b.filename, ttl=60*60)
-def render_body(template, **kwds):
+def render_body_cache_key(request, template, **params):
+    return 'template(uri=%s, filename=%s)' % (request.uri, template.filename, )
+
+
+@cache(render_body_cache_key, ttl=60*60)
+def render_body(request, template, **kwds):
     return template.render(**kwds)
 
 
@@ -88,7 +85,7 @@ class ContextLoader(object):
 	return self.load(key + '.pt')
 
     @classmethod
-    def build(cls, template_prefix, auto_reload=devel):
+    def build(cls, template_prefix, auto_reload=features.devel):
 	tpl = TemplateLoader(template_prefix, auto_reload=auto_reload)
 	return cls(tpl), tpl
 
@@ -103,7 +100,7 @@ class LocalHandler(RequestHandler):
 	return self.request.environ['PATH_INFO'].split('/')[-1]
 
     @staticmethod
-    def make_main(app, debug=devel):
+    def make_main(app, debug=features.devel):
 	return make_main(app, debug)
 
 
@@ -116,7 +113,7 @@ class ApiHandler(LocalHandler):
 
 
 class View(LocalHandler):
-    context_loader, template_loader = ContextLoader.build(template_dir)
+    context_loader, template_loader = ContextLoader.build(features.template_dir)
     default_css = ('site.css', )
     default_js = ('jquery.json-2.2.js', 'tools.js')
     related_css = ()
@@ -127,6 +124,7 @@ class View(LocalHandler):
 	    ('context', self.context_loader),
 	    ('controller', self),
 	    ('environ', self.request.environ),
+	    ('features', features),
 	    ('errors', {}),
     	    ('itertools', itertools),
 	    ('user', users.get_current_user()),
@@ -143,12 +141,13 @@ class View(LocalHandler):
 	logging.exception(exc)
 	self.error(500)
 	self.response.clear()
-        tb = traceback.format_exc() if self.is_devel() else None
+        tb = traceback.format_exc() if features.devel else None
 	self.render(self.template_loader.load('500.pt'), traceback=tb, stack='')
 
-    def is_devel(self):
-	return is_devel(self.request.environ)
+    def login_url_key(self):
+	return 'login-url:%s?%s' % (self.request.uri, self.request.query_string, )
 
+    @cache(lambda self, **kwds:self.login_url_key(), ttl=60*60, verbose=True)
     def login_url(self, dest='/profile-update', provider='steamcommunity.com/openid'):
 	next_url = parse_qs(self.request.query_string).get('next', [''])[0]
 	if next_url:
@@ -158,6 +157,10 @@ class View(LocalHandler):
 	    dest += '/' + next_url.encode('base64')
 	return users.create_login_url(dest_url=dest, federated_identity=provider)
 
+    def logout_url_key(self):
+	return 'logout-url:%s' % (self.request.uri, )
+
+    @cache(lambda self:self.logout_url_key(), ttl=60*60, verbose=True)
     def logout_url(self):
 	return users.create_logout_url(self.request.uri)
 
@@ -167,7 +170,7 @@ class View(LocalHandler):
 	params.update(self.default_context())
 	params.update(self.extra_context())
 	params.update(kwds)
-	self.response.out.write(render_body(template, **params))
+	self.response.out.write(render_body(self.request, template, **params))
 
     def template(self, name=None):
 	return self.template_loader.load(self.template_name if name is None else name)
@@ -194,13 +197,13 @@ def wsgi_local(app, debug):
     return local
 
 
-def make_main(app, debug=devel):
+def make_main(app, debug=features.devel):
     def main():
 	run_wsgi_app(wsgi_local(app, debug))
     return main
 
 
-def template_main(template_name, related_css=None, related_js=None, debug=devel):
+def template_main(template_name, related_css=None, related_js=None, debug=features.devel):
     return make_main(basic_view(template_name, related_css, related_js), debug)
 
 

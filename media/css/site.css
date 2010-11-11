@@ -106,7 +106,7 @@ div.detail-view, div.organizer-view {
 background-color:#2e2b2a;
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
-padding:0.5em;
+padding:0.25em;
 }
 
 div.organizer-view .outline, div.items-view .outline, div.item-view .outline {

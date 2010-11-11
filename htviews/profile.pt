@@ -37,6 +37,31 @@
 
 	<!-- outer wrapper for listings and bids -->
 	<div id="${slug}-main-pod">
+
+	    <div style="border:1px solid red" tal:condition="False">
+	    <!-- inner wrapper for msg drop  -->
+	    <div id="${slug}-leave-msg-pod" class="null"> <!-- require js to show -->
+		<h1>
+		    <span class="hilite">&nbsp;</span>
+		    <span id="${slug}-leave-msg-title">Leave a message for NNNN:</span>
+		</h1>
+		<div class="">
+		    <textarea id="${slug}-leave-msg-txt" name="${slug}-leave-msg-txt"></textarea>
+		</div>
+	    </div>
+
+	    <!-- inner wrapper for msg view  -->
+	    <div id="${slug}-view-msg-pod" class="null"> <!-- require js to show -->
+		<h1>
+		    <span class="hilite">&nbsp;</span>
+		    <span id="${slug}-view-msg-title">Messages for NNNN:</span>
+		</h1>
+		<div class="">
+		    <div class="${slug}-view-msg-seed">view seed</div>
+		</div>
+	    </div>
+	    </div>
+
 	    <!-- inner wrapper for listings -->
 	    <div id="${slug}-listings-pod">
 		<div class="init-seed null">

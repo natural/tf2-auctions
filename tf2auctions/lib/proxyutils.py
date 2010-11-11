@@ -23,7 +23,7 @@ class fetch:
 	)
 
     @classmethod
-    def profile(cls, id64, ttl=60*5, default='{}'):
+    def profile(cls, id64, ttl=60*10, default='{}'):
 	url = cls.config.url_profile % id64
 	val = memcache.get(url)
 	if val:
@@ -54,7 +54,7 @@ class fetch:
 	    return default
 
     @classmethod
-    def items(cls, id64, ttl=60*5, default='[]'):
+    def items(cls, id64, ttl=60*10, default='[]'):
 	url = cls.config.url_items % id64
 	val = memcache.get(url)
 	if val:
@@ -69,7 +69,7 @@ class fetch:
 	    return False, default
 
     @classmethod
-    def player_status(cls, id64, ttl=60*10, default='{}'):
+    def player_status(cls, id64, ttl=60*15, default='{}'):
 	url = cls.config.url_player_status % id64
 	val = memcache.get(url)
 	if val:
