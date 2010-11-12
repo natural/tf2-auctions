@@ -614,12 +614,14 @@ var listingReady = function(listing) {
     var owner = listing.owner
 
     $$('owner-link').text(owner.personaname)
-    $$('owner-avatar')
-	.attr('src', owner.avatarmedium)
-        .addClass('profile-status ' + owner.online_state)
+    if (owner.avatar) {
+	$$('owner-avatar')
+	    .attr('src', owner.avatarmedium)
+            .addClass('profile-status ' + owner.online_state)
+    }
     $$('owner-status').html(owner.message_state).addClass(owner.online_state)
     $$('owner-listings')
-	.attr('href', '/profile/' + owner.id64 + '?show=listings')
+	.attr('href', '/profile/' + owner.id64 + '#tabs-1')
     $$('owner-profile-link')
 	.attr('href', defaultProfileUrl(owner))
         .attr('title', 'Profile for ' + owner.personaname)
@@ -684,9 +686,11 @@ var listingReady = function(listing) {
 	$('.bid-status', clone).text(bid.status)
 	$('.bid-created', clone).text('' + new Date(bid.created))
 
-	$('.bid-avatar', clone)
-            .attr('src', bid.owner.avatar)
-	    .addClass('profile-status ' + bid.owner.online_state)
+	if (bid.owner && bid.owner.avatar) {
+	    $('.bid-avatar', clone)
+		.attr('src', bid.owner.avatar)
+		.addClass('profile-status ' + bid.owner.online_state)
+	}
 
 	$('.bid-avatar', clone).parent().attr('href', '/profile/'+bid.owner.id64)
 

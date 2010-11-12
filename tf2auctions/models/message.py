@@ -19,7 +19,9 @@ class PlayerMessage(db.Model):
 
     @classmethod
     def build(cls, source, target, message):
-	msg = cls(source=source, target=target, message=message)
+	source = user_steam_id(source)
+	## verify source + target
+	msg = cls(source=source, target=target, message=message[0:400])
 	msg.put()
 	inc(message_counter_cache_key(msg))
 	return msg

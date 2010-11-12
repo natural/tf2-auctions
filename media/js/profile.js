@@ -15,37 +15,22 @@ var setHeadings = function(prefix) {
 //
 var backpackShow = function() {
     siteMessage('Loading backpack...')
-    new BackpackLoader({
-	suffix: id64View(), success: backpackReady, error: backpackError
-    })
+    new BackpackLoader({suffix: id64View(), success: backpackReady})
 }
 
-var backpackHide = function() {
-    // nb:  this is a nice fadein/fadeout order
-    $$('backpack-hide').fadeOut(function() {
-	$$('backpack-inner').fadeOut(function() {
-	    $$('backpack-show').fadeIn()
-	})
-    })
-}
 
 var backpackReady = function(backpack) {
     siteMessage('Backpack loaded.').fadeOut()
-    $$('backpack-show').fadeOut(function() {
-	new ListingsLoader({
-	    suffix: id64View(),
-	    success: function(listings) {
-		new BidsLoader({
-		    suffix: id64View(),
-		    success: function(bids) {
-			putBackpack(backpack, listings, bids)
-		    }})
-	    }})
-    })
+    new ListingsLoader({
+	suffix: id64View(),
+	success: function(listings) {
+	    new BidsLoader({
+		suffix: id64View(),
+		success: function(bids) {
+		    putBackpack(backpack, listings, bids)
+		}})
+	}})
 }
-
-
-var backpackError = function(request, status, error) { }
 
 
 var putBackpack = function(backpack, listings, bids) {
@@ -73,7 +58,6 @@ var putBackpack = function(backpack, listings, bids) {
 	$$('backpack-inner td').hover(hoverItem, unhoverItem)
 	putBackpack.initOnce = true
     }
-    $$('backpack-hide').fadeIn()
     $$('backpack-inner').fadeIn()
     // stupid tweaks:
     $$('backpack-pod').width($$('backpack-pod').width()+32)
@@ -87,34 +71,25 @@ var putBackpack = function(backpack, listings, bids) {
 // bids
 //
 var bidsShow = function() {
-    siteMessage('Loading bids...')
-    new BidsLoader({suffix: id64View()+'?ext=1', success: bidsReady, error: bidsError})
-}
-
-var bidsHide = function() {
-   $$('bids-show').fadeIn(function() {
-       $$('bids-inner').fadeOut(function() {
-	   $$('bids-hide').fadeOut()
-       })
+    $$('bids-loading').text('Loading...').fadeIn(function() {
+	new BidsLoader({suffix: id64View()+'?ext=1', success: bidsReady, error: bidsError})
     })
 }
 
 var bidsReady = function(bids) {
     siteMessage('Bids loaded.').fadeOut()
-    $$('bids-show').fadeOut(function() {
+
 	$$('bids-inner').fadeIn(function() {
 	    if (!bids.length) {
 		$$('bids-none').text('Nothing recent.').slideDown()
-		$$('bids-hide').fadeOut()
 	    } else {
 		if (!bidsReady.initOnce) {
 		    bidsReady.initOnce = true
 		    putBids(bids)
 		}
-		$$('bids-hide').fadeIn()
 	    }
 	})
-    })
+    window.setTimeout(function() { $$('bids-loading').fadeAway() }, 500)
 }
 
 
@@ -153,32 +128,22 @@ var putBid = function(bid, clone) {
 // listings
 //
 var listingsShow = function() {
-    siteMessage('Loading listings...')
-    new ListingsLoader({
-	suffix: id64View()+'?ext=1', success: listingsReady, error: listingsError
+    $$('listings-loading').text('Loading...').fadeIn(function() {
+	new ListingsLoader({suffix: id64View()+'?ext=1', success: listingsReady, error: listingsError})
     })
 }
 
-var listingsHide = function() {
-   $$('listings-show').fadeIn(function() {
-       $$('listings-inner').fadeOut(function() {
-	   $$('listings-hide').fadeOut()
-       })
-   })
-}
 
 var listingsReady = function(listings) {
     siteMessage('Listings loaded.').fadeOut()
-    $$('listings-show').fadeOut(function() {
-	$$('listings-inner').fadeIn(function() {
-	    if (!listings.length) {
-		$$('listings-none').text('Nothing recent.').slideDown()
-	    } else {
-		$$('listings-hide').fadeIn()
-		putListings(listings)
-	    }
-	})
+    $$('listings-inner').fadeIn(function() {
+	if (!listings.length) {
+	    $$('listings-none').text('Nothing recent.').slideDown()
+	} else {
+	    putListings(listings)
+	}
     })
+    window.setTimeout(function() { $$('listings-loading').fadeAway() }, 500)
 }
 
 
@@ -244,10 +209,32 @@ var playerProfileError = function(request, status, error) {
     siteMessage().fadeAway()
 }
 
+var submitMessage = function() {
+    var txt = $$('leave-msg-txt').val()
+    var output = {message: txt, target: id64View()}
+    console.log('submit:', output)
+    var submitMessageOkay = function(results) {
+	console.log('success', results)
+    }
+    var submitMessageError = function(request, status, error) {
+	console.error('error', request, status, error)
+    }
+    $.ajax({
+	url: '/api/v1/auth/leave-message',
+	type: 'POST',
+	dataType:'json',
+	data: $.toJSON(output),
+	success: submitMessageOkay,
+	error: submitMessageError
+    })
+}
+
 
 var otherProfileOkay = function(profile) {
     $$('leave-msg-title').text('Leave a message for {0}:'.fs(profile.personaname))
+    $$('leave-msg-txt').width('50%').height(150)
     $$('leave-msg-pod').slideDown()
+    $$('leave-msg-submit').click(submitMessage)
     playerProfileOkay(profile)
 }
 
@@ -264,7 +251,7 @@ var authProfileOkay = function(profile) {
 	// authorized user viewing their own profile
 	setHeadings('My')
 	$$('is-you').text('This is you!').slideDown()
-	$$('view-msg-title').text('Messages for you:')
+	$$('view-msg-title').text('Incoming Messages')
 	$$('view-msg-pod').slideDown()
 	playerProfileOkay(profile)
     }
@@ -298,21 +285,22 @@ var schemaReady = function(schema) {
     $('.listing-view').live('mouseout', function() { $(this).removeClass('listing-hover') })
 }
 
+var messagesShow = function() {
+    console.log('showing msgs....')
+}
+
+
+var settingsShow = function() {
+}
+
+
+var tabCallbacks = {0: messagesShow, 1: listingsShow, 2: bidsShow, 3: backpackShow, 4: settingsShow}
 
 // document loaded -> load schema
 $(document).ready(function() {
     siteMessage('Loading...')
-    new SchemaLoader({success: function(schema) {
-	schemaReady(schema)
-	$$('backpack-hide').click(backpackHide)
-	$$('backpack-show').click(backpackShow)
-	$$('bids-hide').click(bidsHide)
-	$$('bids-show').click(bidsShow)
-	$$('listings-hide').click(listingsHide)
-	$$('listings-show').click(listingsShow)
-
-	// stupid fracking browsers don't do this right.  arg.
-	if (window.location.search.indexOf('show=listings')>-1) { listingsShow() }
-	if (window.location.search.indexOf('show=backpack')>-1) { backpackShow() }
-    }})
+    $('#tabs').tabs({
+	show: function(event, ui) {if (ui.index in tabCallbacks) { tabCallbacks[ui.index]() }}
+    })
+    new SchemaLoader({success: schemaReady})
 })

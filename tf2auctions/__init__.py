@@ -9,7 +9,7 @@ class features:
     always_cache = False
     app_dir = os.path.abspath(os.path.join(os.path.split(__file__)[0], '../'))
     devel = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
-    profile_settings = devel # True later when ready
+    profile_settings = False #devel # True later when ready
     subscriber_accounts = devel # True later when ready
     template_dir = os.path.join(app_dir, 'htviews')
     version = yaml.load(open(os.path.join(app_dir, 'app.yaml')))['version']

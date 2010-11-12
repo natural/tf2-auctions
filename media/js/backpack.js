@@ -108,8 +108,10 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		}
 	    }
 	    if ((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) {
-		img.before('<span class="quantity">' + item['quantity'] + '</span>')
-		img.css('margin-top', '-1em')
+		if (img) {
+		    img.before('<span class="quantity">' + item['quantity'] + '</span>')
+		    img.css('margin-top', '-1em')
+		}
 	    }
 	})
 	$('#unplaced-backpack-' + slug + ', #backpack-' + slug + ' label.null').toggle(newIdx > -1)
