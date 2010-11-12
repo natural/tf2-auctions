@@ -9,16 +9,15 @@
         <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
     </metal:slot>
     <metal:slot fill-slot="style">
-	<metal:assoc tal:repeat="link controller.default_css + controller.related_css">
-            <link rel="stylesheet" href="/media/css/${link}" type="text/css" media="screen, projection" />
+	<metal:assoc tal:repeat="link controller.iter_css()">
+            <link rel="stylesheet" href="${link}" type="text/css" media="screen, projection" />
 	</metal:assoc>
         <!--[if lt IE 10]><link rel="stylesheet" href="/media/css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <metal:slot define-slot="style" />
     </metal:slot>
     <metal:slot fill-slot="script">
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-	<metal:assoc tal:repeat="link controller.default_js + controller.related_js">
-	    <script type="text/javascript" src="/media/js/${link}"></script>
+	<metal:assoc tal:repeat="link controller.iter_js()">
+	    <script type="text/javascript" src="${link}"></script>
 	</metal:assoc>
         <metal:slot define-slot="script" />
     </metal:slot>

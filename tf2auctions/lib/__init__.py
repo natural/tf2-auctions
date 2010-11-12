@@ -113,9 +113,27 @@ class ApiHandler(LocalHandler):
 
 class View(LocalHandler):
     context_loader, template_loader = ContextLoader.build(features.template_dir)
+    media_css_path = '/media/css'
+    media_js_path = '/media/js'
+
+    base_css = ()
     default_css = ('site.css', )
-    default_js = ('jquery.json-2.2.js', 'tools.js')
     related_css = ()
+
+    ## javascripts for every template; names are not modified
+    base_js = (
+	'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
+	'%s/%s' % (media_js_path, 'jquery.json-2.2.js'),
+    )
+
+    ## javascripts for every template; values are modified to include
+    ## script media prefix and app version number
+    default_js = (
+	'tools.js',
+    )
+
+    ## javascripts specific to a view subclass; values are modified in the
+    ## same manner as scripts in default_js
     related_js = ()
 
     def default_context(self):
@@ -142,6 +160,28 @@ class View(LocalHandler):
 	self.response.clear()
         tb = traceback.format_exc() if features.devel else None
 	self.render(self.template_loader.load('500.pt'), traceback=tb, stack='')
+
+
+    def iter_css(self, css_path=None):
+	prefix = self.media_css_path if css_path is None else css_path
+	for css in self.base_css:
+	    yield css
+	for css in self.default_css:
+	    yield '%s/%s' % (prefix, css)
+	for css in self.related_css:
+	    yield '%s/%s' % (prefix, css)
+
+    def iter_js(self, js_path=None):
+	prefix = self.media_js_path if js_path is None else js_path
+	version = features.version
+	for js in self.base_js:
+	    yield js
+	## uncertain if this is enough to get the browser to load new
+	## js files correctly 100% of the time:
+	for js in self.default_js:
+	    yield '%s/%s?v=%s' % (prefix, js, version, )
+	for js in self.related_js:
+	    yield '%s/%s?v=%s' % (prefix, js, version, )
 
     def login_url_key(self):
 	return 'login-url:%s?%s' % (self.request.uri, self.request.query_string, )

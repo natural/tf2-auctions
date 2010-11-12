@@ -12,6 +12,10 @@ handlers:
     upload: media/ttf/(.*\.(ttf|eot))
     url: /media/ttf/(.*\.(ttf|eot))
 -   expiration: 1h
+    static_files: media/js/\1.js
+    upload: media/js/(.*)(-)(\d+)\.js
+    url: /media/js/(.*)(-)(\d+)\.js
+-   expiration: 1h
     static_files: media/\1
     upload: media/(.*\.(css|js|png|gif))
     url: /media/(.*\.(css|js|png|gif))
@@ -66,4 +70,4 @@ handlers:
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 55
+version: 56

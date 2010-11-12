@@ -29,6 +29,7 @@ dist: $(dist_css) $(dist_js)
 	@cp -r tf2auctions $(dist_dir)
 	@cd $(dist_dir) && appcfg.py update .
 	appcfg.py set_default_version .
+	git commit -a -m "make dist."
 	git tag v$(shell python -c "import yaml;d=yaml.load(open('app.yaml')); print d['version']")
 
 

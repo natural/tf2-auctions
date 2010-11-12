@@ -579,6 +579,7 @@ var profileReady = function(profile, listing) {
 			success: function (results) {
 			    $$('auth-bid-pod').fadeOut()
 			    $$('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
+			    $$('bidcount').text((listing.bid_count-1) ? ('Bids (' + (listing.bid_count-1) + ')') : 'No Bids')
 			    $.each($$('bids div.organizer-view'), function(idx, ele) {
 				ele = $(ele)
 				if (ele.data('bid') && ele.data('bid').key == bid.key) {
