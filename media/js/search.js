@@ -134,10 +134,14 @@ var showListing = function(listing, clone) {
     $('.listing-owner', clone).text(listing.owner.personaname)
     $('.listing-owner', clone).parent().attr('href', defaultProfileUrl(listing.owner))
 
+
     $('.listing-avatar', clone)
 	.attr('src', listing.owner.avatar)
-        .addClass('profile-status ' + listing.owner.online_state)
     $('.listing-avatar', clone).parent().attr('href', defaultProfileUrl(listing.owner))
+
+    new StatusLoader({suffix: listing.owner.id64, success: function(status) {
+	$('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
+    }})
 
     $('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
     var next = 0

@@ -190,19 +190,22 @@ var putListing = function(listing, clone) {
 var playerProfileOkay = function(profile) {
     setTitle(profile.personaname)
     siteMessage().fadeOut()
-
     $$('title').text(profile.personaname)
-    $$('avatar').attr('src', profile.avatarmedium).addClass(profile.online_state)
-    $$('status').html(profile.message_state).addClass(profile.online_state).slideDown()
-
+    if (profile.avatarmedium) {
+	$$('avatar').attr('src', profile.avatarmedium)
+    }
+    new StatusLoader({
+	suffix: profile.id64, success: function(status) {
+	    $$('avatar').addClass(status.online_state)
+	    $$('status').html(status.message_state).addClass(status.online_state).slideDown()
+	}
+    })
     $$('badge').slideDown()
     $('.init-seed').fadeIn()
-
     var ownerid = profile.steamid
     id64Internal = profile.steamid
     $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
     $$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
-
 }
 
 var playerProfileError = function(request, status, error) {

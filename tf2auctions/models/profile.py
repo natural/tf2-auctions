@@ -130,15 +130,17 @@ class PlayerProfile(db.Expando):
 	res = {'id64':id64, 'rating':self.get_rating(), 'custom_name':self.custom_name}
 	for key in self.dynamic_properties():
 	    res[key] = getattr(self, key)
-	try:
-	    status = fetch.player_status(id64)
-	    if isinstance(status, (basestring, )):
-		status = {} # huh?
-	except (Exception, ), exc:
-	    ## already logged by fetch class
-	    status = {}
-	res['online_state'] = status.get('online_state', 'offline')
-	res['message_state'] = status.get('message_state', '')
+	if 0:
+	    try:
+		status = fetch.player_status(id64)
+		if isinstance(status, (basestring, )):
+		    status = {} # huh?
+	    except (Exception, ), exc:
+		## already logged by fetch class
+		status = {}
+	    res['online_state'] = status.get('online_state', 'offline')
+	    res['message_state'] = status.get('message_state', '')
+	res['online_state'] = res['message_state'] = ''
 	return res
 
     def add_rating(self, value):

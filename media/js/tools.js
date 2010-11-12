@@ -60,9 +60,12 @@ var showProfile = function(profile) {
     $('#content-avatar-pod')
         .html(makeImg({src: profile.avatar, width: 32, height: 32}))
         .show()
-    $('#content-avatar-pod img').addClass(profile.online_state)
-    $('#content-avatar-pod img').addClass('profile-status')
-
+    new StatusLoader({
+	suffix: profile.id64, success: function(status) {
+	    $('#content-avatar-pod img').addClass(status.online_state)
+	    $('#content-avatar-pod img').addClass('profile-status')
+	}
+    })
 }
 
 
@@ -87,11 +90,13 @@ var makeLoader = function(config) {
 	    cb(req, status, err)
         }
         var res = cache[url]
+	var async = typeof(config.async) == 'undefined' ? true : config.async
         if (!res) {
-            console.log(name, 'loading', url)
+            console.log("{0} url='{1}' async={2}".fs(name, url, async))
 	    $.ajax({url: url,
+		    async: async,
 		    dataType: (config.dataType||'json'),
-		    jsonpCallback: (config.jsonpCallback||null),
+		    jsonpCallback: (config.jsonpCallback || null),
 		    cache: true,
 		    success: okay,
 		    error: error
@@ -126,6 +131,11 @@ var SchemaLoader = makeLoader({
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsSchemaLoader',
     name: 'SchemaLoader'})
+
+var StatusLoader = makeLoader({
+    prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
+    dataType: 'jsonp',
+    name: 'StatusLoader'})
 
 var ListingLoader = makeLoader({
     prefix: '/api/v1/public/listing/',
