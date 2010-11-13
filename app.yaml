@@ -70,4 +70,4 @@ handlers:
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 58
+version: 59

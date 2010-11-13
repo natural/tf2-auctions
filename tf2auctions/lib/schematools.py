@@ -6,7 +6,7 @@ known_categories = [
     ('hat', 'Hats'),
     ('weapon', 'Weapons'),
     ('craft_bar', 'Metal'),
-    ('bundle', 'Bundles'),
+#    ('bundle', 'Bundles'),
     ('craft_token', 'Tokens'),
     ('supply_crate', 'Crates'),
     ('tool', 'Tools'),
