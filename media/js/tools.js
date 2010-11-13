@@ -145,6 +145,10 @@ var ListingsLoader = makeLoader({
     prefix: '/api/v1/public/listings/',
     name: 'ListingLoader'})
 
+var MessagesLoader = makeLoader({
+    prefix: '/api/v1/auth/list-messages',
+    name: 'MessagesLoader'})
+
 var SearchLoader = makeLoader({
     prefix: '/api/v1/public/search',
     name: 'SearchLoader'})

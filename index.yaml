@@ -191,3 +191,9 @@ indexes:
   properties:
   - name: status
   - name: expires
+
+- kind: PlayerMessage
+  properties:
+  - name: target
+  - name: created
+    direction: desc

@@ -59,7 +59,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	    animate: true,
 	    max: 30,
 	    min:1,
-	    value: 30,
+	    value: 15,
 	    change: sliderChange,
 	    slide: sliderChange
 	})

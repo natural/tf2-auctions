@@ -11,30 +11,110 @@ var setHeadings = function(prefix) {
 
 
 //
+// messages
+//
+var messagesReady = function(msgs) {
+    if (!putMessages.initOnce) {
+	putMessages(msgs)
+	putMessages.initOnce = true
+    }
+}
+
+
+var putMessages = function(msgs) {
+    var msgCount = msgs.messages.length
+    var showEmpty = function () {
+	$$('msg-none').text('No messages.  Too bad.').fadeIn()
+	$$('view-msg-count').text('')
+    }
+    var showCount = function (c) { $$('view-msg-count').text('({0})'.fs(c) ) }
+    var showCounter = function(c) {
+	if (c) {
+	    showCount(msgCount)
+	} else {
+	    showEmpty()
+	}
+    }
+    showCounter(msgCount)
+    if (!msgCount) { return }
+
+    $.each(msgs.messages, function(idx, msg) {
+	var clone = $$('view-msg-pod div.prototype').clone()
+	$('.profile-msg-text-seed', clone).text(msg.message)
+	new StatusLoader({
+	    suffix: msg.source,
+	    success: function(status) {
+		var link = '<a href="/profile/{0}">{1}</a>'
+		if (status.avatar_icon) {
+		    var img = '<img src="{0}" class="msg-avatar" />'.fs(status.avatar_icon)
+		    $('.profile-msg-sender-name', clone)
+			.append(link.fs(msg.source, img))
+		    $('.profile-msg-sender-name img', clone)
+			.addClass('profile-status ' + status.online_state)
+		}
+		$('.profile-msg-sender-name', clone)
+		    .append('{0} wrote:'.fs( link.fs(msg.source, status.name)) )
+	    }
+	})
+	$('.profile-msg-created-seed', clone).text('Left: {0}'.fs(msg.created))
+	clone.removeClass('null prototype')
+	$('.profile-msg-remove', clone).click(function (e) {
+	    var removeMessageOkay = function(results) {
+		msgCount -= 1
+		showCounter(msgCount)
+	    }
+	    clone.slideUp(function() {
+		$.ajax({
+		    url: '/api/v1/auth/remove-message',
+		    type: 'POST',
+		    dataType:'json',
+		    data: $.toJSON({key: msg.key}),
+		    success: removeMessageOkay,
+		})
+	    })
+	    console.log('remove msg:', msg.key)
+	})
+	$$('view-msg-pod').append(clone)
+	console.log('showing msg:', msg)
+    })
+    $$('view-msg-pod').slideDown()
+}
+
+
+//
 // backpack
 //
 var backpackShow = function() {
     siteMessage('Loading backpack...')
+    $$('backpack-loading').text('Loading...').fadeIn()
     new BackpackLoader({suffix: id64View(), success: backpackReady})
 }
 
 
 var backpackReady = function(backpack) {
     siteMessage('Backpack loaded.').fadeOut()
+
+    if (!putBackpack.initOnce) {
+	putBackpack.initOnce = true
     new ListingsLoader({
 	suffix: id64View(),
 	success: function(listings) {
 	    new BidsLoader({
 		suffix: id64View(),
 		success: function(bids) {
-		    putBackpack(backpack, listings, bids)
-		}})
-	}})
+		    $$('backpack-loading').fadeOut( function () {
+			$$('backpack-loading').detach() // lol wut
+			putBackpack(backpack, listings, bids)
+		    })
+		}
+	    })
+	}
+    })
+    }
 }
 
 
 var putBackpack = function(backpack, listings, bids) {
-    if (!putBackpack.initOnce) {
 	var schema = new SchemaTool()
 	var tipTool = new TooltipView(schema)
 	var bpNav = new BackpackNavigator('profile')
@@ -57,7 +137,7 @@ var putBackpack = function(backpack, listings, bids) {
 	schema.setImages()
 	$$('backpack-inner td').hover(hoverItem, unhoverItem)
 	putBackpack.initOnce = true
-    }
+
     $$('backpack-inner').fadeIn()
     // stupid tweaks:
     $$('backpack-pod').width($$('backpack-pod').width()+32)
@@ -213,14 +293,30 @@ var playerProfileError = function(request, status, error) {
 }
 
 var submitMessage = function() {
-    var txt = $$('leave-msg-txt').val()
+    var txt = $$('leave-msg-txt').val().slice(0,400)
+    if (!txt) {
+	$$('leave-msg-form').slideUp(function() {
+	    $$('leave-msg-title').text('Empty message?  Really?  Nothing sent!')
+	})
+	return
+    }
     var output = {message: txt, target: id64View()}
-    console.log('submit:', output)
     var submitMessageOkay = function(results) {
-	console.log('success', results)
+	$$('leave-msg-form').slideUp(function() {
+	    $$('leave-msg-title').text('Message sent!')
+	})
     }
     var submitMessageError = function(request, status, error) {
-	console.error('error', request, status, error)
+	if (request.status==500) {
+	    try {
+		var err = $.parseJSON( request.responseText )
+		if (err.exception == 'Mailbox full') {
+		    $$('leave-msg-form').slideUp(function() {
+			$$('leave-msg-title').text('Your message was not sent!  Target mailbox is full.')
+		    })
+		}
+	    } catch (e) {}
+	}
     }
     $.ajax({
 	url: '/api/v1/auth/leave-message',
@@ -249,13 +345,21 @@ var authProfileOkay = function(profile) {
     if (id64 != profile.id64 && id64 != profile.custom_name ) {
 	// authorized user viewing another profile; load separately:
 	setHeadings()
+
 	new ProfileLoader({suffix: id64, success: otherProfileOkay, error: playerProfileError})
     } else {
 	// authorized user viewing their own profile
 	setHeadings('My')
 	$$('is-you').text('This is you!').slideDown()
-	$$('view-msg-title').text('Incoming Messages')
-	$$('view-msg-pod').slideDown()
+	$$('view-msg-title').text('My Messages')
+	new MessagesLoader({
+	    success: function(messages) {
+		console.log('your messages:', messages)
+		messagesReady(messages)
+		$$('view-msg-pod').slideDown()
+	    }
+	})
+	$$('settings-tab').fadeIn()
 	playerProfileOkay(profile)
     }
     showProfile(profile)
@@ -275,6 +379,7 @@ var authProfileError = function(request, status, error) {
 
 // schema loaded -> (maybe) load auth profile
 var schemaReady = function(schema) {
+    // change order around to load given profile first!
     new AuthProfileLoader({success: authProfileOkay, error:authProfileError})
 
     var st = new SchemaTool(schema)
@@ -305,5 +410,6 @@ $(document).ready(function() {
     $('#tabs').tabs({
 	show: function(event, ui) {if (ui.index in tabCallbacks) { tabCallbacks[ui.index]() }}
     })
+    $$('settings-tab').hide() // shown elsewhere
     new SchemaLoader({success: schemaReady})
 })

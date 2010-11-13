@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import itertools
-
 from cgi import parse_qs
 from logging import info, warn
 from re import search
@@ -137,6 +135,7 @@ class View(LocalHandler):
     related_js = ()
 
     def default_context(self):
+	import itertools
 	return (
 	    ('context', self.context_loader),
 	    ('controller', self),
@@ -164,20 +163,19 @@ class View(LocalHandler):
 
     def iter_css(self, css_path=None):
 	prefix = self.media_css_path if css_path is None else css_path
+	version = features.version
 	for css in self.base_css:
 	    yield css
 	for css in self.default_css:
-	    yield '%s/%s' % (prefix, css)
+	    yield '%s/%s?v=%s' % (prefix, css, version, )
 	for css in self.related_css:
-	    yield '%s/%s' % (prefix, css)
+	    yield '%s/%s?v=%s' % (prefix, css, version, )
 
     def iter_js(self, js_path=None):
 	prefix = self.media_js_path if js_path is None else js_path
 	version = features.version
 	for js in self.base_js:
 	    yield js
-	## uncertain if this is enough to get the browser to load new
-	## js files correctly 100% of the time:
 	for js in self.default_js:
 	    yield '%s/%s?v=%s' % (prefix, js, version, )
 	for js in self.related_js:

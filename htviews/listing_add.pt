@@ -33,7 +33,7 @@
 		<label for="${slug}-duration">Duration:</label>
  		<div class="message null"><div class="error" id="${slug}-duration-slider-error"></div></div>
 		<div class="center">
-		    <div id="${slug}-duration">30 days</div>
+		    <div id="${slug}-duration">15 days</div>
 		    <div id="${slug}-duration-slider" name="duration"></div>
 		    <div class="clear"></div>
 		</div>

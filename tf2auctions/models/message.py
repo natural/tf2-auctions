@@ -5,6 +5,7 @@ from google.appengine.ext import db
 
 from tf2auctions.lib import js_datetime, user_steam_id
 from tf2auctions.models.counters import inc, dec
+#from tf2auctions.models.profile import PlayerProfile
 
 
 def message_counter_cache_key(msg):
@@ -19,7 +20,9 @@ class PlayerMessage(db.Model):
 
     @classmethod
     def build(cls, source, target, message):
-	source = user_steam_id(source)
+	if cls.is_full(target):
+	    raise Exception('Mailbox full')
+	source = user_steam_id(source) if hasattr(source, 'nickname') else source
 	## verify source + target
 	msg = cls(source=source, target=target, message=message[0:400])
 	msg.put()
@@ -27,21 +30,29 @@ class PlayerMessage(db.Model):
 	return msg
 
     @classmethod
-    def remove(cls, key):
-	msg = cls.get(key)
-	if msg:
-	    msg.delete()
-	    dec(message_counter_cache_key(msg))
+    def remove(cls, key, target):
+	key = db.Key(key)
+	target = user_steam_id(target) if hasattr(target, 'nickname') else target
+	msg = PlayerMessage.all().filter('__key__ =', key).filter('target =', target).get()
+	msg.delete()
+	dec(message_counter_cache_key(msg))
 
     @classmethod
-    def get_for_user(cls, user, limit=10):
+    def get_for_user(cls, user, limit=100):
 	user = user_steam_id(user) if hasattr(user, 'nickname') else user
 	return cls.all().filter('target =', user).order('-created').fetch(limit)
+
+    @classmethod
+    def is_full(cls, target, limit=100):
+	target = user_steam_id(target) if hasattr(target, 'nickname') else target
+	count = cls.all(keys_only=True).filter('target =', target).count()
+	return count >= limit
 
     def encode_builtin(self):
 	return {
 	    'created': js_datetime(self.created),
 	    'message': self.message,
-	    'source': PlayerMessage.get_by_id64(self.source),
-	    'target': self.target, # don't bother with a lookup on the target
+	    'key' : str(self.key()),
+	    'source': self.source, # don't bother with a profile lookup
+	    'target': self.target, # don't bother with a profile lookup
 	}
