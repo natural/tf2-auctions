@@ -142,18 +142,22 @@
 
 
 		<div id="tabs-4">
-		    There isn't anything here yet.
+		    <h1>
+			<span class="hilite">&nbsp;</span><span id="${slug}-settings-title">My Settings</span>
+		    </h1>
+
+		    <div class="" id="settings-pod">
+			<metal:include
+			     tal:define="schema settings_schema"
+			     metal:use-macro="context.form_parts.macros.schema_form" />
+			<div class="">
+			    <a href="#" class="button" onclick="return false" id="settings-save">Save</a>
+			</div>
+		    </div>
 		</div>
 
-
-
 	    </div>
-
-
 	</div>
-
-
-
 
 </metal:fill>
 </body>

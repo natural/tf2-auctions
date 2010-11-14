@@ -116,3 +116,33 @@ margin-right:0.25em;
 border:2px solid;
 border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
 }
+
+#tabs-4 label { display:inline }
+
+div.fields h2 {
+margin-top:1.75em;
+}
+
+div.fields:first-child h2 {
+margin-top:0.5em;
+}
+
+div.field  {
+margin-top:0.25em;
+margin-bottom:1.5em;
+}
+
+
+div.field div.field-container {
+margin-left:1.5em;
+}
+
+#tabs-4 #email {
+width:32em;
+height:2em;
+margin-bottom:0.25em;
+}
+
+div.help {
+width:35%;
+}

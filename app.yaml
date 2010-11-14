@@ -11,11 +11,7 @@ handlers:
     static_files: media/ttf/\1
     upload: media/ttf/(.*\.(ttf|eot))
     url: /media/ttf/(.*\.(ttf|eot))
--   expiration: 1h
-    static_files: media/js/\1.js
-    upload: media/js/(.*)(-)(\d+)\.js
-    url: /media/js/(.*)(-)(\d+)\.js
--   expiration: 1h
+-   expiration: 1d 1h
     static_files: media/\1
     upload: media/(.*\.(css|js|png|gif))
     url: /media/(.*\.(css|js|png|gif))
