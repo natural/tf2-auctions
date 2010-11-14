@@ -39,6 +39,43 @@ var lazy = function(def) {
 
 var pathTail = function() { return window.location.pathname.split('/').pop() }
 
+
+var itemUtil = function(item, schema) {
+    return {
+	canTrade: function() {
+	    return !(item.flag_cannot_trade) && !(item.flag_active_listing) && !(item.flag_active_bid)
+	},
+	equippedTag: function() {
+	    return '<span style="display:none" class="badge equipped">Equipped</span>'
+	},
+	quantityTag: function(q) {
+	    return '<span style="display:none" class="badge quantity">{0}</span>'.fs(q)
+	},
+	img: function() {
+	    return makeImg({src: schema.itemDefs()[item['defindex']]['image_url'],
+			    style:'display:none', width:64, height:64})
+	},
+	isEquipped: function() { return (item['inventory'] & 0xff0000) != 0 },
+	pos:  function() { return (item.pos) ? item.pos : item['inventory'] & 0xFFFF  },
+	painted: function () {
+	    var attrs = (item.attributes || {}).attribute || []
+	    var paint = 0
+	    $.each( $(attrs), function (idx, attr) {
+		if (attr.defindex==142) { paint = attr.float_value }
+	    })
+	    return paint
+	},
+	effect: function() {
+	    var attrs = (item.attributes || {}).attribute || []
+	    var effect = 0
+	    $.each( $(attrs), function (idx, attr) {
+		if (attr.defindex==134) { effect = attr.float_value }
+	    })
+	    return effect
+	}
+    }
+}
+
 var makeImg = function(options) {
     var src = options['src'] ? options['src'] : '/media/img/missing.png'
     var width = '' + (options['width'] || 32)
@@ -162,6 +199,7 @@ var BidsLoader = makeLoader({
     name: 'BidsLoader'})
 
 
+
 var SchemaTool = function(schema) {
     var self = this
 
@@ -192,7 +230,9 @@ var SchemaTool = function(schema) {
         // replace any items on the page that have the "schema
         // definition index replace" class with the url of the item
         // specified in the content.
-        var img = function(url) { return makeImg({src:url, width:64, height:64}) }
+        var itemImg = function(url) { return makeImg({src:url, width:64, height:64}) }
+	var toolDefs = self.tools(), actionDefs = self.actions()
+
         $('.defindex-lazy').each(function(index, tag) {
             var data = $.parseJSON($(tag).text())
 	    if (!data) { return }
@@ -201,10 +241,39 @@ var SchemaTool = function(schema) {
 	    } else {
                 var defindex = data
             }
-	    var item = self.itemDefs()[defindex]
-            if (!item) { return }
-            $(tag).data('node', asPlayerItem(data))
-	    $(tag).html(img(item['image_url'])).fadeIn()
+	    var def = self.itemDefs()[defindex]
+            if (!def) { return }
+	    var pitem = asPlayerItem(data)
+            $(tag).data('node', pitem)
+	    $(tag).html(itemImg(def['image_url'])).fadeIn()
+	    var iutil = itemUtil(pitem, schema)
+	    var img = $('img', tag)
+
+	    // if settings.show_equipped_tag_or_whatever
+		if (iutil.isEquipped()) {
+		    img.addClass('equipped equipped-'+defindex).after(iutil.equippedTag())
+		    img.removeClass('unequipped-'+defindex)
+		    $('.equipped', tag).fadeIn()
+		} else {
+		    img.addClass('unequipped-'+defindex)
+		    img.removeClass('equipped equipped-'+defindex)
+		}
+
+	    // if settings.show_equipped_paint_jewels_or_whatever
+		var paintColor = iutil.painted()
+		if (paintColor) {
+		    img.after('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
+		}
+
+	    // if settings.show_item_quantity_tags_or_whatever
+	    if ((defindex in toolDefs) || (defindex in actionDefs)) {
+		if (img) {
+		    img.before(iutil.quantityTag(pitem['quantity']))
+		    $('.quantity', tag).fadeIn()
+		}
+	    }
+
+
 	})
     }
 
@@ -276,7 +345,8 @@ var asPlayerItem = function(i) {
 	defindex: i.defindex,
 	level: i.level || '',
 	quality: i.quality || i.item_quality,
-	quantity: i.quantity || 1
+	quantity: i.quantity || 1,
+	inventory: i.inventory || 0
     }
 }
 

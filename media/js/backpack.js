@@ -16,40 +16,6 @@ itemEffects = {
 }
 
 
-var itemUtil = function(item, schema) {
-    return {
-	canTrade: function() {
-	    return !(item.flag_cannot_trade) && !(item.flag_active_listing) && !(item.flag_active_bid)
-	},
-	equippedTag: function() {
-	    return '<span style="display:none" class="equipped">Equipped</span>'
-	},
-	img: function() {
-	    return makeImg({src: schema.itemDefs()[item['defindex']]['image_url'],
-			    style:'display:none', width:64, height:64})
-	},
-	isEquipped: function() { return (item['inventory'] & 0xff0000) != 0 },
-	pos:  function() { return (item.pos) ? item.pos : item['inventory'] & 0xFFFF  },
-	painted: function () {
-	    var attrs = (item.attributes || {}).attribute || []
-	    var paint = 0
-	    $.each( $(attrs), function (idx, attr) {
-		if (attr.defindex==142) { paint = attr.float_value }
-	    })
-	    return paint
-	},
-	effect: function() {
-	    var attrs = (item.attributes || {}).attribute || []
-	    var effect = 0
-	    $.each( $(attrs), function (idx, attr) {
-		if (attr.defindex==134) { effect = attr.float_value }
-	    })
-	    return effect
-	}
-    }
-}
-
-
 var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
     var self = this
 
@@ -109,8 +75,7 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 	    }
 	    if ((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) {
 		if (img) {
-		    img.before('<span class="quantity">' + item['quantity'] + '</span>')
-		    img.css('margin-top', '-1em')
+		    img.before('<span class="badge quantity">' + item['quantity'] + '</span>')
 		}
 	    }
 	})
@@ -219,7 +184,7 @@ var BackpackChooser = function(options) {
 	    $(this).append(item)
 	    item.data('original-cell', ui.draggable)
 	    $('img', this).css('margin-top', '0')
-	    var others = $("span.equipped:only-child, span.quantity:only-child", ui.draggable)
+	    var others = $("span.equipped:only-child, span.quantity:only-child, span.jewel", ui.draggable)
 	    $(this).append(others)
 	    $('#' + chooserSlug + '-chooser td, #backpack-' + backpackSlug + ' td').removeClass('selected outline')
 	    self.updateCount()

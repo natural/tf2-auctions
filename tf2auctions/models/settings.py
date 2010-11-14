@@ -43,7 +43,7 @@ class PlayerSettings(db.Expando):
 		    with an extra badge."""
 	    },
 	    {
-		'id':'badge-usecount', 'type':bool, 'label':'Show Item Use Count Badge',
+		'id':'badge-usecount', 'type':bool, 'label':'Show Item Use Count',
 		'widget':'checkbox', 'default':True,
 		'help':"""
 		    When enabled, backpack items with a specific
@@ -57,56 +57,17 @@ class PlayerSettings(db.Expando):
 		'widget':'checkbox', 'default':True,
 		'help':"""
 		    When enabled, backpack items that have been
-		    painted will have an additional splash of paint.
+		    painted will have an additional color icon.
 		    """
 	    },
 	    {
-		'id':'hilight-unique', 'type':'bool', 'label':'Highlight Unique Items',
+		'id':'higlight-rarity', 'type':bool, 'label':'Hilight Items by Rarity',
 		'widget':'checkbox', 'default':False,
 		'help':"""
-		    When enabled, unique backpack items will be shown
-		    with a yellow border and shading, very much like
-		    they're shown in-game."""
-	    },
-	    {
-		'id':'hilight-unique', 'type':'bool', 'label':'Highlight Unique Items',
-		'widget':'checkbox', 'default':False,
-		'help':"""
-		    When enabled, unique backpack items will be shown
-		    with a yellow border and shading, very much like
-		    they're shown in-game."""
-	    },
-	    {
-		'id':'hilight-unusual', 'type':'bool', 'label':'Highlight Unusual Items',
-		'widget':'checkbox', 'default':False,
-		'help':"""
-		    When enabled, unusual backpack items will be shown
-		    with a purple border and shading, very much like
-		    they're shown in-game."""
-	    },
-	    {
-		'id':'hilight-community', 'type':'bool', 'label':'Highlight Community Items',
-		'widget':'checkbox', 'default':False,
-		'help':"""
-		    When enabled, community backpack items will be shown
-		    with a green border and shading, very much like
-		    they're shown in-game."""
-	    },
-	    {
-		'id':'hilight-valve', 'type':'bool', 'label':'Highlight Developer Items',
-		'widget':'checkbox', 'default':False,
-		'help':"""
-		    When enabled, developer backpack items will be shown
-		    with a magenta border and shading, very much like
-		    they're shown in-game."""
-	    },
-	    {
-		'id':'higlight-vintage', 'type':'bool', 'label':'Hilight Vintage Items',
-		'widget':'checkbox', 'default':False,
-		'help':"""
-		    When enabled, vintage backpack items will be shown
-		    with a blue border and shading, very much like
-		    they're shown in-game."""
+		    When enabled, backpack items will be bordered and
+		    shaded with their specific rarity color, very much
+		    like the in-game interface.
+		"""
 	    },
 	]),
 

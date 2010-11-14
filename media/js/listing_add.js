@@ -176,7 +176,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	var cell = source.parent().parent()
 	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	source.data('original-cell', cell)
-	var others = $('span.equipped, span.quantity', cell)
+	var others = $('span.equipped, span.quantity, span.jewel', cell)
 	target.prepend(source)
 	target.append(others)
 	bpChs.updateCount()
@@ -187,7 +187,7 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	var source = $(event.target)
 	var target = $('div', source.data('original-cell'))
 	if (target.length==1) {
-    	    var others = $('span.equipped, span.quantity', source.parent())
+    	    var others = $('span.equipped, span.quantity, span.jewel', source.parent())
 	    target.append(source)
 	    target.append(others)
 	    bpChs.updateCount()

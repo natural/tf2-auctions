@@ -134,7 +134,10 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
     var itemMoved = function(item) {
 	var items = $('#listing-detail-add-bid-item-chooser img')
 	var minItems = items.length >= listing.min_bid.length
-	var defItems = $.map(items, function(i, v) { return $(items[v]).data('node').defindex })
+	var defItems = $.map(items, function(i, v) {
+	    var node = $(items[v]).data('node')
+	    return node && node.defindex
+	})
 	var metBid = true
 	$.each(listing.min_bid, function(i, v) {
 	    if ($.inArray(v, defItems) == -1 ) { metBid = false }
@@ -181,7 +184,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	source.data('original-cell', cell)
 	target.prepend(source)
-	target.append($('span.equipped, span.quantity', cell))
+	target.append($('span.equipped, span.quantity, span.jewel', cell))
 	itemMoved(source)
 	bc.updateCount()
 	$$('add-bid-item-chooser-error').parent().slideUp()
@@ -191,7 +194,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	var source = $(event.target)
 	var target = $('div', source.data('original-cell'))
 	if (target.length==1) {
-    	    var others = $('span.equipped, span.quantity', source.parent())
+    	    var others = $('span.equipped, span.quantity, span.jewel', source.parent())
 	    target.append(source)
 	    target.append(others)
 	    itemMoved(source)

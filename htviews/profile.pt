@@ -50,7 +50,7 @@
 		</div>
 
 		<!-- messages -->
-		<div tal:condition="features.profile_settings" class="" id="${slug}-msg-pod">
+		<div tal:condition="features.profile_messages" class="" id="${slug}-msg-pod">
 		    <!-- inner wrapper for msg drop  -->
 		    <div id="${slug}-leave-msg-pod" class="null">
 			<h1>
@@ -146,7 +146,11 @@
 			<span class="hilite">&nbsp;</span><span id="${slug}-settings-title">My Settings</span>
 		    </h1>
 
-		    <div class="" id="settings-pod">
+		    <div class="" id="settings-pod" tal:condition="not features.profile_settings">
+			There's nothing to see here yet.
+		    </div>
+
+		    <div class="" id="settings-pod" tal:condition="features.profile_settings">
 			<metal:include
 			     tal:define="schema settings_schema"
 			     metal:use-macro="context.form_parts.macros.schema_form" />
