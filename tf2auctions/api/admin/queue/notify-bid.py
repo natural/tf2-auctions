@@ -28,7 +28,7 @@ and change your settings.
 def send(name, email, id64, url):
     mail.send_mail(
 	sender='TF2Auctions.com Notification Bot <support@tf2auctions.com>',
-	to='TF2Auctions.com Notification Bot <support@tf2auctions.com>',
+	to=email,
 	subject='New Bid for Your Listing on TF2Auctions.com',
         body=body_template % locals(),
     )
@@ -47,7 +47,7 @@ class NotifyBid(ApiHandler):
 	    if settings['email'] and settings['notify-bids']:
 		name = getattr(profile, 'personaname', listing.owner)
 		email = settings['email']
-		url = 'http://www.tf2auctions.com/listing/%s' % (listing.key().id, )
+		url = 'http://www.tf2auctions.com/listing/%s' % (listing.key().id(), )
 		send(name, email, listing.owner, url)
 
 	except (Exception, ), exc:
