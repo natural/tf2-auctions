@@ -2,12 +2,12 @@ var $$ = function(suffix, next) { return $('#all-items-'+suffix, next) }
 
 
 var userAuthOkay = function(profile) {
-    defaultUserAuthOkay(profile)
+    new ProfileTool(profile).defaultUserAuthOkay()
 }
 
 
 var userAuthError = function(request, status, error) {
-    defaultUserAuthError(request, status, error)
+    new ProfileTool().defaultUserAuthError(request, status, error)
 }
 
 var putItems = function(target, items) {

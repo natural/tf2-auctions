@@ -9,6 +9,7 @@ from google.appengine.ext import db
 
 from tf2auctions.lib import json_dumps, json_loads, user_steam_id
 from tf2auctions.lib.proxyutils import fetch
+from tf2auctions.models.settings import PlayerSettings
 
 
 class PlayerProfile(db.Expando):
@@ -124,23 +125,22 @@ class PlayerProfile(db.Expando):
 	    self.updated = datetime.now()
 	    self.put()
 
-    def encode_builtin(self):
+    def encode_builtin(self, settings=False, complete=False):
 	""" Encode this instance using only built-in types. """
 	id64 = self.id64()
-	res = {'id64':id64, 'rating':self.get_rating(), 'custom_name':self.custom_name}
+	res = {
+	    'id64' : id64,
+	    'rating' : self.get_rating(),
+	    'custom_name' : self.custom_name,
+	}
 	for key in self.dynamic_properties():
 	    res[key] = getattr(self, key)
-	if 0:
-	    try:
-		status = fetch.player_status(id64)
-		if isinstance(status, (basestring, )):
-		    status = {} # huh?
-	    except (Exception, ), exc:
-		## already logged by fetch class
-		status = {}
-	    res['online_state'] = status.get('online_state', 'offline')
-	    res['message_state'] = status.get('message_state', '')
-	res['online_state'] = res['message_state'] = ''
+	if settings:
+	    psettings = PlayerSettings.get_by_id64(id64)
+	    psettings = psettings.encode_builtin(complete) if psettings else {}
+	else:
+	    psettings = {}
+	res['settings'] = psettings
 	return res
 
     def add_rating(self, value):

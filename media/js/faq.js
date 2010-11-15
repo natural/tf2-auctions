@@ -27,6 +27,13 @@ var FaqLoader = makeLoader({
 
 
 $(document).ready(function() {
-    new AuthProfileLoader({success: defaultUserAuthOkay, error: defaultUserAuthError})
+    new AuthProfileLoader({
+	success: function(profile) {
+	    new ProfileTool(profile).defaultUserAuthOkay()
+	},
+	error: function(request, error, status) {
+	    new ProfileTool().defaultUserAuthError(request, error, status)
+	}
+    })
     new FaqLoader({success: faqsLoaded })
 })

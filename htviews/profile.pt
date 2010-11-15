@@ -50,7 +50,7 @@
 		</div>
 
 		<!-- messages -->
-		<div tal:condition="features.profile_messages" class="" id="${slug}-msg-pod">
+		<div class="" id="${slug}-msg-pod">
 		    <!-- inner wrapper for msg drop  -->
 		    <div id="${slug}-leave-msg-pod" class="null">
 			<h1>
@@ -142,21 +142,37 @@
 
 
 		<div id="tabs-4">
+
+
 		    <h1>
 			<span class="hilite">&nbsp;</span><span id="${slug}-settings-title">My Settings</span>
 		    </h1>
 
-		    <div class="" id="settings-pod" tal:condition="not features.profile_settings">
-			There's nothing to see here yet.
+
+		    <div class="message w40 center text-center">
+			<div class="error">
+			    Note:  Not all of these work all of the time.  Please be patient.
+			</div>
 		    </div>
 
-		    <div class="" id="settings-pod" tal:condition="features.profile_settings">
+
+		    <div class="" id="${slug}-settings-pod">
 			<metal:include
-			     tal:define="schema settings_schema"
+			     tal:define="schema settings_schema; slug slug"
 			     metal:use-macro="context.form_parts.macros.schema_form" />
-			<div class="">
-			    <a href="#" class="button" onclick="return false" id="settings-save">Save</a>
+
+			<div class="w50">
+			<div class="message w40 float-left" id="${slug}-settings-save-message">
+			    <div class="error null" style="margin:0"></div>
+			    <div class="information null" style="margin:0"></div>
 			</div>
+			<div class="w40 float-right p05">
+			    <a href="#" class="button" onclick="return false" id="${slug}-settings-save">Save</a>
+			</div>
+
+			</div>
+
+
 		    </div>
 		</div>
 

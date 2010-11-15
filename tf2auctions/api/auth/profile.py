@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from cgi import parse_qs
 from google.appengine.api import users
 
 from tf2auctions.lib import ApiHandler
@@ -18,7 +19,13 @@ class CurrentUserProfile(ApiHandler):
 		self.error(401)
 		return
 	    profile.refresh()
-	    self.write_json(profile.encode_builtin())
+	    qs = parse_qs(self.request.query_string)
+	    self.write_json(
+		profile.encode_builtin(
+		    settings='settings' in qs,
+		    complete='complete' in qs,
+		)
+	    )
 	except (Exception, ), exc:
 	    self.error(500)
 	    raise

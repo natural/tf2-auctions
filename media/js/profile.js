@@ -3,6 +3,9 @@ var id64Internal = null
 var id64View = function() { return id64Internal || pathTail() }
 
 
+//
+// set various page headings
+//
 var setHeadings = function(prefix) {
     $$('backpack-title').text('{0}Backpack'.fs(prefix ? prefix+' ' : ''))
     $$('bids-title').text('{0}Recent Bids'.fs(prefix ? prefix+' ' : ''))
@@ -11,7 +14,7 @@ var setHeadings = function(prefix) {
 
 
 //
-// messages
+// called when messages have been fetched.
 //
 var messagesReady = function(msgs) {
     if (!putMessages.initOnce) {
@@ -21,26 +24,26 @@ var messagesReady = function(msgs) {
 }
 
 
+//
+// called to display a sequence of messages.
+//
 var putMessages = function(msgs) {
     var msgCount = msgs.messages.length
-    var showEmpty = function () {
-	$$('msg-none').text('No messages.  Too bad.').fadeIn()
-	$$('view-msg-count').text('')
-    }
-    var showCount = function (c) { $$('view-msg-count').text('({0})'.fs(c) ) }
-    var showCounter = function(c) {
+    var putCount = function(c) {
 	if (c) {
-	    showCount(msgCount)
+	    $$('view-msg-count').text('({0})'.fs(c) )
 	} else {
-	    showEmpty()
+	    $$('msg-none').text('No messages.  Too bad.').fadeIn()
+	    $$('view-msg-count').text('')
 	}
     }
-    showCounter(msgCount)
+    putCount(msgCount)
     if (!msgCount) { return }
 
     $.each(msgs.messages, function(idx, msg) {
 	var clone = $$('view-msg-pod div.prototype').clone()
 	$('.profile-msg-text-seed', clone).text(msg.message)
+
 	new StatusLoader({
 	    suffix: msg.source,
 	    success: function(status) {
@@ -61,7 +64,7 @@ var putMessages = function(msgs) {
 	$('.profile-msg-remove', clone).click(function (e) {
 	    var removeMessageOkay = function(results) {
 		msgCount -= 1
-		showCounter(msgCount)
+		putCount(msgCount)
 	    }
 	    clone.slideUp(function() {
 		$.ajax({
@@ -72,10 +75,8 @@ var putMessages = function(msgs) {
 		    success: removeMessageOkay,
 		})
 	    })
-	    console.log('remove msg:', msg.key)
 	})
 	$$('view-msg-pod').append(clone)
-	console.log('showing msg:', msg)
     })
     $$('view-msg-pod').slideDown()
 }
@@ -115,35 +116,43 @@ var backpackReady = function(backpack) {
 
 
 var putBackpack = function(backpack, listings, bids) {
-	var schema = new SchemaTool()
-	var tipTool = new TooltipView(schema)
-	var bpNav = new BackpackNavigator('profile')
-	var bpTool = new BackpackItemsTool(backpack, listingItemsUids(listings), bidItemsUids(bids), 'profile')
-	var hoverItem = function(e) {
-            tipTool.show(e)
-            try {
-		var data = $('img', this).data('node')
-        	if (!data.flag_cannot_trade) {
-	            $(this).addClass('outline')
-                }
-            } catch (e) {}
+    var schema = new SchemaTool()
+    var tipTool = new TooltipView(schema)
+    var bpNav = new BackpackNavigator('profile')
+    var bpTool = new BackpackItemsTool(backpack, listingItemsUids(listings), bidItemsUids(bids), 'profile')
+    var hoverItem = function(e) {
+        tipTool.show(e)
+        try {
+	    var data = $('img', this).data('node')
+       	    if (!data.flag_cannot_trade) {
+		$(this).addClass('outline')
+            }
+        } catch (e) {}
+    }
+    var unhoverItem = function(e) {
+        tipTool.hide(e)
+        $(this).removeClass('outline')
+    }
+    new AuthProfileLoader({
+	suffix: '?settings=1&complete=1',
+	success: function(profile) {
+	    bpNav.init()
+	    bpTool.init(profile.settings)
+	},
+	error: function(request, status, error) {
+	    bpNav.init()
+	    bpTool.init()
 	}
-	var unhoverItem = function(e) {
-            tipTool.hide(e)
-            $(this).removeClass('outline')
-	}
-	bpNav.init()
-	bpTool.init()
-	schema.setImages()
-	$$('backpack-inner td').hover(hoverItem, unhoverItem)
-	putBackpack.initOnce = true
-
+    })
+    $$('backpack-inner td').hover(hoverItem, unhoverItem)
     $$('backpack-inner').fadeIn()
-    // stupid tweaks:
-    $$('backpack-pod').width($$('backpack-pod').width()+32)
-    $('#backpack-tools-profile').width(
-	$$('backpack-pod tbody:visible').first().width()-12
+    // stupid tweaks
+    $$('backpack-pod')
+	.width($$('backpack-pod').width()+32)
+    $('#backpack-tools-profile')
+	.width($$('backpack-pod tbody:visible').first().width()-12
     )
+    putBackpack.initOnce = true
 }
 
 
@@ -182,7 +191,11 @@ var putBids = function(bids) {
 	putBid(bid, proto.clone().addClass('bid-marker'))
     })
     $('div.bid-marker td.item-view div:empty').parent().remove()
-    new SchemaTool().setImages()
+    new AuthProfileLoader({
+	suffix: '?settings=1&complete=1',
+	success: function(profile) { new SchemaTool().putImages(profile.settings) },
+	error: function(request, status, error) { new SchemaTool().putImages() }
+    })
 }
 
 
@@ -236,7 +249,11 @@ var putListings = function(listings) {
 	$.each(listings, function(idx, listing) {
 	    putListing(listing, proto.clone().addClass('listing-seed'))
 	})
-	new SchemaTool().setImages()
+        new AuthProfileLoader({
+    	    suffix: '?settings=1&complete=1',
+	    success: function(profile) { new SchemaTool().putImages(profile.settings) },
+	    error: function(request, status, error) { new SchemaTool().putImages() }
+	})
 	$('div.listing-seed td.item-view div:empty').parent().remove()
 	putListings.initOnce = true
     }
@@ -292,6 +309,7 @@ var playerProfileError = function(request, status, error) {
     siteMessage().fadeAway()
 }
 
+
 var submitMessage = function() {
     var txt = $$('leave-msg-txt').val().slice(0,400)
     if (!txt) {
@@ -329,8 +347,13 @@ var submitMessage = function() {
 }
 
 
+//
+// called when an authorized user is viewing a player profile other
+// than their own.
+//
 var otherProfileOkay = function(profile) {
-    $$('leave-msg-title').text('Leave a message for {0}:'.fs(profile.personaname))
+    $$('leave-msg-title')
+	.text('Leave a message for {0}:'.fs(profile.personaname))
     $$('leave-msg-txt').width('50%').height(150)
     $$('leave-msg-pod').slideDown()
     $$('leave-msg-submit').click(submitMessage)
@@ -338,23 +361,28 @@ var otherProfileOkay = function(profile) {
 }
 
 
-// auth profile -> maybe load other player profile, load (bids+backpack+listings)
+//
+// the auth profile was loaded succesfully, so we continue to load the
+// player profile if the user isn't viewing their own page.
+//
 var authProfileOkay = function(profile) {
-    defaultUserAuthOkay(profile)
+    new ProfileTool(profile).defaultUserAuthOkay()
     var id64 = id64View()
     if (id64 != profile.id64 && id64 != profile.custom_name ) {
-	// authorized user viewing another profile; load separately:
+	// authorized user viewing another profile. load separately:
 	setHeadings()
-
-	new ProfileLoader({suffix: id64, success: otherProfileOkay, error: playerProfileError})
+	new ProfileLoader({
+	    suffix: id64,
+	    success: otherProfileOkay,
+	    error: playerProfileError
+	})
     } else {
-	// authorized user viewing their own profile
+	// authorized user viewing their own profile:
 	setHeadings('My')
 	$$('is-you').text('This is you!').slideDown()
 	$$('view-msg-title').text('My Messages')
 	new MessagesLoader({
 	    success: function(messages) {
-		console.log('your messages:', messages)
 		messagesReady(messages)
 		$$('view-msg-pod').slideDown()
 	    }
@@ -362,54 +390,137 @@ var authProfileOkay = function(profile) {
 	$$('settings-tab').fadeIn()
 	playerProfileOkay(profile)
     }
-    showProfile(profile)
 }
 
-// auth profile failure -> load player (backpack+bids+listings+profile)
+
+//
+// when the auth profile loader failes, this continues to load the
+// given player profile.
+//
 var authProfileError = function(request, status, error) {
-    defaultUserAuthError(request, status, error)
-    if (request.status==401) {
+    new ProfileTool().defaultUserAuthError(request, status, error)
+    if (request.status == 401) {
 	setHeadings()
 	siteMessage('Loading profile...')
-	// internal not set, fallback to path tail, works because profile loader works
-	new ProfileLoader({suffix: id64View(), success: playerProfileOkay, error: playerProfileError})
+	// internal not set, fallback to path tail, works because
+	// profile loader works:
+	new ProfileLoader({
+	    suffix: id64View(),
+	    success: playerProfileOkay,
+	    error: playerProfileError
+	})
     }
 }
 
 
-// schema loaded -> (maybe) load auth profile
+//
+// when the schema is loaded, try to load the auth profile and then
+// initialize various tools for item display.
+//
 var schemaReady = function(schema) {
-    // change order around to load given profile first!
-    new AuthProfileLoader({success: authProfileOkay, error:authProfileError})
-
+    new AuthProfileLoader({
+	success: authProfileOkay,
+	error: authProfileError,
+	suffix: '?settings=1&complete=1'
+    })
     var st = new SchemaTool(schema)
     var tt = new TooltipView(st)
     var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
-
-    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseover', hoverItem)
-    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseout', unhoverItem)
-    $('.listing-view').live('mouseover', function() { $(this).addClass('listing-hover') })
-    $('.listing-view').live('mouseout', function() { $(this).removeClass('listing-hover') })
+    $('div.organizer-view td.item-view, #backpack-ac td')
+	.live('mouseover', hoverItem)
+    $('div.organizer-view td.item-view, #backpack-ac td')
+	.live('mouseout', unhoverItem)
+    $('.listing-view')
+	.live('mouseover', function() { $(this).addClass('listing-hover') })
+    $('.listing-view')
+	.live('mouseout', function() { $(this).removeClass('listing-hover') })
 }
 
-var messagesShow = function() {
-    console.log('showing msgs....')
-}
+
+// do nothing when the messages tab is shown
+var messagesShow = function() {}
 
 
+//
+// when the settings tab is shown, reconfigure that page with the
+// current values for the auth profile.
+//
 var settingsShow = function() {
+    var settingsReady = function(profile) {
+	var settings = profile.settings
+	$.each(keys(settings), function(index, key) {
+	    var value = settings[key]
+	    var pkey = 'profile-{0}'.fs(key)
+	    if (typeof(value) == 'boolean') {
+		$('#'+pkey).attr('checked', value)
+	    }
+	    if (typeof(value) == 'string') {
+		$('#'+pkey).val(value)
+	    }
+	})
+    }
+    new AuthProfileLoader({
+	success: settingsReady,
+	suffix: '?settings=1&complete=1'
+    })
+
+    $$('settings-save').click(function() {
+	var output = {}, trim = function(i) { return i.replace('profile-', '') }
+	$.each($('div.field input[type="checkbox"]'), function(index, checkbox) {
+	    output[trim(checkbox.id)] = $(checkbox).attr('checked')
+	})
+        $.each($('div.field input[type="text"]'), function(index, input) {
+	    output[trim(input.id)] = $(input).val()
+	})
+	var settingsSaveOkay = function(results) {
+	    // todo:  re-init profile somehow
+	    $$('settings-save-message div.information')
+		.text('Saved!').fadeIn().delay(3000).fadeOut()
+	}
+	var settingsSaveError = function(request, error, status) {
+	    try {
+		var msg = $.parseJSON(request.responseText).description
+	    } catch (e) {
+		var msg = 'unknown error.  this is bad.'
+	    }
+	    $$('settings-save-message div.error')
+	        .text('Error: {0}'.fs(msg)).fadeIn().delay(5000).fadeOut()
+	}
+	$$('settings-save-message div.error').fadeOut()
+	$$('settings-save-message div.information').fadeOut()
+	$.ajax({
+	    url: '/api/v1/auth/save-settings',
+	    type: 'POST',
+	    dataType: 'json',
+	    data: $.toJSON(output),
+	    success: settingsSaveOkay,
+	    error: settingsSaveError
+	})
+    })
 }
 
 
-var tabCallbacks = {0: messagesShow, 1: listingsShow, 2: bidsShow, 3: backpackShow, 4: settingsShow}
-
-// document loaded -> load schema
+//
+// when the document is loaded, setup the tabs and load the item
+// schema.
+//
 $(document).ready(function() {
-    siteMessage('Loading...')
+    var tabCallbacks = {
+	0: messagesShow,
+	1: listingsShow,
+	2: bidsShow,
+	3: backpackShow,
+	4: settingsShow
+    }
     $('#tabs').tabs({
-	show: function(event, ui) {if (ui.index in tabCallbacks) { tabCallbacks[ui.index]() }}
+	show: function(event, ui) {
+	    if (ui.index in tabCallbacks) {
+		tabCallbacks[ui.index]()
+	    }
+	}
     })
-    $$('settings-tab').hide() // shown elsewhere
+    $$('settings-tab').hide()
+    siteMessage('Loading...')
     new SchemaLoader({success: schemaReady})
 })

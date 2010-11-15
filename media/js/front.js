@@ -2,14 +2,14 @@ var $$ = function(suffix, next) { return $('#front-'+suffix, next) }
 
 
 var userAuthOkay = function(profile) {
-    defaultUserAuthOkay(profile)
+    new ProfileTool(profile).defaultUserAuthOkay()
     $$('auth').slideDown()
     $$('auth > h1').text('Welcome, {0}!'.fs(profile.personaname))
 }
 
 
 var userAuthError = function(request, status, error) {
-    defaultUserAuthError(request, status, error)
+    new ProfileTool().defaultUserAuthError(request, status, error)
     $$('no-auth').slideDown()
 }
 
@@ -93,7 +93,15 @@ var showListings = function(results) {
     $.each(results.listings, function(idx, listing) {
 	showListing(listing, proto.clone().addClass('listing-seed'))
     })
-    new SchemaTool().setImages()
+    new AuthProfileLoader({
+	success: function(profile) {
+	    new SchemaTool().putImages(profile.settings)
+	},
+	error: function(request, error, status) {
+	    new SchemaTool().putImages({})
+	},
+	suffix: '?settings=1'
+    })
     $('div.listing-seed td.item-view div:empty').parent().remove()
     $$('new-listings-pod').slideDown()
 }
@@ -115,7 +123,11 @@ var schemaReady = function(schema) {
 
 
 $(document).ready(function() {
-    new AuthProfileLoader({success: userAuthOkay, error: userAuthError})
+    new AuthProfileLoader({
+	success: userAuthOkay,
+	error: userAuthError,
+	suffix: '?settings=1'
+    })
     new StatsLoader({success: statsLoaded })
     new BlogLoader({success: blogLoaded })
     new SchemaLoader({success: schemaReady })

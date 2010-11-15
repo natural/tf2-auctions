@@ -157,7 +157,16 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	 chooserSlug: 'listing-detail-add-bid-item',
 	 afterDropMove: itemMoved,
 	 help: 'Drag items from your backpack to the bid area below.'})
-    bc.init()
+
+    new AuthProfileLoader({
+	suffix: '?settings=1',
+	success: function(profile) {
+	    bc.init(profile.settings)
+	},
+	error: function(request, status, error) {
+	    bc.init()
+	}
+    })
 
     var st = new SchemaTool()
     var tt = new TooltipView(st)
@@ -399,7 +408,7 @@ var profileBid = function(profile) {
 
 
 var profileReady = function(profile, listing) {
-    defaultUserAuthOkay(profile)
+    new ProfileTool(profile).defaultUserAuthOkay(profile)
     var ownerid = listing.owner.steamid
     $$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
     $$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
@@ -603,7 +612,7 @@ var profileReady = function(profile, listing) {
 
 
 var profileError = function(request, status, error) {
-    defaultUserAuthError(request, status, error)
+    new ProfileTool().defaultUserAuthError(request, status, error)
     if (request.status==401) {
 	// normal and expected if the user isn't currently logged in.
 	// TODO:  this should wait for the listing...
@@ -631,7 +640,7 @@ var listingReady = function(listing) {
     $$('owner-listings')
 	.attr('href', '/profile/' + owner.id64 + '#tabs-1')
     $$('owner-profile-link')
-	.attr('href', defaultProfileUrl(owner))
+	.attr('href', new ProfileTool(owner).defaultUrl())
         .attr('title', 'Profile for ' + owner.personaname)
 
     var possum = listing.owner.rating[0]
@@ -723,7 +732,17 @@ var listingReady = function(listing) {
 	    $('.bid-message-private', clone).parent().remove()
 	}
     })
-    st.setImages()
+
+    new AuthProfileLoader({
+	suffix: '?settings=1',
+	success: function(profile) {
+	    st.putImages(profile.settings)
+	},
+	error: function(request, status, error) {
+	    st.putImages()
+	}
+    })
+
     $('td.item-view div:empty').parent().remove()
 
     var hover = makeHovers(tt)
@@ -758,10 +777,11 @@ var listingError = function(request, status, error) {
 
 var orderedLoad = function(listing) {
     var pl = new AuthProfileLoader({
-         success: function (profile) {
-	     listingReady(listing)
-	     profileReady(profile, listing)
-	 },
+	suffix: '?settings=1',
+        success: function (profile) {
+	    listingReady(listing)
+	    profileReady(profile, listing)
+	},
         error: function (r, s, e) { profileError(r, s, e); listingReady(listing) }
     })
 }

@@ -124,6 +124,7 @@ var showAdvancedSearch = function() {
 
 
 var showListing = function(listing, clone) {
+    var putil = new ProfileTool(listing.owner)
     clone.removeClass('null prototype')
     if (listing.description) {
 	$('.listing-description', clone).text(listing.description)
@@ -132,12 +133,12 @@ var showListing = function(listing, clone) {
 	$('.listing-description', clone).empty()
     }
     $('.listing-owner', clone).text(listing.owner.personaname)
-    $('.listing-owner', clone).parent().attr('href', defaultProfileUrl(listing.owner))
+    $('.listing-owner', clone).parent().attr('href', putil.defaultUrl())
 
 
     $('.listing-avatar', clone)
 	.attr('src', listing.owner.avatar)
-    $('.listing-avatar', clone).parent().attr('href', defaultProfileUrl(listing.owner))
+    $('.listing-avatar', clone).parent().attr('href', putil.defaultUrl())
 
     new StatusLoader({suffix: listing.owner.id64, success: function(status) {
 	$('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
@@ -248,7 +249,16 @@ var showListings = function(results) {
 	$('#search-prev-link, #search-bottom-prev-link').hide()
 	$('#search-prev-none, #search-bottom-prev-none').show()
     }
-    new SchemaTool().setImages()
+    var st = new SchemaTool()
+    new AuthProfileLoader({
+	suffix: '?settings=1',
+	success: function(profile) {
+	    st.putImages(profile.settings)
+	},
+	error: function(request, status, error) {
+	    st.putImages()
+	}
+    })
     $('div.listing-seed td.item-view div:empty').parent().remove()
     $$('listings').fadeIn()
     $$('nav-extra').fadeIn()
@@ -298,7 +308,15 @@ var schemaReady = function(schema) {
 
 $(document).ready(function() {
     siteMessage('Loading schema...')
-    new AuthProfileLoader({success: defaultUserAuthOkay, error: defaultUserAuthError})
+    new AuthProfileLoader({
+	suffix: '?settings=1',
+	success: function(profile) {
+	    new ProfileTool(profile).defaultUserAuthOkay()
+	},
+	error: function(request, error, status) {
+	    new ProfileTool().defaultUserAuthError(request, error, status)
+	}
+    })
     new SchemaLoader({success: schemaReady})
     console.log('search.js version {0} ready'.fs(43))
 })

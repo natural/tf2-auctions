@@ -10,8 +10,9 @@ class PlayerSettings(db.Expando):
     """ PlayerSettings
 
     """
-    owner = db.StringProperty('Owner ID', required=True, indexed=True)
-    email = db.EmailProperty('Player email', indexed=True)
+    ## not an email because db.EmailProperty requires a value (and it
+    ## doesn't do any validation anyway):
+    email = db.StringProperty('Player email', indexed=True)
     payload = db.TextProperty('Serialized settings (JSON encoded)')
 
     ## the current schema for the payload property.
@@ -61,7 +62,7 @@ class PlayerSettings(db.Expando):
 		    """
 	    },
 	    {
-		'id':'higlight-rarity', 'type':bool, 'label':'Hilight Items by Rarity',
+		'id':'angry-fruit-salad', 'type':bool, 'label':'Color Items by Rarity',
 		'widget':'checkbox', 'default':False,
 		'help':"""
 		    When enabled, backpack items will be bordered and
@@ -75,12 +76,12 @@ class PlayerSettings(db.Expando):
 
 
     def __str__(self):
-	return '<PlayerSettings id64=%s>' % (self.owner, )
+	return '<PlayerSettings id64=%s>' % (self.key(), )
 
     @classmethod
     def get_by_id64(cls, id64):
 	""" Returns the PlayerProfile for the given id64. """
-	return cls.all().filter('owner =', id64).get()
+	return cls.get_by_key_name(id64)
 
     @classmethod
     def get_by_user(cls, user):
@@ -88,37 +89,26 @@ class PlayerSettings(db.Expando):
 	return cls.get_by_id64(user_steam_id(user) if hasattr(user, 'nickname') else user)
 
     @classmethod
-    def build(cls, owner, id64=None):
+    def put_merged(cls, owner, settings):
 	""" Returns the PlayerProfile for the given user, creating it if necessary. """
-	if id64 is None:
-	    id64 = user_steam_id(owner)
-	if not id64:
-	    return
-	profile = cls.all().filter('owner =', id64).get()
-	if profile is None:
-	    profile = cls(owner=id64)
-	    profile.put()
-	    taskqueue.add(
-		url='/api/v1/admin/queue/bang-counters',
-		queue_name='counters',
-		params={'players':1})
-	return profile
+	key = user_steam_id(owner) if hasattr(owner, 'nickname') else owner
+	obj = cls.get_or_insert(key)
+	payload = {}
+	## merge
+	for heading, fields in cls.schema:
+	    for field in fields:
+		field_id = field['id']
+		if field.get('primary'):
+		    setattr(obj, field_id, settings.get(field_id, field.get('default')))
+		else:
+		    payload[field_id] = settings.get(field_id, field.get('default'))
+	obj.payload = json_dumps(payload)
+	obj.put()
+	return obj
 
-    def encode_builtin(self):
+    def encode_builtin(self, complete=False):
 	""" Encode this instance using only built-in types. """
-	id64 = self.id64()
-	res = {'id64':id64, 'rating':self.get_rating(), 'custom_name':self.custom_name}
-	for key in self.dynamic_properties():
-	    res[key] = getattr(self, key)
-	if 0:
-	    try:
-		status = fetch.player_status(id64)
-		if isinstance(status, (basestring, )):
-		    status = {} # huh?
-	    except (Exception, ), exc:
-		## already logged by fetch class
-		status = {}
-	    res['online_state'] = status.get('online_state', 'offline')
-	    res['message_state'] = status.get('message_state', '')
-	res['online_state'] = res['message_state'] = ''
-	return res
+	payload = json_loads(self.payload)
+	if complete:
+	    payload['email'] = self.email
+	return payload

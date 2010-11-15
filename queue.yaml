@@ -4,3 +4,6 @@ queue:
 
 - name: counters
   rate: 1/s
+
+- name: bid-notify
+  rate: 1/s

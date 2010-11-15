@@ -255,6 +255,43 @@ A50F79 Developer
 .quality-9  { color:#70B04A; } /* self-made */
 .quality-10 { color:#70B04A; } /* custom */
 
+
+/*
+    note that the background colors were manually selected from an
+    opacity of 0.5 applied to the base (border) color while over an
+    div.organizer-view which had a bg color of #2E2B2A
+*/
+.border-quality-0 { border-color:#B2B2B2 !important; } /* normal */
+.background-quality-0 { background-color:#706E6E !important; }
+
+.border-quality-1 { border-color:#B2B2B2 !important; } /* common */
+.background-quality-1 { background-color:#706E6E !important; }
+
+.border-quality-2 { border-color:#B2B2B2 !important; } /* rare */
+.background-quality-2 { background-color:#706E6E !important; }
+
+.border-quality-3  { border-color:#476291 !important; } /* vintage */
+.background-quality-3 { background-color:#6279a1 !important; }
+
+.border-quality-5  { border-color:#874FAD !important; } /* unusual */
+.background-quality-5 { background-color:#5A3C6B !important; }
+
+.border-quality-6  { border-color:#FFD800 !important; } /* unique */
+.background-quality-6 { background-color: #9D8617 !important; }
+
+.border-quality-7  { border-color:#70B04A !important; } /* community */
+.background-quality-7  { background-color:#4F6D3A  !important; }
+
+.border-quality-8  { border-color:#A50F79 !important; } /* developer */
+.background-quality-8  { background-color:#691C51 !important; }
+
+.border-quality-9  { border-color:#70B04A !important; } /* self-made */
+.background-quality-9  { background-color:#4F6D3A  !important; }
+
+.border-quality-10  { border-color:#70B04A !important; } /* custom */
+.background-quality-10  { background-color:#4F6D3A  !important; }
+
+
 .message div {
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 color:#fff;

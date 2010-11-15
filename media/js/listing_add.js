@@ -33,8 +33,18 @@ var BackpackListingTool = function(backpack, listingUids, bidUids) {
 	help:'Drag items from your backpack into the area below.  Double click works, too.',
 	chooserHelp:'Remove items by dragging them to your backpack.  Double click will remove, too.'
     })
-    bpNav.init()
-    bpChs.init()
+
+    new AuthProfileLoader({
+	suffix: '?settings=1',
+	success: function(profile) {
+	    bpNav.init()
+	    bpChs.init(profile.settings)
+	},
+	error: function(request, status, error) {
+	    bpNav.init()
+	    bpChs.init()
+	}
+    })
 
     self.show = function() {
 	$('#listing-add-intro').fadeAway().slideUp(750)
@@ -300,7 +310,7 @@ var listingsReady = function(listings, bids, profile) {
 
 
 var profileReady = function(profile) {
-    defaultUserAuthOkay(profile)
+    new ProfileTool(profile).defaultUserAuthOkay()
     siteMessage('Profile loaded.  Welcome back, ' + profile['personaname'] + '!')
     var listingsLoaded = function(listings) {
 	new BidsLoader({
@@ -317,7 +327,12 @@ var profileReady = function(profile) {
 
 var schemaReady = function(schema) {
     siteMessage('Loading your profile...')
-    new AuthProfileLoader({success: profileReady, error: defaultUserAuthError})
+    var pt = new ProfileTool()
+    new AuthProfileLoader({
+	suffix: '?settings=1',
+	success: profileReady,
+	error: pt.defaultUserAuthError
+    })
 }
 
 

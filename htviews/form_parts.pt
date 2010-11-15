@@ -6,7 +6,7 @@
 
 <!-- render a field label -->
 <metal:def define-macro="field_label">
-    <label for="${field.id}">${field.label | field.id}</label>
+    <label for="${slug}-${field.id}">${field.label | field.id}</label>
 </metal:def>
 
 
@@ -15,7 +15,7 @@
     <div class="field-container string-field-container">
 	<metal:use use-macro="macros.field_label" />
 	<br />
-	<input type="text" value="${value | ''}" id="${field.id}" name="${field.id}" />
+	<input type="text" value="${value | ''}" id="${slug}-${field.id}" name="${slug}-${field.id}" />
 	<div tal:condition="field.get('help')" class="help" tal:content="field.help" />
 	<metal:use use-macro="macros.error_node" />
     </div>
@@ -25,7 +25,7 @@
 <!-- render a checkbox input -->
 <metal:def define-macro="checkbox">
     <div class="field-container checkbox-field-container">
-	<input type="checkbox" value="${value | ''}" id="${field.id}" name="${field.id}"
+	<input type="checkbox" value="${value | ''}" id="${slug}-${field.id}" name="${slug}-${field.id}"
 	       tal:attributes="checked field.default" />
 	<metal:use use-macro="macros.field_label" />
 	<metal:use use-macro="macros.error_node" />
@@ -38,7 +38,7 @@
     <metal:outer tal:define="schema schema | []; slug slug | 'empty'">
 	<metal:loop tal:repeat="heading_fields schema">
 	    <metal:names tal:define="heading heading_fields[0]; fields heading_fields[1]">
-		<div class="fields">
+		<div class="fields ${slug}-fields">
 		    <h2 tal:content="heading" />
 		    <div class="field" tal:repeat="field fields">
 			<metal:use use-macro="macros[field.widget]" />

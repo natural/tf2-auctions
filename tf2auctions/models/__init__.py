@@ -375,6 +375,11 @@ class Bid(db.Model):
 	    transactional=True,
 	    queue_name='counters',
 	    params={'bids':1, 'bid_items':len(item_ids)})
+	taskqueue.add(
+	    url='/api/v1/admin/queue/notify-bid',
+	    transactional=True,
+	    queue_name='bid-notify',
+	    params={'bid':key, 'update':False})
 	return key
 
     @classmethod
@@ -427,12 +432,18 @@ class Bid(db.Model):
 		listing=listing,
 		bid=bid)
 	    bid_item.put()
+	key = bid.key()
 	taskqueue.add(
 	    url='/api/v1/admin/queue/bang-counters',
 	    transactional=True,
 	    queue_name='counters',
 	    params={'bid_items':len(item_ids)})
-	return bid.key()
+	taskqueue.add(
+	    url='/api/v1/admin/queue/notify-bid',
+	    transactional=True,
+	    queue_name='bid-notify',
+	    params={'bid':key, 'update':True})
+	return key
 
 
     def encode_builtin(self, listing=True, private=False):

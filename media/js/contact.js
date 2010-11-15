@@ -24,7 +24,7 @@ var submitFeedback = function() {
 
 
 var userAuthOkay = function(profile) {
-    defaultUserAuthOkay(profile)
+    new ProfileTool(profile).defaultUserAuthOkay()
     $$('id64').val(profile.steamid)
     $$('name').val(profile.personaname)
     $$('content-pod').slideDown()

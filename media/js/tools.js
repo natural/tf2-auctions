@@ -1,21 +1,34 @@
+// define a console if we don't have one.
 if (typeof(console) == 'undefined') {
     var console = {}
     console.log = console.error = function() {}
 }
 
 
+// a very simple but useful string formatting function
 String.prototype.fs = function() {
     var formatted = this
     for (var i=0; i<arguments.length; i++) {
-        formatted = formatted.replace("{" + i + "}", arguments[i])
+        formatted = formatted.replace('{' + i + '}', arguments[i])
     }
     return formatted
 }
 
 
+// oh javascript, i wish you were more functional
 var ident = function(a) { return a }
 
 
+// it's the end of the line for you, i'm afraid
+var pathTail = function() { return window.location.pathname.split('/').pop() }
+
+
+// is it document.title, window.title or $(something).title?  i can
+// never remember.
+var setTitle = function(name) { document.title = document.title + ' - ' + name }
+
+
+// returns the keys of the given object
 var keys = function(obj) {
     var ks = []
     for (var k in obj) { ks.push(k) }
@@ -23,6 +36,7 @@ var keys = function(obj) {
 }
 
 
+// returns the values of the given object
 var values = function(obj) {
     var vs = []
     for (var k in obj) { vs.push(obj[k]) }
@@ -30,6 +44,7 @@ var values = function(obj) {
 }
 
 
+// more lazy than a Sunday afternoon
 var lazy = function(def) {
     var cache = []
     return function(i) {
@@ -37,9 +52,26 @@ var lazy = function(def) {
     }
 }
 
-var pathTail = function() { return window.location.pathname.split('/').pop() }
+var settingsView = function(settings) {
+    var valid = settings && keys(settings).length
+    return {
+	showEquipped: function() {
+	    return (valid ? settings['badge-equipped'] : true)
+	},
+	showPainted: function() {
+	    return (valid ? settings['badge-painted'] : true)
+	},
+	showUseCount: function() {
+	    return (valid ? settings['badge-usecount'] : true)
+	},
+	showAngrySalad: function() {
+	    return (valid ? settings['angry-fruit-salad'] : false)
+	}
+    }
+}
 
-
+// group of functions closed over an item definition and an item
+// schema.
 var itemUtil = function(item, schema) {
     return {
 	canTrade: function() {
@@ -55,8 +87,12 @@ var itemUtil = function(item, schema) {
 	    return makeImg({src: schema.itemDefs()[item['defindex']]['image_url'],
 			    style:'display:none', width:64, height:64})
 	},
-	isEquipped: function() { return (item['inventory'] & 0xff0000) != 0 },
-	pos:  function() { return (item.pos) ? item.pos : item['inventory'] & 0xFFFF  },
+	isEquipped: function() {
+	    return (item['inventory'] & 0xff0000) != 0
+	},
+	pos:  function() {
+	    return (item.pos) ? item.pos : item['inventory'] & 0xFFFF
+	},
 	painted: function () {
 	    var attrs = (item.attributes || {}).attribute || []
 	    var paint = 0
@@ -76,6 +112,30 @@ var itemUtil = function(item, schema) {
     }
 }
 
+
+// makes a table cell with a lazy div
+var makeCell = function(v) { return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v) }
+
+
+// makes tooltip hover in/out functions
+var makeHovers = function(tool) {
+    return {
+	enter: function(event) {
+            tool.show(event)
+            try {
+		var data = $('div', this).data('node')
+		$(this).addClass('outline')
+            } catch (e) {}
+	},
+	leave: function(event) {
+            tool.hide(event)
+            $(this).removeClass('outline')
+	}
+    }
+}
+
+
+// makes a nice img tag with all the trimmings.
 var makeImg = function(options) {
     var src = options['src'] ? options['src'] : '/media/img/missing.png'
     var width = '' + (options['width'] || 32)
@@ -88,25 +148,7 @@ var makeImg = function(options) {
 }
 
 
-var setTitle = function(name) {
-    document.title = document.title + ' - ' + name
-}
-
-
-var showProfile = function(profile) {
-    $('#content-avatar-pod')
-        .html(makeImg({src: profile.avatar, width: 32, height: 32}))
-        .show()
-    new StatusLoader({
-	suffix: profile.id64, success: function(status) {
-	    $('#content-avatar-pod img').addClass(status.online_state)
-	    $('#content-avatar-pod img').addClass('profile-status')
-	}
-    })
-}
-
-
-
+// makes an async. data loader, which is a preconfigured ajax call.
 var makeLoader = function(config) {
     var cache = {}, prefix = config.prefix, name = config.name
     this.cache = cache
@@ -129,7 +171,7 @@ var makeLoader = function(config) {
         var res = cache[url]
 	var async = typeof(config.async) == 'undefined' ? true : config.async
         if (!res) {
-            console.log("{0} url='{1}' async={2}".fs(name, url, async))
+            console.log('{0}(url="{1}", async={2})'.fs(name, url, async))
 	    $.ajax({url: url,
 		    async: async,
 		    dataType: (config.dataType||'json'),
@@ -149,13 +191,16 @@ var makeLoader = function(config) {
     }
 }
 
+
 var AuthProfileLoader = makeLoader({
     prefix: '/api/v1/auth/profile',
     name: 'AuthProfileLoader'})
 
+
 var ProfileLoader = makeLoader({
     prefix: '/api/v1/public/profile/',
     name: 'ProfileLoader'})
+
 
 var BackpackLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/items/',
@@ -163,41 +208,83 @@ var BackpackLoader = makeLoader({
     jsonpCallback: 'tf2auctionsBackpackLoader',
     name: 'BackpackLoader'})
 
+
 var SchemaLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsSchemaLoader',
     name: 'SchemaLoader'})
 
+
 var StatusLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
     dataType: 'jsonp',
     name: 'StatusLoader'})
 
+
 var ListingLoader = makeLoader({
     prefix: '/api/v1/public/listing/',
     name: 'ListingLoader'})
+
 
 var ListingsLoader = makeLoader({
     prefix: '/api/v1/public/listings/',
     name: 'ListingLoader'})
 
+
 var MessagesLoader = makeLoader({
     prefix: '/api/v1/auth/list-messages',
     name: 'MessagesLoader'})
+
 
 var SearchLoader = makeLoader({
     prefix: '/api/v1/public/search',
     name: 'SearchLoader'})
 
+
 var StatsLoader = makeLoader({
     prefix: '/api/v1/public/stats',
     name: 'StatsLoader'})
+
 
 var BidsLoader = makeLoader({
     prefix: '/api/v1/public/bids/', // move to /api/v1/public/player-bids/
     name: 'BidsLoader'})
 
+
+var ProfileTool = function(profile) {
+    var self = this
+
+    self.defaultUrl = function() {
+	    return profile.custom_name ? '/id/{0}'.fs(profile.custom_name) : '/profile/{0}'.fs(profile.id64)
+    }
+
+    self.defaultUserAuthError = function(request, status, error) {
+	$('#content-login-link')
+	    .attr('href', '/login?next=' + encodeURIComponent(window.location.href))
+	    .fadeIn()
+	$('#content-search-link').fadeIn()
+    }
+
+    self.defaultUserAuthOkay = function() {
+        $('#content-user-buttons, #content-logout-link, #content-search-link').fadeIn()
+        $('#content-player-profile-link').attr('href', self.defaultUrl())
+	self.put()
+    }
+
+    self.put = function() {
+	$('#content-avatar-pod')
+	    .html(makeImg({src: profile.avatar, width: 32, height: 32}))
+	    .show()
+	new StatusLoader({
+	    suffix: profile.id64, success: function(status) {
+		$('#content-avatar-pod img').addClass(status.online_state)
+		$('#content-avatar-pod img').addClass('profile-status')
+	    }
+	})
+    }
+
+}
 
 
 var SchemaTool = function(schema) {
@@ -226,13 +313,30 @@ var SchemaTool = function(schema) {
 	})
     }
 
-    self.setImages = function() {
+    self.asPlayerItem = function(i) {
+	return {
+	    attributes: i.attributes || {'attribute':[]},
+	    defindex: i.defindex,
+	    level: i.level || '',
+	    quality: i.quality || i.item_quality,
+	    quantity: i.quantity || 1,
+	    inventory: i.inventory || 0
+	}
+    }
+
+    // this is a better name:
+    self.putImages = function(settings) {
+	console.log('settings:', settings)
+	self.setImages(settings)
+    }
+
+    self.setImages = function(settings) {
         // replace any items on the page that have the "schema
         // definition index replace" class with the url of the item
         // specified in the content.
         var itemImg = function(url) { return makeImg({src:url, width:64, height:64}) }
 	var toolDefs = self.tools(), actionDefs = self.actions()
-
+	var settingV = settingsView(settings)
         $('.defindex-lazy').each(function(index, tag) {
             var data = $.parseJSON($(tag).text())
 	    if (!data) { return }
@@ -243,37 +347,37 @@ var SchemaTool = function(schema) {
             }
 	    var def = self.itemDefs()[defindex]
             if (!def) { return }
-	    var pitem = asPlayerItem(data)
+	    var pitem = self.asPlayerItem(data)
             $(tag).data('node', pitem)
 	    $(tag).html(itemImg(def['image_url'])).fadeIn()
 	    var iutil = itemUtil(pitem, schema)
 	    var img = $('img', tag)
 
-	    // if settings.show_equipped_tag_or_whatever
-		if (iutil.isEquipped()) {
-		    img.addClass('equipped equipped-'+defindex).after(iutil.equippedTag())
-		    img.removeClass('unequipped-'+defindex)
-		    $('.equipped', tag).fadeIn()
-		} else {
-		    img.addClass('unequipped-'+defindex)
-		    img.removeClass('equipped equipped-'+defindex)
-		}
+	    if (iutil.isEquipped() && settingV.showEquipped() ) {
+		img.addClass('equipped equipped-'+defindex).after(iutil.equippedTag())
+		img.removeClass('unequipped-'+defindex)
+		$('.equipped', tag).fadeIn()
+	    } else {
+		img.addClass('unequipped-'+defindex)
+		img.removeClass('equipped equipped-'+defindex)
+	    }
 
-	    // if settings.show_equipped_paint_jewels_or_whatever
-		var paintColor = iutil.painted()
-		if (paintColor) {
-		    img.after('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
-		}
+	    var paintColor = iutil.painted()
+	    if (paintColor && settingV.showPainted()) {
+		img.after('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
+	    }
 
-	    // if settings.show_item_quantity_tags_or_whatever
-	    if ((defindex in toolDefs) || (defindex in actionDefs)) {
+	    if (((defindex in toolDefs) || (defindex in actionDefs)) && settingV.showUseCount()) {
 		if (img) {
 		    img.before(iutil.quantityTag(pitem['quantity']))
 		    $('.quantity', tag).fadeIn()
 		}
 	    }
-
-
+	    if (settingV.showAngrySalad()) {
+		//
+		img.parent().parent()
+		    .addClass('border-quality-{0} background-quality-{1}'.fs( pitem.quality, pitem.quality ))
+	    }
 	})
     }
 
@@ -293,19 +397,23 @@ var SchemaTool = function(schema) {
     self.tokens = function() {return self.select('craft_class', 'craft_token')}
     self.tools = function() {return self.select('craft_class', 'tool')}
     self.weapons = function() {return self.select('craft_class', 'weapon')}
+
     self.stock = function() {
 	return self.select('defindex', function(v) {
 	    return ((v>=190 && v<=212) || (v<=30))
 	})
     }
+
     self.uncraftable = function() {
 	return self.select('craft_class', function(v) { return (v==undefined) })
     }
+
     self.qualityMap = function() {
 	var map = {}, names = self.schema['qualityNames']
 	$.each(self.schema['qualities'], function(name, key) { map[key] = names[name] })
 	return map
     }
+
     self.tradable = function() {
 	var stock = self.stock(), can = {}, cannot = {}
 	$.each(self.itemDefs(), function(idx, def) {
@@ -339,38 +447,10 @@ var siteMessage = function(text) {
 }
 
 
-var asPlayerItem = function(i) {
-    return {
-	attributes: i.attributes || {'attribute':[]},
-	defindex: i.defindex,
-	level: i.level || '',
-	quality: i.quality || i.item_quality,
-	quantity: i.quantity || 1,
-	inventory: i.inventory || 0
-    }
-}
-
-
-var makeCell = function(v) {
-    return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v)
-}
-
-
-var listingItemsUids = function(src) {
+var listingItemsUids = bidItemsUids = itemsUids = function(src) {
     var uids = {}
-    $.each(src, function(idx, listing) {
-	$.each(listing.items, function(i, item) {
-	    uids[item.uniqueid] = item
-	})
-    })
-    return uids
-}
-
-
-var bidItemsUids = function(src) {
-    var uids = {}
-    $.each(src, function(idx, bid) {
-	$.each(bid.items, function(i, item) {
+    $.each(src, function(idx, obj) {
+	$.each(obj.items, function(i, item) {
 	    uids[item.uniqueid] = item
 	})
     })
@@ -399,41 +479,6 @@ var showTermsDialog = function(e) {
 }
 
 
-var makeHovers = function(tool) {
-    return {
-	enter: function(event) {
-            tool.show(event)
-            try {
-		var data = $('div', this).data('node')
-		$(this).addClass('outline')
-            } catch (e) {}
-	},
-	leave: function(event) {
-            tool.hide(event)
-            $(this).removeClass('outline')
-	}
-    }
-}
-
-var defaultProfileUrl = function (p) {
-    return p.custom_name ? '/id/{0}'.fs(p.custom_name) : '/profile/{0}'.fs(p.id64)
-}
-
-var defaultUserAuthOkay = function(p) {
-    $('#content-user-buttons, #content-logout-link, #content-search-link').fadeIn()
-    $('#content-player-profile-link').attr('href', defaultProfileUrl(p))
-    showProfile(p)
-}
-
-
-var defaultUserAuthError = function(request, status, error) {
-    $('#content-login-link')
-	.attr('href', '/login?next=' + encodeURIComponent(window.location.href))
-        .fadeIn()
-    $('#content-search-link').fadeIn()
-}
-
-
 var initExtensions = function(jq) {
     jq.fn.fadeAway = function() { this.each(function() { jq(this).fadeTo(750, 0) }); return this }
     jq.fn.fadeBack = function() { this.each(function() { jq(this).fadeTo(750, 100) }); return this }
@@ -445,5 +490,3 @@ initExtensions(jQuery)
 $(document).ready(function() {
     console.log('tools.js ready')
 })
-
-

@@ -19,9 +19,10 @@ itemEffects = {
 var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
     var self = this
 
-    self.init = function() {
+    self.init = function(settings) {
         var schema = new SchemaTool()
 	var newIdx = -1, toolDefs = schema.tools(), actionDefs = schema.actions()
+	var settingV = settingsView(settings)
 
 	$.each(items, function(index, item) {
 	    item.flag_active_listing = (item.id in listingUids)
@@ -32,7 +33,8 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		var ele = $('#' + slug + iutil.pos() + ' div').append(iutil.img())
 		var img = $('img:last', ele).data('node', item)
 		var def = item['defindex']
-		if (iutil.isEquipped()) {
+
+		if (iutil.isEquipped() && settingV.showEquipped() ) {
 		    img.addClass('equipped equipped-'+def).after(iutil.equippedTag())
 		    img.removeClass('unequipped-'+def)
 		} else {
@@ -41,6 +43,10 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		}
 		if (iutil.canTrade()) {
 		    ele.parent('td').removeClass('cannot-trade active-listing active-bid')
+		    if (settingV.showAngrySalad()) {
+			ele.parent()
+			    .addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
+		    }
 		} else {
 		    ele.parent('td').addClass('cannot-trade')
 		    if (item.flag_active_listing) {
@@ -50,9 +56,10 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		    }
 		}
 		var paintColor = iutil.painted()
-		if (paintColor) {
+		if (paintColor && settingV.showPainted()) {
 		    img.before('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
 		}
+
 	    } else {
 		newIdx += 1
 		if ($('#unplaced-backpack-' + slug + ' table.unplaced td:not(:has(img))').length == 0) {
@@ -64,6 +71,11 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		ele.data('node', item)
 		if (iutil.canTrade()) {
 		    ele.parent().removeClass('cannot-trade active-listing active-bid')
+		    /* need to verify this against unplaced items */
+		    //if (settingV.showAngrySalad()) {
+			//ele.parent()
+			    //.addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
+		    //}
 		} else {
 		    ele.parents('td').addClass('cannot-trade')
 		    if (item.flag_active_listing) {
@@ -73,7 +85,7 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		    }
 		}
 	    }
-	    if ((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) {
+	    if (((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) && settingV.showUseCount() ) {
 		if (img) {
 		    img.before('<span class="badge quantity">' + item['quantity'] + '</span>')
 		}
@@ -136,11 +148,11 @@ var BackpackChooser = function(options) {
     var backpack = options.backpack, listingUids = options.listingUids, bidUids = options.bidUids
     var backpackSlug = options.backpackSlug, chooserSlug = options.chooserSlug
 
-    self.init = function() {
+    self.init = function(settings) {
 	var bn = new BackpackNavigator(backpackSlug)
 	var bp = new BackpackItemsTool(backpack, listingUids, bidUids, backpackSlug)
 	bn.init()
-	bp.init()
+	bp.init(settings)
 	self.initBackpack()
 	self.initDrag()
 	return false
