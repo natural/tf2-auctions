@@ -49,27 +49,32 @@
         </div>
     </div>
     <div id="${slug}-terms-dialog" class="null"></div>
+    <div id="${slug}-site-message" class="null"></div>
+
     <div id="${slug}-header-pod">
+
+
 	<div id="${slug}-header" metal:fill-slot="header">
 	    <div id="${slug}-main-logo">
 		<a href="/" title="TF2Auctions.com - random logo by lenzo">
 		    <img alt="TF2Auctions.com" src="/media/img/tf2auctions-logo-1c.png"
 			 height="82" width="340" />
-		    <!-- <img alt="TF2Auctions.com" src="/media/img/tf2auctions-logo.png"
-			 height="48" width="340" /> -->
 		</a>
 	    </div>
-	    <div id="${slug}-site-buttons">
+	    <div id="${slug}-site-buttons" class="">
 		<span class="null" id="${slug}-user-buttons">
 		    <span id="${slug}-avatar-pod"></span>
 		    <a id="${slug}-player-profile-link" class="big-button" href="#">My Profile</a>
-		    <a id="${slug}-add-listing-link" class="big-button mr1" href="/listing/add">Add Listing</a>
+		    <a id="${slug}-add-listing-link" class="big-button" href="/listing/add">Add Listing</a>
 		</span>
-		<a id="${slug}-search-link" class="button null" href="/search">Search</a>
-		<a id="${slug}-login-link" class="button null" href="/login">Login</a>
-		<a id="${slug}-logout-link" class="button null" href="${controller.logout_url()}">Logout</a>
+		<span class="" id="${slug}-main-buttons">
+                    <a id="${slug}-quick-backpack" class="button" href="/backpack">Backpacks</a>
+		    <a id="${slug}-all-items" class="button" href="/all-items">All Items</a>
+		    <a id="${slug}-search-link" class="button" href="/search">Search</a>
+		    <a id="${slug}-login-link" class="button null" href="/login">Login</a>
+		    <a id="${slug}-logout-link" class="button null" href="${controller.logout_url()}">Logout</a>
+		</span>
 	    </div>
-	    <div id="${slug}-site-message" class="null"></div>
 	</div>
     </div>
 

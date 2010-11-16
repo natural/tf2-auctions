@@ -6,7 +6,7 @@ var submitFeedback = function() {
 	email: $$('email').val(),
 	id64: $$('id64').val(),
 	name: $$('name').val(),
-	msg: $$('message').val().slice(0, 400)
+	msg: $$('message').val().slice(0, 2048)
     }
     var done = function() {
 	$$('form').slideUp()

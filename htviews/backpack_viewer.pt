@@ -1,0 +1,47 @@
+<html metal:use-macro="context.content.macros.layout">
+<head>
+    <title metal:fill-slot="title">TF2Auctions.com - Backpack Viewer</title>
+</head>
+<body>
+    <metal:fill fill-slot="main" tal:define="slug 'backpack-viewer'">
+	<div class="null" id="${slug}-content-pod">
+	    <h1><span class="hilite">&nbsp;</span>Backpack Viewer</h1>
+
+	    <div class="center text-center">
+		<input style="width:24em; line-height:1em; padding:0.35em 1.5em 0 0.25em" type="text" id="${slug}-search-value" /><a href="#" class="ml1 button small-button" onclick="return false" id="${slug}-search">Search</a>
+
+		<div id="${slug}-result-summary" class="mt05">
+		    <div class="null" id="${slug}-result-none">
+			Nothing found.
+		    </div>
+		    <div class="null" id="${slug}-result-one">
+			Showing backpack for <strong id="${slug}-result-one-name"></strong>.
+		    </div>
+		    <div class="null" id="${slug}-result-many">
+			Found <strong id="${slug}-result-many-count"></strong> players.  Select one from
+			this list to view their backpack:
+			<select id="${slug}-result-many-choose">
+			    <option>Fu</option>
+			    <option>Bar</option>
+			</select>
+		    </div>
+		</div>
+	    </div>
+
+	    <div id="${slug}-backpack-pod" class="">
+		<h1>
+		    <span class="hilite">&nbsp;</span><span id="${slug}-backpack-title"></span>
+		</h1>
+		<h2 class="null" id="${slug}-backpack-loading"></h2>
+		<div class="organizer-view null" id="${slug}-backpack-inner">
+		    <h2 class="null" id="${slug}-backpack-none"></h2>
+		    <metal:include
+			 tal:define="include_unplaced True"
+			 metal:use-macro="context.organizer_parts.macros.item_backpack_wide" />
+		</div>
+	    </div>
+
+	</div>
+    </metal:fill>
+</body>
+</html>

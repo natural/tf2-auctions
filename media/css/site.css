@@ -48,7 +48,7 @@ color:#ece3cb;
 font-family:"TF2Build";
 height:1.5em;
 line-height:1.5em;
-padding:0.6em 0.75em 0.5em 0.75em;
+padding:0.6em 0.75em 0.6em 0.75em;
 text-align:center;
 vertical-align:middle;
 white-space:nowrap !important;
@@ -89,7 +89,7 @@ color:#2e2b2a;
 font-family:"TF2Build";
 height:1.5em;
 line-height:1.5em;
-padding:0.65em 0.75em 0.5em 0.75em;
+padding:0.65em 0.75em 0.65em 0.75em;
 text-align:center;
 vertical-align:middle;
 white-space:nowrap !important;
@@ -503,21 +503,21 @@ top:8px;
 #content-site-buttons {
 position:absolute;
 right:0;
-top:12px;
+top:1em;
+font-size:80%;
+width:60%;
+text-align:right;
 }
 
-#content-site-buttons span { vertical-align:middle; }
 
-#content-avatar-pod {
-display:inline-block;
-height:38px;
-margin-right:0.25em;
-width:38px;
-}
+#content-site-buttons span, #content-site-buttons img { vertical-align:middle; }
+
 
 #content-avatar-pod img {
-a-border:0.2em solid #847668 !important;
-a-border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
+margin-top:-0.25em; /* for the border */
+a-height:2.25em;
+a-width:2.25em;
+
 }
 
 
@@ -534,9 +534,9 @@ font-family:Verdana, Arial, Sans-Serif;
 font-weight:bold;
 opacity:0.5;
 padding:0.5em 1.5em 0.5em 1em;
-position:absolute;
-right:0;
-top:3.25em;
+position:fixed;
+bottom:1em;
+right:1em;
 }
 
 
@@ -622,5 +622,3 @@ color:#6FBDFF;
 border-color:#898989;
 color:#898989;
 }
-
-

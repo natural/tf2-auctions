@@ -28,7 +28,6 @@ class CurrentUserProfile(ApiHandler):
 	    )
 	except (Exception, ), exc:
 	    self.error(500)
-	    raise
 	    self.write_json({'exception':str(exc)})
 
 

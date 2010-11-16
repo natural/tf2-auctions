@@ -28,11 +28,12 @@ def send(name, email, id64, message):
 class SendFeedback(ApiHandler):
     def post(self):
 	data = self.body_json()
-	if data.get('msg'):
+	msg = data.get('msg')
+	if msg:
 	    send(data.get('name'),
 		 data.get('email'),
 		 data.get('id64'),
-		 data.get('msg'))
+		 msg[0:2048])
 	self.write_json({})
 
 

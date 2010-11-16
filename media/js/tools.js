@@ -263,18 +263,18 @@ var ProfileTool = function(profile) {
 	$('#content-login-link')
 	    .attr('href', '/login?next=' + encodeURIComponent(window.location.href))
 	    .fadeIn()
-	$('#content-search-link').fadeIn()
+	$('#content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
     }
 
     self.defaultUserAuthOkay = function() {
-        $('#content-user-buttons, #content-logout-link, #content-search-link').fadeIn()
+        $('#content-user-buttons, #content-logout-link, #content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
         $('#content-player-profile-link').attr('href', self.defaultUrl())
 	self.put()
     }
 
     self.put = function() {
 	$('#content-avatar-pod')
-	    .html(makeImg({src: profile.avatar, width: 32, height: 32}))
+	    .html(makeImg({src: profile.avatar, width: 24, height: 24}))
 	    .show()
 	new StatusLoader({
 	    suffix: profile.id64, success: function(status) {
