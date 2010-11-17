@@ -26,7 +26,7 @@
 			 tal:define="use_minbid True;
 				     rows 2; cols 5;
 				     slug 'new-listings';
-				     use_created False;
+				     use_created True;
 				     use_bids False"
 			 metal:use-macro="context.table_parts.macros.listings_large" />
 		</div>

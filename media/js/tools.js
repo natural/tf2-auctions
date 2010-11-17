@@ -52,23 +52,18 @@ var lazy = function(def) {
     }
 }
 
+
+// closure over a settings object
 var settingsView = function(settings) {
     var valid = settings && keys(settings).length
     return {
-	showEquipped: function() {
-	    return (valid ? settings['badge-equipped'] : true)
-	},
-	showPainted: function() {
-	    return (valid ? settings['badge-painted'] : true)
-	},
-	showUseCount: function() {
-	    return (valid ? settings['badge-usecount'] : true)
-	},
-	showAngrySalad: function() {
-	    return (valid ? settings['angry-fruit-salad'] : false)
-	}
+	showEquipped: (valid ? settings['badge-equipped'] : true),
+	showPainted: (valid ? settings['badge-painted'] : true),
+	showUseCount: (valid ? settings['badge-usecount'] : true),
+	showAngrySalad: (valid ? settings['angry-fruit-salad'] : false)
     }
 }
+
 
 // group of functions closed over an item definition and an item
 // schema.
@@ -326,7 +321,6 @@ var SchemaTool = function(schema) {
 
     // this is a better name:
     self.putImages = function(settings) {
-	console.log('settings:', settings)
 	self.setImages(settings)
     }
 
@@ -353,7 +347,7 @@ var SchemaTool = function(schema) {
 	    var iutil = itemUtil(pitem, schema)
 	    var img = $('img', tag)
 
-	    if (iutil.isEquipped() && settingV.showEquipped() ) {
+	    if (iutil.isEquipped() && settingV.showEquipped ) {
 		img.addClass('equipped equipped-'+defindex).after(iutil.equippedTag())
 		img.removeClass('unequipped-'+defindex)
 		$('.equipped', tag).fadeIn()
@@ -363,18 +357,17 @@ var SchemaTool = function(schema) {
 	    }
 
 	    var paintColor = iutil.painted()
-	    if (paintColor && settingV.showPainted()) {
+	    if (paintColor && settingV.showPainted) {
 		img.after('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
 	    }
 
-	    if (((defindex in toolDefs) || (defindex in actionDefs)) && settingV.showUseCount()) {
+	    if (((defindex in toolDefs) || (defindex in actionDefs)) && settingV.showUseCount) {
 		if (img) {
 		    img.before(iutil.quantityTag(pitem['quantity']))
 		    $('.quantity', tag).fadeIn()
 		}
 	    }
-	    if (settingV.showAngrySalad()) {
-		//
+	    if (settingV.showAngrySalad) {
 		img.parent().parent()
 		    .addClass('border-quality-{0} background-quality-{1}'.fs( pitem.quality, pitem.quality ))
 	    }
@@ -435,6 +428,11 @@ var SchemaTool = function(schema) {
     } else {
 	self.load(schema)
     }
+}
+
+
+var hiliteSpan = function(after) {
+    return '<span class="hilite">&nbsp;</span><span>{0}</span>'.fs(after)
 }
 
 

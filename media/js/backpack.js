@@ -19,10 +19,11 @@ itemEffects = {
 var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
     var self = this
 
-    self.init = function(settings) {
+    self.init = function(settings, cols) {
         var schema = new SchemaTool()
 	var newIdx = -1, toolDefs = schema.tools(), actionDefs = schema.actions()
 	var settingV = settingsView(settings)
+	cols = cols || 5
 
 	$.each(items, function(index, item) {
 	    item.flag_active_listing = (item.id in listingUids)
@@ -34,7 +35,7 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		var img = $('img:last', ele).data('node', item)
 		var def = item['defindex']
 
-		if (iutil.isEquipped() && settingV.showEquipped() ) {
+		if (iutil.isEquipped() && settingV.showEquipped ) {
 		    img.addClass('equipped equipped-'+def).after(iutil.equippedTag())
 		    img.removeClass('unequipped-'+def)
 		} else {
@@ -43,7 +44,7 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		}
 		if (iutil.canTrade()) {
 		    ele.parent('td').removeClass('cannot-trade active-listing active-bid')
-		    if (settingV.showAngrySalad()) {
+		    if (settingV.showAngrySalad) {
 			ele.parent()
 			    .addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
 		    }
@@ -56,14 +57,14 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		    }
 		}
 		var paintColor = iutil.painted()
-		if (paintColor && settingV.showPainted()) {
+		if (paintColor && settingV.showPainted) {
 		    img.before('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
 		}
 
 	    } else {
 		newIdx += 1
 		if ($('#unplaced-backpack-' + slug + ' table.unplaced td:not(:has(img))').length == 0) {
-		    var cells = new Array(5+1).join('<td><div></div></td>')
+		    var cells = new Array(cols+1).join('<td><div></div></td>')
 		    $('#unplaced-backpack-' + slug + ' table.unplaced').append('<tbody><tr>' + cells + '</tr></tbody>')
 		}
 		$('#unplaced-backpack-' + slug + ' table.unplaced td:eq('+newIdx+') div').append(iutil.img())
@@ -72,10 +73,12 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		if (iutil.canTrade()) {
 		    ele.parent().removeClass('cannot-trade active-listing active-bid')
 		    /* need to verify this against unplaced items */
-		    //if (settingV.showAngrySalad()) {
-			//ele.parent()
-			    //.addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
-		    //}
+		    if (settingV.showAngrySalad) {
+			ele
+			    .parent()
+			    .parent()
+			    .addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
+		    }
 		} else {
 		    ele.parents('td').addClass('cannot-trade')
 		    if (item.flag_active_listing) {
@@ -85,7 +88,7 @@ var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
 		    }
 		}
 	    }
-	    if (((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) && settingV.showUseCount() ) {
+	    if (((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) && settingV.showUseCount ) {
 		if (img) {
 		    img.before('<span class="badge quantity">' + item['quantity'] + '</span>')
 		}
@@ -103,18 +106,16 @@ var BackpackNavigator = function(slug) {
     var current = 1, count = $('#backpack-' + slug + ' table.backpack tbody').length
 
     self.navigate = function(event, offset) {
-	// this borks ie:
-	//if (event && event.detail != 1) { return false }
 	if ((current + offset) > 0 && (current + offset <= count)) {
-	    $('#backpack-' + slug + ' .backpack-page-' + current).fadeOut(250, function() {
-		current += offset
-		$('#backpack-' + slug + ' .backpack-page-' + current).fadeIn(250)
-		self.redisplay()
-	    })
+	    current += offset
+	    $('#backpack-' + slug + ' tbody').hide()
+	    $('#backpack-' + slug + ' .backpack-page-' + current).delay(750).show()
+	    self.redisplay()
 	}
 	return false
     }
 
+    // not really "redisplay" but "reset-nav-buttons"
     self.redisplay = function () {
 	$('#backpack-pagecount-' + slug).text(current + '/' + count)
 	if (current == 1) {
@@ -133,6 +134,11 @@ var BackpackNavigator = function(slug) {
 	}
     }
 
+    self.reset = function() {
+	current = 1
+	self.navigate(null, 0)
+    }
+
     self.init = function() {
 	$('#backpack-nav-' + slug + ' .nav:first a').click(function (e) {
 	    return self.navigate(e, -1)})
@@ -141,6 +147,9 @@ var BackpackNavigator = function(slug) {
 	self.redisplay()
     }
 }
+
+
+
 
 
 var BackpackChooser = function(options) {
@@ -288,7 +297,6 @@ var TooltipView = function(schema) {
 	    tooltip.hide()
 	    return
 	}
-	//console.log(playerItem)
 	self.hide()
 	var schemaItem = schema.itemDefs()[type]
 
@@ -359,4 +367,178 @@ var TooltipView = function(schema) {
 	tooltip.show()
     }
     return self
+}
+
+
+
+
+
+
+
+
+var NewBackpackNavigator = function(options) {
+    var self = this, slug = options.slug || ''
+    var current = 1, count = $('table.bp-page-{0}'.fs(slug)).length
+
+    var context = $('#bp-placed-{0}'.fs(slug)) // parent of label, inner div, nav
+    var pagesContext = $('div.bp-pages', context) // parent of pages (tables)
+
+    self.init = function() {
+	$('table.bp-placed.bp-2, table.bp-placed.bp-3, table.bp-placed.bp-4', pagesContext)
+	    .css('margin-left', 1050)
+
+	$('#bp-nav-' + slug + ' .nav:first a').click(function (e) {
+	    return self.navigate(e, -1)})
+	$('#bp-nav-' + slug + ' .nav:last a').click(function (e) {
+	    return self.navigate(e, 1)})
+	self.updateButtons()
+    }
+
+    self.navigate = function(event, offset) {
+	if ((current + offset) > 0 && (current + offset <= count)) {
+	    var prev = current, off = $('.bp-1').width() * (offset>0 ? -1 : 1)
+	    current += offset
+	    $('table.bp-placed.bp-{0}'.fs(prev), pagesContext)
+	        .animate({marginLeft:off}, function() {
+		    $('table.bp-placed.bp-{0}'.fs(prev), pagesContext).hide()
+		    $('table.bp-placed.bp-{0}'.fs(current), pagesContext).show().animate({marginLeft:0})
+		})
+	    self.updateButtons()
+	}
+	return false
+    }
+
+    self.updateButtons = function () {
+	$('#bp-count-' + slug).text(current + '/' + count)
+	if (current == 1) {
+	    $('#bp-nav-' + slug + ' .non:first').show()
+	    $('#bp-nav-' + slug + ' .nav:first').hide()
+	} else {
+	    $('#bp-nav-' + slug + ' .non:first').hide()
+	    $('#bp-nav-' + slug + ' .nav:first').show()
+	}
+	if (current == count) {
+	    $('#bp-nav-' + slug + ' .non:last').show()
+	    $('#bp-nav-' + slug + ' .nav:last').hide()
+	} else {
+	    $('#bp-nav-' + slug + ' .non:last').hide()
+	    $('#bp-nav-' + slug + ' .nav:last').show()
+	}
+    }
+
+    self.reset = function() {
+	current = 1
+	self.navigate(null, 0)
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var NewBackpackItemsTool = function(options) {
+    var self = this
+    var items = options.items, listingUids = options.listingUids
+    var bidUids = options.bidUids, slug = options.slug
+    var cols = options.cols || 10
+
+    self.init = function(settings) {
+        var schema = new SchemaTool()
+	var newIdx = -1, toolDefs = schema.tools(), actionDefs = schema.actions()
+	var settingV = settingsView(settings)
+
+	$.each(items, function(index, item) {
+	    item.flag_active_listing = (item.id in listingUids)
+	    item.flag_active_bid = (item.id in bidUids)
+
+	    var iutil = itemUtil(item, schema)
+	    if (iutil.pos() > 0) {
+		var ele = $('#' + slug + iutil.pos() + ' div').append(iutil.img())
+		var img = $('img:last', ele).data('node', item)
+		var def = item['defindex']
+
+		if (iutil.isEquipped() && settingV.showEquipped ) {
+		    img.addClass('equipped equipped-'+def).after(iutil.equippedTag())
+		    img.removeClass('unequipped-'+def)
+		} else {
+		    img.addClass('unequipped-'+def)
+		    img.removeClass('equipped equipped-'+def)
+		}
+		if (iutil.canTrade()) {
+		    ele.parent('td').removeClass('cannot-trade active-listing active-bid')
+		    if (settingV.showAngrySalad) {
+			ele.parent()
+			    .addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
+		    }
+		} else {
+		    ele.parent('td').addClass('cannot-trade')
+		    if (item.flag_active_listing) {
+			ele.parent('td').addClass('active-listing')
+		    } else if (item.flag_active_bid) {
+			ele.parent('td').addClass('active-bid')
+		    }
+		}
+		var paintColor = iutil.painted()
+		if (paintColor && settingV.showPainted) {
+		    img.before('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
+		}
+
+	    } else {
+		newIdx += 1
+		if ($('#bp-unplaced-' + slug + ' table.bp-unplaced td:not(:has(img))').length == 0) {
+		    var cells = new Array(cols+1).join('<td><div></div></td>')
+		    $('#bp-unplaced-' + slug + ' table.bp-unplaced').append('<tbody><tr>' + cells + '</tr></tbody>')
+		}
+		$('#bp-unplaced-' + slug + ' table.bp-unplaced td:eq('+newIdx+') div').append(iutil.img())
+		var ele = $('#bp-unplaced-' + slug + ' table.bp-unplaced td img:last')
+		ele.data('node', item)
+		if (iutil.canTrade()) {
+		    ele.parent().removeClass('cannot-trade active-listing active-bid')
+		    /* need to verify this against unplaced items */
+		    if (settingV.showAngrySalad) {
+			ele
+			    .parent()
+			    .parent()
+			    .addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
+		    }
+		} else {
+		    ele.parents('td').addClass('cannot-trade')
+		    if (item.flag_active_listing) {
+			ele.parents('td').addClass('active-listing')
+		    } else if (item.flag_active_bid) {
+			ele.parents('td').addClass('active-bid')
+		    }
+		}
+	    }
+	    if (((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) && settingV.showUseCount ) {
+		if (img) {
+		    img.before('<span class="badge quantity">' + item['quantity'] + '</span>')
+		}
+	    }
+	})
+	$('#bp-placed-' + slug + ' label').toggle(newIdx > -1)
+	$('#bp-unplaced-' + slug).toggle(newIdx > -1)
+	$('#bp-unplaced-{0} td > div > img, #bp-placed-{1} td > div > img, span.equipped'.fs(slug, slug)).fadeIn('slow')
+//	$('#backpack-listing').fadeIn()
+    }
 }

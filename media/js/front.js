@@ -73,7 +73,10 @@ var showListing = function(listing, clone) {
     } else {
         $('.new-listings-listing-view-min-bid', clone).hide()
     }
-    $('.new-listings-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
+    $('.new-listings-listing-view-link a', clone)
+	.attr('href', '/listing/'+listing.id)
+    $('.new-listings-listing-view-link', clone)
+	.append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
     $$('results-pod').append(clone)
 }
 

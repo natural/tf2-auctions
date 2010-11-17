@@ -122,6 +122,7 @@ class View(LocalHandler):
     base_js = (
 	'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
 	'%s/%s' % (media_js_path, 'jquery.json-2.2.js'),
+	'%s/%s' % (media_js_path, 'jquery.ba-bbq.min.js'),
     )
 
     ## javascripts for every template; values are modified to include

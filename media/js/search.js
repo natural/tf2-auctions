@@ -163,6 +163,8 @@ var showListing = function(listing, clone) {
         $('.search-listing-view-min-bid', clone).hide()
     }
     $('.search-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
+    $('.search-listing-view-link', clone)
+	.append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
     $$('listings').append(clone)
 }
 

@@ -142,20 +142,9 @@
 
 
 		<div id="tabs-4">
-
-
 		    <h1>
 			<span class="hilite">&nbsp;</span><span id="${slug}-settings-title">My Settings</span>
 		    </h1>
-
-
-		    <div class="message w40 center text-center">
-			<div class="error">
-			    Note:  Not all of these work all of the time.  Please be patient.
-			</div>
-		    </div>
-
-
 		    <div class="" id="${slug}-settings-pod">
 			<metal:include
 			     tal:define="schema settings_schema; slug slug"
