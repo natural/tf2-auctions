@@ -108,7 +108,7 @@ div.organizer-view {
 }
 
 div.organizer-view:hover {
-border:0.25em solid #847668;
+aa-border:0.25em solid #847668;
 }
 
 div.organizer-view .outline, div.items-view .outline, div.item-view .outline {
@@ -643,13 +643,23 @@ color:#898989;
 }
 
 
+/*
+
+
+
+new backpack styling
+
+
+
+*/
+
+
+/* any backpack view wrapping: just the border and bg */
 .bp-view {
 background-color:#2e2b2a;
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
 }
-
-
 
 /* any backpack */
 div.bp { }
@@ -657,61 +667,38 @@ div.bp { }
 /* full width backpack */
 div.bp-full {}
 
-div.bp-full div.bp-unplaced {
-width:67em;
-}
+/* specific width for the full sized backpack placed/unplaced wrappers */
+.any-full, div.bp-full div.bp-pages { width:58em; }
 
-div.bp-full div.bp-placed {
-overflow:hidden;
-width:67em;
-}
+/* specific width for the slim sized backpack placed/unplaced wrappers */
+.any-slim, div.bp-thin div.bp-pages, div.bp-slim div.bp-pages { width:29em; }
 
-div.bp-full div.bp-placed table.bp-placed {
-}
+/* hide any overflow so we can slide the tables left and right */
+div.bp-pages { overflow:hidden; }
 
-div.bp-full table.bp-unplaced td, div.bp-full table.bp-placed td {
-width:10%;
+
+div.bp td {
 background-color:#3c352e;
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
 }
-div.bp-full table.bp-unplaced td { background-color:#2E2B2A }
+div.bp table.bp-unplaced td { background-color:#2E2B2A }
 
-
-div.bp-full table.bp-unplaced td, div.bp-full table.bp-placed td {
--webkit-transition: border-color 0.35s ease-in-out;
--moz-transition-property: border-color;
--moz-transition-duration: 0.3s;
--moz-transition-timing-function: ease-in-out;
-}
-
-div.bp-full table.bp-unplaced td:hover, div.bp-full table.bp-placed td:hover {
-border:0.25em solid #847668;
-}
-
-
-div.bp-full table.bp-unplaced td > div, div.bp-full table.bp-placed td > div {
+div.bp td, div.bp td > div {
 height:4em !important;
 max-height:4em !important;
+max-width:5.15em !important;
 min-height:4em !important;
+min-width:5.15em !important;
 position:relative;
 text-align:center;
+width:5.15em !important;
 }
 
-div.bp-full table.bp-unplaced td > div > img, div.bp-full table.bp-placed td > div >img {
-a-border:1px dotted gray;
-}
-
-div.bp-nav {
-white-space:nowrap !important;
-}
 
 div.bp-nav span.non, div.bp-nav span.nav a {
 background-color:#766b5e;
-a-border-bottom:none !important;
 border-radius:0.25em; -moz-border-radius:0.25em; -webkit-border-radius:0.25em;
-a-height:1.5em;
-a-line-height:1.5em;
 padding:0.5em 0.75em 0.5em 0.75em;
 text-align:center;
 vertical-align:middle;
@@ -722,7 +709,6 @@ div.bp-nav span.nav a { color:#ece3cb; }
 div.bp-nav span.nav a:hover { background-color:#924738; color:#ece3cb; }
 div.bp-nav span.nav a:active  { color:#2a2725 !important;}
 
-
 div.bp-nav span.bp-count {
 color:#c8503c;
 display:inline-block;
@@ -730,4 +716,31 @@ font-size:135%;
 text-align:center;
 vertical-align:middle;
 width:2em;
+}
+
+
+/* more new bits */
+div.bp td.cannot-trade, div.bp td.active-listing, div.bp td.active-bid {
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
+a-border:0.25em solid #252221;
+}
+
+div.bp .active-listing { border-color:#9d302f !important; }
+div.bp .active-bid { border-color:#385c78 !important; }
+div.bp .cannot-trade { background-color:#252221 !important; }
+
+div.bp .selected {
+background-color:#ece3cb !important;
+border:0.25em solid #ece3cb !important;
+}
+
+
+div.bp td.outline {
+border:0.25em solid #847668 !important;
+}
+
+
+div.bp td.selected-delete {
+background-color:#9d302f !important;
+border:0.25em solid #9d302f !important;
 }

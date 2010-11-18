@@ -16,17 +16,22 @@
     <metal:main fill-slot="main" tal:define="slug 'listing-add'">
 	<h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Add a New Listing</h1>
 	<div class="organizer-view null" id="${slug}-own-backpack">
+
+	    <h3 id="${slug}-title-a">Your Backpack</h3>
 	    <metal:include
 		 tal:define="include_unplaced True; slug 'a'"
-		 metal:use-macro="context.organizer_parts.macros.item_backpack" />
+		 metal:use-macro="context.new_parts.macros.backpack_slim" />
+
 	    <h3 id="${slug}-title">
 		Your Listing <span id="${slug}-item-title-extra">(0 items)</span>
 	    </h3>
 	    <metal:include
 		 tal:define="slug slug+'-item'"
-		 metal:use-macro="context.organizer_parts.macros.item_chooser" />
+		 metal:use-macro="context.new_parts.macros.chooser_slim" />
 
 	    <div id="${slug}-fields" class="center">
+
+		<div class="any-slim center">
 		<label for="${slug}-fields">Description:</label>
  		<div class="message null"><div class="error" id="${slug}-description-error"></div></div>
 		<textarea id="${slug}-description" name="${slug}-description"></textarea>
@@ -48,26 +53,23 @@
 			<a href="#" class="nice">Click to Show Items</a>
 		    </span>
 		</div>
+		</div>
 
 		<div class="null" id="${slug}-min-bid-pod">
-		    <div>
-			Select the minimum items you will consider for
-			a trade. You can select up to 10 items.
-		    </div>
-		    <div class="organizer-view" id="${slug}-min-bid">
+		    <div class="" id="${slug}-min-bid">
 			<metal:include
-			     tal:define="slug 'mb'; rows 5; cols 5"
-			     metal:use-macro="context.organizer_parts.macros.item_backpack_narrow" />
-			<label id="${slug}-min-bid-title">
+			     tal:define="slug 'mb'; rows 5; cols 5;"
+			     metal:use-macro="context.new_parts.macros.backpack_thin" />
+			<label id="${slug}-min-bid-title" class="center any-slim">
 			    Minimum Bid <span id="${slug}-min-bid-title-extra">(0 items)</span>
 			</label>
 			<metal:include
 			     tal:define="slug 'listing-add-min-bid'"
-			     metal:use-macro="context.organizer_parts.macros.item_chooser" />
+			     metal:use-macro="context.new_parts.macros.chooser_slim" />
 		    </div>
 		</div>
 
-		<div class="center mt2">
+		<div class="center mt2 any-slim">
                     <label for="" id="${slug}-terms-desc">Site Rules, Terms and Conditions:</label>
  		    <div class="message null">
 			<div class="error" id="${slug}-terms-error"></div>

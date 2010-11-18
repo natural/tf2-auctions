@@ -71,7 +71,7 @@
                     <a id="${slug}-quick-backpack" class="button" href="/backpack">Backpacks</a>
 		    <a id="${slug}-all-items" class="button" href="/all-items">All Items</a>
 		    <a id="${slug}-search-link" class="button" href="/search">Search</a>
-		    <a id="${slug}-login-link" class="button null" href="/login">Login</a>
+		    <a id="${slug}-login-link" class="button" href="/login">Login</a>
 		    <a id="${slug}-logout-link" class="button null" href="${controller.logout_url()}">Logout</a>
 		</span>
 	    </div>

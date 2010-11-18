@@ -74,55 +74,32 @@ var clearBackpack = function() {
 
 
 var putBackpack = function(backpack, listings, bids) {
-    var bpNav = new NewBackpackNavigator({slug: 'bv'})
     var bpTool = new NewBackpackItemsTool({
 	items: backpack,
 	listingUids: listingItemsUids(listings),
 	bidUids: bidItemsUids(bids),
-	slug: 'bv'
+	slug: 'bv',
+	navigator: true,
+	toolTips: true,
+	select: true,
+	selectMulti: true,
+	outlineHover: true
     })
-
     new AuthProfileLoader({
 	suffix: '?settings=1&complete=1',
 	success: function(profile) {
-	    bpNav.init()
 	    bpTool.init(profile.settings)
 	},
 	error: function(request, status, error) {
-	    bpNav.init()
 	    bpTool.init(null)
 	}
     })
     if (!putBackpack.initOnce) {
-	var schema = new SchemaTool()
-	var tipTool = new TooltipView(schema)
-	var hoverItem = function(e) {
-            tipTool.show(e)
-            try {
-		var data = $('img', this).data('node')
-       		if (!data.flag_cannot_trade) {
-		    $(this).addClass('outline')
-		}
-            } catch (e) {}
-	}
-	var unhoverItem = function(e) {
-            tipTool.hide(e)
-	}
-	$$('backpack-inner td').live('mouseover mouseout', function(e) {
-	    if (e.type=='mouseover') { hoverItem(e) }
-	    else { unhoverItem(e) }
-	})
 	$$('backpack-inner').fadeIn()
-	// stupid tweaks
-	$$('backpack-pod')
-	    .width($$('backpack-pod').width()+32)
-	$('#backpack-tools-profile')
-	    .width($$('backpack-pod tbody:visible').first().width()-12)
 	putBackpack.initOnce = true
     } else {
-	bpNav.reset()
+	bpTool.navigator.reinit()
     }
-//    $('#backpack-viewer-backpack-inner').slideDown()
 }
 
 var showSelection = function(event) {

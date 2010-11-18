@@ -1,31 +1,197 @@
 <metal:parts>
 
 
-    <metal:macro
-	 metal:define-macro="backpack_full"
-	 tal:define="slug slug | '';">
+<!--
 
-	<div class="bp bp-full pt05">
-	    <div><h3></h3></div>
+slim chooser:  default 2 rows * 5 cols
 
-	    <div class="bp-unplaced null center" id="bp-unplaced-${slug}">
-		<label>New Items:</label>
-		<table class="bp-unplaced w100">
-		    <tbody>
-			<tr><!-- prototype  -->
-			    <metal:loop tal:repeat="col range(10)">
-				<td><div></div></td>
-			    </metal:loop>
-			</tr>
-		    </tbody>
-		</table>
+-->
+<metal:macro
+     metal:define-macro="chooser_slim"
+     tal:define="slug slug | '';
+		 rows rows | 2;
+		 cols cols | 5;
+		 ordered ordered | False; ">
+    <div class="bp bp-slim" id="bp-chooser-${slug}">
+	<div><span class="help"></span></div>
+	<table class="bp-chooser center">
+	    <caption>
+		<div class="message null">
+		    <div class="error" id="${slug}-chooser-error"></div>
+		</div>
+	    </caption>
+	    <tbody>
+		<metal:loop tal:repeat="row range(rows)">
+		    <tr>
+			<metal:loop tal:repeat="col range(cols)">
+			    <td id="${slug}-${(row*cols)+col+1}"><div></div></td>
+			</metal:loop>
+		    </tr>
+		</metal:loop>
+	    </tbody>
+	</table>
+    </div>
+</metal:macro>
+
+
+
+
+<!--
+
+thin backpack: dynamic rows, cols, and pages
+
+-->
+<metal:macro
+     metal:define-macro="backpack_thin"
+     tal:define="slug slug | '';
+		 item_count item_count | 206;
+		 rows rows | 4;
+		 cols cols | 4; ">
+    <div class="bp bp-thin" id="bp-${slug}">
+	<div><h3></h3></div>
+	<div class="bp-view">
+	    <div class="bp-ordered" id="bp-ordered-${slug}">
+		<div class="bp-pages center">
+		    <div><span class="help"></span></div>
+		    <metal:dynamic tal:define="pages range(1+(item_count / (rows*cols)));
+					       rows range(rows);
+					       cols range(cols);
+					       cell_counter itertools.count(1)">
+			<metal:loop tal:repeat="page pages">
+			    <table class="bp-ordered bp-${page+1} bp-page-${slug} ${page and 'null' or ''}">
+				<tbody>
+				    <tr tal:repeat="row rows">
+					<td tal:repeat="col cols" id="${slug}${cell_counter.next()}">
+					    <div></div>
+					</td>
+				    </tr>
+				</tbody>
+			    </table>
+			</metal:loop>
+		    </metal:dynamic>
+		    <metal:nav metal:use-macro="macros.backpack_navigator" />
+		</div>
 	    </div>
+	</div>
+    </div>
+</metal:macro>
 
-	    <div class="bp-placed p05 center" id="bp-placed-${slug}">
-		<label>Existing Items:</label>
 
-		<div class="bp-pages w100">
-		    <table class="bp-placed bp-1 w100 bp-page-${slug}">
+
+
+<!--
+
+slim backpack: 5 rows * 5 cols * 8 pages
+
+-->
+<metal:macro
+     metal:define-macro="backpack_slim"
+     tal:define="slug slug | ''; ">
+
+    <div class="bp bp-slim" id="bp-${slug}">
+        <div><h3></h3></div>
+	<div><span class="help"></span></div>
+	<div class="bp-view">
+	    <metal:unplaced metal:use-macro="macros.backpack_unplaced" />
+	    <div class="bp-placed p05" id="bp-placed-${slug}">
+		<div class="bp-pages center">
+		    <table class="bp-placed bp-1 bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}1"><div></div></td><td id="${slug}2"><div></div></td><td id="${slug}3"><div></div></td><td id="${slug}4"><div></div></td><td id="${slug}5"><div></div></td></tr>
+			    <tr><td id="${slug}11"><div></div></td><td id="${slug}12"><div></div></td><td id="${slug}13"><div></div></td><td id="${slug}14"><div></div></td><td id="${slug}15"><div></div></td></tr>
+			    <tr><td id="${slug}21"><div></div></td><td id="${slug}22"><div></div></td><td id="${slug}23"><div></div></td><td id="${slug}24"><div></div></td><td id="${slug}25"><div></div></td></tr>
+			    <tr><td id="${slug}31"><div></div></td><td id="${slug}32"><div></div></td><td id="${slug}33"><div></div></td><td id="${slug}34"><div></div></td><td id="${slug}35"><div></div></td></tr>
+			    <tr><td id="${slug}41"><div></div></td><td id="${slug}42"><div></div></td><td id="${slug}43"><div></div></td><td id="${slug}44"><div></div></td><td id="${slug}45"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-2 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}6" ><div></div></td><td id="${slug}7" ><div></div></td><td id="${slug}8" ><div></div></td><td id="${slug}9" ><div></div></td><td id="${slug}10"><div></div></td></tr>
+			    <tr><td id="${slug}16"><div></div></td><td id="${slug}17"><div></div></td><td id="${slug}18"><div></div></td><td id="${slug}19"><div></div></td><td id="${slug}20"><div></div></td></tr>
+			    <tr><td id="${slug}26"><div></div></td><td id="${slug}27"><div></div></td><td id="${slug}28"><div></div></td><td id="${slug}29"><div></div></td><td id="${slug}30"><div></div></td></tr>
+			    <tr><td id="${slug}36"><div></div></td><td id="${slug}37"><div></div></td><td id="${slug}38"><div></div></td><td id="${slug}39"><div></div></td><td id="${slug}40"><div></div></td></tr>
+			    <tr><td id="${slug}46"><div></div></td><td id="${slug}47"><div></div></td><td id="${slug}48"><div></div></td><td id="${slug}49"><div></div></td><td id="${slug}50"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-3 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}51"><div></div></td><td id="${slug}52"><div></div></td><td id="${slug}53"><div></div></td><td id="${slug}54"><div></div></td><td id="${slug}55"><div></div></td></tr>
+			    <tr><td id="${slug}61"><div></div></td><td id="${slug}62"><div></div></td><td id="${slug}63"><div></div></td><td id="${slug}64"><div></div></td><td id="${slug}65"><div></div></td></tr>
+			    <tr><td id="${slug}71"><div></div></td><td id="${slug}72"><div></div></td><td id="${slug}73"><div></div></td><td id="${slug}74"><div></div></td><td id="${slug}75"><div></div></td></tr>
+			    <tr><td id="${slug}81"><div></div></td><td id="${slug}82"><div></div></td><td id="${slug}83"><div></div></td><td id="${slug}84"><div></div></td><td id="${slug}85"><div></div></td></tr>
+			    <tr><td id="${slug}91"><div></div></td><td id="${slug}92"><div></div></td><td id="${slug}93"><div></div></td><td id="${slug}94"><div></div></td><td id="${slug}95"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-4 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}56"><div></div></td><td id="${slug}57"><div></div></td><td id="${slug}58"><div></div></td><td id="${slug}59"><div></div></td><td id="${slug}60"><div></div></td></tr>
+			    <tr><td id="${slug}66"><div></div></td><td id="${slug}67"><div></div></td><td id="${slug}68"><div></div></td><td id="${slug}69"><div></div></td><td id="${slug}70"><div></div></td></tr>
+			    <tr><td id="${slug}76"><div></div></td><td id="${slug}77"><div></div></td><td id="${slug}78"><div></div></td><td id="${slug}79"><div></div></td><td id="${slug}80"><div></div></td></tr>
+			    <tr><td id="${slug}86"><div></div></td><td id="${slug}87"><div></div></td><td id="${slug}88"><div></div></td><td id="${slug}89"><div></div></td><td id="${slug}90"><div></div></td></tr>
+			    <tr><td id="${slug}96"><div></div></td><td id="${slug}97"><div></div></td><td id="${slug}98"><div></div></td><td id="${slug}99"><div></div></td><td id="${slug}100"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-5 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}101"><div></div></td><td id="${slug}102"><div></div></td><td id="${slug}103"><div></div></td><td id="${slug}104"><div></div></td><td id="${slug}105"><div></div></td></tr>
+			    <tr><td id="${slug}111"><div></div></td><td id="${slug}112"><div></div></td><td id="${slug}113"><div></div></td><td id="${slug}114"><div></div></td><td id="${slug}115"><div></div></td></tr>
+			    <tr><td id="${slug}121"><div></div></td><td id="${slug}122"><div></div></td><td id="${slug}123"><div></div></td><td id="${slug}124"><div></div></td><td id="${slug}125"><div></div></td></tr>
+			    <tr><td id="${slug}131"><div></div></td><td id="${slug}132"><div></div></td><td id="${slug}133"><div></div></td><td id="${slug}134"><div></div></td><td id="${slug}135"><div></div></td></tr>
+			    <tr><td id="${slug}141"><div></div></td><td id="${slug}142"><div></div></td><td id="${slug}143"><div></div></td><td id="${slug}144"><div></div></td><td id="${slug}145"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-6 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}106"><div></div></td><td id="${slug}107"><div></div></td><td id="${slug}108"><div></div></td><td id="${slug}109"><div></div></td><td id="${slug}110"><div></div></td></tr>
+			    <tr><td id="${slug}116"><div></div></td><td id="${slug}117"><div></div></td><td id="${slug}118"><div></div></td><td id="${slug}119"><div></div></td><td id="${slug}120"><div></div></td></tr>
+			    <tr><td id="${slug}126"><div></div></td><td id="${slug}127"><div></div></td><td id="${slug}128"><div></div></td><td id="${slug}129"><div></div></td><td id="${slug}130"><div></div></td></tr>
+			    <tr><td id="${slug}136"><div></div></td><td id="${slug}137"><div></div></td><td id="${slug}138"><div></div></td><td id="${slug}139"><div></div></td><td id="${slug}140"><div></div></td></tr>
+			    <tr><td id="${slug}146"><div></div></td><td id="${slug}147"><div></div></td><td id="${slug}148"><div></div></td><td id="${slug}149"><div></div></td><td id="${slug}150"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-7 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}151"><div></div></td><td id="${slug}152"><div></div></td><td id="${slug}153"><div></div></td><td id="${slug}154"><div></div></td><td id="${slug}155"><div></div></td></tr>
+			    <tr><td id="${slug}161"><div></div></td><td id="${slug}162"><div></div></td><td id="${slug}163"><div></div></td><td id="${slug}164"><div></div></td><td id="${slug}165"><div></div></td></tr>
+			    <tr><td id="${slug}171"><div></div></td><td id="${slug}172"><div></div></td><td id="${slug}173"><div></div></td><td id="${slug}174"><div></div></td><td id="${slug}175"><div></div></td></tr>
+			    <tr><td id="${slug}181"><div></div></td><td id="${slug}182"><div></div></td><td id="${slug}183"><div></div></td><td id="${slug}184"><div></div></td><td id="${slug}185"><div></div></td></tr>
+			    <tr><td id="${slug}191"><div></div></td><td id="${slug}192"><div></div></td><td id="${slug}193"><div></div></td><td id="${slug}194"><div></div></td><td id="${slug}195"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-8 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}156"><div></div></td><td id="${slug}157"><div></div></td><td id="${slug}158"><div></div></td><td id="${slug}159"><div></div></td><td id="${slug}160"><div></div></td></tr>
+			    <tr><td id="${slug}166"><div></div></td><td id="${slug}167"><div></div></td><td id="${slug}168"><div></div></td><td id="${slug}169"><div></div></td><td id="${slug}170"><div></div></td></tr>
+			    <tr><td id="${slug}176"><div></div></td><td id="${slug}177"><div></div></td><td id="${slug}178"><div></div></td><td id="${slug}179"><div></div></td><td id="${slug}180"><div></div></td></tr>
+			    <tr><td id="${slug}186"><div></div></td><td id="${slug}187"><div></div></td><td id="${slug}188"><div></div></td><td id="${slug}189"><div></div></td><td id="${slug}190"><div></div></td></tr>
+			    <tr><td id="${slug}196"><div></div></td><td id="${slug}197"><div></div></td><td id="${slug}198"><div></div></td><td id="${slug}199"><div></div></td><td id="${slug}200"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <metal:nav metal:use-macro="macros.backpack_navigator" />
+		</div>
+            </div>
+        </div>
+    </div>
+</metal:macro>
+
+
+
+<!--
+
+full width backpack: 5 rows * 10 cols * 4 pages
+
+-->
+<metal:macro
+     metal:define-macro="backpack_full"
+     tal:define="slug slug | '';">
+
+    <div class="bp bp-full" id="bp-${slug}">
+        <div><h3></h3></div>
+	<div class="bp-view">
+	    <metal:unplaced metal:use-macro="macros.backpack_unplaced" />
+	    <div class="bp-placed p05" id="bp-placed-${slug}">
+		<div class="bp-pages center">
+		    <table class="bp-placed center bp-1 bp-page-${slug}">
 			   <tbody>
 			       <tr><td id="${slug}1"><div></div></td><td id="${slug}2"><div></div></td><td id="${slug}3"><div></div></td><td id="${slug}4"><div></div></td><td id="${slug}5"><div></div></td>      <td id="${slug}6" ><div></div></td><td id="${slug}7" ><div></div></td><td id="${slug}8" ><div></div></td><td id="${slug}9" ><div></div></td><td id="${slug}10"><div></div></td></tr>
 			       <tr><td id="${slug}11"><div></div></td><td id="${slug}12"><div></div></td><td id="${slug}13"><div></div></td><td id="${slug}14"><div></div></td><td id="${slug}15"><div></div></td> <td id="${slug}16"><div></div></td><td id="${slug}17"><div></div></td><td id="${slug}18"><div></div></td><td id="${slug}19"><div></div></td><td id="${slug}20"><div></div></td></tr>
@@ -34,7 +200,7 @@
 			       <tr><td id="${slug}41"><div></div></td><td id="${slug}42"><div></div></td><td id="${slug}43"><div></div></td><td id="${slug}44"><div></div></td><td id="${slug}45"><div></div></td> <td id="${slug}46"><div></div></td><td id="${slug}47"><div></div></td><td id="${slug}48"><div></div></td><td id="${slug}49"><div></div></td><td id="${slug}50"><div></div></td></tr>
 			   </tbody>
 		    </table>
-		    <table class="bp-placed bp-2 null w100 bp-page-${slug}">
+		    <table class="bp-placed center bp-2 null bp-page-${slug}">
 			<tbody>
 			    <tr><td id="${slug}51"><div></div></td><td id="${slug}52"><div></div></td><td id="${slug}53"><div></div></td><td id="${slug}54"><div></div></td><td id="${slug}55"><div></div></td><td id="${slug}56"><div></div></td><td id="${slug}57"><div></div></td><td id="${slug}58"><div></div></td><td id="${slug}59"><div></div></td><td id="${slug}60"><div></div></td></tr>
 			    <tr><td id="${slug}61"><div></div></td><td id="${slug}62"><div></div></td><td id="${slug}63"><div></div></td><td id="${slug}64"><div></div></td><td id="${slug}65"><div></div></td><td id="${slug}66"><div></div></td><td id="${slug}67"><div></div></td><td id="${slug}68"><div></div></td><td id="${slug}69"><div></div></td><td id="${slug}70"><div></div></td></tr>
@@ -43,7 +209,7 @@
 			    <tr><td id="${slug}91"><div></div></td><td id="${slug}92"><div></div></td><td id="${slug}93"><div></div></td><td id="${slug}94"><div></div></td><td id="${slug}95"><div></div></td><td id="${slug}96"><div></div></td><td id="${slug}97"><div></div></td><td id="${slug}98"><div></div></td><td id="${slug}99"><div></div></td><td id="${slug}100"><div></div></td></tr>
 			</tbody>
 		    </table>
-		    <table class="bp-placed bp-3 null w100 bp-page-${slug}">
+		    <table class="bp-placed center bp-3 null bp-page-${slug}">
 			<tbody>
 			    <tr><td id="${slug}101"><div></div></td><td id="${slug}102"><div></div></td><td id="${slug}103"><div></div></td><td id="${slug}104"><div></div></td><td id="${slug}105"><div></div></td><td id="${slug}106"><div></div></td><td id="${slug}107"><div></div></td><td id="${slug}108"><div></div></td><td id="${slug}109"><div></div></td><td id="${slug}110"><div></div></td></tr>
 			    <tr><td id="${slug}111"><div></div></td><td id="${slug}112"><div></div></td><td id="${slug}113"><div></div></td><td id="${slug}114"><div></div></td><td id="${slug}115"><div></div></td><td id="${slug}116"><div></div></td><td id="${slug}117"><div></div></td><td id="${slug}118"><div></div></td><td id="${slug}119"><div></div></td><td id="${slug}120"><div></div></td></tr>
@@ -52,7 +218,7 @@
 			    <tr><td id="${slug}141"><div></div></td><td id="${slug}142"><div></div></td><td id="${slug}143"><div></div></td><td id="${slug}144"><div></div></td><td id="${slug}145"><div></div></td><td id="${slug}146"><div></div></td><td id="${slug}147"><div></div></td><td id="${slug}148"><div></div></td><td id="${slug}149"><div></div></td><td id="${slug}150"><div></div></td></tr>
 			</tbody>
 		    </table>
-		    <table class="bp-placed bp-4 null w100 bp-page-${slug}">
+		    <table class="bp-placed center bp-4 null bp-page-${slug}">
 			<tbody>
 			    <tr><td id="${slug}151"><div></div></td><td id="${slug}152"><div></div></td><td id="${slug}153"><div></div></td><td id="${slug}154"><div></div></td><td id="${slug}155"><div></div></td><td id="${slug}156"><div></div></td><td id="${slug}157"><div></div></td><td id="${slug}158"><div></div></td><td id="${slug}159"><div></div></td><td id="${slug}160"><div></div></td></tr>
 			    <tr><td id="${slug}161"><div></div></td><td id="${slug}162"><div></div></td><td id="${slug}163"><div></div></td><td id="${slug}164"><div></div></td><td id="${slug}165"><div></div></td><td id="${slug}166"><div></div></td><td id="${slug}167"><div></div></td><td id="${slug}168"><div></div></td><td id="${slug}169"><div></div></td><td id="${slug}170"><div></div></td></tr>
@@ -61,19 +227,56 @@
 			    <tr><td id="${slug}191"><div></div></td><td id="${slug}192"><div></div></td><td id="${slug}193"><div></div></td><td id="${slug}194"><div></div></td><td id="${slug}195"><div></div></td><td id="${slug}196"><div></div></td><td id="${slug}197"><div></div></td><td id="${slug}198"><div></div></td><td id="${slug}199"><div></div></td><td id="${slug}200"><div></div></td></tr>
 			</tbody>
 		    </table>
+		    <metal:nav metal:use-macro="macros.backpack_navigator" />
 		</div>
+            </div>
+        </div>
+    </div>
+</metal:macro>
 
-		<div class="bp-nav w100 text-right mt1 build-font pb05" id="bp-nav-${slug}">
-		    <span class="non">&lt;</span>
-		    <span class="nav"><a onclick="return false" href="#">&lt;</a></span>
-		    <span class="bp-count" id="bp-count-${slug}">A/B</span>
-		    <span class="non">&gt;</span>
-		    <span class="nav"><a onclick="return false" href="#">&gt;</a></span>
-		</div>
 
-	    </div>
-	</div>
-    </metal:macro>
+<!--
+
+backpack navigator buttons
+
+-->
+<metal:macro metal:define-macro="backpack_navigator">
+    <div class="bp-nav text-right mt1 build-font pb05 mr05" id="bp-nav-${slug}">
+	<span class="non">&lt;</span>
+	<span class="nav"><a onclick="return false" href="#">&lt;</a></span>
+	<span class="bp-count" id="bp-count-${slug}">A/B</span>
+	<span class="non">&gt;</span>
+	<span class="nav"><a onclick="return false" href="#">&gt;</a></span>
+    </div>
+</metal:macro>
+
+
+
+
+<!--
+
+backpack chooser:  one prototypical row, default 10 cols
+
+-->
+<metal:macro
+     metal:define-macro="backpack_unplaced"
+     tal:define="cols cols | 10">
+
+    <div class="bp-unplaced null center" id="bp-unplaced-${slug}">
+	<label>New Items:</label>
+	<table class="bp-unplaced">
+	    <tbody>
+		<tr><!-- prototype  -->
+		    <metal:loop tal:repeat="col range(cols)">
+			<td><div></div></td>
+		    </metal:loop>
+		</tr>
+	    </tbody>
+	</table>
+    </div>
+</metal:macro>
+
+
 
 
 </metal:parts>

@@ -133,9 +133,11 @@
 			<h2 class="null" id="${slug}-backpack-loading"></h2>
 			<div class="organizer-view null" id="${slug}-backpack-inner">
 			    <h2 class="null" id="${slug}-backpack-none"></h2>
-			    <metal:include
-				 tal:define="include_unplaced True"
-				 metal:use-macro="context.organizer_parts.macros.item_backpack_wide" />
+
+			<metal:include
+			     tal:define="include_unplaced True; slug slug"
+			     metal:use-macro="context.new_parts.macros.backpack_full" />
+
 			</div>
 		    </div>
 		</div>

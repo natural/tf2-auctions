@@ -73,10 +73,13 @@ var itemUtil = function(item, schema) {
 	    return !(item.flag_cannot_trade) && !(item.flag_active_listing) && !(item.flag_active_bid)
 	},
 	equippedTag: function() {
-	    return '<span style="display:none" class="badge equipped">Equipped</span>'
+	    return '<span class="badge equipped">Equipped</span>'
 	},
 	quantityTag: function(q) {
-	    return '<span style="display:none" class="badge quantity">{0}</span>'.fs(q)
+	    return '<span class="badge quantity">{0}</span>'.fs(q)
+	},
+	jewelTag: function(c) {
+	    return '<span class="jewel jewel-{0}">&nbsp;</span>'.fs(c)
 	},
 	img: function() {
 	    return makeImg({src: schema.itemDefs()[item['defindex']]['image_url'],
@@ -257,12 +260,13 @@ var ProfileTool = function(profile) {
     self.defaultUserAuthError = function(request, status, error) {
 	$('#content-login-link')
 	    .attr('href', '/login?next=' + encodeURIComponent(window.location.href))
-	    .fadeIn()
 	$('#content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
     }
 
     self.defaultUserAuthOkay = function() {
-        $('#content-user-buttons, #content-logout-link, #content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
+        //$('#content-user-buttons, #content-logout-link, #content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
+	$('#content-user-buttons, #content-logout-link').fadeIn()
+	$('#content-login-link').fadeAway()
         $('#content-player-profile-link').attr('href', self.defaultUrl())
 	self.put()
     }

@@ -35,7 +35,8 @@
 		    <span class="null" id="${slug}-backpack-loading"></span>
 		    &nbsp;
 		</h1>
-		<div class="mt1 center w100 null" id="${slug}-backpack-inner">
+
+		<div class="mt05 center w100 null" id="${slug}-backpack-inner">
 		    <h2 class="null" id="${slug}-backpack-none"></h2>
 			<metal:include
 			     tal:define="include_unplaced True; slug 'bv'; "
