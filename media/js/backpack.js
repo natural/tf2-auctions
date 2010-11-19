@@ -51,246 +51,9 @@ var formatCalcMap = {
 }
 
 
-var BackpackItemsTool = function(items, listingUids, bidUids, slug) {
-    var self = this
-
-    self.init = function(settings, cols) {
-        var schema = new SchemaTool()
-	var newIdx = -1, toolDefs = schema.tools(), actionDefs = schema.actions()
-	var settingV = settingsView(settings)
-	cols = cols || 5
-
-	$.each(items, function(index, item) {
-	    item.flag_active_listing = (item.id in listingUids)
-	    item.flag_active_bid = (item.id in bidUids)
-
-	    var iutil = itemUtil(item, schema)
-	    if (iutil.pos() > 0) {
-		var ele = $('#' + slug + iutil.pos() + ' div').append(iutil.img())
-		var img = $('img:last', ele).data('node', item)
-		var def = item['defindex']
-
-		if (iutil.isEquipped() && settingV.showEquipped ) {
-		    img.addClass('equipped equipped-'+def).after(iutil.equippedTag())
-		    img.removeClass('unequipped-'+def)
-		} else {
-		    img.addClass('unequipped-'+def)
-		    img.removeClass('equipped equipped-'+def)
-		}
-		if (iutil.canTrade()) {
-		    ele.parent('td').removeClass('cannot-trade active-listing active-bid')
-		    if (settingV.showAngrySalad) {
-			ele.parent()
-			    .addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
-		    }
-		} else {
-		    ele.parent('td').addClass('cannot-trade')
-		    if (item.flag_active_listing) {
-			ele.parent('td').addClass('active-listing')
-		    } else if (item.flag_active_bid) {
-			ele.parent('td').addClass('active-bid')
-		    }
-		}
-		var paintColor = iutil.painted()
-		if (paintColor && settingV.showPainted) {
-		    img.before('<span class="jewel jewel-{0}">&nbsp;</span>'.fs(paintColor))
-		}
-
-	    } else {
-		newIdx += 1
-		if ($('#unplaced-backpack-' + slug + ' table.unplaced td:not(:has(img))').length == 0) {
-		    var cells = new Array(cols+1).join('<td><div></div></td>')
-		    $('#unplaced-backpack-' + slug + ' table.unplaced').append('<tbody><tr>' + cells + '</tr></tbody>')
-		}
-		$('#unplaced-backpack-' + slug + ' table.unplaced td:eq('+newIdx+') div').append(iutil.img())
-		var ele = $('#unplaced-backpack-' + slug + ' table.unplaced td img:last')
-		ele.data('node', item)
-		if (iutil.canTrade()) {
-		    ele.parent().removeClass('cannot-trade active-listing active-bid')
-		    /* need to verify this against unplaced items */
-		    if (settingV.showAngrySalad) {
-			ele
-			    .parent()
-			    .parent()
-			    .addClass('border-quality-{0} background-quality-{1}'.fs( item.quality, item.quality ))
-		    }
-		} else {
-		    ele.parents('td').addClass('cannot-trade')
-		    if (item.flag_active_listing) {
-			ele.parents('td').addClass('active-listing')
-		    } else if (item.flag_active_bid) {
-			ele.parents('td').addClass('active-bid')
-		    }
-		}
-	    }
-	    if (((item['defindex'] in toolDefs) || (item['defindex'] in actionDefs)) && settingV.showUseCount ) {
-		if (img) {
-		    img.before('<span class="badge quantity">' + item['quantity'] + '</span>')
-		}
-	    }
-	})
-	$('#unplaced-backpack-' + slug + ', #backpack-' + slug + ' label.null').toggle(newIdx > -1)
-	$('#unplaced-backpack-{0} table.unplaced td img, #backpack-{1} table.backpack td img, span.equipped'.fs(slug, slug)).fadeIn('slow')
-	$('#backpack-listing').fadeIn()
-    }
-}
-
-
-var BackpackNavigator = function(slug) {
-    var self = this
-    var current = 1, count = $('#backpack-' + slug + ' table.backpack tbody').length
-
-    self.navigate = function(event, offset) {
-	if ((current + offset) > 0 && (current + offset <= count)) {
-	    current += offset
-	    $('#backpack-' + slug + ' tbody').hide()
-	    $('#backpack-' + slug + ' .backpack-page-' + current).delay(750).show()
-	    self.redisplay()
-	}
-	return false
-    }
-
-    // not really "redisplay" but "reset-nav-buttons"
-    self.redisplay = function () {
-	$('#backpack-pagecount-' + slug).text(current + '/' + count)
-	if (current == 1) {
-	    $('#backpack-nav-' + slug + ' .nonav:first').show()
-	    $('#backpack-nav-' + slug + ' .nav:first').hide()
-	} else {
-	    $('#backpack-nav-' + slug + ' .nonav:first').hide()
-	    $('#backpack-nav-' + slug + ' .nav:first').show()
-	}
-	if (current == count) {
-	    $('#backpack-nav-' + slug + ' .nonav:last').show()
-	    $('#backpack-nav-' + slug + ' .nav:last').hide()
-	} else {
-	    $('#backpack-nav-' + slug + ' .nonav:last').hide()
-	    $('#backpack-nav-' + slug + ' .nav:last').show()
-	}
-    }
-
-    self.reset = function() {
-	current = 1
-	self.navigate(null, 0)
-    }
-
-    self.init = function() {
-	$('#backpack-nav-' + slug + ' .nav:first a').click(function (e) {
-	    return self.navigate(e, -1)})
-	$('#backpack-nav-' + slug + ' .nav:last a').click(function (e) {
-	    return self.navigate(e, 1)})
-	self.redisplay()
-    }
-}
-
-
-
-
-
-var BackpackChooser = function(options) {
-    var self = this
-    var backpack = options.backpack, listingUids = options.listingUids, bidUids = options.bidUids
-    var backpackSlug = options.backpackSlug, chooserSlug = options.chooserSlug
-
-    self.init = function(settings) {
-	var bn = new BackpackNavigator(backpackSlug)
-	var bp = new BackpackItemsTool(backpack, listingUids, bidUids, backpackSlug)
-	bn.init()
-	bp.init(settings)
-	self.initBackpack()
-	self.initDrag()
-	return false
-    }
-
-    self.initBackpack = function() {
-	var title = (typeof(options.title)=='undefined') ? 'Your Backpack' : options.title
-	var help = (typeof(options.help)=='undefined') ? 'Drag items from your backpack into the area below.' : options.help
-	var chooserHelp = (typeof(options.chooserHelp)=='undefined') ? 'To remove items, drag them to your backpack.  Double click removes, too.' : options.chooserHelp
-
-	var width = $('#backpack-' + backpackSlug + ' tbody').width()
-
-	$('#backpack-header-'  + backpackSlug + ' h3').first().html(title)
-	$('#backpack-header-' + backpackSlug + ' div').first().html(help)
-	$('#' + chooserSlug + '-chooser div').first().html(chooserHelp)
-
-	$('#backpack-tools-' + backpackSlug).width(width - 10)
-	$('#backpack-' + backpackSlug + ' label').width(width)
-	$('#unplaced-backpack-' + backpackSlug + ' label').width(width)
-	$('div.organizer-view table').mousedown(function() { return false })
-    }
-
-    self.updateCount = function() {
-	window.setTimeout(function() {
-	    var len = $('#' + chooserSlug + '-chooser img').length
-	    var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
-	    $('#' + chooserSlug + '-title-extra').text(txt)
-	}, 150)
-    }
-
-    self.initDrag = function() {
-	var dropMove = function(event, ui) {
-	    if ($(this).children().length > 0) { return false }
-	    $(this).parent().removeClass('selected')
-	    if (options.copy) {
-		var item = $($('div img', ui.draggable)).clone()
-		item.data('node', $('div img', ui.draggable).data('node'))
-	    } else {
-		var item = $('div img', ui.draggable)
-	    }
-	    $(this).append(item)
-	    item.data('original-cell', ui.draggable)
-	    $('img', this).css('margin-top', '0')
-	    var others = $("span.equipped:only-child, span.quantity:only-child, span.jewel", ui.draggable)
-	    $(this).append(others)
-	    $('#' + chooserSlug + '-chooser td, #backpack-' + backpackSlug + ' td').removeClass('selected outline')
-	    self.updateCount()
-	    if (options.afterDropMove) { options.afterDropMove(item) }
-	    if (options.copy && options.afterDropCopy) { options.afterDropCopy(item) }
-	}
-	var dragFromBackpack = function(event, ui) {
-	    var img = $('img', event.target) // source img, not the drag img
-            try {
-		var node = img.data('node')
-		return !(node.flag_cannot_trade) && !(node.flag_active_listing) && !(node.flag_active_bid)
-	    } catch (e) { return false }
-	}
-	var dragShow = function(event, ui) { ui.helper.addClass('selected') }
-	var dropOver = function(event, ui) { $(this).parent().addClass('outline') }
-	var dropOut = function(event, ui) { $(this).parent().removeClass('outline') }
-
-	$('#backpack-' + backpackSlug + ' td, #unplaced-backpack-' + backpackSlug + ' td')
-	    .draggable({
-		containment: $('#backpack-'+backpackSlug).parent(),
-		cursor: 'move',
-		drag: dragFromBackpack,
-		helper: 'clone',
-		start: dragShow})
-
-	$('#backpack-' + backpackSlug + ' td div, #unplaced-backpack-' + backpackSlug + 'td div')
-	    .droppable({
-		accept: '#' + chooserSlug + '-chooser td',
-		drop: dropMove,
-		out: dropOut,
-		over: dropOver})
-
-	$('#' + chooserSlug + '-chooser td')
-	    .draggable({
-		containment: $('#backpack-'+backpackSlug).parent(),
-		cursor: 'move',
-		drag: dragFromBackpack,
-		helper: 'clone',
-		start: dragShow})
-
-	$('#' + chooserSlug + '-chooser td div')
-	    .droppable({
-		accept: '#backpack-' + backpackSlug + ' td, #unplaced-backpack-' + backpackSlug + ' td',
-		drop: dropMove,
-		out: dropOut,
-		over: dropOver})
-    }
-}
-
-
+//
+// tool for formatting and showing a nice tooltip.
+//
 var TooltipView = function(schema) {
     var self = this
     var quals = schema.qualityMap()
@@ -391,12 +154,9 @@ var TooltipView = function(schema) {
 }
 
 
-
-
-
-
-
-
+//
+// tool for managing the navigation thru a view of backpack items.
+//
 var NewBackpackNavigator = function(options) {
     var self = this, slug = options.slug
     var outerContext = $('#bp-{0}'.fs(slug))
@@ -458,28 +218,9 @@ var NewBackpackNavigator = function(options) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
+// tool for showing items in a backpack.
+//
 var NewBackpackItemsTool = function(options) {
     var self = this
     var items = options.items
@@ -541,7 +282,10 @@ var NewBackpackItemsTool = function(options) {
 	if (showTooltips) {
 	    var schema = new SchemaTool()
 	    var tipTool = new TooltipView(schema)
-	    $('#bp-{0} td'.fs(slug)).hover(tipTool.show, tipTool.hide)
+	    // this is a very general selector that picks up just
+	    // about everything on the page that's backpack-ish,
+	    // including choosers:
+	    $('div.bp td').hover(tipTool.show, tipTool.hide)
 	}
 
 	var makeNav = options.navigator
@@ -645,8 +389,14 @@ var NewBackpackItemsTool = function(options) {
 
 }
 
+
+//
+// tool for showing a "chooser", which is a small area for selecting
+// items.
+//
 // NB: backpack choosers must be initialized *after* any corresponding
 // backpack item tool.
+//
 var NewBackpackChooser = function(options) {
     var self = this
     var title = options.title
@@ -672,11 +422,12 @@ var NewBackpackChooser = function(options) {
 	    $(this).append(item)
 	    item.data('original-cell', ui.draggable)
 	    $('img', this).css('margin-top', '0')
-	    var others = $("span.equipped:only-child, span.quantity:only-child, span.jewel", ui.draggable)
+	    var others = $('span.equipped:only-child, span.quantity:only-child, span.jewel', ui.draggable)
 	    $(this).append(others)
 	    $('#bp-chooser-{0} td, #bp-{1} td'.fs(chooserSlug, backpackSlug))
 		.removeClass('selected outline')
 	    self.updateCount()
+	    moveSalad(ui.draggable, $(this).parent())
 	    if (options.afterDropMove) { options.afterDropMove(item) }
 	    if (options.copy && options.afterDropCopy) { options.afterDropCopy(item) }
 	}
@@ -749,47 +500,32 @@ var NewBackpackChooser = function(options) {
 	}, 150)
     }
 
-
-
-}
-
-
-
-var Scraps = function() {
-    var backpack = options.backpack, listingUids = options.listingUids, bidUids = options.bidUids
-    var backpackSlug = options.backpackSlug, chooserSlug = options.chooserSlug
-
-    self.init = function(settings) {
-	var bn = new BackpackNavigator(backpackSlug)
-	var bp = new BackpackItemsTool(backpack, listingUids, bidUids, backpackSlug)
-	bn.init()
-	bp.init(settings)
-	self.initBackpack()
-	self.initDrag()
-	return false
+    self.moveToChooser = function(event) {
+	var source = $(event.target)
+	var target = $('#bp-chooser-{0} td div:empty'.fs(chooserSlug)).first()
+	var cell = source.parent().parent()
+	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
+	cell.removeClass('selected')
+	source.data('original-cell', cell)
+	var others = $('span.equipped, span.quantity, span.jewel', cell)
+	target.prepend(source)
+	target.append(others)
+	moveSalad(cell, target.parent())
+	if (options.afterDropMove) { options.afterDropMove(null) }
+	self.updateCount()
     }
 
-    self.initBackpack = function() {
-
-	var width = $('#backpack-' + backpackSlug + ' tbody').width()
-
-	$('#backpack-header-'  + backpackSlug + ' h3').first().html(title)
-	$('#backpack-header-' + backpackSlug + ' div').first().html(help)
-	$('#' + chooserSlug + '-chooser div').first().html(chooserHelp)
-
-	$('#backpack-tools-' + backpackSlug).width(width - 10)
-	$('#backpack-' + backpackSlug + ' label').width(width)
-	$('#unplaced-backpack-' + backpackSlug + ' label').width(width)
-	$('div.organizer-view table').mousedown(function() { return false })
+    self.moveToOriginal = function(event) {
+	var source = $(event.target)
+	var target = $('div', source.data('original-cell'))
+	if (target.length==1) {
+    	    var others = $('span.equipped, span.quantity, span.jewel', source.parent())
+	    moveSalad(source.parent().parent(), target.parent())
+	    target.append(source)
+	    target.append(others)
+    	    if (options.afterDropMove) { options.afterDropMove(null) }
+	    self.updateCount()
+	}
     }
-
-    self.updateCount = function() {
-	window.setTimeout(function() {
-	    var len = $('#' + chooserSlug + '-chooser img').length
-	    var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
-	    $('#' + chooserSlug + '-title-extra').text(txt)
-	}, 150)
-    }
-
 
 }

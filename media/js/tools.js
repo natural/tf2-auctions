@@ -494,6 +494,16 @@ var showTermsDialog = function(e) {
 }
 
 
+var moveClasses = function(source, target, expr) {
+    $.each(source.attr('class').split(' '), function(idx, name) {
+	if (name.match(expr)) { target.addClass(name); source.removeClass(name) }
+    })
+}
+
+var moveSalad = function(source, target) {
+    return moveClasses(source, target, /(border|background)-quality/)
+}
+
 var getHash = function() { return location.hash.slice(1) }
 
 

@@ -276,7 +276,11 @@ A50F79 Developer
 /*
     note that the background colors were manually selected from an
     opacity of 0.5 applied to the base (border) color while over an
-    div.organizer-view which had a bg color of #2E2B2A
+    div.organizer-view which had a bg color of #2E2B2A.
+
+    also note that the outline styling (via javascript hover events)
+    is only applied to specific (tradable) qualities.
+
 */
 .border-quality-0 { border-color:#B2B2B2 !important; } /* normal */
 .background-quality-0 { background-color:#706E6E !important; }
@@ -289,12 +293,25 @@ A50F79 Developer
 
 .border-quality-3  { border-color:#476291 !important; } /* vintage */
 .background-quality-3 { background-color:#6279a1 !important; }
+/* inverse on hover */
+td.border-quality-3.outline  { border-color: #6279a1 !important; }
+td.background-quality-3.outline { background-color:#476291 !important; }
+
 
 .border-quality-5  { border-color:#874FAD !important; } /* unusual */
 .background-quality-5 { background-color:#5A3C6B !important; }
+/* inverse on hover */
+td.border-quality-5.outline  { border-color:#5A3C6B !important; }
+td.background-quality-5.outline { background-color:#874FAD !important; }
+
+
 
 .border-quality-6  { border-color:#FFD800 !important; } /* unique */
 .background-quality-6 { background-color: #9D8617 !important; }
+/* inverse on hover */
+td.border-quality-6.outline {background-color:#FFD800 !important;}
+td.background-quality-6.outline { border-color: #9D8617 !important; }
+
 
 .border-quality-7  { border-color:#70B04A !important; } /* community */
 .background-quality-7  { background-color:#4F6D3A  !important; }
@@ -735,8 +752,8 @@ border:0.25em solid #ece3cb !important;
 }
 
 
-div.bp td.outline {
-border:0.25em solid #847668 !important;
+div.bp .outline {
+border:0.25em solid #847668;
 }
 
 

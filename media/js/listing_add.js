@@ -48,7 +48,7 @@ var BackpackListingTool = function(params) {
 	help: 'Drag items from your backpack into the area below.  Double click works, too.',
     })
 
-    var chTool = new NewBackpackChooser({
+    var chTool = self.chooser = new NewBackpackChooser({
 	backpackSlug: 'a',
 	help: 'Remove items by dragging them to your backpack.  Double click will remove, too.',
 	chooserSlug: 'listing-add-item',
@@ -190,32 +190,6 @@ var BackpackListingTool = function(params) {
 	}
 	return false
     }
-
-    self.moveItemToChooser = function(event) {
-	var source = $(event.target)
-	var target = $('#bp-chooser-listing-add-item td div:empty').first()
-	var cell = source.parent().parent()
-	if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
-	cell.removeClass('selected')
-	source.data('original-cell', cell)
-	var others = $('span.equipped, span.quantity, span.jewel', cell)
-	target.prepend(source)
-	target.append(others)
-	chTool.updateCount()
-	$$('item-chooser-error').parent().slideUp()
-    }
-
-    self.moveItemOriginal = function(event) {
-	var source = $(event.target)
-	var target = $('div', source.data('original-cell'))
-	if (target.length==1) {
-    	    var others = $('span.equipped, span.quantity, span.jewel', source.parent())
-	    target.append(source)
-	    target.append(others)
-	    chTool.updateCount()
-	}
-    }
-
 }
 
 
@@ -257,9 +231,12 @@ var backpackReady = function(backpack, listings, bids, profile) {
 	listingUids: listingItemsUids(listings),
 	bidUids: bidItemsUids(bids)
     })
-    $('#bp-placed-a td div img').live('dblclick', addTool.moveItemToChooser)
-    $('#bp-unplaced-a td div img').live('dblclick', addTool.moveItemToChooser)
-    $('#bp-chooser-listing-add-item td div img').live('dblclick', addTool.moveItemOriginal)
+    $('#bp-placed-a td div img')
+	.live('dblclick', addTool.chooser.moveToChooser)
+    $('#bp-unplaced-a td div img')
+	.live('dblclick', addTool.chooser.moveToChooser)
+    $('#bp-chooser-listing-add-item td div img')
+	.live('dblclick', addTool.chooser.moveToOriginal)
     siteMessage().fadeAway()
     addTool.show()
 }
@@ -302,5 +279,5 @@ $(document).ready(function() {
     new SchemaLoader({success: schemaReady})
     $$('min-bid-show a').click(showMinBid)
     $$('show-terms').click(showTermsDialog)
-    console.log('listing_add: 62 62 62')
+//    console.log('listing_add: 79 79 79')
 })

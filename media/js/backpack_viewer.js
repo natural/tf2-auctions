@@ -10,7 +10,7 @@ var showError = function(request, status, error) {
 var showSearch = function(results) {
     new SchemaLoader({
 	success: function() {
-	    siteMessage().fadeOut()
+	    siteMessage().hide()
 	    if (results.length == 0) {
 		$$('result-none').text('Your search did not match any players.')
 	    } else if (results.length == 1) {

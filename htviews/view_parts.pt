@@ -17,7 +17,7 @@ slim chooser:  default 2 rows * 5 cols
 	<table class="bp-chooser center">
 	    <caption>
 		<div class="message null">
-		    <div class="error" id="${slug}-chooser-error"></div>
+		    <div class="error" id="bp-chooser-${slug}-error"></div>
 		</div>
 	    </caption>
 	    <tbody>
