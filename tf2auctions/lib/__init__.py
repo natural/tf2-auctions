@@ -11,9 +11,21 @@ from google.appengine.ext.webapp import RequestHandler, Request, Response
 from google.appengine.ext.webapp.util import run_wsgi_app
 
 from simplejson import dumps as json_dumps, loads as json_loads
-from chameleon.zpt.loader import TemplateLoader
+from chameleon.zpt.loader import TemplateLoader as DefaultTemplateLoader
 
 from tf2auctions import features
+
+
+class TemplateLoader(DefaultTemplateLoader):
+    cache = {}
+
+    def load(self, filename, format='xml'):
+	key = (filename, format)
+	if key in self.cache:
+	    return self.cache[key]
+	info('DebugTemplateLoader(%s, %s)', filename, format)
+	tmpl = self.cache[key] = super(TemplateLoader, self).load(filename, format)
+	return tmpl
 
 
 def js_datetime(dt):
@@ -122,7 +134,9 @@ class View(LocalHandler):
     base_js = (
 	'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
 	'%s/%s' % (media_js_path, 'jquery.json-2.2.js'),
-	'%s/%s' % (media_js_path, 'jquery.ba-bbq.min.js'),
+	'%s/%s' % (media_js_path, 'jquery.ba-hashchange.min.js'),
+##	'%s/%s' % (media_js_path, 'jquery.ba-bbq.min.js'),
+
     )
 
     ## javascripts for every template; values are modified to include

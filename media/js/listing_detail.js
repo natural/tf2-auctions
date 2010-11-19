@@ -1,4 +1,3 @@
-// slug '#listing-detail-' defined in listing_detail.pt
 var $$ = function(suffix, next) { return $('#listing-detail-{0}'.fs(suffix), next) }
 var timeLeftId = null
 
@@ -148,23 +147,34 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	    $$('add-bid-min-bid-warn').text('Warning: Minimum bid not met').slideDown()
 	}
     }
-
-    var bc = new BackpackChooser(
-	{backpack: backpack,
-	 listingUids: listingItemsUids(listings),
-	 bidUids: bidItemsUids(bids),
+    var bpTool = new NewBackpackItemsTool({
+	items: backpack,
+	listingUids: listingItemsUids(listings),
+	bidUids: bidItemsUids(bids),
+	slug: 'listing-detail-bid',
+	navigator: true,
+	toolTips: true,
+	select: true,
+	outlineHover: true,
+	cols: 5,
+	help: 'foo'
+    })
+    var chTool = new NewBackpackChooser({
 	 backpackSlug: 'listing-detail-bid',
 	 chooserSlug: 'listing-detail-add-bid-item',
 	 afterDropMove: itemMoved,
-	 help: 'Drag items from your backpack to the bid area below.'})
+	 help: 'Drag items from your backpack to the bid area below.'
+    })
 
     new AuthProfileLoader({
 	suffix: '?settings=1',
 	success: function(profile) {
-	    bc.init(profile.settings)
+	    bpTool.init()
+	    chTool.init(profile.settings)
 	},
 	error: function(request, status, error) {
-	    bc.init()
+	    bpTool.init()
+	    chTool.init()
 	}
     })
 
@@ -195,7 +205,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	target.prepend(source)
 	target.append($('span.equipped, span.quantity, span.jewel', cell))
 	itemMoved(source)
-	bc.updateCount()
+	chTool.updateCount()
 	$$('add-bid-item-chooser-error').parent().slideUp()
     }
 
@@ -207,7 +217,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	    target.append(source)
 	    target.append(others)
 	    itemMoved(source)
-	    bc.updateCount()
+	    chTool.updateCount()
 	}
     }
 
@@ -808,4 +818,5 @@ $(document).ready(function() {
     $$('add-bid-success-view').click(function(){ window.location.reload() })
     siteMessage('Loading...')
     new SchemaLoader({success: schemaReady, error: schemaError})
+    console.log('listing_detail: 44')
 })

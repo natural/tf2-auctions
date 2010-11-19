@@ -38,7 +38,9 @@ margin-right:0.5em;
 text-align:center;
 }
 
-#backpack-nav-ac .pagecount {
-padding-left:0.25em;
-padding-right:0.25em;
+
+
+#bp-ac div.bp-pages {
+width:23.25em;
 }
+

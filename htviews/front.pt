@@ -28,7 +28,7 @@
 				     slug 'new-listings';
 				     use_created True;
 				     use_bids False"
-			 metal:use-macro="context.table_parts.macros.listings_large" />
+			 metal:use-macro="context.view_parts.macros.listings_large" />
 		</div>
 	    </div>
 	</div>

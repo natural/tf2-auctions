@@ -32,7 +32,7 @@
 		</div>
 	    </div>
 
-	    <div id="${slug}-basic" class="null mb05">
+	    <div id="${slug}-basic-link-pod" class="null mb05">
 		<a id="${slug}-basic-link" href="" onclick="return false">
 		    <h2>Back to Basic Search <span class="hi">&lt;&lt;</span></h2>
 		</a>
@@ -44,21 +44,20 @@
 		    <span class="help">Drag items to the search area below.  Double click works, too.
 		    </span>
 		    <metal:include
-			 tal:define="slug 'ac'"
-			 metal:use-macro="context.organizer_parts.macros.item_backpack_narrow" />
+			 tal:define="slug 'ac'; cols 4"
+			 metal:use-macro="context.view_parts.macros.backpack_thin" />
 		    <label>Your Search:</label>
 		    <span class="help">Double click an item to remove it or
 			<a href="#" id="${slug}-advanced-reset" onclick="return false">remove all</a>.
 		    </span>
 		    <metal:include
 			 tal:define="slug 'advanced-search'; rows 1; cols 4"
-			 metal:use-macro="context.organizer_parts.macros.item_chooser" />
-
+			 metal:use-macro="context.view_parts.macros.chooser_slim" />
 		</div>
 	    </div>
             <div id="${slug}-filters"><h2>Filters:</h2> <div id="${slug}-filter-inputs"></div></div>
 	    <div id="${slug}-sorts" class="mt1"><h2>Sort:</h2> <div id="${slug}-sort-inputs"></div></div>
-	    <div id="${slug}-advanced" class="mt1">
+	    <div id="${slug}-advanced-link-pod" class="mt1">
 		<a id="${slug}-advanced-link" href="" onclick="return false">
 		    <h2>Advanced <span class="hi">&gt;&gt;</span></h2>
 		</a>
@@ -71,7 +70,7 @@
 	    <div class="" id="${slug}-results-pod">
 		<metal:include
 		     tal:define="slug 'search'; use_minbid True; rows 2; cols 5"
-		     metal:use-macro="context.table_parts.macros.listings_large" />
+		     metal:use-macro="context.view_parts.macros.listings_large" />
 		<div class="w100 null" id="${slug}-nav-extra">
 		    <div class="float-right tools w100" id="${slug}-bottom-nav">
 			<div class="navs">

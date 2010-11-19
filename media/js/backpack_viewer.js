@@ -2,21 +2,15 @@ var $$ = function(suffix, next) { return $('#backpack-viewer-'+suffix, next) }
 var defaultSearch = 'Enter a player name or Steam ID'
 
 
-var PlayerSearchLoader = makeLoader({
-    prefix: 'http://tf2apiproxy.appspot.com/api/v1/search/',
-    dataType: 'jsonp',
-    name: 'PlayerSearchLoader'
-})
-
-
 var showError = function(request, status, error) {
     siteMessage('Error.  Lame').delay(3000).fadeOut()
 }
 
+
 var showSearch = function(results) {
-    siteMessage('Done.').delay(2000).fadeOut()
     new SchemaLoader({
 	success: function() {
+	    siteMessage().fadeOut()
 	    if (results.length == 0) {
 		$$('result-none').text('Your search did not match any players.')
 	    } else if (results.length == 1) {
@@ -34,33 +28,31 @@ var showSearch = function(results) {
 		    chooser.append('<option>{0}</option>'.fs(result.persona))
 		    $('option:last', chooser).data('result', result)
 		})
-	        $$('result-many-choose').fadeBack()
+                    $$('result-many').fadeIn()
 	    }
 	}
     })
 }
 
 
-
 var backpackReady = function(id64, name, backpack) {
     window.location.hash = id64
-    siteMessage('Backpack loaded.').fadeOut()
     if (!backpack.length || backpack[0]==null) {
-	$$('backpack-loading').text('Backpack is Private or Empty').fadeIn()
+	$$('backpack-title').html(hiliteSpan('Backpack is Private or Empty')).fadeIn()
 	clearBackpack()
+	siteMessage().fadeOut()
 	return
     }
+    siteMessage('Loading backpack...')
     var loadWrapper = function (listings) {
-	    clearBackpack()
-	    new BidsLoader({
-		suffix: id64,
-		success: function(bids) {
-		    $$('backpack-loading').fadeOut( function () {
-			$$('backpack-title').html(hiliteSpan('Backpack'))
-			putBackpack(backpack, listings, bids)
-		    })
-		}
-	    })
+	clearBackpack()
+	new BidsLoader({
+	    suffix: id64,
+	    success: function(bids) {
+		$$('backpack-title').html(hiliteSpan('Backpack - {0}'.fs(name)))
+		putBackpack(backpack, listings, bids)
+	    }
+	})
     }
     new ListingsLoader({suffix: id64, success: loadWrapper})
 }
@@ -85,6 +77,7 @@ var putBackpack = function(backpack, listings, bids) {
 	selectMulti: true,
 	outlineHover: true
     })
+
     new AuthProfileLoader({
 	suffix: '?settings=1&complete=1',
 	success: function(profile) {
@@ -94,6 +87,8 @@ var putBackpack = function(backpack, listings, bids) {
 	    bpTool.init(null)
 	}
     })
+
+    siteMessage().fadeOut()
     if (!putBackpack.initOnce) {
 	$$('backpack-inner').fadeIn()
 	putBackpack.initOnce = true
@@ -102,21 +97,29 @@ var putBackpack = function(backpack, listings, bids) {
     }
 }
 
+
 var showSelection = function(event) {
     try {
 	var data = $('option:selected', event.target).data('result')
     } catch (e) { return }
     if (data.id_type != 'id64') { return }
+
     var id64 = data.id
     siteMessage('Loading backpack...')
-    $$('backpack-title').text('')
-    $$('backpack-loading').text('Loading...').fadeIn()
-
     new BackpackLoader({
 	suffix: id64,
-	success: function(bp) { backpackReady(id64, data.persona, bp) }
+	success: function(bp) {
+	    backpackReady(id64, data.persona, bp)
+	}
     })
 }
+
+
+var PlayerSearchLoader = makeLoader({
+    prefix: 'http://tf2apiproxy.appspot.com/api/v1/search/',
+    dataType: 'jsonp',
+    name: 'PlayerSearchLoader'
+})
 
 
 var doSearch = function(value) {
@@ -125,10 +128,15 @@ var doSearch = function(value) {
     $$('search-controls').animate({'margin-left':0, 'width':'100%'})
     $$('result-none').text('')
     $$('result-one').html('')
-    $$('result-many-label').text('')
-    $$('result-many-choose').fadeAway()
+    $$('result-many').fadeOut()
+
     if (value.match(/\d{17}/)) {
-	showSearch([{id:value, persona:''}])
+	new StatusLoader({
+	    suffix: value,
+	    success: function(status) {
+		showSearch([{id:value, persona:status.name}])
+	    }
+	})
     } else {
 	new PlayerSearchLoader({
 	    suffix: value,
@@ -137,7 +145,6 @@ var doSearch = function(value) {
 	})
     }
 }
-
 
 
 $(function() {
@@ -149,6 +156,8 @@ $(function() {
 	    new ProfileTool().defaultUserAuthError(request, error, status)
 	}
     })
+
+    $$('result-many-choose').change(showSelection)
     $$('search-value').val(defaultSearch).select()
     $$('search').click(function() {
 	doSearch( $$('search-value').val() )
@@ -160,8 +169,6 @@ $(function() {
 	    return
 	}
     })
-    $$('result-many-choose').change(showSelection)
-    if ($.param.fragment()) {
-	doSearch($.param.fragment())
-    }
+
+    if (getHash()) { doSearch(getHash()) }
 })

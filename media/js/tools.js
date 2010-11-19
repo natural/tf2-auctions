@@ -9,7 +9,7 @@ if (typeof(console) == 'undefined') {
 String.prototype.fs = function() {
     var formatted = this
     for (var i=0; i<arguments.length; i++) {
-        formatted = formatted.replace('{' + i + '}', arguments[i])
+	formatted = formatted.replace('{' + i + '}', arguments[i])
     }
     return formatted
 }
@@ -119,15 +119,15 @@ var makeCell = function(v) { return '<td><div class="defindex-lazy">{0}</div></t
 var makeHovers = function(tool) {
     return {
 	enter: function(event) {
-            tool.show(event)
-            try {
+	    tool.show(event)
+	    try {
 		var data = $('div', this).data('node')
 		$(this).addClass('outline')
-            } catch (e) {}
+	    } catch (e) {}
 	},
 	leave: function(event) {
-            tool.hide(event)
-            $(this).removeClass('outline')
+	    tool.hide(event)
+	    $(this).removeClass('outline')
 	}
     }
 }
@@ -151,25 +151,29 @@ var makeLoader = function(config) {
     var cache = {}, prefix = config.prefix, name = config.name
     this.cache = cache
     return function(options) {
-        options = options || {}
-        var suffix = options.suffix
-        var url = prefix + (suffix || '')
-        var okay = function(data) {
-	    console.log(name, 'success', data)
+	options = options || {}
+	var suffix = options.suffix
+	var url = prefix + (suffix || '')
+	var okay = function(data) {
+	    if (config.debug || options.debug) {
+		console.log(name, 'success', data)
+	    }
 	    cache[url] = {data:data}
     	    var cb = options.success ? options.success : ident
 	    cb(data)
-        }
-        var error = function(req, status, err) {
+	}
+	var error = function(req, status, err) {
 	    console.error(name, 'error', req, status, err, url)
 	    cache[url] = {request:req, status:status, error:err}
 	    var cb = options.error ? options.error : ident
 	    cb(req, status, err)
-        }
-        var res = cache[url]
+	}
+	var res = cache[url]
 	var async = typeof(config.async) == 'undefined' ? true : config.async
-        if (!res) {
-            console.log('{0}(url="{1}", async={2})'.fs(name, url, async))
+	if (!res) {
+	    if (config.debug || options.debug) {
+		console.log('{0}(url="{1}", async={2})'.fs(name, url, async))
+	    }
 	    $.ajax({url: url,
 		    async: async,
 		    dataType: (config.dataType||'json'),
@@ -177,15 +181,17 @@ var makeLoader = function(config) {
 		    cache: true,
 		    success: okay,
 		    error: error
-                    })
-        } else {
-	    console.log(name, 'using cached data', cache[url])
+		    })
+	} else {
+	    if (config.debug || options.debug) {
+		console.log(name, 'using cached data', cache[url])
+	    }
 	    if (res.data) {
 		okay(res.data)
 	    } else {
 		error(res.request, res.status, res.error)
 	    }
-        }
+	}
     }
 }
 
@@ -264,10 +270,10 @@ var ProfileTool = function(profile) {
     }
 
     self.defaultUserAuthOkay = function() {
-        //$('#content-user-buttons, #content-logout-link, #content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
+	//$('#content-user-buttons, #content-logout-link, #content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
 	$('#content-user-buttons, #content-logout-link').fadeIn()
 	$('#content-login-link').fadeAway()
-        $('#content-player-profile-link').attr('href', self.defaultUrl())
+	$('#content-player-profile-link').attr('href', self.defaultUrl())
 	self.put()
     }
 
@@ -290,24 +296,24 @@ var SchemaTool = function(schema) {
     var self = this
 
     self.load = function(schema) {
-        self.schema = schema['result']
-        self._definitions = {}, self._attrByName = {}, self._attrById = {}
+	self.schema = schema['result']
+	self._definitions = {}, self._attrByName = {}, self._attrById = {}
 	self.itemDefs = lazy(function() {
 	    $.each(self.schema['items']['item'], function(index, definition) {
 		self._definitions[definition['defindex']] = definition
 	    })
-            return self._definitions
+	    return self._definitions
 	})
 	self.attributesByName = lazy(function() {
-            $.each(self.schema['attributes']['attribute'], function(index, definition) {
+	    $.each(self.schema['attributes']['attribute'], function(index, definition) {
 		self._attrByName[definition['name']] = definition
 	    })
 	    return self._attrByName
 	})
 	self.attributesById = lazy(function() {
-            $.each(self.schema['attributes']['attribute'], function(index, definition) {
+	    $.each(self.schema['attributes']['attribute'], function(index, definition) {
 		self._attrById[definition['defindex']] = definition
-            })
+	    })
 	    return self._attrById
 	})
     }
@@ -329,24 +335,24 @@ var SchemaTool = function(schema) {
     }
 
     self.setImages = function(settings) {
-        // replace any items on the page that have the "schema
-        // definition index replace" class with the url of the item
-        // specified in the content.
-        var itemImg = function(url) { return makeImg({src:url, width:64, height:64}) }
+	// replace any items on the page that have the "schema
+	// definition index replace" class with the url of the item
+	// specified in the content.
+	var itemImg = function(url) { return makeImg({src:url, width:64, height:64}) }
 	var toolDefs = self.tools(), actionDefs = self.actions()
 	var settingV = settingsView(settings)
-        $('.defindex-lazy').each(function(index, tag) {
-            var data = $.parseJSON($(tag).text())
+	$('.defindex-lazy').each(function(index, tag) {
+	    var data = $.parseJSON($(tag).text())
 	    if (!data) { return }
-            if (typeof(data) == 'object') {
-                var defindex = data.defindex
+	    if (typeof(data) == 'object') {
+		var defindex = data.defindex
 	    } else {
-                var defindex = data
-            }
+		var defindex = data
+	    }
 	    var def = self.itemDefs()[defindex]
-            if (!def) { return }
+	    if (!def) { return }
 	    var pitem = self.asPlayerItem(data)
-            $(tag).data('node', pitem)
+	    $(tag).data('node', pitem)
 	    $(tag).html(itemImg(def['image_url'])).fadeIn()
 	    var iutil = itemUtil(pitem, schema)
 	    var img = $('img', tag)
@@ -379,11 +385,11 @@ var SchemaTool = function(schema) {
     }
 
     self.select = function(key, match) {
-        var res = {}
-        var matchf = (typeof(match) == typeof('')) ? function(v) { return v == match } : match
+	var res = {}
+	var matchf = (typeof(match) == typeof('')) ? function(v) { return v == match } : match
 	$.each(self.itemDefs(), function(idx, def) {
 	    if (matchf(def[key])) {res[def.defindex] = def }})
-        return res
+	return res
     }
 
     self.actions = function() {return self.select('item_slot', 'action')}
@@ -425,8 +431,15 @@ var SchemaTool = function(schema) {
 		    can[def.defindex] = def
 		}
 	    })
-        return can
+	return can
     }
+
+    self.tradableBackpack = function() {
+	return $.map(values(self.tradable()), function(item, index) {
+	    return {defindex:item.defindex, pos:index+1}
+	})
+    }
+
     if (typeof(schema) == 'undefined') {
 	new SchemaLoader({success: self.load})
     } else {
@@ -481,6 +494,9 @@ var showTermsDialog = function(e) {
 }
 
 
+var getHash = function() { return location.hash.slice(1) }
+
+
 var initExtensions = function(jq) {
     jq.fn.fadeAway = function() { this.each(function() { jq(this).fadeTo(750, 0) }); return this }
     jq.fn.fadeBack = function() { this.each(function() { jq(this).fadeTo(750, 100) }); return this }
@@ -489,6 +505,56 @@ var initExtensions = function(jq) {
 initExtensions(jQuery)
 
 
-$(document).ready(function() {
-    console.log('tools.js ready')
-})
+
+/*
+
+
+// copied from somewhere...
+
+var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+function encode64(input) {
+    var output = new Array()
+    var chr1, chr2, chr3, enc1, enc2, enc3, enc4, i = 0;
+    while (i < input.length) {
+	chr1 = input.charCodeAt(i++)
+	chr2 = input.charCodeAt(i++)
+	chr3 = input.charCodeAt(i++)
+	enc1 = chr1 >> 2
+	enc2 = ((chr1 & 3) << 4) | (chr2 >> 4)
+	enc3 = ((chr2 & 15) << 2) | (chr3 >> 6)
+	enc4 = chr3 & 63
+	if (isNaN(chr2)) {
+	    enc3 = enc4 = 64
+	} else if (isNaN(chr3)) {
+	    enc4 = 64
+	}
+	output.push(keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4))
+    }
+    return output.join('')
+}
+
+function decode64(input) {
+    var output = new Array()
+    var chr1, chr2, chr3, enc1, enc2, enc3, enc4, i = 0
+    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "")
+    while (i < input.length) {
+	enc1 = keyStr.indexOf(input.charAt(i++))
+	enc2 = keyStr.indexOf(input.charAt(i++))
+	enc3 = keyStr.indexOf(input.charAt(i++))
+	enc4 = keyStr.indexOf(input.charAt(i++))
+	chr1 = (enc1 << 2) | (enc2 >> 4)
+	chr2 = ((enc2 & 15) << 4) | (enc3 >> 2)
+	chr3 = ((enc3 & 3) << 6) | enc4
+	output.push(String.fromCharCode(chr1))
+	if (enc3 != 64) {
+	    output.push(String.fromCharCode(chr2))
+	}
+	if (enc4 != 64) {
+	    output.push(String.fromCharCode(chr3))
+	}
+    }
+    return output.join('')
+}
+
+
+*/

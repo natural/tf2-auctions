@@ -99,7 +99,7 @@
 				<h2 class="null" id="${slug}-listings-none"></h2>
 				<metal:include
 				     tal:define="rows 2; cols 5; use_created False"
-				     metal:use-macro="context.table_parts.macros.listings_large" />
+				     metal:use-macro="context.view_parts.macros.listings_large" />
 			    </div>
 			</div>
 
@@ -117,7 +117,7 @@
 			    <h2 class="null" id="${slug}-bids-none"></h2>
 			    <metal:include
 				 tal:define="use_created False"
-				 metal:use-macro="context.table_parts.macros.bids_large" />
+				 metal:use-macro="context.view_parts.macros.bids_large" />
 			</div>
 		    </div>
 		</div>
@@ -136,7 +136,7 @@
 
 			<metal:include
 			     tal:define="include_unplaced True; slug slug"
-			     metal:use-macro="context.new_parts.macros.backpack_full" />
+			     metal:use-macro="context.view_parts.macros.backpack_full" />
 
 			</div>
 		    </div>

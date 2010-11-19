@@ -1,157 +1,181 @@
-var $$ = function(suffix, next) { return $('#search-'+suffix, next) } // slug defined in search.pt
-var previousStack = [], contentWidths = {controls:null, results:null}
+var $$ = function(suffix, next) { return $('#search-'+suffix, next) }
+var contentWidths = {controls:null, results:null}
 
 
+// returns a mapping of functions closed over a stack of searches.
+// the stack acts like an ordered cache and helps reduce the number of
+// network requests.
+var makeSearchStack = function() {
+    var stack = []
+    var changed = function() {
+	stack = []
+	$$('some-listings').text('Loading...')
+    }
+    return {
+	chooserChanged: function() {
+	    changed()
+	    var q = chooserQuery()
+	    new SearchLoader({
+		success: function(rs) { searchOkay(rs, q) },
+		suffix: '?' + q
+	    })
+	},
+	optionChanged: function() {
+	    changed()
+	    var q = optionsQuery()
+	    new SearchLoader({
+		success: function(rs) { searchOkay(rs, q) },
+		suffix: '?' + q
+	    })
+	},
+	push: function(value) { stack.push(value) },
+	pop: function() { return stack.pop() },
+	depth: function() { return stack.length	}
+    }
+}
+
+
+// one and only global search stack
+var searchStack = makeSearchStack()
+
+
+// advanced search backpack tool.  creates and initializes the items
+// tool and the chooser.
 var SearchBackpackTool = function(schema) {
-    var backpack = $.map(values(schema.tradable()), function(item, index) {
-	return {defindex:item.defindex, pos:index+1}
+    var bpTool = new NewBackpackItemsTool({
+	items: schema.tradableBackpack(),
+	slug: 'ac',
+	navigator: true,
+	toolTips: true,
+	select: true,
+	outlineHover: true,
     })
-    var bpNav = new BackpackNavigator('ac')
-    var bpChs = new BackpackChooser({
-	backpack: backpack,
-	copy: true,
-	listingUids: [],
-	bidUids: [],
+    var chTool = new NewBackpackChooser({
 	backpackSlug: 'ac',
 	chooserSlug: 'advanced-search',
-	title:'',
-	help:'',
-	afterDropMove: chooserChanged
+	copy:true,
+	selectDeleteHover: true,
+	afterDropMove: searchStack.chooserChanged
     })
-    bpNav.init()
-    bpChs.init()
-    $(".quantity:contains('undefined')").fadeAway()
-    this.chooser = bpChs
+    bpTool.init()
+    chTool.init()
 }
 
 
+// returns search parameters (as a query string) for the current
+// options.  accounts for search filters and search order only.
 var optionsQuery = function() {
-    var qs = $$("controls input[type='checkbox']").map(function(i,v) {
-	return '{0}={1}'.fs( $(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
+    var qs = $$('controls input[type="checkbox"]').map(function(i,v) {
+	return '{0}={1}'.fs($(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
     })
-    qs.push('{0}={1}'.fs('sort', $$("controls input[type='radio']:checked").attr('value')))
-    return '?' + qs.toArray().join('&')
+    qs.push('{0}={1}'.fs('sort', $$('controls input[type="radio"]:checked').attr('value')))
+    return qs.toArray().join('&')
 }
 
 
-var optionChanged = function() {
-    previousStack = []
-    new SearchLoader({success: searchOkay, suffix: optionsQuery()})
-}
-
-
+// returns search parameters (as a query string) for the current
+// advanced search.  accounts for item indexes only.
 var chooserQuery = function() {
-    var qs = $('#advanced-search-chooser img')
-        .map(function(k, v) { return 'di={0}'.fs( $(v).data('node')['defindex'] ) })
+    var qs = $('#bp-chooser-advanced-search img')
+        .map(function(k, v) { return 'di={0}'.fs($(v).data('node')['defindex']) })
         .toArray()
-    return '?' + qs.join('&')
-}
-
-var chooserChanged = function() {
-    previousStack = []
-    new SearchLoader({success: searchOkay, suffix: chooserQuery()})
+    return qs.join('&')
 }
 
 
+// displays the basic search fields and hides the advanced fields.
 var showBasicSearch = function() {
     $$('advanced-pod').slideUp()
-    $('#search-advanced, #search-sorts, #search-filters').fadeBack()
-    $$('basic').fadeOut()
-    $$("listing-pod").animate({width:contentWidths.results}, 400)
-    $$("controls").animate({width:contentWidths.controls} ,400)
-    $$("controls-nav").fadeIn()
+    $('#search-advanced-link-pod, #search-sorts, #search-filters').fadeBack()
+    $$('basic-link-pod').fadeOut()
+    $$('listing-pod').animate({width: contentWidths.results}, 400)
+    $$('controls').animate({width: contentWidths.controls} ,400)
+    $$('controls-nav').fadeIn()
 }
 
 
+// displays the advanced search fields and hides the basic fields.
 var showAdvancedSearch = function() {
-    var schema = new SchemaTool()
-    if ( !$$('advanced-pod').data('init') ) {
+    if (!showAdvancedSearch.initOnce) {
+	showAdvancedSearch.initOnce = true
+	var schema = new SchemaTool()
 	var advSearchTool = new SearchBackpackTool(schema)
-	$$('advanced-pod').data('init', true)
-    }
-    var tipTool = new TooltipView(schema)
-    var hoverSearchChoice = function(e) {
-        try {
-            var data = $('img', this).data('node')
-        	if (!data.flag_cannot_trade) {
-	            $(this).addClass('selected-delete')
-                }
-        } catch (e) { }
-    }
-    var unhoverSearchChoice = function(e) {
-	$(this).removeClass('selected-delete')
-    }
-    var copyToSearchChoice = function(event) {
-	var source = $(event.target)
-	var target = $("#advanced-search-chooser td div:empty").first()
-	if (!target.length) { return }
-	var clone = source.clone()
-	clone.data('node', source.data('node'))
-	target.prepend(clone)
-	chooserChanged()
-    }
-    var removeSearchChoice = function(e) {
-	$('img', this).fadeOut().remove()
-	$(this).removeClass('selected selected-delete')
-	chooserChanged()
-    }
-    var resetAdvancedSearch = function () {
-	$.each( $('#advanced-search-chooser td'), function(idx, cell) {
-	    $('img', cell).fadeOut().remove()
-	    $(cell).removeClass('selected selected-delete')
-	})
-	chooserChanged()
+	var copyToSearchChoice = function(event) {
+	    var source = $(event.target)
+	    var target = $('#bp-chooser-advanced-search td div:empty').first()
+	    if (!target.length) { return }
+	    var clone = source.clone()
+	    clone.data('node', source.data('node'))
+	    target.prepend(clone)
+	    searchStack.chooserChanged()
+	}
+	var removeSearchChoice = function(e) {
+	    $('img', this).fadeOut().remove()
+	    $(this).removeClass('selected selected-delete')
+	    searchStack.chooserChanged()
+	}
+	var resetAdvancedSearch = function () {
+	    $.each( $('#bp-chooser-advanced-search td'), function(idx, cell) {
+		$('img', cell).fadeOut().remove()
+		$(cell).removeClass('selected selected-delete')
+	    })
+		searchStack.chooserChanged()
+	}
+	$('#bp-ac td div img').dblclick(copyToSearchChoice)
+	$('#bp-chooser-advanced-search td').dblclick(removeSearchChoice)
+	$$('advanced-reset').click(resetAdvancedSearch)
     }
 
-    $('#backpack-ac td div img').unbind().dblclick(copyToSearchChoice)
-    $('#advanced-search-chooser td').unbind().dblclick(removeSearchChoice)
-    $('#advanced-search-chooser td').hover(hoverSearchChoice, unhoverSearchChoice)
-    $('#search-advanced, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
-    $$('advanced-reset').click(resetAdvancedSearch)
-    $$('basic').fadeIn()
-
+    $('#search-advanced-link-pod, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
+    $$('basic-link-pod').fadeIn()
     var width = $$('pod').width()
-    $("#advanced-search-pod").show()
+    $('#advanced-search-pod').show()
     $$('controls').animate({width:400} ,400)
-    $$("listing-pod").animate({width:width-450}, 400, function() {
-	$$('advanced-pod').show( function () {
-	    $("#backpack-tools-ac")
-		.width($("#backpack-ac .backpack-page-1").width() - 10)
+    $$('listing-pod').animate({width:width-450}, 400, function() {
+	$$('advanced-pod').show(function () {
+	    $('#bp-nav-ac').width($('#bp-ac .bp-1').width() - 10)
 	})
     })
-    return false
 }
 
 
-var showListing = function(listing, clone) {
+// builds an element for a listing.  writes formatted data from the
+// given listing to the given clone (prototype copy).
+var putListing = function(listing, clone) {
     var putil = new ProfileTool(listing.owner)
-    clone.removeClass('null prototype')
+
     if (listing.description) {
 	$('.listing-description', clone).text(listing.description)
     } else {
 	$('.listing-description-label', clone).empty()
 	$('.listing-description', clone).empty()
     }
+
     $('.listing-owner', clone).text(listing.owner.personaname)
     $('.listing-owner', clone).parent().attr('href', putil.defaultUrl())
-
-
     $('.listing-avatar', clone)
 	.attr('src', listing.owner.avatar)
     $('.listing-avatar', clone).parent().attr('href', putil.defaultUrl())
 
-    new StatusLoader({suffix: listing.owner.id64, success: function(status) {
-	$('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
-    }})
+    new StatusLoader({
+	suffix: listing.owner.id64,
+	success: function(status) {
+	    $('.listing-avatar', clone)
+		.addClass('profile-status ' + status.online_state)
+	}
+    })
 
-    $('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
+    $('.bid-count-seed', clone)
+	.text(listing.bid_count || '0') // bid_count because bids aren't fetched.
+
     var next = 0
     $.each(listing.items, function(index, item) {
 	$( $('.item-view div', clone)[next]).append( $.toJSON(item) )
 	next += 1
     })
+
     if (listing.min_bid.length) {
-	var next = 0
+	next = 0
 	$.each(listing.min_bid, function(index, defindex) {
             $( $('.search-listing-view-min-bid .item-view div', clone)[next] ).append(
 		$.toJSON({defindex:defindex, quality:6})
@@ -162,7 +186,9 @@ var showListing = function(listing, clone) {
     } else {
         $('.search-listing-view-min-bid', clone).hide()
     }
-    $('.search-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
+
+    $('.search-listing-view-link a', clone)
+	.attr('href', '/listing/{0}'.fs(listing.id))
     $('.search-listing-view-link', clone)
 	.append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
     $$('listings').append(clone)
@@ -174,9 +200,10 @@ var configNext = function(results) {
 	$$('some-listings').text('Loading...')
 	$$('nav-extra').slideUp(function() {
 	    $$('listings').slideUp(function() {
-		previousStack.push(results)
+		searchStack.push(results)
 		var innerNext = function(rs) {
-		    showListings(rs)
+		    window.location.hash = results.next_qs
+		    putListings(rs)
 		}
 		new SearchLoader({success: innerNext, suffix: '?'+results.next_qs})
 	    })
@@ -198,7 +225,9 @@ var configPrev = function(results) {
 	$$('some-listings').text('Loading...')
 	$$('nav-extra').slideUp(function() {
 	    $$('listings').slideUp(function() {
-		showListings(previousStack.pop())
+		var rs = searchStack.pop()
+		window.location.hash = rs.next_qs
+		putListings(rs)
 	    })
 	})
 	return false
@@ -213,8 +242,7 @@ var configPrev = function(results) {
 }
 
 
-
-var showListings = function(results) {
+var putListings = function(results) {
     $('div.listing-seed').remove()
     if (!results.listings.length) {
 	$$('no-listings').text('Nothing found.  You should add a listing.').show()
@@ -231,7 +259,12 @@ var showListings = function(results) {
 
     var proto = $$('listings div.prototype')
     $.each(results.listings, function(idx, listing) {
-	showListing(listing, proto.clone().addClass('listing-seed'))
+	putListing(listing,
+		   proto
+		        .clone()
+		        .addClass('listing-seed')
+		        .removeClass('null prototype')
+		  )
     })
 
     if (results.more) {
@@ -243,7 +276,7 @@ var showListings = function(results) {
 	$('#search-next-none, #search-bottom-next-none').show()
     }
 
-    if (previousStack.length) {
+    if (searchStack.depth()) {
 	configPrev(results)
 	$('#search-prev-link, #search-bottom-prev-link').show()
 	$('#search-prev-none, #search-bottom-prev-none').hide()
@@ -262,18 +295,22 @@ var showListings = function(results) {
 	}
     })
     $('div.listing-seed td.item-view div:empty').parent().remove()
-    $$('listings').fadeIn()
+    $$('listings').slideDown()
     $$('nav-extra').fadeIn()
 }
 
 
-var searchOkay = function(search) {
+var searchOkay = function(search, query) {
+    console.log('searchOkay', search, query)
+    if (query) {
+	window.location.hash = query
+    }
     if (! $$('filter-inputs').children().length) {
 	$.each(search.filters, function(idx, filter) {
 	    var input = '<input type="checkbox" name="{0}" />{1}<br />'.fs(filter[0], filter[1])
 	    $$('filter-inputs').append(input)
 	})
-	$$('controls input[type="checkbox"]').click(optionChanged)
+	$$('controls input[type="checkbox"]').click(searchStack.optionChanged)
     }
     if (!$$('sort-inputs').children().length) {
 	$.each(search.orders, function(idx, order) {
@@ -281,9 +318,9 @@ var searchOkay = function(search) {
 	    $$('sort-inputs').append(input)
 	})
 	$('input[name="sort"]').first().click()
-	$$('controls input[type="radio"]').click(optionChanged)
+	$$('controls input[type="radio"]').click(searchStack.optionChanged)
     }
-    showListings(search)
+    putListings(search)
     siteMessage().fadeAway()
     $$('controls').fadeIn('fast')
     $$('listings').fadeIn('fast')
@@ -293,18 +330,41 @@ var searchOkay = function(search) {
 
 
 var schemaReady = function(schema) {
+
+    // TODO: remove these statements when common listing/bid
+    // hover/chooser thing gets implemented:
     var st = new SchemaTool(schema)
     var tt = new TooltipView(st)
     var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
-    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseover', hoverItem)
-    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseout', unhoverItem)
-    $('.listing-view').live('mouseover', function() { $(this).addClass('listing-hover') })
-    $('.listing-view').live('mouseout', function() { $(this).removeClass('listing-hover') })
+    $('div.organizer-view td.item-view').live('mouseover', hoverItem)
+    $('div.organizer-view td.item-view').live('mouseout', unhoverItem)
+
+
+
     $$('advanced-link').click(showAdvancedSearch)
     $$('basic-link').click(showBasicSearch)
+
+
+    var q = getHash()
+    if (q) {
+	window.setTimeout(function() {
+	// initialize controls from hash.  this is fail.
+	$.each(q.split('&'), function(idx, pair) {
+	    try {
+		var p = pair.split('=')
+		var name = p[0], val = p[1]
+		$('input[name={0}]'.fs(name)).attr('checked', val=='on')
+	    } catch (e) {   }
+	})
+	    }, 125)
+    }
+
     siteMessage('Loading results...')
-    new SearchLoader({success:searchOkay})
+    new SearchLoader({
+	suffix: '?' + q,
+	success: function(rs) { searchOkay(rs, q) }
+    })
 }
 
 
@@ -320,5 +380,5 @@ $(document).ready(function() {
 	}
     })
     new SchemaLoader({success: schemaReady})
-    console.log('search.js version {0} ready'.fs(43))
+    console.log('search 99999 111111111')
 })

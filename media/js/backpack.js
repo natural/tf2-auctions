@@ -489,10 +489,10 @@ var NewBackpackItemsTool = function(options) {
     var cols = options.cols || 10
 
     self.init = function(settings) {
-	console.log('NewBackpackItemsTool.init( 343434  )')
         var schema = new SchemaTool()
 	var newIdx = -1, settings = settingsView(settings)
 	var toolDefs = schema.tools(), actionDefs = schema.actions()
+	$('div.bp').mousedown(function() { return false })
 
 	$.each(items, function(index, item) {
 	    item.flag_active_listing = (item.id in listingUids)
@@ -571,7 +571,6 @@ var NewBackpackItemsTool = function(options) {
 	    )
 	}
 	var help = options.help || ''
-	console.log('help', help)
 	if (help) {
 	    $('#bp-{0} span.help'.fs(slug)).text(help)
 	}
@@ -639,25 +638,15 @@ var NewBackpackItemsTool = function(options) {
 	if (((def in tools) || (def in actions)) &&
 	    settings.showUseCount &&
 	    (typeof(item.quantity) != 'undefined')) {
-	    image.before('<span class="badge quantity">' + item.quantity + '</span>')
+	    image.before('<span class="badge quantity">{0}</span>'.fs(item.quantity))
 	}
     }
 
 
 }
 
-
-
-
-
-var defaults = {
-    title: '',
-    backpackHelp: '',
-    chooserHelp: ''
-}
-
-
-
+// NB: backpack choosers must be initialized *after* any corresponding
+// backpack item tool.
 var NewBackpackChooser = function(options) {
     var self = this
     var title = options.title
@@ -667,9 +656,7 @@ var NewBackpackChooser = function(options) {
 
     self.init = function(settings) {
 	self.initDrag()
-	if (options.help) {
-	    $('#bp-chooser-{0} span.help'.fs(chooserSlug)).text(options.help)
-	}
+	self.initOptional()
     }
 
     self.initDrag = function() {
@@ -700,7 +687,7 @@ var NewBackpackChooser = function(options) {
 		return !(node.flag_cannot_trade) && !(node.flag_active_listing) && !(node.flag_active_bid)
 	    } catch (e) { return false }
 	}
-	var dragShow = function(event, ui) { ui.helper.addClass('selected') }
+	var dragShow = function(event, ui) { ui.helper.addClass('selected').removeClass('outline') }
 	var dropOver = function(event, ui) { $(this).parent().addClass('outline') }
 	var dropOut = function(event, ui) { $(this).parent().removeClass('outline') }
 
@@ -733,6 +720,25 @@ var NewBackpackChooser = function(options) {
 		drop: dropMove,
 		out: dropOut,
 		over: dropOver})
+    }
+
+    self.initOptional = function() {
+	// maybe add some help
+	if (options.help) {
+	    $('#bp-chooser-{0} span.help'.fs(chooserSlug)).text(options.help)
+	}
+
+	// maybe toggle some classes on hover
+	if (options.selectDeleteHover) {
+	    $('#bp-chooser-{0} td'.fs(chooserSlug)).hover(
+		function(e) {
+		    if ($('img', this).length) {
+			$(this).addClass('selected-delete')
+		    }
+		},
+		function(e) { $(this).removeClass('selected-delete') }
+	    )
+	}
     }
 
     self.updateCount = function() {
