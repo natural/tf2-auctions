@@ -266,11 +266,10 @@ var ProfileTool = function(profile) {
     self.defaultUserAuthError = function(request, status, error) {
 	$('#content-login-link')
 	    .attr('href', '/login?next=' + encodeURIComponent(window.location.href))
-	$('#content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
+	$('#content-search-link, #content-quick-backpack').fadeIn()
     }
 
     self.defaultUserAuthOkay = function() {
-	//$('#content-user-buttons, #content-logout-link, #content-search-link, #content-quick-backpack, #content-all-items').fadeIn()
 	$('#content-user-buttons, #content-logout-link').fadeIn()
 	$('#content-login-link').fadeAway()
 	$('#content-player-profile-link').attr('href', self.defaultUrl())

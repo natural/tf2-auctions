@@ -7,7 +7,7 @@ width:100%;
 #search-controls {
 font-family:"TF2Build";
 float:left;
-width:15%;
+width:12%;
 }
 
 #search-listing-pod {
@@ -35,12 +35,12 @@ margin-right:0.5em;
 }
 
 #search-nav .navs {
-text-align:center;
+text-align:left;
+margin-left:1.5em;
 }
 
 
-
-#bp-ac div.bp-pages {
+#bp-rv div.bp-pages, #bp-ac div.bp-pages {
 width:23.25em;
 }
 

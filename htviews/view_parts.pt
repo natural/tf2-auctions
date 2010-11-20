@@ -343,7 +343,7 @@ large listings: um...
 				<strong>Created By:</strong>
 				<div class="listing-owner-seed mb1">
 				    <a href="#">
-					<img src="" class="listing-avatar" />
+					<img class="listing-avatar" />
 				    </a>
 				    <a href="#">
 					<span class="listing-owner"></span>
@@ -441,7 +441,7 @@ large bids: ...
 				<strong>Created By:</strong>
 				<div class="bid-owner-seed">
 				    <a href="#">
-					<img src="" class="bid-avatar" />
+					<img class="bid-avatar" />
 				    </a>
 				    <a href="#">
 					<span class="bid-owner center"></span>

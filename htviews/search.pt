@@ -15,7 +15,7 @@
 <body>
 <metal:fill fill-slot="main" tal:define="slug 'search'">
 
-    <h1><span class="hilite">&nbsp;</span>Search Listings</h1>
+    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search Listings</span></h1>
 
     <div id="${slug}-pod">
 
@@ -33,7 +33,6 @@
 	    </div>
 
 	    <div class="null" id="${slug}-advanced-pod">
-		<h2>Advanced Search</h2>
 		<div class="help mb1">
 		    Search for listings with specific items with this
 		    thing that kinda looks like a backpack.
@@ -56,7 +55,6 @@
 	    </div>
 
 	    <div class="null" id="${slug}-reverse-pod">
-		<h2>Reverse Search</h2>
 		<div class="help mb1">
 		    Search for listings by minimum bid with this handy dandy backpack dohicky.
 		</div>

@@ -69,7 +69,6 @@
 		</span>
 		<span class="" id="${slug}-main-buttons">
                     <a id="${slug}-quick-backpack" class="button" href="/backpack">Backpacks</a>
-		    <a id="${slug}-all-items" class="button" href="/all-items">All Items</a>
 		    <a id="${slug}-search-link" class="button" href="/search">Search</a>
 		    <a id="${slug}-login-link" class="button" href="/login">Login</a>
 		    <a id="${slug}-logout-link" class="button null" href="${controller.logout_url()}">Logout</a>
@@ -87,6 +86,7 @@
 	<div class="p1">
 	    <metal:slot define-slot="footer" />
 	    <div class="text-center">
+		<a href="/all-items" class="nice">All Items</a> &middot;
 		<a href="/about" class="nice">About this Site</a> &middot;
 		<a href="/faq" class="nice">FAQ</a> &middot;
 		<a href="/terms" class="nice">Rules, Terms &amp; Privacy Policy</a> &middot;

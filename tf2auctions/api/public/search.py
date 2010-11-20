@@ -82,9 +82,37 @@ class AdvancedSearch(ListingSearch):
 	return inner_search()
 
 
+class ReverseSearch(ListingSearch):
+    limit = 20
+    max_defs = 4
+
+    def run(self):
+	@cache(self.rqs, ttl=180)
+	def inner_search():
+	    listings, qs = [], self.qs
+	    for mb in qs.get('mb', [])[0:self.max_defs]:
+		try:
+		    mb = int(mb)
+		except (ValueError, ):
+		    continue
+		q = Listing.all().filter('status = ', 'active')
+		q.filter('min_bid =', mb)
+		listings += q.fetch(self.limit)
+	    listings = dict((lst.key(), lst) for lst in listings).values() ## remove dupes
+	    listings.sort(key=lambda o:o.expires) ## TODO:  verify this is desired
+	    listings = [lst.encode_builtin() for lst in listings]
+	    return listings, '', False
+	return inner_search()
+
+
 def buildSearch(raw_qs):
     qs = parse_qs(raw_qs)
-    return AdvancedSearch(qs, raw_qs) if 'di' in qs else BasicSearch(qs, raw_qs)
+    if 'di' in qs:
+	return AdvancedSearch(qs, raw_qs)
+    elif 'mb' in qs:
+	return ReverseSearch(qs, raw_qs)
+    else:
+	return BasicSearch(qs, raw_qs)
 
 
 class ListingSearchHandler(ApiHandler):

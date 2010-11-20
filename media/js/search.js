@@ -11,10 +11,30 @@ var makeSearchStack = function() {
 	stack = []
 	$$('some-listings').text('Loading...')
     }
+
+    // returns search parameters (as a query string) for the current
+    // advanced search.  accounts for item indexes only.
+    var chooserQuery = function(sel, pfx) {
+	var qs = $(sel)
+            .map(function(k, v) { return '{0}={1}'.fs(pfx, $(v).data('node')['defindex']) })
+            .toArray()
+	return qs.join('&')
+    }
+
+    // returns search parameters (as a query string) for the current
+    // options.  accounts for search filters and search order only.
+    var optionsQuery = function() {
+	var qs = $$('controls input[type="checkbox"]').map(function(i,v) {
+	    return '{0}={1}'.fs($(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
+	})
+	qs.push('{0}={1}'.fs('sort', $$('controls input[type="radio"]:checked').attr('value')))
+	return qs.toArray().join('&')
+    }
+
     return {
-	chooserChanged: function() {
+	chooserChanged: function(selector, qprefix) {
 	    changed()
-	    var q = chooserQuery()
+	    var q = chooserQuery(selector, qprefix)
 	    new SearchLoader({
 		success: function(rs) { searchOkay(rs, q) },
 		suffix: '?' + q
@@ -41,7 +61,7 @@ var searchStack = makeSearchStack()
 
 // advanced search backpack tool.  creates and initializes the items
 // tool and the chooser.
-var SearchBackpackTool = function(schema, bpSlug, chSlug) {
+var SearchBackpackTool = function(schema, bpSlug, chSlug, afterDrop) {
     var bpTool = new BackpackItemsTool({
 	items: schema.tradableBackpack(),
 	slug: bpSlug,
@@ -56,36 +76,16 @@ var SearchBackpackTool = function(schema, bpSlug, chSlug) {
 	chooserSlug: chSlug,
 	copy:true,
 	selectDeleteHover: true,
-	afterDropMove: searchStack.chooserChanged
+	afterDropMove: afterDrop
     })
     bpTool.init()
     chTool.init()
 }
 
 
-// returns search parameters (as a query string) for the current
-// options.  accounts for search filters and search order only.
-var optionsQuery = function() {
-    var qs = $$('controls input[type="checkbox"]').map(function(i,v) {
-	return '{0}={1}'.fs($(v).attr('name'), $(v).attr('checked') ? 'on' : 'off')
-    })
-    qs.push('{0}={1}'.fs('sort', $$('controls input[type="radio"]:checked').attr('value')))
-    return qs.toArray().join('&')
-}
-
-
-// returns search parameters (as a query string) for the current
-// advanced search.  accounts for item indexes only.
-var chooserQuery = function() {
-    var qs = $('#bp-chooser-advanced-search img')
-        .map(function(k, v) { return 'di={0}'.fs($(v).data('node')['defindex']) })
-        .toArray()
-    return qs.join('&')
-}
-
-
 // displays the basic search fields and hides the advanced fields.
 var showBasicSearch = function() {
+    $$('title').text('Search Listings')
     $$('advanced-pod').slideUp()
     $$('reverse-pod').slideUp()
     $('#search-advanced-link-pod, #search-sorts, #search-filters, #search-reverse-link-pod').fadeBack()
@@ -101,7 +101,10 @@ var showAdvancedSearch = function() {
     if (!showAdvancedSearch.initOnce) {
 	showAdvancedSearch.initOnce = true
 	var schema = new SchemaTool()
-	var advSearchTool = new SearchBackpackTool(schema, 'ac', 'advanced-search')
+	var chooserChanged = function () {
+	    searchStack.chooserChanged('#bp-chooser-advanced-search img', 'di')
+	}
+	var advSearchTool = new SearchBackpackTool(schema, 'ac', 'advanced-search', chooserChanged)
 	var copyToSearchChoice = function(event) {
 	    var source = $(event.target)
 	    var target = $('#bp-chooser-advanced-search td div:empty').first()
@@ -109,25 +112,25 @@ var showAdvancedSearch = function() {
 	    var clone = source.clone()
 	    clone.data('node', source.data('node'))
 	    target.prepend(clone)
-	    searchStack.chooserChanged()
+	    chooserChanged()
 	}
 	var removeSearchChoice = function(e) {
 	    $('img', this).fadeOut().remove()
 	    $(this).removeClass('selected selected-delete')
-	    searchStack.chooserChanged()
+	    chooserChanged()
 	}
 	var resetAdvancedSearch = function () {
 	    $.each( $('#bp-chooser-advanced-search td'), function(idx, cell) {
 		$('img', cell).fadeOut().remove()
 		$(cell).removeClass('selected selected-delete')
 	    })
-		searchStack.chooserChanged()
+	    chooserChanged()
 	}
 	$('#bp-ac td div img').live('dblclick', copyToSearchChoice)
 	$('#bp-chooser-advanced-search td').live('dblclick', removeSearchChoice)
 	$$('advanced-reset').click(resetAdvancedSearch)
     }
-
+    $$('title').text('Advanced Search')
     $('#search-advanced-link-pod, #search-reverse-link-pod, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
     $$('basic-link-pod').fadeIn()
     var width = $$('pod').width()
@@ -146,7 +149,11 @@ var showReverseSearch = function() {
     if (!showReverseSearch.initOnce) {
 	showReverseSearch.initOnce = true
 	var schema = new SchemaTool()
-	var advSearchTool = new SearchBackpackTool(schema, 'rv', 'reverse-search')
+	var chooserChanged = function () {
+	    searchStack.chooserChanged('#bp-chooser-reverse-search img', 'mb')
+	}
+	var advSearchTool = new SearchBackpackTool(schema, 'rv', 'reverse-search', chooserChanged)
+
 	var copyToSearchChoice = function(event) {
 	    var source = $(event.target)
 	    var target = $('#bp-chooser-reverse-search td div:empty').first()
@@ -154,25 +161,27 @@ var showReverseSearch = function() {
 	    var clone = source.clone()
 	    clone.data('node', source.data('node'))
 	    target.prepend(clone)
-	    searchStack.chooserChanged()
+	    chooserChanged()
 	}
+
 	var removeSearchChoice = function(e) {
 	    $('img', this).fadeOut().remove()
 	    $(this).removeClass('selected selected-delete')
-	    searchStack.chooserChanged()
+	    chooserChanged()
 	}
+
 	var resetReverseSearch = function () {
 	    $.each( $('#bp-chooser-reverse-search td'), function(idx, cell) {
 		$('img', cell).fadeOut().remove()
 		$(cell).removeClass('selected selected-delete')
 	    })
-		searchStack.chooserChanged()
+	    chooserChanged()
 	}
 	$('#bp-rv td div img').live('dblclick', copyToSearchChoice)
 	$('#bp-chooser-reverse-search td').live('dblclick', removeSearchChoice)
 	$$('reverse-reset').click(resetReverseSearch)
     }
-
+    $$('title').text('Reverse Search')
     $('#search-advanced-link-pod, #search-reverse-link-pod, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
     $$('basic-link-pod').fadeIn()
     var width = $$('pod').width()
@@ -249,7 +258,7 @@ var configNext = function(results) {
 	    $$('listings').slideUp(function() {
 		searchStack.push(results)
 		var innerNext = function(rs) {
-		    window.location.hash = results.next_qs
+		    //window.location.hash = results.next_qs
 		    putListings(rs)
 		}
 		new SearchLoader({success: innerNext, suffix: '?'+results.next_qs})
@@ -273,7 +282,7 @@ var configPrev = function(results) {
 	$$('nav-extra').slideUp(function() {
 	    $$('listings').slideUp(function() {
 		var rs = searchStack.pop()
-		window.location.hash = rs.next_qs
+		//window.location.hash = rs.next_qs
 		putListings(rs)
 	    })
 	})
@@ -368,6 +377,7 @@ var searchOkay = function(search, query) {
     }
     putListings(search)
     siteMessage().fadeAway()
+
     $$('controls').fadeIn('fast')
     $$('listings').fadeIn('fast')
     contentWidths.controls = $$('controls').width()
@@ -376,7 +386,6 @@ var searchOkay = function(search, query) {
 
 
 var schemaReady = function(schema) {
-
     // TODO: remove these statements when common listing/bid
     // hover/chooser thing gets implemented:
     var st = new SchemaTool(schema)
