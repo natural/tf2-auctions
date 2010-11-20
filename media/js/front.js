@@ -27,12 +27,16 @@ var blogLoaded = function(entries) {
 	var clone = $$('blog div.blog-seed').clone()
 	clone.removeClass('blog-seed null prototype')
 	$('.blog-title-seed', clone).text(blogpost.title)
-	$('.blog-intro-seed', clone).html(blogpost.intro)
+	if (blogpost.intro != '<p></p>') {
+	    $('.blog-intro-seed', clone).html(blogpost.intro)
+	} else {
+	    $('.blog-intro-seed', clone).remove()
+	}
 	$('.blog-encoded-seed', clone).html(blogpost.entry)
 	$$('blog').append(clone)
 
     })
-    $$('blog').slideDown()
+    if (entries.length) { $$('blog').slideDown() }
 }
 
 
@@ -110,6 +114,25 @@ var showListings = function(results) {
 }
 
 
+var newsReady = function(news) {
+    $.each(news, function(idx, newsentry) {
+	console.log(newsentry)
+	var clone = $$('news div.news-seed').clone()
+	clone.removeClass('news-seed null prototype')
+	if (newsentry.author) {
+	    $('.news-author-seed', clone).html('({0})'.fs(newsentry.author))
+	}
+	$('.news-title-seed', clone).text(newsentry.title)
+	$('.news-title-seed', clone).parents('a').attr('href', newsentry.url)
+	if (newsentry.url) {
+	    $('.news-contents-seed a', clone).attr('href', newsentry.url).text('more...')
+	}
+	$('.news-contents-seed', clone).prepend(newsentry.contents)
+	$$('news').append(clone)
+    })
+    if (news.length) { $$('news').slideDown() }
+}
+
 
 
 var schemaReady = function(schema) {
@@ -131,7 +154,8 @@ $(document).ready(function() {
 	error: userAuthError,
 	suffix: '?settings=1'
     })
-    new StatsLoader({success: statsLoaded })
-    new BlogLoader({success: blogLoaded })
-    new SchemaLoader({success: schemaReady })
+    new StatsLoader({success: statsLoaded})
+    new BlogLoader({success: blogLoaded})
+    new SchemaLoader({success: schemaReady})
+    new NewsLoader({success: newsReady})
 })

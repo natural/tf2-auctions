@@ -220,6 +220,13 @@ var SchemaLoader = makeLoader({
     name: 'SchemaLoader'})
 
 
+var NewsLoader = makeLoader({
+    prefix: 'http://tf2apiproxy.appspot.com/api/v1/news',
+    dataType: 'jsonp',
+    jsonpCallback: 'tf2auctionsNewsLoader',
+    name: 'NewsLOader'})
+
+
 var StatusLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
     dataType: 'jsonp',

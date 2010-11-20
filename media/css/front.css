@@ -8,3 +8,7 @@ margin-top:0.25em;
 .listing-owner-seed img {
 vertical-align:middle;
 }
+
+#front-news label a:hover {
+color:#c8503c;
+}
