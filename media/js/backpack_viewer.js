@@ -66,7 +66,7 @@ var clearBackpack = function() {
 
 
 var putBackpack = function(backpack, listings, bids) {
-    var bpTool = new NewBackpackItemsTool({
+    var bpTool = new BackpackItemsTool({
 	items: backpack,
 	listingUids: listingItemsUids(listings),
 	bidUids: bidItemsUids(bids),

@@ -16,6 +16,7 @@ var itemEffects = {
 }
 
 
+// mapping of extra lines to tooltip class names
 var extraLineMap = {
     0: 'alt',
     1: 'positive',
@@ -23,6 +24,7 @@ var extraLineMap = {
 }
 
 
+// mapping of schema effect types to tooltip class names
 var effectTypeMap = {
     negative: 'negative',
     neutral:'alt',
@@ -30,6 +32,7 @@ var effectTypeMap = {
 }
 
 
+// mapping specific item qualities; used for checking only.
 var prefixCheckMap = {
     3: 'vint',
     5: 'unusual',
@@ -38,16 +41,50 @@ var prefixCheckMap = {
     9: 'self'
 }
 
+itemFilterLabels = [
+    ['tradable', 'All Items'],
+    ['', ''],
+    ['wearables', 'Hats / Wearables'],
+    ['weapons', 'Weapons'],
+    ['metal', 'Metal'],
+    ['tokens', 'Tokens'],
+    ['crates', 'Crates'],
+    ['actions', 'Actions'],
+    ['tools', 'Tools'],
+    ['', ''],
+    ['scoot', 'Scout'],
+    ['soly', 'Soldier'],
+    ['pyro', 'Pyro'],
+    ['demo', 'Demoman'],
+    ['heavy', 'Heavy'],
+    ['engi', 'Engineer'],
+    ['medic', 'Medic'],
+    ['sniper', 'Sniper'],
+    ['spy', 'Spy']
+]
 
+
+
+// functions to convert schema values into tooltip display values
 var formatCalcMap = {
-    value_is_percentage: function (v) { return Math.round(v*100 - 100) },
-    value_is_inverted_percentage: function (v) { return Math.round(100 - (v*100)) },
     value_is_additive: ident,
-    value_is_additive_percentage: function (v) { return Math.round(100*v) },
-    value_is_date: function (v) { return new Date(v * 1000) },
     value_is_particle_index: ident,
-    value_is_account_id: function (v) { return '7656' + (v + 1197960265728) },
-    value_is_or: ident
+    value_is_or: ident,
+    value_is_percentage: function (v) {
+	return Math.round(v*100 - 100)
+    },
+    value_is_inverted_percentage: function (v) {
+	return Math.round(100 - (v*100))
+    },
+    value_is_additive_percentage: function (v) {
+	return Math.round(100*v)
+    },
+    value_is_date: function (v) {
+	return new Date(v * 1000)
+    },
+    value_is_account_id: function (v) {
+	return '7656' + (v + 1197960265728)
+    }
 }
 
 
@@ -59,8 +96,11 @@ var TooltipView = function(schema) {
     var quals = schema.qualityMap()
 
     var formatSchemaAttr = function(def, val) {
-	var line = def['description_string'].replace(/\n/gi, '<br />')
-	// we only look for (and sub) one '%s1'; that's the most there is (as of oct 2010)
+	var line = ''
+	try {
+	    line = def['description_string'].replace(/\n/gi, '<br />')
+	} catch (e) { }
+	// we only sub one '%s1'; that's the most there is (as of oct 2010)
 	if (line.indexOf('%s1') > -1) {
 	    var fCalc = formatCalcMap[def['description_format']]
 	    line = line.replace('%s1', fCalc(val))
@@ -108,6 +148,7 @@ var TooltipView = function(schema) {
 	    .replace('TF_LockedCrate', 'Crate')
 	$('#tooltip .level').text(level ? 'Level ' + level + ' ' + levelType : '')
 
+
 	// clear and set the extra text
 	$.each(extraLineMap, function(k, v) { $('#tooltip .'+ extraLineMap[k]).text('') })
 	if (playerItem['attributes']) {
@@ -129,18 +170,21 @@ var TooltipView = function(schema) {
 		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
 	    })
 	}
+
 	if (schemaItem['attributes']) {
 	    $.each(schemaItem['attributes']['attribute'], function(aidx, schemaAttr) {
-		var attrDef = schema.attributesByName()[schemaAttr['name']]
-		if (!attrDef) { return }
-		if (attrDef['description_string']=='I made this!') { return }
-		if (attrDef['description_string']=='%s1% damage done' && attrDef['attribute_class']=='always_tradable') { return }
-		if (attrDef['description_string']=='unused') { return }
-		if (attrDef['attribute_class']=='set_employee_number') { return }
-		var extra = formatSchemaAttr(attrDef, schemaAttr['value'])
-		var etype = effectTypeMap[attrDef['effect_type']]
-		var current = $('#tooltip .' + etype).html()
-		$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
+		try {
+		    var attrDef = schema.attributesByName()[schemaAttr['name']]
+		    if (!attrDef) { return }
+		    if (attrDef['description_string']=='I made this!') { return }
+		    if (attrDef['description_string']=='%s1% damage done') { return }
+		    if (attrDef['description_string']=='unused') { return }
+		    if (attrDef['attribute_class']=='set_employee_number') { return }
+		    var extra = formatSchemaAttr(attrDef, schemaAttr['value'])
+		    var etype = effectTypeMap[attrDef['effect_type']]
+		    var current = $('#tooltip .' + etype).html()
+		    $('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
+		} catch (e) { }
 	    })
 	}
 	// position and show
@@ -157,8 +201,9 @@ var TooltipView = function(schema) {
 //
 // tool for managing the navigation thru a view of backpack items.
 //
-var NewBackpackNavigator = function(options) {
+var BackpackNavTool = function(options) {
     var self = this, slug = options.slug
+    var itemTool = options.itemTool
     var outerContext = $('#bp-{0}'.fs(slug))
     var pagesContext = $('div.bp-pages', outerContext)
     var pageCount = $('table.bp-page-{0}'.fs(slug), pagesContext).length
@@ -168,18 +213,58 @@ var NewBackpackNavigator = function(options) {
     var navPrev = $('#bp-nav-{0} .nav:first'.fs(slug))
     var nonNext = $('#bp-nav-{0} .non:last'.fs(slug))
     var navNext = $('#bp-nav-{0} .nav:last'.fs(slug))
+    var initWidth = 0
 
     self.init = function() {
-	var initWidth = $('body').width() // sucks, but it's better than 0
+	initWidth = $('body').width() // sucks, but it's better than 0
         $('table.bp-page-{0}:gt(0)'.fs(slug), pagesContext).css('margin-left', initWidth)
 	$('a', navPrev).click(function (event) { self.navigate(-1); return false })
 	$('a', navNext).click(function (event) { self.navigate( 1); return false })
 	self.updateButtons()
+
+	// maybe enable a select element for filtering by class and
+	// item type.
+	if (options.filters) {
+	    var select = $('#bp-nav-filter-{0}'.fs(slug)).change(self.applyFilter)
+	    $.each(itemFilterLabels, function(idx, val) {
+		select.append('<option value="{0}">{1}</option>'.fs(val[0], val[1]))
+	    })
+            select.parent().show()
+	}
+    }
+
+    self.applyFilter = function(event) {
+	try {
+	    var value = $('option:selected', event.target).attr('value')
+	} catch (e) { return }
+	if (!value) { return }
+	var schema = new SchemaTool()
+	var itemCall = schema[value]
+	if (itemCall) {
+	    self.clear()
+	    self.putFilterItems(schema.tradable(itemCall()))
+	    self.reinit()
+	}
+    }
+
+    self.clear = function() {
+	$('td > div > img', outerContext).remove()
+    }
+
+    self.putFilterItems = function(items) {
+	if (items) {
+	    // this map is duplicated from the schematool.tradeableBackpack; fixme.
+	    items = $.map(values(items), function(item, index) {
+		return {defindex:item.defindex, pos:index+1}
+	    })
+	    options.itemTool.putItems(items)
+	}
     }
 
     self.reinit = function() {
-	pageCurrent = 1
-	self.navigate(0)
+	while (pageCurrent > 1) {
+	    self.navigate(-1)
+	}
     }
 
     self.navigate = function(offset) {
@@ -188,12 +273,14 @@ var NewBackpackNavigator = function(options) {
 	    var newMargin = $('div.bp-pages', outerContext).width() * (offset>0 ? -1 : 1)
 	    pageCurrent += offset
 	    $('table.bp-{0}'.fs(prev), pagesContext)
-	        .animate({marginLeft:newMargin}, 200, function() {
-		    $('table.bp-{0}'.fs(prev), pagesContext).hide()
-		    $('table.bp-{0}'.fs(pageCurrent), pagesContext)
-		        .show()
-			.animate({marginLeft:0}, 200)
-		})
+	        .animate({marginLeft:newMargin}, 200,
+			 function() {
+			     $('td.selected', pagesContext).removeClass('selected')
+			     $('table.bp-{0}'.fs(prev), pagesContext).hide()
+			     $('table.bp-{0}'.fs(pageCurrent), pagesContext)
+				 .show()
+				 .animate({marginLeft:0}, 200)
+			 })
 	    self.updateButtons()
 	}
     }
@@ -215,25 +302,33 @@ var NewBackpackNavigator = function(options) {
 	    navNext.show()
 	}
     }
+
 }
 
 
 //
 // tool for showing items in a backpack.
 //
-var NewBackpackItemsTool = function(options) {
+var BackpackItemsTool = function(options) {
     var self = this
-    var items = options.items
     var listingUids = options.listingUids || []
     var bidUids = options.bidUids || []
     var slug = options.slug
     var cols = options.cols || 10
 
     self.init = function(settings) {
+	self.putItems(options.items, settings)
+	self.initOptional()
+	// TODO: restate this such that it works for both unplaced and
+	// placed cells.  (removing the 'td' works but affects other
+	// elements).
+	$('div.bp td').mousedown(function() { return false })
+    }
+
+    self.putItems = function(items, settings) {
         var schema = new SchemaTool()
 	var newIdx = -1, settings = settingsView(settings)
 	var toolDefs = schema.tools(), actionDefs = schema.actions()
-	$('div.bp').mousedown(function() { return false })
 
 	$.each(items, function(index, item) {
 	    item.flag_active_listing = (item.id in listingUids)
@@ -262,7 +357,6 @@ var NewBackpackItemsTool = function(options) {
         $('#bp-placed-{0} label, #bp-unplaced-{1}'.fs(slug, slug))
 	    .toggle(newIdx > -1)
 	$('#bp-{0} img'.fs(slug)).fadeIn()
-	self.initOptional()
     }
 
     self.initOptional = function() {
@@ -290,7 +384,11 @@ var NewBackpackItemsTool = function(options) {
 
 	var makeNav = options.navigator
 	if (makeNav) {
-	    self.navigator = new NewBackpackNavigator({slug: slug})
+	    self.navigator = new BackpackNavTool({
+		slug: slug,
+		filters: options.filters,
+		itemTool: self
+	    })
 	    // we're in our own init, so init the navigator, too
 	    self.navigator.init()
 	}
@@ -316,7 +414,7 @@ var NewBackpackItemsTool = function(options) {
 	}
 	var help = options.help || ''
 	if (help) {
-	    $('#bp-{0} span.help'.fs(slug)).text(help)
+	    $('#bp-{0} span.help:first'.fs(slug)).text(help)
 	}
     }
 
@@ -397,7 +495,7 @@ var NewBackpackItemsTool = function(options) {
 // NB: backpack choosers must be initialized *after* any corresponding
 // backpack item tool.
 //
-var NewBackpackChooser = function(options) {
+var BackpackChooserTool = function(options) {
     var self = this
     var title = options.title
     var backpackHelp = options.backpackHelp
@@ -410,7 +508,10 @@ var NewBackpackChooser = function(options) {
     }
 
     self.initDrag = function() {
-	var dropMove = function(event, ui) {
+
+	// called after an item has been dropped on a backpack or
+	// chooser.
+	var dropMoveItem = function(event, ui) {
 	    if ($(this).children().length > 0) { return false }
 	    $(this).parent().removeClass('selected')
 	    if (options.copy) {
@@ -431,52 +532,74 @@ var NewBackpackChooser = function(options) {
 	    if (options.afterDropMove) { options.afterDropMove(item) }
 	    if (options.copy && options.afterDropCopy) { options.afterDropCopy(item) }
 	}
-	var dragFromBackpack = function(event, ui) {
+
+	// called prior to dragging; returns false for untradable
+	// items which makes them not draggable.
+	var dragTradableFilter = function(event, ui) {
 	    var img = $('img', event.target) // source img, not the drag img
             try {
 		var node = img.data('node')
-		return !(node.flag_cannot_trade) && !(node.flag_active_listing) && !(node.flag_active_bid)
+		return !(node.flag_cannot_trade) &&
+	               !(node.flag_active_listing) &&
+		       !(node.flag_active_bid)
 	    } catch (e) { return false }
 	}
-	var dragShow = function(event, ui) { ui.helper.addClass('selected').removeClass('outline') }
-	var dropOver = function(event, ui) { $(this).parent().addClass('outline') }
-	var dropOut = function(event, ui) { $(this).parent().removeClass('outline') }
 
+	// adds the "selected" higlight class to items during drag.
+	var dragStartFocus = function(event, ui) {
+	    ui.helper.addClass('selected').removeClass('outline')
+	}
+
+	// adds the "outline" hilight to drop targets.
+	var dropOverFocus = function(event, ui) {
+	    $(this).parent().addClass('outline')
+	}
+
+	// removes the "outline" highlight from drop targets when they
+	// are no longer the active target.
+	var dropOverBlur = function(event, ui) {
+	    $(this).parent().removeClass('outline')
+	}
+
+	// setup dragging from the backpack
 	$('#bp-{0} td'.fs(backpackSlug))
 	    .draggable({
 		containment: $('#bp-{0}'.fs(backpackSlug)).parent(),
 		cursor: 'move',
-		drag: dragFromBackpack,
+		drag: dragTradableFilter,
 		helper: 'clone',
-		start: dragShow})
+		start: dragStartFocus})
 
+	// setup dropping onto the chooser
 	$('#bp-{0} td div'.fs(backpackSlug))
 	    .droppable({
 		accept: '#bp-chooser-{0} td'.fs(chooserSlug),
-		drop: dropMove,
-		out: dropOut,
-		over: dropOver})
+		drop: dropMoveItem,
+		out: dropOverBlur,
+		over: dropOverFocus})
 
+	// setup dragging from the chooser
 	$('#bp-chooser-{0} td'.fs(chooserSlug))
 	    .draggable({
 		containment: $('#bp-{0}'.fs(backpackSlug)).parent(),
 		cursor: 'move',
-		drag: dragFromBackpack,
+		drag: dragTradableFilter,
 		helper: 'clone',
-		start: dragShow})
+		start: dragStartFocus})
 
+	// setup dropping onto the backpack
 	$('#bp-chooser-{0} td div'.fs(chooserSlug))
 	    .droppable({
 		accept: '#bp-{0} td'.fs(backpackSlug),
-		drop: dropMove,
-		out: dropOut,
-		over: dropOver})
+		drop: dropMoveItem,
+		out: dropOverBlur,
+		over: dropOverFocus})
     }
 
     self.initOptional = function() {
 	// maybe add some help
 	if (options.help) {
-	    $('#bp-chooser-{0} span.help'.fs(chooserSlug)).text(options.help)
+	    $('#bp-chooser-{0} span.help:first'.fs(chooserSlug)).text(options.help)
 	}
 
 	// maybe toggle some classes on hover
@@ -529,3 +652,4 @@ var NewBackpackChooser = function(options) {
     }
 
 }
+

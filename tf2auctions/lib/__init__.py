@@ -11,21 +11,9 @@ from google.appengine.ext.webapp import RequestHandler, Request, Response
 from google.appengine.ext.webapp.util import run_wsgi_app
 
 from simplejson import dumps as json_dumps, loads as json_loads
-from chameleon.zpt.loader import TemplateLoader as DefaultTemplateLoader
+from chameleon.zpt.loader import TemplateLoader as BaseTemplateLoader
 
 from tf2auctions import features
-
-
-class TemplateLoader(DefaultTemplateLoader):
-    cache = {}
-
-    def load(self, filename, format='xml'):
-	key = (filename, format)
-	if key in self.cache:
-	    return self.cache[key]
-	info('DebugTemplateLoader(%s, %s)', filename, format)
-	tmpl = self.cache[key] = super(TemplateLoader, self).load(filename, format)
-	return tmpl
 
 
 def js_datetime(dt):
@@ -86,6 +74,18 @@ def render_body(request, template, **kwds):
     return template.render(**kwds)
 
 
+class TemplateLoader(BaseTemplateLoader):
+    cache = {}
+
+    def load(self, filename, format='xml'):
+	key = (filename, format)
+	if key in self.cache and not features.devel:
+	    return self.cache[key]
+	info('DebugTemplateLoader(%s, %s)', filename, format)
+	tmpl = self.cache[key] = super(TemplateLoader, self).load(filename, format)
+	return tmpl
+
+
 class ContextLoader(object):
     def __init__(self, loader):
 	self.load = loader.load
@@ -134,9 +134,8 @@ class View(LocalHandler):
     base_js = (
 	'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
 	'%s/%s' % (media_js_path, 'jquery.json-2.2.js'),
-	'%s/%s' % (media_js_path, 'jquery.ba-hashchange.min.js'),
-##	'%s/%s' % (media_js_path, 'jquery.ba-bbq.min.js'),
-
+	# '%s/%s' % (media_js_path, 'jquery.ba-hashchange.min.js'),
+	# '%s/%s' % (media_js_path, 'jquery.ba-bbq.min.js'),
     )
 
     ## javascripts for every template; values are modified to include
@@ -179,21 +178,23 @@ class View(LocalHandler):
     def iter_css(self, css_path=None):
 	prefix = self.media_css_path if css_path is None else css_path
 	version = features.version
+	if features.devel:
+	    import random
+	    version = '%s-%s' % (version, random.random()*100)
 	for css in self.base_css:
 	    yield css
-	for css in self.default_css:
-	    yield '%s/%s?v=%s' % (prefix, css, version, )
-	for css in self.related_css:
+	for css in self.default_css + self.related_css:
 	    yield '%s/%s?v=%s' % (prefix, css, version, )
 
     def iter_js(self, js_path=None):
 	prefix = self.media_js_path if js_path is None else js_path
 	version = features.version
+	if features.devel:
+	    import random
+	    version = '%s-%s' % (version, random.random()*100)
 	for js in self.base_js:
 	    yield js
-	for js in self.default_js:
-	    yield '%s/%s?v=%s' % (prefix, js, version, )
-	for js in self.related_js:
+	for js in self.default_js + self.related_js:
 	    yield '%s/%s?v=%s' % (prefix, js, version, )
 
     def login_url_key(self):

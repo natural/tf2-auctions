@@ -32,13 +32,12 @@
 		</div>
 	    </div>
 
-	    <div id="${slug}-basic-link-pod" class="null mb05">
-		<a id="${slug}-basic-link" href="" onclick="return false">
-		    <h2>Back to Basic Search <span class="hi">&lt;&lt;</span></h2>
-		</a>
-	    </div>
-
 	    <div class="null" id="${slug}-advanced-pod">
+		<h2>Advanced Search</h2>
+		<div class="help mb1">
+		    Search for listings with specific items with this
+		    thing that kinda looks like a backpack.
+		</div>
 		<div class="organizer-view">
 		    <label>Tradable Items:</label>
 		    <span class="help">Drag items to the search area below.  Double click works, too.
@@ -55,13 +54,57 @@
 			 metal:use-macro="context.view_parts.macros.chooser_slim" />
 		</div>
 	    </div>
+
+	    <div class="null" id="${slug}-reverse-pod">
+		<h2>Reverse Search</h2>
+		<div class="help mb1">
+		    Search for listings by minimum bid with this handy dandy backpack dohicky.
+		</div>
+		<div class="organizer-view">
+		    <label>Tradable Items:</label>
+		    <span class="help">Drag items to the search area below.  Double click works, too.
+		    </span>
+		    <metal:include
+			 tal:define="slug 'rv'; cols 4"
+			 metal:use-macro="context.view_parts.macros.backpack_thin" />
+		    <label>Your Search:</label>
+		    <span class="help">Double click an item to remove it or
+			<a href="#" id="${slug}-reverse-reset" onclick="return false">remove all</a>.
+		    </span>
+		    <metal:include
+			 tal:define="slug 'reverse-search'; rows 1; cols 4"
+			 metal:use-macro="context.view_parts.macros.chooser_slim" />
+		</div>
+	    </div>
+
+	    <div id="${slug}-basic-link-pod" class="null mt1 mb1">
+		<a id="${slug}-basic-link" href="#" class="small-button"
+		   onclick="return false">Back to Basic Search &lt;&lt;</a>
+	    </div>
+
+
             <div id="${slug}-filters"><h2>Filters:</h2> <div id="${slug}-filter-inputs"></div></div>
 	    <div id="${slug}-sorts" class="mt1"><h2>Sort:</h2> <div id="${slug}-sort-inputs"></div></div>
-	    <div id="${slug}-advanced-link-pod" class="mt1">
-		<a id="${slug}-advanced-link" href="" onclick="return false">
-		    <h2>Advanced <span class="hi">&gt;&gt;</span></h2>
-		</a>
+
+	    <div id="${slug}-advanced-link-pod" class="mt2">
+		<a id="${slug}-advanced-link" onclick="return false"
+		   href="#" class="small-button">Advanced &gt;&gt;</a>
+		<div class="help mt1">
+		    Use the "Advanced" search feature to find listings
+		    with a specific item or items.
+		</div>
 	    </div>
+
+	    <div id="${slug}-reverse-link-pod" class="mt2">
+		<a id="${slug}-reverse-link" onclick="return false"
+		   href="#" class="small-button">Reverse &gt;&gt;</a>
+		<div class="help mt1">
+		    Use the "Reverse" search feature to find listings by minimum bid.
+		</div>
+	    </div>
+
+
+
 	</div>
 
 	<div id="${slug}-listing-pod">

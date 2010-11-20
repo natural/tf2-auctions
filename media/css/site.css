@@ -712,6 +712,9 @@ text-align:center;
 width:5.15em !important;
 }
 
+div.bp-nav {
+white-space:nowrap !important;
+}
 
 div.bp-nav span.non, div.bp-nav span.nav a {
 background-color:#766b5e;
@@ -760,4 +763,14 @@ border:0.25em solid #847668;
 div.bp td.selected-delete {
 background-color:#9d302f !important;
 border:0.25em solid #9d302f !important;
+}
+
+
+select.bp-nav-filter {
+background-color:#2E2B2A;
+border:2px solid #766B5E;
+color:#766B5E;
+font-size:1em;
+height:2em;
+margin-right:2em;
 }

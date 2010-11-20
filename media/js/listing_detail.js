@@ -147,7 +147,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	$$('add-bid-item-chooser-error').parent().slideUp()
     }
 
-    var bpTool = new NewBackpackItemsTool({
+    var bpTool = new BackpackItemsTool({
 	items: backpack,
 	listingUids: listingItemsUids(listings),
 	bidUids: bidItemsUids(bids),
@@ -160,7 +160,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	help: 'Drag items from your backpack to the bid area below.  You can also double click an item to move it.'
     })
 
-    var chTool = new NewBackpackChooser({
+    var chTool = new BackpackChooserTool({
 	backpackSlug: 'listing-detail-bid',
 	chooserSlug: 'listing-detail-add-bid-item',
 	afterDropMove: itemMoved,

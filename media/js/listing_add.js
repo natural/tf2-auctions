@@ -8,20 +8,21 @@ var $$ = function(suffix, next) { return $('{0}-{1}'.fs(pid, suffix), next) }
 //
 var MinBidTool = function() {
     var schemaTool = new SchemaTool()
-    var bpTool = new NewBackpackItemsTool({
+    var bpTool = new BackpackItemsTool({
 	items: schemaTool.tradableBackpack(),
 	slug: 'mb',
 	navigator: true,
 	toolTips: true,
 	select: true,
 	outlineHover: true,
+	filters: true,
 	help: 'Select the minimum items you will consider for a trade. You can select up to 10 items.'
     })
-    var chTool = this.chooser = new NewBackpackChooser({
+    var chTool = this.chooser = new BackpackChooserTool({
 	backpackSlug: 'mb',
 	chooserSlug: 'listing-add-min-bid',
 	selectDeleteHover: true,
-	copy:true
+	copy: true,
     })
     bpTool.init()
     chTool.init()
@@ -35,7 +36,7 @@ var BackpackListingTool = function(params) {
     var self = this
     var defDesc  = 'Enter a description.'
 
-    var bpTool = new NewBackpackItemsTool({
+    var bpTool = new BackpackItemsTool({
 	items: params.backpack,
 	listingUids: params.listingUids,
 	bidUids: params.bidUids,
@@ -48,7 +49,7 @@ var BackpackListingTool = function(params) {
 	help: 'Drag items from your backpack into the area below.  Double click works, too.',
     })
 
-    var chTool = self.chooser = new NewBackpackChooser({
+    var chTool = self.chooser = new BackpackChooserTool({
 	backpackSlug: 'a',
 	help: 'Remove items by dragging them to your backpack.  Double click will remove, too.',
 	chooserSlug: 'listing-add-item',
@@ -214,8 +215,8 @@ var showMinBid = function() {
 	target.prepend(clone)
 	minTool.chooser.updateCount()
     }
-    $('#bp-mb td div img').dblclick(copyToMinbidChooser)
-    $('#bp-chooser-listing-add-min-bid td').dblclick(removeMinBidChoice)
+    $('#bp-mb td div img').live('dblclick', copyToMinbidChooser)
+    $('#bp-chooser-listing-add-min-bid td').live('dblclick', removeMinBidChoice)
     $$('min-bid-show').slideUp(750)
     $$('min-bid-pod').fadeIn('slow')
     return false
@@ -279,5 +280,4 @@ $(document).ready(function() {
     new SchemaLoader({success: schemaReady})
     $$('min-bid-show a').click(showMinBid)
     $$('show-terms').click(showTermsDialog)
-//    console.log('listing_add: 79 79 79')
 })

@@ -41,18 +41,19 @@ var searchStack = makeSearchStack()
 
 // advanced search backpack tool.  creates and initializes the items
 // tool and the chooser.
-var SearchBackpackTool = function(schema) {
-    var bpTool = new NewBackpackItemsTool({
+var SearchBackpackTool = function(schema, bpSlug, chSlug) {
+    var bpTool = new BackpackItemsTool({
 	items: schema.tradableBackpack(),
-	slug: 'ac',
+	slug: bpSlug,
 	navigator: true,
 	toolTips: true,
 	select: true,
 	outlineHover: true,
+	filters: true
     })
-    var chTool = new NewBackpackChooser({
-	backpackSlug: 'ac',
-	chooserSlug: 'advanced-search',
+    var chTool = new BackpackChooserTool({
+	backpackSlug: bpSlug,
+	chooserSlug: chSlug,
 	copy:true,
 	selectDeleteHover: true,
 	afterDropMove: searchStack.chooserChanged
@@ -86,7 +87,8 @@ var chooserQuery = function() {
 // displays the basic search fields and hides the advanced fields.
 var showBasicSearch = function() {
     $$('advanced-pod').slideUp()
-    $('#search-advanced-link-pod, #search-sorts, #search-filters').fadeBack()
+    $$('reverse-pod').slideUp()
+    $('#search-advanced-link-pod, #search-sorts, #search-filters, #search-reverse-link-pod').fadeBack()
     $$('basic-link-pod').fadeOut()
     $$('listing-pod').animate({width: contentWidths.results}, 400)
     $$('controls').animate({width: contentWidths.controls} ,400)
@@ -99,7 +101,7 @@ var showAdvancedSearch = function() {
     if (!showAdvancedSearch.initOnce) {
 	showAdvancedSearch.initOnce = true
 	var schema = new SchemaTool()
-	var advSearchTool = new SearchBackpackTool(schema)
+	var advSearchTool = new SearchBackpackTool(schema, 'ac', 'advanced-search')
 	var copyToSearchChoice = function(event) {
 	    var source = $(event.target)
 	    var target = $('#bp-chooser-advanced-search td div:empty').first()
@@ -121,12 +123,12 @@ var showAdvancedSearch = function() {
 	    })
 		searchStack.chooserChanged()
 	}
-	$('#bp-ac td div img').dblclick(copyToSearchChoice)
-	$('#bp-chooser-advanced-search td').dblclick(removeSearchChoice)
+	$('#bp-ac td div img').live('dblclick', copyToSearchChoice)
+	$('#bp-chooser-advanced-search td').live('dblclick', removeSearchChoice)
 	$$('advanced-reset').click(resetAdvancedSearch)
     }
 
-    $('#search-advanced-link-pod, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
+    $('#search-advanced-link-pod, #search-reverse-link-pod, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
     $$('basic-link-pod').fadeIn()
     var width = $$('pod').width()
     $('#advanced-search-pod').show()
@@ -134,6 +136,51 @@ var showAdvancedSearch = function() {
     $$('listing-pod').animate({width:width-450}, 400, function() {
 	$$('advanced-pod').show(function () {
 	    $('#bp-nav-ac').width($('#bp-ac .bp-1').width() - 10)
+	})
+    })
+}
+
+
+// displays the reverse search fields and hides the basic fields.
+var showReverseSearch = function() {
+    if (!showReverseSearch.initOnce) {
+	showReverseSearch.initOnce = true
+	var schema = new SchemaTool()
+	var advSearchTool = new SearchBackpackTool(schema, 'rv', 'reverse-search')
+	var copyToSearchChoice = function(event) {
+	    var source = $(event.target)
+	    var target = $('#bp-chooser-reverse-search td div:empty').first()
+	    if (!target.length) { return }
+	    var clone = source.clone()
+	    clone.data('node', source.data('node'))
+	    target.prepend(clone)
+	    searchStack.chooserChanged()
+	}
+	var removeSearchChoice = function(e) {
+	    $('img', this).fadeOut().remove()
+	    $(this).removeClass('selected selected-delete')
+	    searchStack.chooserChanged()
+	}
+	var resetReverseSearch = function () {
+	    $.each( $('#bp-chooser-reverse-search td'), function(idx, cell) {
+		$('img', cell).fadeOut().remove()
+		$(cell).removeClass('selected selected-delete')
+	    })
+		searchStack.chooserChanged()
+	}
+	$('#bp-rv td div img').live('dblclick', copyToSearchChoice)
+	$('#bp-chooser-reverse-search td').live('dblclick', removeSearchChoice)
+	$$('reverse-reset').click(resetReverseSearch)
+    }
+
+    $('#search-advanced-link-pod, #search-reverse-link-pod, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
+    $$('basic-link-pod').fadeIn()
+    var width = $$('pod').width()
+    $('#reverse-search-pod').show()
+    $$('controls').animate({width:400} ,400)
+    $$('listing-pod').animate({width:width-450}, 400, function() {
+	$$('reverse-pod').show(function () {
+	    $('#bp-nav-rv').width($('#bp-rv .bp-1').width() - 10)
 	})
     })
 }
@@ -301,7 +348,6 @@ var putListings = function(results) {
 
 
 var searchOkay = function(search, query) {
-    console.log('searchOkay', search, query)
     if (query) {
 	window.location.hash = query
     }
@@ -340,11 +386,9 @@ var schemaReady = function(schema) {
     $('div.organizer-view td.item-view').live('mouseover', hoverItem)
     $('div.organizer-view td.item-view').live('mouseout', unhoverItem)
 
-
-
+    $$('reverse-link').click(showReverseSearch)
     $$('advanced-link').click(showAdvancedSearch)
     $$('basic-link').click(showBasicSearch)
-
 
     var q = getHash()
     if (q) {
@@ -380,5 +424,4 @@ $(document).ready(function() {
 	}
     })
     new SchemaLoader({success: schemaReady})
-    console.log('search 99999 111111111')
 })

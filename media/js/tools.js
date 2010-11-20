@@ -392,14 +392,33 @@ var SchemaTool = function(schema) {
 	return res
     }
 
-    self.actions = function() {return self.select('item_slot', 'action')}
-    self.crates = function() {return self.select('craft_class', 'supply_crate')}
-    self.hats = function() {return self.select('item_slot', 'head')}
-    self.metal = function() {return self.select('craft_class', 'craft_bar')}
-    self.misc = function() {return self.select('item_slot', 'misc')}
-    self.tokens = function() {return self.select('craft_class', 'craft_token')}
-    self.tools = function() {return self.select('craft_class', 'tool')}
-    self.weapons = function() {return self.select('craft_class', 'weapon')}
+    self.all = function() { return self.select('', function(v) { return true }) }
+    self.actions = function() { return self.select('item_slot', 'action') }
+    self.crates = function() { return self.select('craft_class', 'supply_crate') }
+    self.hats = function() { return self.select('item_slot', 'head') }
+    self.metal = function() { return self.select('craft_class', 'craft_bar') }
+    self.misc = function() { return self.select('item_slot', 'misc') }
+    self.tokens = function() { return self.select('craft_class', 'craft_token') }
+    self.tools = function() { return self.select('craft_class', 'tool') }
+    self.weapons = function() { return self.select('craft_class', 'weapon') }
+    self.wearables = function() { return self.select('item_class', 'tf_wearable_item') }
+
+    self.scoot = function() { return self.usedByClass('Scout') }
+    self.soly = function() { return self.usedByClass('Soldier') }
+    self.pyro = function() { return self.usedByClass('Pyro') }
+    self.demo = function() { return self.usedByClass('Demoman') }
+    self.heavy = function() { return self.usedByClass('Heavy') }
+    self.engi = function() { return self.usedByClass('Engineer') }
+    self.medic = function() { return self.usedByClass('Medic') }
+    self.sniper = function() { return self.usedByClass('Sniper') }
+    self.spy = function() { return self.usedByClass('Spy') }
+
+    self.usedByClass = function(className, others) {
+	return self.select('used_by_classes', function(cs) {
+	    if (!cs || !cs['class']) { return false }
+	    return $.inArray(className, cs['class']) > -1
+	})
+    }
 
     self.stock = function() {
 	return self.select('defindex', function(v) {
@@ -417,16 +436,17 @@ var SchemaTool = function(schema) {
 	return map
     }
 
-    self.tradable = function() {
+    self.tradable = function(items) {
+	items = items || self.itemDefs()
 	var stock = self.stock(), can = {}, cannot = {}
-	$.each(self.itemDefs(), function(idx, def) {
+	$.each(items, function(idx, def) {
 	    $.each(   ((def.attributes || {} ).attribute || []), function(i, a) {
 		if (a['class']=='cannot_trade' && a['value'] == 1) {
 		    cannot[idx] = def
 		}
 	    })
 	})
-	    $.each(self.itemDefs(), function(idx, def) {
+	    $.each(items, function(idx, def) {
 		if (!(def.defindex in cannot) && !(def.defindex in stock)) {
 		    can[def.defindex] = def
 		}
