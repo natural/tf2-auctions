@@ -55,13 +55,10 @@ handlers:
     login: required
     script: tf2auctions/scripts/auth/\1.py
     url: /(profile-update)(/.*)?
-
 -   script: tf2auctions/scripts/public/search-redirect.py
     url: /(listing|profile)(/?)
-
 -   script: tf2auctions/scripts/public/\1.py
     url: /(listing|profile)/\d{1,20}
-
 -   script: tf2auctions/scripts/public/profile.py
     url: /id/(.{1,32})
 -   script: tf2auctions/scripts/public/\1.py
@@ -71,4 +68,4 @@ handlers:
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 62
+version: 63
