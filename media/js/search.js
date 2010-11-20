@@ -258,7 +258,7 @@ var configNext = function(results) {
 	    $$('listings').slideUp(function() {
 		searchStack.push(results)
 		var innerNext = function(rs) {
-		    //window.location.hash = results.next_qs
+		    window.location.hash = results.next_qs
 		    putListings(rs)
 		}
 		new SearchLoader({success: innerNext, suffix: '?'+results.next_qs})
@@ -282,7 +282,7 @@ var configPrev = function(results) {
 	$$('nav-extra').slideUp(function() {
 	    $$('listings').slideUp(function() {
 		var rs = searchStack.pop()
-		//window.location.hash = rs.next_qs
+		window.location.hash = rs.next_qs
 		putListings(rs)
 	    })
 	})

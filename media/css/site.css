@@ -9,6 +9,8 @@ background-color:#393431;
 color:#ebe2ca;
 font-family:"TF2secondary", Verdana, Arial, Sans-Serif;
 font-size:1em;
+min-height:42em;
+height:42em;
 }
 
 a { color:#ece3cb; text-decoration:none; outline-style:none; }
@@ -552,12 +554,7 @@ text-align:right;
 margin-top:-0.25em; /* for the border */
 a-height:2.25em;
 a-width:2.25em;
-
 }
-
-
-#content-player-profile-link {}
-#content-add-listing-link {}
 
 
 #content-site-message {

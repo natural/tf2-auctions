@@ -53,6 +53,7 @@ var BackpackListingTool = function(params) {
 	backpackSlug: 'a',
 	help: 'Remove items by dragging them to your backpack.  Double click will remove, too.',
 	chooserSlug: 'listing-add-item',
+	afterDropMove: function(item) { $('#bp-chooser-listing-add-item-error').parent().slideUp() }
     })
 
     new AuthProfileLoader({
@@ -130,6 +131,7 @@ var BackpackListingTool = function(params) {
     }
 
     self.showErrors = function(errors) {
+	console.error(errors)
 	$.each(errors, function(index, error) {
 	    var ele = $('{0}-error'.fs(error.id))
 	    ele.text('Error: {0}'.fs(error.msg)).parent().slideDown()
@@ -144,7 +146,7 @@ var BackpackListingTool = function(params) {
 	// 1.  listing items: uniqueid + item text
 	var items = $('#bp-chooser-listing-add-item img')
 	if (items.length < 1 || items.length > 10) {
-	    errs.push({id:'#listing-add-item-chooser',
+	    errs.push({id:'#bp-chooser-listing-add-item',
 		       msg:'Select 1-10 items from your backpack.'})
 	}
 	// 2.  description
@@ -176,7 +178,11 @@ var BackpackListingTool = function(params) {
 	// 5. agree w/ site terms
 	if (! $$('terms').attr('checked')) {
 	    $$('terms').click(function (e) {
-		$$('terms-error').slideToggle()
+		if (e.target.checked) {
+		    $$('terms-error').slideUp()
+		} else {
+		    $$('terms-error').slideDown()
+		}
 	    })
 	    errs.push({id: '#listing-add-terms',
 		       msg:'You must read and agree with site rules, terms, and conditions.'})
@@ -206,6 +212,7 @@ var showMinBid = function() {
 	$(this).removeClass('selected selected-delete')
 	minTool.chooser.updateCount()
     }
+
     var copyToMinbidChooser = function(e) {
 	var source = $(event.target)
 	var target = $("#bp-chooser-listing-add-min-bid td div:empty").first()
@@ -215,6 +222,7 @@ var showMinBid = function() {
 	target.prepend(clone)
 	minTool.chooser.updateCount()
     }
+
     $('#bp-mb td div img').live('dblclick', copyToMinbidChooser)
     $('#bp-chooser-listing-add-min-bid td').live('dblclick', removeMinBidChoice)
     $$('min-bid-show').slideUp(750)

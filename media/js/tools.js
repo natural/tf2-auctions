@@ -271,7 +271,7 @@ var ProfileTool = function(profile) {
 
     self.defaultUserAuthOkay = function() {
 	$('#content-user-buttons, #content-logout-link').fadeIn()
-	$('#content-login-link').fadeAway()
+	$('#content-login-link').fadeOut()
 	$('#content-player-profile-link').attr('href', self.defaultUrl())
 	self.put()
     }

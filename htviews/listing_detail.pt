@@ -170,10 +170,6 @@
 		    Your Bid <span id="${slug}-add-bid-item-title-extra">(0 items)</span>
 		</h3>
 
- 		<div class="message center">
-		    <div class="warning null" id="${slug}-add-bid-min-bid-warn"></div>
-		</div>
-
 		<metal:include
 		     tal:define="slug slug+'-add-bid-item'"
 		     metal:use-macro="context.view_parts.macros.chooser_slim" />

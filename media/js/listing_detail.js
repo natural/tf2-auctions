@@ -140,11 +140,14 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	    if ($.inArray(v, defItems) == -1 ) { metBid = false }
 	})
 	if (minItems && metBid) {
-	    $$('add-bid-min-bid-warn').slideUp()
+	    $('#bp-chooser-listing-detail-add-bid-item-warn')
+		.parent().slideUp()
 	} else {
-	    $$('add-bid-min-bid-warn').text('Warning: Minimum bid not met').slideDown()
+	    $('#bp-chooser-listing-detail-add-bid-item-warn')
+		.text('Warning: Minimum bid not met')
+		.parent().slideDown()
 	}
-	$$('add-bid-item-chooser-error').parent().slideUp()
+	$('#bp-chooser-listing-detail-add-bid-item-error').parent().slideUp()
     }
 
     var bpTool = new BackpackItemsTool({
@@ -267,7 +270,11 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
 	// 5. agree w/ site terms
 	if (! $$('add-bid-terms').attr('checked')) {
 	    $$('add-bid-terms').click(function (e) {
-		$$('add-bid-terms-error').slideToggle()
+		if (e.target.checked) {
+		    $$('add-bid-terms-error').slideUp()
+		} else {
+		    $$('add-bid-terms-error').slideDown()
+		}
 	    })
 	    errs.push({id: '#listing-detail-add-bid-terms',
 		       msg:'You must read and agree with site rules, terms, and conditions.'})
@@ -311,7 +318,7 @@ var backpackReady = function(backpack, listing, listings, bids, profile, update)
     $$('add-bid-fields').width(width)
     $$('add-bid-fields textarea').width(width).height(width/4).text()
     $$('add-bid-terms-desc').parent().width(width)
-    $$('add-bid-min-bid-warn').parent().width(width)
+//    $$('add-bid-min-bid-warn').parent().width(width)
     $.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
 	$('#listing-detail-{0}'.fs(value)).text( $('#listing-detail-{0}-default'.fs(value)).text() )
 	$('#listing-detail-{0}'.fs(value)).focusin(function() {
@@ -369,7 +376,7 @@ var profileReady = function(profile, listing) {
 
     /* auth profile owner is also listing owner */
     if (profile.steamid == ownerid) {
-	$$('owner-links').fadeAway()
+	$$('owner-links').fadeOut()
         $$('owner-controls').slideDown()
 
 	if (listing.status == 'active') {
@@ -531,7 +538,7 @@ var profileReady = function(profile, listing) {
 		return false
 	    })
 	    $$('existing-bid-cancel').click(function() {
-		$$('existing-bid-cancel').fadeAway()
+		$$('existing-bid-cancel').fadeOut()
 		$$('existing-bid-confirm').fadeIn()
 		$$('existing-bid-cancel-yes').click(function() {
 		    var bid = profileBid(profile)
@@ -556,7 +563,7 @@ var profileReady = function(profile, listing) {
 		})
 		$$('existing-bid-cancel-no').click(function() {
 		    $$('existing-bid-confirm').fadeOut()
-		    $$('existing-bid-cancel').fadeBack()
+		    $$('existing-bid-cancel').fadeIn()
 		})
 	    })
 	}

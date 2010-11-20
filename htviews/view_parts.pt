@@ -19,6 +19,9 @@ slim chooser:  default 2 rows * 5 cols
 		<div class="message null">
 		    <div class="error" id="bp-chooser-${slug}-error"></div>
 		</div>
+ 		<div class="message null">
+		    <div class="warning" id="bp-chooser-${slug}-warn"></div>
+		</div>
 	    </caption>
 	    <tbody>
 		<metal:loop tal:repeat="row range(rows)">
@@ -44,7 +47,7 @@ thin backpack: dynamic rows, cols, and pages
 <metal:macro
      metal:define-macro="backpack_thin"
      tal:define="slug slug | '';
-		 item_count item_count | 206;
+		 item_count item_count | 212;
 		 rows rows | 4;
 		 cols cols | 4; ">
     <div class="bp bp-thin" id="bp-${slug}">
