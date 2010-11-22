@@ -22,6 +22,11 @@ label { display:block; font-family:"TF2Build"; }
 p { color:#827868; font-size:110%; margin-bottom:1em; }
 strong { font-family:"TF2Build"; }
 
+input[type=text] {
+line-height:1em;
+padding:0.35em 1.5em 0.35em 0.25em;
+border:3px solid #847668;
+}
 
 .build-font { font-family:"TF2Build";}
 .center { margin:0 auto 0 auto; }

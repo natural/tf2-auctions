@@ -152,16 +152,16 @@
 			     tal:define="schema settings_schema; slug slug"
 			     metal:use-macro="context.form_parts.macros.schema_form" />
 
-			<div class="w50">
-			<div class="message w40 float-left" id="${slug}-settings-save-message">
-			    <div class="error null" style="margin:0"></div>
-			    <div class="information null" style="margin:0"></div>
+			<div class="message" id="${slug}-settings-save-message">
+			    <div class="error null"></div>
+			    <div class="information null"></div>
 			</div>
-			<div class="w40 float-right p05">
+
+			<div class="p05">
 			    <a href="#" class="button" onclick="return false" id="${slug}-settings-save">Save</a>
 			</div>
 
-			</div>
+
 
 
 		    </div>

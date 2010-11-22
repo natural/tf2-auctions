@@ -424,6 +424,14 @@ var schemaReady = function(schema) {
 // do nothing when the messages tab is shown
 var messagesShow = function() {}
 
+var validateNotifyBids = function() {
+    if ( $('#profile-notify-bids').attr('checked') && !$('#profile-email').val().trim() ) {
+	$('#profile-email-error').text("Error: we can't send you notifications without an email address.")
+	    .parent().slideDown()
+    } else {
+	$('#profile-email-error').text('').parent().slideUp()
+    }
+}
 
 //
 // when the settings tab is shown, reconfigure that page with the
@@ -442,6 +450,9 @@ var settingsShow = function() {
 		$('#'+pkey).val(value)
 	    }
 	})
+        $('#profile-notify-bids').click(validateNotifyBids)
+	$('#profile-email').keyup(validateNotifyBids)
+        validateNotifyBids()
     }
     new AuthProfileLoader({
 	success: settingsReady,
@@ -489,6 +500,8 @@ var settingsShow = function() {
 // schema.
 //
 $(document).ready(function() {
+    var initHash = window.location.hash
+
     var tabCallbacks = {
 	0: messagesShow,
 	1: listingsShow,
@@ -496,14 +509,28 @@ $(document).ready(function() {
 	3: backpackShow,
 	4: settingsShow
     }
+
     $('#tabs').tabs({
 	show: function(event, ui) {
 	    if (ui.index in tabCallbacks) {
+		// munge the hash (to prevent the browser from jumping
+		// to the div automatically) and then set it:
+		window.location.hash = ui.tab.hash.replace('tabs-', '')
 		tabCallbacks[ui.index]()
 	    }
 	}
     })
+
     $$('settings-tab').hide()
     siteMessage('Loading...')
     new SchemaLoader({success: schemaReady})
+
+    if (initHash) {
+	initHash = parseInt(initHash.replace('#', ''))
+	if (initHash in tabCallbacks) {
+	    $('#tabs').tabs('select', initHash)
+	}
+
+    }
+
 })

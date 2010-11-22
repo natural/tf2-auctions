@@ -137,12 +137,11 @@ div.field div.field-container {
 margin-left:2em;
 }
 
-#tabs-4 #email {
-width:32em;
-height:2em;
+#profile-email {
+width:24em;
 margin-bottom:0.25em;
 }
 
-div.help {
-width:35%;
+#profile-settings-pod {
+width:50%;
 }

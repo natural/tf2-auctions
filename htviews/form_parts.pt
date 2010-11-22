@@ -1,7 +1,11 @@
 <metal:macros>
 
 <!-- render an error node -->
-<metal:def define-macro="error_node"><div><!-- js error --></div></metal:def>
+<metal:def define-macro="error_node">
+    <div class="null message">
+	<div class="error" id="${slug}-${field.id}-error"></div>
+    </div>
+</metal:def>
 
 
 <!-- render a field label -->
@@ -16,8 +20,8 @@
 	<metal:use use-macro="macros.field_label" />
 	<br />
 	<input type="text" value="${value | ''}" id="${slug}-${field.id}" name="${slug}-${field.id}" />
-	<div tal:condition="field.get('help')" class="help" tal:content="field.help" />
 	<metal:use use-macro="macros.error_node" />
+	<div tal:condition="field.get('help')" class="help" tal:content="field.help" />
     </div>
 </metal:def>
 

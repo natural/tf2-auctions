@@ -129,6 +129,14 @@ class Listing(db.Model):
 	    queue_name='expiration',
 	    eta=expires,
 	    params={'key':key})
+
+	## 7.  submit an item to the re-verification task queue.
+	taskqueue.add(
+	    url='/api/v1/admin/queue/reverify-items',
+	    transactional=True,
+	    queue_name='item-verification',
+	    params={'key':key, 'action':'init', 'type':'listing'})
+	## 8.  submit an item to the counter banging task queue.
 	taskqueue.add(
 	    url='/api/v1/admin/queue/bang-counters',
 	    transactional=True,
@@ -376,6 +384,11 @@ class Bid(db.Model):
 	    queue_name='counters',
 	    params={'bids':1, 'bid_items':len(item_ids)})
 	taskqueue.add(
+	    url='/api/v1/admin/queue/reverify-items',
+	    transactional=True,
+	    queue_name='item-verification',
+	    params={'key':key, 'action':'init', 'type':'bid'})
+	taskqueue.add(
 	    url='/api/v1/admin/queue/notify-bid',
 	    transactional=True,
 	    queue_name='bid-notify',
@@ -413,8 +426,6 @@ class Bid(db.Model):
     @classmethod
     def build_update_transaction(cls, owner, profile, listing, bid, item_ids, public_msg, private_msg):
 	if not profile.owns_all(uid for uid, item in item_ids):
-	    ## TODO: re-fetch backpack.  will probably need to move
-	    ## backpack feed into this site for that to work.
 	    raise ValueError('Incorrect ownership.')
 	schema = json_loads(fetch.schema())
 	bid.message_public = public_msg
@@ -438,6 +449,9 @@ class Bid(db.Model):
 	    transactional=True,
 	    queue_name='counters',
 	    params={'bid_items':len(item_ids)})
+	## we don't re-queue the bid verification because the
+	## verification script will pick up all of the items when it
+	## runs.
 	taskqueue.add(
 	    url='/api/v1/admin/queue/notify-bid',
 	    transactional=True,
@@ -467,14 +481,14 @@ class Bid(db.Model):
     def items(self):
 	return BidItem.all().filter('bid = ', self).fetch(limit=100)
 
-    def set_status(self, status, reason):
+    def set_status(self, status, reason, **kwds):
 	self.status = status
 	self.put()
 	for bid_item in self.items():
 	    bid_item.status = status
 	    bid_item.put()
 
-    def cancel(self):
+    def cancel(self, reason):
 	self.listing.bid_count = max(0, self.listing.bid_count-1)
 	self.listing.put()
 	for item in self.items():

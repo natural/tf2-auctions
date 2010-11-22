@@ -7,3 +7,6 @@ queue:
 
 - name: bid-notify
   rate: 1/s
+
+- name: item-verification
+  rate: 1/s
