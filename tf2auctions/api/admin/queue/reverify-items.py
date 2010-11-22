@@ -11,11 +11,20 @@ from tf2auctions.models import Listing, Bid
 from tf2auctions.models.profile import PlayerProfile
 
 
-info = warn
-
-
 class ReverifyItems(ApiHandler):
+    """ ReverifyItems -> checks listing and bid item ownership and
+        cancels the listing or bid if the ownership changes.
+
+	This class supports two modes: the initial mode, called
+	'init', is used by the Listing and Bid models to start the
+	reverification timer.  The second mode, called 'verify', is
+	the actual reverification process.
+
+    """
     def post(self):
+	""" Called by the task queue API when a this task is ready to
+	    run.  The tasks are created by the Listing and Bid models.
+	"""
 	get = self.request.get
 	try:
 	    vtype, action, key = get('type'), get('action'), get('key')
@@ -25,21 +34,37 @@ class ReverifyItems(ApiHandler):
 		raise TypeError('Invalid reverify type and action: %s_%s' % (action, vtype))
 	    call(key)
 	except (Exception, ), exc:
-	    warn('re-verify exception: %r', exc)
+	    error('re-verify exception: %r', exc)
 
     def init_listing(self, key):
+	""" Initialize listing items reverification by sending it back
+	    into this queue.
+	"""
 	self.requeue(Listing, key, lambda v:v.expires)
 
     def init_bid(self, key):
+	""" Initialize bid items reverification by sending it back
+	    into this queue.
+	"""
 	self.requeue(Bid, key, lambda v:v.listing.expires)
 
     def verify_listing(self, key):
+	""" Verify listing items and possibly requeue the verification.
+
+	"""
 	self.init_listing(self.reverify(Listing, key))
 
     def verify_bid(self, key):
+	""" Verify bid items and possibly requeue the verification.
+
+	"""
 	self.init_bid(self.reverify(Bid, key))
 
     def requeue(self, cls, key, get_expires):
+	""" If there is time left on a listing or bid, this method
+	    will submit a new item to the task queue to run in one day
+	    (one minute in devel).
+	"""
 	if not key:
 	    return
 	kind = cls.__name__.lower()
@@ -76,6 +101,11 @@ class ReverifyItems(ApiHandler):
 		params=params)
 
     def reverify(self, cls, key):
+	""" Verify item ownership against the owner's backpack.
+
+	This method will return the object if ownership is correct,
+	otherwise it will cancel the listing or bid.
+	"""
 	kind = cls.__name__.lower()
 	obj = cls.get(key)
 	info('re-verify items in %s: %s', kind, key)
