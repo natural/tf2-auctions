@@ -61,21 +61,15 @@ handlers:
     url: /(listing|profile)/\d{1,20}
 -   script: tf2auctions/scripts/public/profile.py
     url: /id/(.{1,32})
-
-
 -   script: tf2auctions/scripts/public/subscribe/index.py
     url: /subscribe
-
 -   script: tf2auctions/scripts/public/subscribe/\1.py
     url: /subscribe/(success|cancel)
-
 -   script: tf2auctions/scripts/public/\1.py
     url: /(search|login|terms|terms-dialog|all-items|about|contact|faq|backpack)
-
-
 -   script: tf2auctions/scripts/public/front.py
     url: /
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 64
+version: 66
