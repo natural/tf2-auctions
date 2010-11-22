@@ -144,7 +144,7 @@ class Listing(db.Model):
 	    params={'listings':1, 'listing_items':len(item_ids)})
 	return key
 
-    def cancel(self, reason):
+    def cancel(self, reason=''):
 	""" Workflow function to cancel a listing.  Called by the user
 	    via a script.
 
@@ -488,7 +488,7 @@ class Bid(db.Model):
 	    bid_item.status = status
 	    bid_item.put()
 
-    def cancel(self, reason):
+    def cancel(self, reason=''):
 	self.listing.bid_count = max(0, self.listing.bid_count-1)
 	self.listing.put()
 	for item in self.items():
