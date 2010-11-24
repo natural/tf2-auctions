@@ -362,6 +362,7 @@ var SchemaTool = function(schema) {
 	    $(tag).html(itemImg(def['image_url'])).fadeIn()
 	    var iutil = itemUtil(pitem, schema)
 	    var img = $('img', tag)
+	    if (!img.data('node')) { img.data('node', data) }
 
 	    if (iutil.isEquipped() && settingV.showEquipped ) {
 		img.addClass('equipped equipped-'+defindex).after(iutil.equippedTag())

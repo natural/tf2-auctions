@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from logging import exception, info
 
 from google.appengine.api import users
-from google.appengine.api.labs import taskqueue
 from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
@@ -13,13 +12,7 @@ from tf2auctions.lib import json_dumps, json_loads, js_datetime, user_steam_id
 from tf2auctions.lib.proxyutils import fetch
 from tf2auctions.lib.schematools import item_categories, item_type_map, known_categories
 from tf2auctions.models.profile import PlayerProfile
-
-
-def add_filters(query, keys, values):
-    for key, value in zip(keys, values):
-        key = '%s =' % key if not key.endswith('=') else key
-	query.filter(key, value)
-    return query
+from tf2auctions.models.utils import add_filters, queue_tool
 
 
 class Listing(db.Model):
@@ -123,25 +116,16 @@ class Listing(db.Model):
 	    listing_item.put()
 
 	## 6.  submit an item to the expiration task queue.
-	taskqueue.add(
-	    url='/api/v1/admin/queue/end-listing',
-	    transactional=True,
-	    queue_name='expiration',
-	    eta=expires,
-	    params={'key':key})
+	queue_tool.end_listing(key, expires, transactional=True)
 
 	## 7.  submit an item to the re-verification task queue.
-	taskqueue.add(
-	    url='/api/v1/admin/queue/reverify-items',
-	    transactional=True,
-	    queue_name='item-verification',
-	    params={'key':key, 'action':'init', 'type':'listing'})
+	queue_tool.reverify_items({'key':key, 'action':'init', 'type':'listing'}, transactional=True)
+
 	## 8.  submit an item to the counter banging task queue.
-	taskqueue.add(
-	    url='/api/v1/admin/queue/bang-counters',
-	    transactional=True,
-	    queue_name='counters',
-	    params={'listings':1, 'listing_items':len(item_ids)})
+	queue_tool.bang_counters({'listings':1, 'listing_items':len(item_ids)}, transactional=True)
+
+	## 9. submit an item to the subscriber notification queue
+	queue_tool.notify_listing(subscription_key=None, listing_key=key, transactional=True)
 	return key
 
     def cancel(self, reason=''):
@@ -164,12 +148,7 @@ class Listing(db.Model):
 		## can't release the listing items or bid items yet
 		## because no winner has been choosen:
 		self.set_status('ended', reason, set_items=False, set_bids=False)
-		taskqueue.add(
-		    url='/api/v1/admin/queue/expire-listing',
-		    queue_name='expiration',
-		    eta=datetime.now() + timedelta(days=1),
-		    params={'key' : str(self.key()) }
-		    )
+		queue_tool.expire_listing(str(self.key()), datetime.now() + timedelta(days=1))
 	    else:
 		self.status = 'ended'
 		self.expire('Expired with no bids')
@@ -237,6 +216,9 @@ class Listing(db.Model):
 
 	"""
 	return PlayerProfile.get_by_user(self.owner)
+
+    def url(self):
+	return 'http://www.tf2auctions.com/listing/%s' % (self.key().id(), )
 
     def encode_builtin(self, bids=False, items=True):
 	""" Encode this instance using only built-in types.
@@ -378,21 +360,9 @@ class Bid(db.Model):
 		listing=listing,
 		bid=bid)
 	    bid_item.put()
-	taskqueue.add(
-	    url='/api/v1/admin/queue/bang-counters',
-	    transactional=True,
-	    queue_name='counters',
-	    params={'bids':1, 'bid_items':len(item_ids)})
-	taskqueue.add(
-	    url='/api/v1/admin/queue/reverify-items',
-	    transactional=True,
-	    queue_name='item-verification',
-	    params={'key':key, 'action':'init', 'type':'bid'})
-	taskqueue.add(
-	    url='/api/v1/admin/queue/notify-bid',
-	    transactional=True,
-	    queue_name='bid-notify',
-	    params={'bid':key, 'update':False})
+	queue_tool.bang_counters({'bids':1, 'bid_items':len(item_ids)}, transactional=True)
+	queue_tool.reverify_items({'key':key, 'action':'init', 'type':'bid'}, transactional=True)
+	queue_tool.notify_bid({'bid':key, 'update':False}, transactional=True)
 	return key
 
     @classmethod
@@ -444,21 +414,12 @@ class Bid(db.Model):
 		bid=bid)
 	    bid_item.put()
 	key = bid.key()
-	taskqueue.add(
-	    url='/api/v1/admin/queue/bang-counters',
-	    transactional=True,
-	    queue_name='counters',
-	    params={'bid_items':len(item_ids)})
+	queue_tool.bang_counters({'bid_items':len(item_ids)}, transactional=True)
 	## we don't re-queue the bid verification because the
 	## verification script will pick up all of the items when it
 	## runs.
-	taskqueue.add(
-	    url='/api/v1/admin/queue/notify-bid',
-	    transactional=True,
-	    queue_name='bid-notify',
-	    params={'bid':key, 'update':True})
+	queue_tool.notify_bid({'bid':key, 'update':True}, transactional=True)
 	return key
-
 
     def encode_builtin(self, listing=True, private=False):
 	lfb = Feedback.get_by_source(self, self.listing, self.listing.owner)
@@ -479,7 +440,7 @@ class Bid(db.Model):
 	    }
 
     def items(self):
-	return BidItem.all().filter('bid = ', self).fetch(limit=100)
+	return BidItem.all().filter('bid = ', self).fetch(limit=10)
 
     def set_status(self, status, reason, **kwds):
 	self.status = status

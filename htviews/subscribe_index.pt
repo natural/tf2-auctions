@@ -131,6 +131,19 @@ vertical-align:middle;
 			    <td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
 			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
 			</tr>
+
+			<tr>
+			    <td>
+				Price
+				<div class="help">
+				    How much does it cost?  Very little, really.
+				</div>
+			    </td>
+			    <td>Free</td>
+			    <td><div>$5 / month</div> or <div>$50 / year</div></td>
+			</tr>
+
+
 			<tr>
 			    <td colspan="3">
 				<div class="help w100 text-center">
@@ -144,39 +157,50 @@ vertical-align:middle;
 	    </div>
 	</div>
 
-	<div class="w25 center">
+	<div class="w25 center null" id="${slug}-login-pod">
+	    <h1 class="mt2">Login to Subscribe</h1>
+	</div>
+
+	<div class="w25 center null" id="${slug}-thanks-pod">
+	    <h1>You're already subscribed.  Thank you!</h1>
+	</div>
+
+	<div class="w25 center null" id="${slug}-form-pod">
 	    <h1 class="mt2">Subscribe Now!</h1>
-	    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+
+	    <form
+		 action="https://www.paypal.com/cgi-bin/webscr"
+		 method="post">
 		<input type="hidden" name="cmd" value="_s-xclick" />
-		<input type="hidden" name="hosted_button_id" value="PLNCQ2ZK6FMSQ" />
+		<input type="hidden" name="hosted_button_id" value="SE8KCN25MJN6C" />
 		<table>
 		    <tr>
 			<td>
-				<input type="hidden" name="on0" value="Subscription Options" />
-				Select a membership type:
-			    </td>
-			</tr>
-			<tr>
-			    <td>
-				<select name="os0">
-				    <option value="Premium">Premium : $5.00USD - monthly</option>
-				    <option value="Premium (You Save $10!)">Premium (You Save $10!) : $50.00USD - yearly</option>
-				</select>
-			    </td>
-			</tr>
-		    </table>
-		    <input type="hidden" name="currency_code" value="USD" />
-		    <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif"
-			   border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
-		    <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-		</form>
+			    <input type="hidden" name="on1" value="Profile ID" />
+			    <input type="hidden" name="os1" value="76111" />
+		        </td>
+		    </tr>
+		    <tr>
+			<td>
+			    <select name="os0">
+				<option value="Monthly Premium">Monthly Premium : $5.00USD - monthly</option>
+				<option value="Yearly Premium">Yearly Premium : $50.00USD - yearly</option>
+                            </select>
+		        </td>
+                    </tr>
+		</table>
+		<input type="hidden" name="currency_code" value="USD" />
+		<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif"
+		       border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
+		<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+	    </form>
 
-		<div tal:condition="False">
-		    <h1 class="mt2">Unsubscribe:</h1>
-		    <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_subscr-find&amp;alias=payments%40tf2auctions%2ecom">
-			<img src="https://www.paypal.com/en_US/i/btn/btn_unsubscribe_LG.gif" border="0" />
-		    </a>
-		</div>
+	    <div tal:condition="False">
+		<h1 class="mt2">Unsubscribe:</h1>
+		<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_subscr-find&amp;alias=payments%40tf2auctions%2ecom">
+		    <img src="https://www.paypal.com/en_US/i/btn/btn_unsubscribe_LG.gif" border="0" />
+		</a>
+	    </div>
 	</div>
 
     </metal:fill>

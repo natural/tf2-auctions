@@ -10,6 +10,7 @@ from google.appengine.ext import db
 from tf2auctions.lib import json_dumps, json_loads, user_steam_id
 from tf2auctions.lib.proxyutils import fetch
 from tf2auctions.models.settings import PlayerSettings
+from tf2auctions.models.subscriber import Subscription
 
 
 class PlayerProfile(db.Expando):
@@ -125,7 +126,7 @@ class PlayerProfile(db.Expando):
 	    self.updated = datetime.now()
 	    self.put()
 
-    def encode_builtin(self, settings=False, complete=False):
+    def encode_builtin(self, settings=False, complete=False, subscription=True):
 	""" Encode this instance using only built-in types. """
 	id64 = self.id64()
 	res = {
@@ -141,6 +142,12 @@ class PlayerProfile(db.Expando):
 	else:
 	    psettings = {}
 	res['settings'] = psettings
+	if subscription:
+	    psub = Subscription.get_by_id64(id64)
+	    psub = psub.encode_builtin() if psub else {}
+	else:
+	    psub = {}
+	res['subscription'] = psub
 	return res
 
     def add_rating(self, value):

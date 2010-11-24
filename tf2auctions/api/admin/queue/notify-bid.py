@@ -8,6 +8,8 @@ from tf2auctions.lib import ApiHandler
 from tf2auctions.models import Bid
 from tf2auctions.models.settings import PlayerSettings
 
+## TODO: send mail function, and email template are candiates for
+## refactoring.
 
 body_template = """
 Hello %(name)s,
@@ -46,9 +48,7 @@ class NotifyBid(ApiHandler):
 	    settings = PlayerSettings.get_by_id64(listing.owner).encode_builtin(complete=True)
 	    if settings['email'] and settings['notify-bids']:
 		name = getattr(profile, 'personaname', listing.owner)
-		email = settings['email']
-		url = 'http://www.tf2auctions.com/listing/%s' % (listing.key().id(), )
-		send(name, email, listing.owner, url)
+		send(name, settings['email'], listing.owner, listing.url())
 
 	except (Exception, ), exc:
 	    warn('notify bid exception: %s', exc)

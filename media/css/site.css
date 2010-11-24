@@ -551,6 +551,13 @@ width:60%;
 text-align:right;
 }
 
+#content-site-categories {
+position:absolute;
+right:0;
+top:3.5em;
+text-align:right;
+}
+
 
 #content-site-buttons span, #content-site-buttons img { vertical-align:middle; }
 

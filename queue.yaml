@@ -10,3 +10,6 @@ queue:
 
 - name: item-verification
   rate: 1/s
+
+- name: listing-notify
+  rate: 1/s

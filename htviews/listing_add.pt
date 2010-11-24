@@ -43,9 +43,37 @@
 		    <div class="clear"></div>
 		</div>
 
+		<div class="center notnullyet">
+		    <div class="mb1 mt1">
+			<label class="">
+			    <span class="min-bid-radio-seed">
+				<input type="radio" name="min-bid-type" value="dollars"  />&nbsp;
+			    </span>
+			    Minimum Bid Amount (Optional):
+			</label>
+
+			<div id="${slug}-min-bid-dollar-show" class="text-center mt05 mb05">
+			    <a href="#" class="nice">Click to Show + Enter Dollar Amount</a>
+			</div>
+
+			<div class="null" id="${slug}-min-bid-dollar-pod">
+			    <div class="help">Enter a dollar amount for a minimum bid</div>
+			    <div class="text-right">
+				<input class="text-right" type="text"
+				       name="${slug}-min-bid-dollar-amount"
+				       value="0.00" />
+			    </div>
+			</div>
+		    </div>
+		    <div class="clear"></div>
+		</div>
+
 		<div class="center">
                     <label for="${slug}-min-bid" id="${slug}-min-bid-label">
-			Minimum Bid (Optional):
+			<span class="min-bid-radio-seed">
+			    <input type="radio" name="min-bid-type" value="items" />&nbsp;
+			</span>
+			Minimum Bid Items (Optional):
 		    </label>
                 </div>
 		<div class="center text-center mt05">
@@ -54,6 +82,7 @@
 		    </span>
 		</div>
 		</div>
+
 
 		<div class="null" id="${slug}-min-bid-pod">
 		    <div class="" id="${slug}-min-bid">

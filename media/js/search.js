@@ -413,6 +413,14 @@ var schemaReady = function(schema) {
 	    }, 125)
     }
 
+    var s = window.location.search.slice(3)
+    if (s) {
+	console.log( ('filter-inputs input[type="checkbox"]:eq({0})'.fs(s) ))
+	$$('filter-inputs input[type="checkbox"]:eq({0})'.fs(s))
+	q = 'metal=on'
+    }
+
+
     siteMessage('Loading results...')
     new SearchLoader({
 	suffix: '?' + q,

@@ -152,6 +152,66 @@
 			     tal:define="schema settings_schema; slug slug"
 			     metal:use-macro="context.form_parts.macros.schema_form" />
 
+			<div class="null" id="${slug}-premium-signup-pod" tal:condition="features.subscriber_accounts">
+			    <h2>Premium Subscription Features</h2>
+			    <div class="field">
+				<div class="field-container">
+				    <label>You Don't Have Any Because You're Not Subscribed</label>
+				    <div class="help">
+					But you could be!  Head over to the <a href="/subscribe">Subscribe Page</a>
+					and sign up for extra features that come only with premium subscriptions.
+					Also, I like turtles.
+				    </div>
+				</div>
+			    </div>
+
+			</div>
+			<div class="null" id="${slug}-premium-settings-pod" tal:condition="features.subscriber_accounts">
+			    <h2>Premium Subscription Features</h2>
+
+			    <div class="field">
+				<div class="field-container">
+				    <label>Listings w/ Minimum Bid Dollar Amounts</label>
+				    <div class="help">
+					You can create listings with dollar amounts as the minimum bid.
+					You do this on the <a href="/listing/add">Add Listing</a> page.
+				    </div>
+				</div>
+			    </div>
+
+			    <div class="field">
+				<div class="field-container">
+				    <label>Featured Listings</label>
+				    <div class="help">
+					You can have your listings featured on the front page and in search results.
+					You do this on the <a href="/listing/add">Add Listing</a> page.
+				    </div>
+				</div>
+			    </div>
+
+			    <div class="field">
+				<div class="field-container">
+				    <label>Notify Me of New Listings</label>
+				    <div class="help">
+					When new listings are created with any of the items below,
+					an email notification will be sent to you.  Of course, you'll
+					have to enter your email address above.
+				    </div>
+				    <div class="organizer-view">
+				    <metal:include
+					 tal:define="slug 'nl'; cols 5;"
+					 metal:use-macro="context.view_parts.macros.backpack_thin" />
+				    <div class="help">Double click an item to remove it or
+					<a href="#" id="${slug}-notify-listing-reset" onclick="return false">remove all</a>.
+				    </div>
+				    <metal:include
+					 tal:define="slug 'notify-listing'; rows 2; cols 5"
+					 metal:use-macro="context.view_parts.macros.chooser_slim" />
+				    </div>
+				</div>
+			    </div>
+			</div>
+
 			<div class="message" id="${slug}-settings-save-message">
 			    <div class="error null"></div>
 			    <div class="information null"></div>

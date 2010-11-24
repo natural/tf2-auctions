@@ -371,8 +371,69 @@ var authProfileOkay = function(profile) {
 	    }
 	})
 	$$('settings-tab').fadeIn()
+	console.log(profile)
+	if (profile.subscription && profile.subscription.status == 'Verified') {
+	    var nlt = new NotifyListingTool()
+	    var removeFromChooser = function(e) {
+		$('img', this).fadeOut().remove()
+		$(this).removeClass('selected selected-delete')
+	    }
+
+	    var copyToChooser = function(e) {
+		var source = $(event.target)
+		var target = $("#bp-chooser-notify-listing td div:empty").first()
+		if (!target.length) { return }
+		var clone = source.clone()
+		clone.data('node', source.data('node'))
+		target.prepend(clone)
+	    }
+	    var resetChooser = function() {
+		$.each( $('#bp-chooser-notify-listing td'), function(idx, cell) {
+		    $('img', cell).fadeOut().remove()
+		    $(cell).removeClass('selected selected-delete')
+		})
+	    }
+            if (profile.settings['notify-listing-defs']) {
+		$.each(profile.settings['notify-listing-defs'], function(idx, defindex) {
+		    var target = $("#bp-chooser-notify-listing td div:empty").first()
+		    target.text( $.toJSON( {defindex:defindex}) ).addClass('defindex-lazy')
+		})
+		nlt.schemaTool.putImages(profile.settings)
+	    }
+
+	    $('#bp-nl td div img').live('dblclick', copyToChooser)
+	    $('#bp-chooser-notify-listing td').live('dblclick', removeFromChooser)
+	    $$('notify-listing-reset').click(resetChooser)
+
+	    $$('premium-settings-pod').fadeIn()
+	} else {
+	    $$('premium-signup-pod').fadeIn()
+	}
 	playerProfileOkay(profile)
     }
+}
+
+
+var NotifyListingTool = function() {
+    var self = this
+    var schemaTool = self.schemaTool = new SchemaTool()
+    var bpTool = new BackpackItemsTool({
+	items: schemaTool.tradableBackpack(),
+	slug: 'nl',
+	navigator: true,
+	toolTips: true,
+	select: true,
+	outlineHover: true,
+	filters: true
+    })
+    var chTool = this.chooser = new BackpackChooserTool({
+	backpackSlug: 'nl',
+	chooserSlug: 'notify-listing',
+	selectDeleteHover: true,
+	copy: true,
+    })
+    bpTool.init()
+    chTool.init()
 }
 
 
@@ -467,6 +528,14 @@ var settingsShow = function() {
         $.each($('div.field input[type="text"]'), function(index, input) {
 	    output[trim(input.id)] = $(input).val()
 	})
+        try {
+            output['notify-listing-defs'] = $.map(
+		$('#bp-chooser-notify-listing td img'),
+		function(image) { return $(image).data('node').defindex }
+	    )
+	} catch (e) {
+	    output['notify-listing-defs'] = []
+	}
 	var settingsSaveOkay = function(results) {
 	    // todo:  re-init profile somehow
 	    $$('settings-save-message div.information')

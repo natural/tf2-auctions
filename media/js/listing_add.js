@@ -59,8 +59,33 @@ var BackpackListingTool = function(params) {
     new AuthProfileLoader({
 	suffix: '?settings=1',
 	success: function(profile) {
+	    var settings = profile.settings
 	    bpTool.init(profile.settings)
 	    chTool.init(profile.settings)
+	    console.log(profile)
+	    if (profile.subscription && profile.subscription.status == 'Verified') {
+		var minBidDollarPod = $$('min-bid-dollar-pod')
+		var minBidDollarLinkP = $$('min-bid-dollar-show')
+		var showMinBidDollar = function () {
+		    minBidDollarPod.slideDown()
+		    minBidDollarLinkP.slideUp()
+		}
+		var hideMinBidDollar = function() {
+ 		    minBidDollarPod.slideUp()
+		    minBidDollarLinkP.slideDown()
+		}
+		$('.min-bid-radio-seed').show()
+		$('.min-bid-radio-seed:eq(1) input[type="radio"]')
+		    .attr('checked', true)
+		    .click(hideMinBidDollar)
+		$('.min-bid-radio-seed:eq(0) input[type="radio"]').click(showMinBidDollar)
+		$('a', minBidDollarLinkP).click(function() {
+		    $('.min-bid-radio-seed:eq(0) input[type="radio"]').click()
+		    return false
+		})
+	    } else {
+		$('.min-bid-radio-seed').remove()
+	    }
 	}
     })
 
@@ -265,6 +290,7 @@ var listingsReady = function(listings, bids, profile) {
 var profileReady = function(profile) {
     siteMessage('Profile loaded.')
     new ProfileTool(profile).defaultUserAuthOkay()
+    console.log(profile)
     var listingsLoaded = function(listings) {
 	new BidsLoader({
 	    suffix: profile.steamid,
@@ -279,7 +305,10 @@ var profileReady = function(profile) {
 
 var schemaReady = function(schema) {
     siteMessage('Loading your profile...')
-    new AuthProfileLoader({suffix: '?settings=1', success: profileReady})
+    new AuthProfileLoader({
+	suffix: '?settings=1&complete=1',
+	success: profileReady
+    })
 }
 
 

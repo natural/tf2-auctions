@@ -4,9 +4,9 @@ from logging import error, info
 from google.appengine.ext import db
 
 from tf2auctions.lib import json_dumps, json_loads, user_steam_id
+from tf2auctions.models.utils import UserId64Mixin
 
-
-class PlayerSettings(db.Expando):
+class PlayerSettings(db.Expando, UserId64Mixin):
     """ PlayerSettings
 
     """
@@ -14,6 +14,8 @@ class PlayerSettings(db.Expando):
     ## doesn't do any validation anyway):
     email = db.StringProperty('Player email', indexed=True)
     payload = db.TextProperty('Serialized settings (JSON encoded)')
+    ## non-schema:
+    notify_listing_defs = db.ListProperty(long, 'Listing Notification Item Def Indexes')
 
     ## the current schema for the payload property.
     schema = [
@@ -79,20 +81,17 @@ class PlayerSettings(db.Expando):
 	return '<PlayerSettings id64=%s>' % (self.key(), )
 
     @classmethod
-    def get_by_id64(cls, id64):
-	""" Returns the PlayerProfile for the given id64. """
-	return cls.get_by_key_name(id64)
-
-    @classmethod
-    def get_by_user(cls, user):
-	""" Returns the PlayerProfile for the given user. """
-	return cls.get_by_id64(user_steam_id(user) if hasattr(user, 'nickname') else user)
+    def build(cls, owner):
+	key = user_steam_id(owner) if hasattr(owner, 'nickname') else owner
+	obj = cls.get_or_insert(key)
+	if not obj.is_saved():
+	    obj.put()
+	return obj
 
     @classmethod
     def put_merged(cls, owner, settings):
 	""" Returns the PlayerProfile for the given user, creating it if necessary. """
-	key = user_steam_id(owner) if hasattr(owner, 'nickname') else owner
-	obj = cls.get_or_insert(key)
+	obj = cls.build(owner)
 	payload = {}
 	## merge
 	for heading, fields in cls.schema:
@@ -102,13 +101,19 @@ class PlayerSettings(db.Expando):
 		    setattr(obj, field_id, settings.get(field_id, field.get('default')))
 		else:
 		    payload[field_id] = settings.get(field_id, field.get('default'))
+	## non schema:
+	obj.notify_listing_defs = settings.get('notify-listing-defs', [])
 	obj.payload = json_dumps(payload)
 	obj.put()
 	return obj
 
     def encode_builtin(self, complete=False):
 	""" Encode this instance using only built-in types. """
-	payload = json_loads(self.payload)
+	try:
+	    payload = json_loads(self.payload)
+	except (TypeError, ):
+	    payload = {}
 	if complete:
 	    payload['email'] = self.email
+	    payload['notify-listing-defs'] = self.notify_listing_defs or []
 	return payload

@@ -74,6 +74,14 @@
 		    <a id="${slug}-logout-link" class="button null" href="${controller.logout_url()}">Logout</a>
 		</span>
 	    </div>
+	    <div id="${slug}-site-categories" class="build-font">
+		<span class="mr1">Find Stuff Fast:</span>
+		<a class="nice" href="/search?f=0">Hats</a>  &middot;
+		<a class="nice" href="/search?f=1">Weapons</a>  &middot;
+		<a class="nice" href="/search?f=2">Metal</a> &middot;
+		<a class="nice" href="/search?f=5">Tools</a> &middot;
+		And <a class="nice" href="/search">much, much more...</a>
+	    </div>
 	</div>
     </div>
 
