@@ -32,10 +32,12 @@ border:3px solid #847668;
 .center { margin:0 auto 0 auto; }
 .clear { clear:both; }
 .text-center { text-align:center; }
-.text-right { text-align:right; }
+.text-left   { text-align:left;   }
+.text-right  { text-align:right;  }
 .defindex-lazy { display:none; position:relative;}
 .desc { overflow:auto; }
 .null { display:none; }
+.nowrap { white-space:nowrap !important; }
 
 .button, .small-button {
 background-color:#766b5e;
@@ -99,63 +101,48 @@ background: -webkit-gradient(linear, left top, left bottom, from(#995040), to(#5
 color:#ebe2ca;
 }
 
-div.detail-view, div.organizer-view {
+/* start organizer view, detail view */
+div.detail-view, div.ov {
 background-color:#2e2b2a;
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
 padding:0.25em;
 }
 
-
-div.organizer-view {
--webkit-transition: border-color 0.5s ease-in-out;
--moz-transition-property: border-color;
--moz-transition-duration: 0.5s;
--moz-transition-timing-function: ease-in-out;
-}
-
-div.organizer-view:hover {
-aa-border:0.25em solid #847668;
-}
-
-div.organizer-view .outline, div.items-view .outline, div.item-view .outline {
+div.ov .outline, div.items-view .outline, div.item-view .outline {
 border:0.25em solid #847668 !important;
 }
 
-div.organizer-view span.mono {
-opacity:0;
+div.ov span.mono {
+opacity: 0;
 -webkit-transition: opacity 0.5s ease-in-out;
 -moz-transition-property: opacity;
 -moz-transition-duration: 0.5s;
 -moz-transition-timing-function: ease-in-out;
-
 }
 
 
-div.organizer-view:hover span.mono {
+div.ov:hover span.mono {
 opacity:1;
 }
 
 
-div.organizer-view .selected {
+div.ov .selected {
 background-color:#ece3cb !important;
 border:0.25em solid #ece3cb !important;
 }
 
-div.organizer-view .selected-delete {
+div.ov .selected-delete {
 background-color:#9d302f !important;
 border:0.25em solid #9d302f !important;
 }
 
-div.items-view table img, div.organizer-view table img {
+div.items-view table img, div.ov table img {
 height:4em !important;
 margin-left:0.575em;
 }
 
-div.items-view table td,
-div.organizer-view table.chooser td,
-div.organizer-view table.backpack td,
-div.organizer-view table.unplaced td {
+div.items-view table td, div.ov table.chooser td, div.ov table.backpack td, div.ov table.unplaced td {
 background-color:#3c352e;
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A;
@@ -167,35 +154,27 @@ min-width:5.15em !important;
 width:5.15em !important;
 }
 
-div.organizer-view table.unplaced td {
+div.ov table.unplaced td {
 background-color:#2E2B2A
 }
 
-div.items-view table td div,
-div.organizer-view table.chooser td div,
-div.organizer-view table.backpack td div,
-div.organizer-view table.unplaced td div {
+div.items-view table td div, div.ov table.chooser td div, div.ov table.backpack td div, div.ov table.unplaced td div {
 height:4em !important;
 width:100% !important;
 }
 
-div.organizer-view .cannot-trade, div.organizer-view .active-listing, div.organizer-view .active-bid {
+div.ov .cannot-trade, div.ov .active-listing, div.ov .active-bid {
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 border:0.25em solid #2E2B2A !important;
 }
 
-div.organizer-view .active-listing { border-color:#9d302f !important; }
-div.organizer-view .active-bid { border-color:#385c78 !important; }
-div.organizer-view .cannot-trade { background-color:#252221 !important; }
+div.ov .active-listing { border-color:#9d302f !important; }
+div.ov .active-listing img { opacity:0.33; }
+div.ov .active-bid { border-color:#385c78 !important; }
+div.ov .cannot-trade { background-color:#252221 !important; }
 
 
 div.tools { margin:1em auto 1em auto; }
-div.navs {
-font-family:"TF2Build";
-text-align:right;
-white-space:nowrap !important;
-}
-
 div.tools div.navs span.nonav, div.tools div.navs span.nav a {
 background-color:#766b5e;
 border-bottom:none !important;
@@ -283,7 +262,7 @@ A50F79 Developer
 /*
     note that the background colors were manually selected from an
     opacity of 0.5 applied to the base (border) color while over an
-    div.organizer-view which had a bg color of #2E2B2A.
+    div.ov which had a bg color of #2E2B2A.
 
     also note that the outline styling (via javascript hover events)
     is only applied to specific (tradable) qualities.
@@ -380,12 +359,14 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .pb05 { padding-bottom:0.5em; }
 
 .w12  { width:12%; }
+.w15  { width:15%; }
 .w25  { width:25%; }
 .w40  { width:40%; }
 .w49  { width:49%; }
 .w50  { width:50%; }
 .w59  { width:59%; }
 .w75  { width:75%; }
+.w83  { width:83%; }
 .w88  { width:88%; }
 .w100 { width:100%; }
 .mono { font-family: Andale Mono, monospace; font-size:0.75em; }
@@ -425,9 +406,6 @@ filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);
 opacity:0.5; /* TODO: add opacity to parent selectors, too */
 }
 
-div.organizer-view .active-listing img {
-opacity:0.33;
-}
 
 .terms-dialog {
 margin:1em;
@@ -454,15 +432,22 @@ border-spacing:0;
 vertical-align:top;
 }
 
-.valign-top {
-vertical-align:top;
-}
+.valign-middle { vertical-align:middle; }
+.valign-top { vertical-align:top; }
 
 .listing-view img.listing-avatar, .bid-owner-seed img.bid-avatar, img.msg-avatar {
 height:24px !important;
 width:24px !important;
 }
 
+.listing-owner-seed {
+vertical-align:middle;
+margin-top:0.25em;
+}
+
+.listing-owner-seed img {
+vertical-align:middle;
+}
 
 /*
 
@@ -668,8 +653,31 @@ border-color:#898989;
 color:#898989;
 }
 
+/*
+
+other new styling:
+
+*/
+.news-seed a:hover {
+color:#c8503c;
+}
+
+.controls input {
+margin-left:0.5em;
+margin-right:0.5em;
+}
+
 
 /*
+
+new listing/bid swatch styling
+
+*/
+
+div.listing-seed {
+margin-bottom:0.75em;
+}
+
 
 
 
@@ -783,3 +791,11 @@ font-size:1em;
 height:2em;
 margin-right:2em;
 }
+
+/* specific to reverse and advanced search: */
+#bp-rv div.bp-pages, #bp-ac div.bp-pages {
+width:23.25em;
+}
+
+
+.featured { border-color: red !important }

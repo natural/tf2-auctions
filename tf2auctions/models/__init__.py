@@ -30,7 +30,7 @@ class Listing(db.Model):
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
     categories = db.StringListProperty(indexed=True)
     bid_count = db.IntegerProperty('Bid Count', default=0)
-
+    featured = db.BooleanProperty('Featured Listing', indexed=True, default=False)
     valid_days = range(1, 31) # 1-30
 
     @classmethod
@@ -247,6 +247,7 @@ class Listing(db.Model):
 	    'status_reason' : self.status_reason,
 	    'bids' : [b.encode_builtin(listing=False, private=private) for b in bids],
 	    'feedback' : bfb.encode_builtin() if bfb else None,
+	    'featured' : self.featured,
 	}
 
 

@@ -328,7 +328,7 @@ large listings: um...
 		 use_minbid use_minbid | False">
 
     <div id="${slug}-listings">
-	<div class="null prototype organizer-view">
+	<div class="null prototype ov">
             <table class="listing-view w100">
 		<tbody>
                     <tr>
@@ -392,7 +392,7 @@ large bids: ...
      tal:define="use_created use_created | True;
 		 use_view use_view | True;">
     <div id="${slug}-bids">
-	<div class="null prototype organizer-view">
+	<div class="null prototype ov">
             <table class="w100">
 		<tbody>
                     <tr>

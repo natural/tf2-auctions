@@ -161,7 +161,7 @@
 
 	<div id="${slug}-place-bid-pod" class="null center">
             <h1><span class="hilite">&nbsp;</span>Place Your Bid</h1>
-	    <div class="organizer-view null" id="${slug}-own-backpack">
+	    <div class="ov null" id="${slug}-own-backpack">
 		<metal:include
 		     tal:define="slug slug+'-bid'"
 		     metal:use-macro="context.view_parts.macros.backpack_slim" />

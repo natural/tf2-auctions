@@ -350,7 +350,7 @@ var listingsReady = function(listing, listings, bids, profile) {
 
 
 var bidData = function() {
-    return $$('bids div.organizer-view').map(
+    return $$('bids div.ov').map(
 	function(idx, ele) { return $(ele).data('bid') }
     )
 }
@@ -401,11 +401,11 @@ var profileReady = function(profile, listing) {
 	    $('.listing-detail-profile-choose-winner-submit').click(function (e) {
 		var self = $(this)
 		self.parents('.listing-detail-profile-choose-confirm').fadeOut()
-		var bid = self.parents('div.organizer-view').data('bid')
+		var bid = self.parents('div.ov').data('bid')
 		if (bid) {
 		    var cb = function(response) {
 			$('.listing-detail-profile-bid-view-select-winner-link').fadeOut()
-			$('div.winner', self.parents('div.organizer-view')).fadeIn()
+			$('div.winner', self.parents('div.ov')).fadeIn()
 			var ele = self.parents('table')
 			$('.bid-status', ele).text('')
 			$('.winner', ele).text('Winner!').parent().show()
@@ -419,7 +419,7 @@ var profileReady = function(profile, listing) {
 
 	}
 	if (listing.status == 'awarded') {
-	    $.each($$('bids div.organizer-view'), function(idx, element) {
+	    $.each($$('bids div.ov'), function(idx, element) {
 		element = $(element)
 		var bid = element.data('bid')
 		if (bid && bid.status == 'awarded' && bid.feedback) {
@@ -552,7 +552,7 @@ var profileReady = function(profile, listing) {
 			    $$('auth-bid-pod').fadeOut()
 			    $$('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
 			    $$('bidcount').text((listing.bid_count-1) ? ('Bids (' + (listing.bid_count-1) + ')') : 'No Bids')
-			    $.each($$('bids div.organizer-view'), function(idx, ele) {
+			    $.each($$('bids div.ov'), function(idx, ele) {
 				ele = $(ele)
 				if (ele.data('bid') && ele.data('bid').key == bid.key) {
 				    ele.slideUp()

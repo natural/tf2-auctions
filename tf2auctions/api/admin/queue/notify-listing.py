@@ -44,12 +44,10 @@ class NotifyListing(ApiHandler):
 	q = Subscription.all().order('__key__').filter('status =', 'Verified')
 	if bookmark:
 	    q.filter('__key__ >', db.Key(bookmark))
-	warn('q: %s, bookmark: %s %s', q, bookmark, type(bookmark))
 	subscription = q.get()
 
 	## 0. done if there are no more subscriptions
 	if not subscription:
-	    warn('all subscriptions notified')
 	    return
 
 	## 1. otherwise, process this subscription via its settings:
@@ -59,17 +57,14 @@ class NotifyListing(ApiHandler):
 	if settings.email and settings.notify_listing_defs:
 	    items = [i.defindex for i in listing.items()]
 	    for defindex in items:
-		warn('DEF: %s/%s, ITEMS: %s/%s', defindex, type(defindex), items, [type(i) for i in items])
 		if defindex in settings.notify_listing_defs:
 		    ## no name, that would mean yet another datastore read...
 		    send(settings.email, listing.url())
-		    warn('NEW notification for subscription: %s', subscription)
 		    break
 
 	## 2.  add another item to the queue:
 	queue_tool.notify_listing(subscription_key=subscription.key(),
 				  listing_key=listing_key)
-	warn('ADD new query for subscription notification: %s', listing_key)
 
 
 main = ApiHandler.make_main(NotifyListing)

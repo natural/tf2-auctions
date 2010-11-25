@@ -45,11 +45,11 @@ div.listing-seed, div.bid-marker {
 }
 
 
-#listing-detail-bids > div.organizer-view {
+#listing-detail-bids > div.ov {
 margin-bottom:0.75em;
 }
 
-div.detail-view, div.organizer-view {
+div.detail-view, div.ov {
 padding:1em;
 }
 

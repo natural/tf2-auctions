@@ -71,7 +71,7 @@
 			</h1>
 			<h2 id="${slug}-msg-none" class="null"></h2>
 			<div id="${slug}-view-msg-pod" class="mt1">
-			    <div class="null prototype organizer-view mb1">
+			    <div class="null prototype ov mb1">
 				<div class="${slug}-msg-sender-seed">
 				    <span class="${slug}-msg-sender-name"></span>
 				    <div class="float-right w50 text-right mono ${slug}-msg-created-seed"></div>
@@ -131,7 +131,7 @@
 			    </h1>
 			</div>
 			<h2 class="null" id="${slug}-backpack-loading"></h2>
-			<div class="organizer-view null" id="${slug}-backpack-inner">
+			<div class="ov null" id="${slug}-backpack-inner">
 			    <h2 class="null" id="${slug}-backpack-none"></h2>
 
 			<metal:include
@@ -197,7 +197,7 @@
 					an email notification will be sent to you.  Of course, you'll
 					have to enter your email address above.
 				    </div>
-				    <div class="organizer-view">
+				    <div class="ov">
 				    <metal:include
 					 tal:define="slug 'nl'; cols 5;"
 					 metal:use-macro="context.view_parts.macros.backpack_thin" />

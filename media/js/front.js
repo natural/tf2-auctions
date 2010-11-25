@@ -140,8 +140,8 @@ var schemaReady = function(schema) {
     var tt = new TooltipView(st)
     var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
-    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseover', hoverItem)
-    $('div.organizer-view td.item-view, #backpack-ac td').live('mouseout', unhoverItem)
+    $('div.ov td.item-view, #backpack-ac td').live('mouseover', hoverItem)
+    $('div.ov td.item-view, #backpack-ac td').live('mouseout', unhoverItem)
     $('.listing-view').live('mouseover', function() { $(this).addClass('listing-hover') })
     $('.listing-view').live('mouseout', function() { $(this).removeClass('listing-hover') })
     new SearchLoader({success:showListings, suffix:'?limit=5'})

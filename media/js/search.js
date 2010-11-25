@@ -247,6 +247,8 @@ var putListing = function(listing, clone) {
 	.attr('href', '/listing/{0}'.fs(listing.id))
     $('.search-listing-view-link', clone)
 	.append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
+    if (listing.featured) { clone.addClass('featured') }
+    console.log(listing)
     $$('listings').append(clone)
 }
 
@@ -392,8 +394,8 @@ var schemaReady = function(schema) {
     var tt = new TooltipView(st)
     var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
     var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
-    $('div.organizer-view td.item-view').live('mouseover', hoverItem)
-    $('div.organizer-view td.item-view').live('mouseout', unhoverItem)
+    $('div.ov td.item-view').live('mouseover', hoverItem)
+    $('div.ov td.item-view').live('mouseout', unhoverItem)
 
     $$('reverse-link').click(showReverseSearch)
     $$('advanced-link').click(showAdvancedSearch)

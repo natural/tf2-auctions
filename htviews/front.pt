@@ -33,7 +33,7 @@
 	    </div>
 	</div>
 
-	<div id="${slug}-news-blog-pod" class="float-left w59">
+	<div id="${slug}-news-blog-pod" class="float-left w59 news-seed">
 	    <div id="${slug}-news" class="null mb1">
 		<div class="news-seed null prototype mb1">
 		    <label>

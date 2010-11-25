@@ -14,16 +14,15 @@
 </head>
 <body>
 <metal:fill fill-slot="main" tal:define="slug 'search'">
-
     <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search Listings</span></h1>
 
-    <div id="${slug}-pod">
+    <div id="${slug}-pod" class="w100 pt05 desc">
 
-	<div id="${slug}-controls" class="null">
+	<div id="${slug}-controls" class="null build-font float-left w15 controls">
 	    <div id="${slug}-controls-nav">
 		<h2>Page:</h2>
 		<div class="tools" id="${slug}-nav">
-		    <div class="navs">
+		    <div class="navs text-left ml1 build-font nowrap">
 			<span class="nonav" id="${slug}-prev-none">&lt;</span>
 			<span class="nav" id="${slug}-prev-link"><a href="" id="${slug}-prev">&lt;</a></span>
 			<span class="nav" id="${slug}-next-link"><a href="" id="${slug}-next">&gt;</a></span>
@@ -37,7 +36,7 @@
 		    Search for listings with specific items with this
 		    thing that kinda looks like a backpack.
 		</div>
-		<div class="organizer-view">
+		<div class="ov">
 		    <label>Tradable Items:</label>
 		    <span class="help">Drag items to the search area below.  Double click works, too.
 		    </span>
@@ -58,7 +57,7 @@
 		<div class="help mb1">
 		    Search for listings by minimum bid with this handy dandy backpack dohicky.
 		</div>
-		<div class="organizer-view">
+		<div class="ov">
 		    <label>Tradable Items:</label>
 		    <span class="help">Drag items to the search area below.  Double click works, too.
 		    </span>
@@ -105,7 +104,7 @@
 
 	</div>
 
-	<div id="${slug}-listing-pod">
+	<div id="${slug}-listing-pod" class="ml1 float-left w83">
 	    <h2 class="null" id="${slug}-no-listings"></h2>
 	    <h2 class="null mb05" id="${slug}-some-listings"></h2>
 	    <div class="" id="${slug}-results-pod">
@@ -114,7 +113,7 @@
 		     metal:use-macro="context.view_parts.macros.listings_large" />
 		<div class="w100 null" id="${slug}-nav-extra">
 		    <div class="float-right tools w100" id="${slug}-bottom-nav">
-			<div class="navs">
+			<div class="navs text-right build-font nowrap">
 			<span class="nonav" id="${slug}-bottom-prev-none">&lt;</span>
 			<span class="nav" id="${slug}-bottom-prev-link"><a href="" id="${slug}-bottom-prev">&lt;</a></span>
 			<span class="nav" id="${slug}-bottom-next-link"><a href="" id="${slug}-bottom-next">&gt;</a></span>
