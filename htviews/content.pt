@@ -76,11 +76,11 @@
 	    </div>
 	    <div id="${slug}-site-categories" class="build-font">
 		<span class="mr1">Find Stuff Fast:</span>
-		<a class="nice" href="/search?f=0">Hats</a>  &middot;
-		<a class="nice" href="/search?f=1">Weapons</a>  &middot;
-		<a class="nice" href="/search?f=2">Metal</a> &middot;
-		<a class="nice" href="/search?f=5">Tools</a> &middot;
-		And <a class="nice" href="/search">much, much more...</a>
+		<a class="nice mr05" href="/search#hat=on">Hats</a>&nbsp;&middot;&nbsp;
+		<a class="nice mr05" href="/search#weapon=on">Weapons</a>&nbsp;&middot;&nbsp;
+		<a class="nice mr05" href="/search#craft_bar=on">Metal</a>&nbsp;&middot;&nbsp;
+		<a class="nice mr05" href="/search#tool=on">Tools</a>&nbsp;&middot;&nbsp;
+		<a class="nice" href="/search">and much, much more...</a>
 	    </div>
 	</div>
     </div>

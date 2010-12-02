@@ -3,7 +3,7 @@
 from tf2auctions.lib import View, template_main
 
 
-main = template_main('search.pt', related_js = ('search.js', 'backpack.js'))
+main = template_main('search.pt', related_js = ('search.js', ))
 
 
 if __name__ == '__main__':

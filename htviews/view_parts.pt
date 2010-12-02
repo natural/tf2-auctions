@@ -363,6 +363,9 @@ large listings: um...
 			<td tal:attributes="width '70%' if use_bids else '100%'">
 			    <div class="${slug}-listing-view-min-bid null mt1">
 				<label>Minimum Bid:</label>
+				<h3 class="null ${slug}-listing-view-min-bid-dollar-use">
+				    <span class="dollars"></span>
+				</h3>
 				<metal:display
 				     tal:define="rows 2; cols 5"
 				     use-macro="macros.items_view" />

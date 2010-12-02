@@ -64,27 +64,15 @@ var BackpackListingTool = function(params) {
 	    chTool.init(profile.settings)
 	    console.log(profile)
 	    if (profile.subscription && profile.subscription.status == 'Verified') {
-		var minBidDollarPod = $$('min-bid-dollar-pod')
-		var minBidDollarLinkP = $$('min-bid-dollar-show')
-		var showMinBidDollar = function () {
-		    minBidDollarPod.slideDown()
-		    minBidDollarLinkP.slideUp()
-		}
-		var hideMinBidDollar = function() {
- 		    minBidDollarPod.slideUp()
-		    minBidDollarLinkP.slideDown()
-		}
-		$('.min-bid-radio-seed').show()
-		$('.min-bid-radio-seed:eq(1) input[type="radio"]')
-		    .attr('checked', true)
-		    .click(hideMinBidDollar)
-		$('.min-bid-radio-seed:eq(0) input[type="radio"]').click(showMinBidDollar)
-		$('a', minBidDollarLinkP).click(function() {
-		    $('.min-bid-radio-seed:eq(0) input[type="radio"]').click()
-		    return false
+		$$('subscriber-pod').show()
+		$$('min-bid-dollar-amount').keyup(function () {
+		    this.value = this.value.replace(/[^0-9\.]/g,'');
+		})
+		$$('min-bid-dollar-use').click(function() {
+		    $$('min-bid-dollar-amount').attr('disabled', !$$('min-bid-dollar-use').attr('checked'))
 		})
 	    } else {
-		$('.min-bid-radio-seed').remove()
+		$$('subscriber-pod').remove()
 	    }
 	}
     })
@@ -137,14 +125,19 @@ var BackpackListingTool = function(params) {
 	var output = {}
 	var items = output.items = []
 	var min_bid = output.min_bid = []
+	output.min_bid_dollar_use = input.min_bid_dollar_use
+	output.min_bid_dollar_amount = input.min_bid_dollar_amount
+	output.feature_listing = input.feature_listing
 	output.days = input.days
 	output.desc = input.desc
 	$.each(input.items, function(idx, img) {
 	    items.push( $(img).data('node'))
 	})
-        $.each(input.min_bid, function(idx, img) {
-	    min_bid.push( $(img).data('node').defindex )
-	})
+	if (!input.min_bid_dollar_use) {
+            $.each(input.min_bid, function(idx, img) {
+		min_bid.push( $(img).data('node').defindex )
+	    })
+	}
 	$.ajax({
 	    url: '/api/v1/auth/add-listing',
 	    type: 'POST',
@@ -200,7 +193,17 @@ var BackpackListingTool = function(params) {
             errs.push({id:'#bp-chooser-listing-add-min-bid',
 		       msg:'Too many items. Select 0-10 items as a minimum bid.'})
 	}
-	// 5. agree w/ site terms
+	// 5.  premium subscriber min bid dollars: checkbox + amount
+	var min_bid_dollar_use = $$('min-bid-dollar-use').attr('checked')
+	var min_bid_dollar_amount = 0.0
+	if (min_bid_dollar_use) {
+	    min_bid_dollar_amount = $$('min-bid-dollar-amount').val()
+	    min_bid = []
+	}
+	// 6.  premium subscriber featured listing
+	var feature_listing = $$('feature-listing').attr('checked')
+
+	// 7. agree w/ site terms
 	if (! $$('terms').attr('checked')) {
 	    $$('terms').click(function (e) {
 		if (e.target.checked) {
@@ -218,7 +221,12 @@ var BackpackListingTool = function(params) {
 	} else {
 	    $$('buttons').slideUp('slow')
 	    $$('working').removeClass('null').text('Working...').fadeIn('fast')
-	    self.addListing({items: items, desc: desc, days: days, min_bid: min_bid})
+	    self.addListing({
+		items: items, desc: desc, days: days, min_bid: min_bid,
+		min_bid_dollar_use: min_bid_dollar_use,
+		min_bid_dollar_amount: min_bid_dollar_amount,
+		feature_listing: feature_listing,
+	    })
 	}
 	return false
     }
@@ -289,7 +297,6 @@ var listingsReady = function(listings, bids, profile) {
 
 var profileReady = function(profile) {
     siteMessage('Profile loaded.')
-    new ProfileTool(profile).defaultUserAuthOkay()
     console.log(profile)
     var listingsLoaded = function(listings) {
 	new BidsLoader({

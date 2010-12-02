@@ -18,9 +18,11 @@ from tf2auctions.models.utils import add_filters, queue_tool
 class Listing(db.Model):
     """ Listing -> records of items up for trade.
 
-    There's still some work to be done on, well, reading, writing,
-    updating and deleting.
     """
+    valid_days = range(1, 31) # 1-30
+    lazy_verify = True
+
+    ## member fields:
     owner = db.StringProperty('Owner', required=True, indexed=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
     expires = db.DateTimeProperty('Expires', required=True)
@@ -30,8 +32,11 @@ class Listing(db.Model):
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
     categories = db.StringListProperty(indexed=True)
     bid_count = db.IntegerProperty('Bid Count', default=0)
+
+    ## subscriber fields:
+    min_bid_dollar_use = db.BooleanProperty('Minimum Bid is Dollars', default=False)
+    min_bid_dollar_amount = db.FloatProperty('Minimum Bid Dollars Amount', default=0.0)
     featured = db.BooleanProperty('Featured Listing', indexed=True, default=False)
-    valid_days = range(1, 31) # 1-30
 
     @classmethod
     def build(cls, **kwds):
@@ -42,31 +47,32 @@ class Listing(db.Model):
 	owner = users.get_current_user()
 	if not owner:
 	    raise ValueError('No owner specified.')
-	kwds['owner'] = user_steam_id(owner)
-	kwds['profile'] = profile = PlayerProfile.get_by_user(user_steam_id(owner))
-	profile.refresh()
+	kwds['owner'] = id64 = user_steam_id(owner)
+	if not cls.lazy_verify:
+	    kwds['profile'] = profile = PlayerProfile.get_by_user(user_steam_id(owner))
+	    profile.refresh()
+	else:
+	    kwds['profile'] = None
+	kwds['is_subscriber'] = PlayerProfile.is_subscriber_id64(id64)
 
 	## this check has to be performed outside of the transaction
-	## because its against items outside the new listing ancestry:
-
-	item_ids = kwds['item_ids']
-	for uid, item in item_ids:
-	    q = ListingItem.all(keys_only=True)
-	    uid = str(uid)
-	    if q.filter('uniqueid', uid).filter('status', 'active').get():
-		raise TypeError('Item already in an active auction.')
-	    q = BidItem.all(keys_only=True)
-	    if q.filter('uniqueid', uid).filter('status', 'active').get():
-		raise TypeError('Item already in an active bid.')
-
+	## because its against items outside the new listing ancestry.
+	## this whole check should move to a
+	## "maybe-cancel-invalid-new-listing" queue:
+	verify_items_inactive(uid for uid, item in kwds['item_ids'])
 	return db.run_in_transaction(cls.build_transaction, **kwds)
 
     @classmethod
-    def build_transaction(cls, owner, profile, item_ids, desc, days, min_bid=None):
+    def build_transaction(cls, owner, profile, item_ids, desc, days, min_bid=None,
+			  is_subscriber=False,
+			  min_bid_dollar_use=False,
+			  min_bid_dollar_amount=0,
+			  feature_listing=False):
 	## 1.  check the user, get their backpack and verify the
 	## inidicated items belong to them.
-	if not profile.owns_all(uid for uid, item in item_ids):
-	    raise ValueError('Incorrect ownership.')
+	if not cls.lazy_verify:
+	    if not profile.owns_all(uid for uid, item in item_ids):
+		raise ValueError('Incorrect ownership.')
 
 	## 2. check the date
 	if days not in cls.valid_days:
@@ -99,6 +105,13 @@ class Listing(db.Model):
 	cats = item_categories([i for u, i in item_ids], schema)
 	listing.categories =\
 	    [cat for cat, ttl in known_categories if cat in cats]
+
+	## 4b.  set subscriber features:
+	if is_subscriber:
+	    listing.min_bid_dollar_use = min_bid_dollar_use
+	    listing.min_bid_dollar_amount = float(min_bid_dollar_amount)
+	    listing.featured = feature_listing
+
 	key = listing.put()
 	info('created new listing at: %s', listing.created)
 
@@ -248,6 +261,8 @@ class Listing(db.Model):
 	    'bids' : [b.encode_builtin(listing=False, private=private) for b in bids],
 	    'feedback' : bfb.encode_builtin() if bfb else None,
 	    'featured' : self.featured,
+	    'min_bid_dollar_use' : self.min_bid_dollar_use,
+	    'min_bid_dollar_amount' : self.min_bid_dollar_amount,
 	}
 
 
@@ -303,6 +318,8 @@ class Bid(db.Model):
     """ Bid -> a bid on a listing.
 
     """
+    lazy_verify = True
+
     owner = db.StringProperty('Owner', required=True)
     created = db.DateTimeProperty('Created', required=True, auto_now_add=True)
     listing = db.ReferenceProperty(Listing, 'Parent Listing', required=True)
@@ -317,19 +334,17 @@ class Bid(db.Model):
 	if not owner:
 	    raise ValueError('No owner specified.')
 	kwds['owner'] = user_steam_id(owner)
-	kwds['profile'] = profile = PlayerProfile.get_by_user(owner)
-	profile.refresh()
-	item_ids = kwds['item_ids']
-	for uid, item in item_ids:
-	    uid = str(uid)
-	    q = ListingItem.all(keys_only=True)
-	    if q.filter('uniqueid', uid).filter('status', 'active').get():
-		raise TypeError('Item already in an active auction.')
-	    q = BidItem.all(keys_only=True)
-	    if q.filter('uniqueid', uid).filter('status', 'active').get():
-		raise TypeError('Item already in an active bid.')
+
+	if not cls.lazy_verify:
+	    kwds['profile'] = profile = PlayerProfile.get_by_user(owner)
+	    profile.refresh()
+	else:
+	    kwds['profile'] = None
+
+	verify_items_inactive(uid for uid, item in kwds['item_ids'])
 	listing_id = int(kwds.pop('listing_id'))
 	listing = kwds['listing'] = Listing.get_by_id(listing_id)
+
 	## TODO: check for existing bid by owner and disallow creating
 	## multiple bids.
 	if not listing:
@@ -344,8 +359,9 @@ class Bid(db.Model):
 
     @classmethod
     def build_transaction(cls, owner, profile, listing, item_ids, public_msg, private_msg):
-	if not profile.owns_all(uid for uid, item in item_ids):
-	    raise ValueError('Incorrect ownership.')
+	if not cls.lazy_verify:
+	    if not profile.owns_all(uid for uid, item in item_ids):
+		raise ValueError('Incorrect ownership.')
 	schema = json_loads(fetch.schema())
 	bid = cls(owner=owner, listing=listing, message_private=private_msg, message_public=public_msg)
 	key = bid.put()
@@ -375,22 +391,14 @@ class Bid(db.Model):
 	listing = kwds['listing'] = Listing.get_by_id(listing_id)
 	if not listing:
 	    raise TypeError('Invalid listing.')
+	if listing.status != 'active':
+	    raise TypeError('Invalid listing status.')
 	bid = kwds['bid'] = cls.all().filter('owner =', user_steam_id(owner)).filter('listing =', listing).get()
 	if not bid:
 	    raise ValueError('No existing bid to update.')
 	kwds['owner'] = user_steam_id(owner)
 	kwds['profile'] = PlayerProfile.get_by_user(owner)
-	item_ids = kwds['item_ids']
-	for uid, item in item_ids:
-	    uid = str(uid)
-	    q = ListingItem.all(keys_only=True)
-	    if q.filter('uniqueid', uid).filter('status', 'active').get():
-		raise TypeError('Item already in an active auction.')
-	    q = BidItem.all(keys_only=True)
-	    if q.filter('uniqueid', uid).filter('status', 'active').get():
-		raise TypeError('Item already in an active bid.')
-	if listing.status != 'active':
-	    raise TypeError('Invalid listing status.')
+	verify_items_inactive(uid for uid, item in kwds['item_ids'])
 	key = db.run_in_transaction(cls.build_update_transaction, **kwds)
 	return key
 
@@ -506,3 +514,12 @@ class Feedback(db.Model):
 	    'source' : self.source,
 	    'target' : self.target,
 	}
+
+
+
+def verify_items_inactive(uids):
+    uids = [str(uid) for uid in uids]
+    for klass in (ListingItem, BidItem):
+	q = klass.all().filter('uniqueid in', uids).filter('status', 'active')
+	if q.get():
+	    raise TypeError('Item already in active listing or bid')

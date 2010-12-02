@@ -198,8 +198,6 @@ var showReverseSearch = function() {
 // builds an element for a listing.  writes formatted data from the
 // given listing to the given clone (prototype copy).
 var putListing = function(listing, clone) {
-    var putil = new ProfileTool(listing.owner)
-
     if (listing.description) {
 	$('.listing-description', clone).text(listing.description)
     } else {
@@ -208,10 +206,12 @@ var putListing = function(listing, clone) {
     }
 
     $('.listing-owner', clone).text(listing.owner.personaname)
-    $('.listing-owner', clone).parent().attr('href', putil.defaultUrl())
+    $('.listing-owner', clone).parent()
+	.attr('href', profileUtil.defaultUrl(listing.owner))
     $('.listing-avatar', clone)
 	.attr('src', listing.owner.avatar)
-    $('.listing-avatar', clone).parent().attr('href', putil.defaultUrl())
+    $('.listing-avatar', clone).parent()
+	.attr('href', profileUtil.defaultUrl(listing.owner))
 
     new StatusLoader({
 	suffix: listing.owner.id64,
@@ -248,7 +248,6 @@ var putListing = function(listing, clone) {
     $('.search-listing-view-link', clone)
 	.append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
     if (listing.featured) { clone.addClass('featured') }
-    console.log(listing)
     $$('listings').append(clone)
 }
 
@@ -388,15 +387,6 @@ var searchOkay = function(search, query) {
 
 
 var schemaReady = function(schema) {
-    // TODO: remove these statements when common listing/bid
-    // hover/chooser thing gets implemented:
-    var st = new SchemaTool(schema)
-    var tt = new TooltipView(st)
-    var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
-    var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
-    $('div.ov td.item-view').live('mouseover', hoverItem)
-    $('div.ov td.item-view').live('mouseout', unhoverItem)
-
     $$('reverse-link').click(showReverseSearch)
     $$('advanced-link').click(showAdvancedSearch)
     $$('basic-link').click(showBasicSearch)
@@ -417,7 +407,6 @@ var schemaReady = function(schema) {
 
     var s = window.location.search.slice(3)
     if (s) {
-	console.log( ('filter-inputs input[type="checkbox"]:eq({0})'.fs(s) ))
 	$$('filter-inputs input[type="checkbox"]:eq({0})'.fs(s))
 	q = 'metal=on'
     }
@@ -435,12 +424,6 @@ $(document).ready(function() {
     siteMessage('Loading schema...')
     new AuthProfileLoader({
 	suffix: '?settings=1',
-	success: function(profile) {
-	    new ProfileTool(profile).defaultUserAuthOkay()
-	},
-	error: function(request, error, status) {
-	    new ProfileTool().defaultUserAuthError(request, error, status)
-	}
     })
     new SchemaLoader({success: schemaReady})
 })

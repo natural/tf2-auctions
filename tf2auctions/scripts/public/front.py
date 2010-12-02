@@ -3,7 +3,7 @@
 from tf2auctions.lib import template_main
 
 
-main = template_main('front.pt', related_js=('backpack.js', 'front.js'))
+main = template_main('front.pt', related_js=('front.js', ))
 
 
 if __name__ == '__main__':

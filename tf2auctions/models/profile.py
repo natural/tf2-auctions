@@ -126,6 +126,11 @@ class PlayerProfile(db.Expando):
 	    self.updated = datetime.now()
 	    self.put()
 
+    @classmethod
+    def is_subscriber_id64(cls, id64):
+	psub = Subscription.get_by_id64(id64)
+	return psub.is_subscriber() if psub else False
+
     def encode_builtin(self, settings=False, complete=False, subscription=True):
 	""" Encode this instance using only built-in types. """
 	id64 = self.id64()

@@ -67,9 +67,9 @@ itemFilterLabels = [
 
 // functions to convert schema values into tooltip display values
 var formatCalcMap = {
-    value_is_additive: ident,
-    value_is_particle_index: ident,
-    value_is_or: ident,
+    value_is_additive: function(a) { return a },
+    value_is_particle_index: function(a) { return a },
+    value_is_or: function(a) { return a },
     value_is_percentage: function (v) {
 	return Math.round(v*100 - 100)
     },
@@ -650,6 +650,4 @@ var BackpackChooserTool = function(options) {
 	    self.updateCount()
 	}
     }
-
 }
-

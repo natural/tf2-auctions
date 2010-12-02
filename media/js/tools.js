@@ -1,7 +1,16 @@
 // define a console if we don't have one.
-if (typeof(console) == 'undefined') {
-    var console = {}
-    console.log = console.error = function() {}
+if (typeof console == 'undefined') {
+    var console = {log: $.noop, error: $.noop}
+}
+
+
+// as defined by Crockford:
+if (typeof Object.create !== 'function') {
+    Object.create = function (proto) {
+        var obj = function() {}
+        obj.prototype = proto
+	return new obj()
+    }
 }
 
 
@@ -148,154 +157,191 @@ var makeImg = function(options) {
 
 // makes an async. data loader, which is a preconfigured ajax call.
 var makeLoader = function(config) {
-    var cache = {}, prefix = config.prefix, name = config.name
-    this.cache = cache
+    var cache = this.cache = {}
+    var prefix = config.prefix, name = config.name
+    var successCallbacks = [], errorCallbacks = [], loading = false
+
     return function(options) {
 	options = options || {}
-	var suffix = options.suffix
-	var url = prefix + (suffix || '')
-	var okay = function(data) {
-	    if (config.debug || options.debug) {
-		console.log(name, 'success', data)
-	    }
+	successCallbacks.push(options.success ? options.success : ident)
+	errorCallbacks.push(options.error ? options.error : ident)
+	var url = prefix + (options.suffix || '')
+
+	var loadSuccess = function(data) {
 	    cache[url] = {data:data}
-    	    var cb = options.success ? options.success : ident
-	    cb(data)
-	}
-	var error = function(req, status, err) {
-	    console.error(name, 'error', req, status, err, url)
-	    cache[url] = {request:req, status:status, error:err}
-	    var cb = options.error ? options.error : ident
-	    cb(req, status, err)
-	}
-	var res = cache[url]
-	var async = typeof(config.async) == 'undefined' ? true : config.async
-	if (!res) {
 	    if (config.debug || options.debug) {
-		console.log('{0}(url="{1}", async={2})'.fs(name, url, async))
+		console.log(name, 'success: ', data, 'callbacks: ', successCallbacks.length)
 	    }
-	    $.ajax({url: url,
-		    async: async,
-		    dataType: (config.dataType||'json'),
+	    if (config.successEvent) {
+		$(document).trigger(config.successEvent, data)
+	    }
+	    while (successCallbacks.length) { successCallbacks.pop()(data) }
+	    loading = false
+	}
+
+	var loadError = function(req, status, err) {
+	    cache[url] = {request:req, status:status, error:err}
+	    console.error(name, 'error', req, status, err, url)
+	    if (config.errorEvent) {
+		$(document).trigger(config.errorEvent, [req, status, err])
+	    }
+	    while (errorCallbacks.length) { errorCallbacks.pop()(req, status, err) }
+	    loading = false
+	}
+
+	var res = cache[url]
+	if (!res) {
+	    if (!loading) {
+		loading = true
+		if (config.debug || options.debug) {
+		    console.log('{0}(url="{1}")'.fs(name, url))
+		}
+		$.ajax({
+		    url: url,
+		    async: typeof(config.async) == 'undefined' ? true : config.async,
+		    dataType: (config.dataType || 'json'),
 		    jsonpCallback: (config.jsonpCallback || null),
 		    cache: true,
-		    success: okay,
-		    error: error
-		    })
+		    success: loadSuccess,
+		    error: loadError
+		})
+	    }
 	} else {
 	    if (config.debug || options.debug) {
-		console.log(name, 'using cached data', cache[url])
+		console.log(name, 'cache hit', cache[url])
 	    }
 	    if (res.data) {
-		okay(res.data)
+		loadSuccess(res.data)
 	    } else {
-		error(res.request, res.status, res.error)
+		loadError(res.request, res.status, res.error)
 	    }
 	}
     }
 }
 
 
+$(document).bind('authProfileLoaded', function(event, profile) {
+    profileUtil.defaultUserAuthOkay(profile)
+})
+
+
+$(document).bind('authProfileError', function(event, req, status, err) {
+    profileUtil.defaultUserAuthError(req, status, err)
+})
+
+$(document).bind('schemaLoaded', function(event, schema) {
+    var st = new SchemaTool(schema)
+    var tt = new TooltipView(st)
+    $('div.ov td.item-view, #backpack-ac td, .backpack td')
+	.live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
+	.live('mouseout',  function(e) {  tt.hide(e);  $(this).removeClass('outline') })
+    $('.listing-view')
+	.live('mouseover', function() { $(this).addClass('listing-hover') })
+	.live('mouseout', function() { $(this).removeClass('listing-hover') })
+})
+
+
 var AuthProfileLoader = makeLoader({
     prefix: '/api/v1/auth/profile',
-    name: 'AuthProfileLoader'})
+    name: 'AuthProfileLoader',
+    successEvent: 'authProfileLoaded',
+    errorEvent: 'authProfileError'
+})
 
 
 var ProfileLoader = makeLoader({
     prefix: '/api/v1/public/profile/',
-    name: 'ProfileLoader'})
+    name: 'ProfileLoader'
+})
 
 
 var BackpackLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/items/',
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsBackpackLoader',
-    name: 'BackpackLoader'})
+    name: 'BackpackLoader'
+})
 
 
 var SchemaLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsSchemaLoader',
-    name: 'SchemaLoader'})
-
-
-var NewsLoader = makeLoader({
-    prefix: 'http://tf2apiproxy.appspot.com/api/v1/news',
-    dataType: 'jsonp',
-    jsonpCallback: 'tf2auctionsNewsLoader',
-    name: 'NewsLOader'})
+    name: 'SchemaLoader',
+    successEvent: 'schemaLoaded',
+})
 
 
 var StatusLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
     dataType: 'jsonp',
-    name: 'StatusLoader'})
+    name: 'StatusLoader'
+})
 
 
 var ListingLoader = makeLoader({
     prefix: '/api/v1/public/listing/',
-    name: 'ListingLoader'})
+    name: 'ListingLoader'
+})
 
 
 var ListingsLoader = makeLoader({
     prefix: '/api/v1/public/listings/',
-    name: 'ListingLoader'})
+    name: 'ListingLoader'
+})
 
 
 var MessagesLoader = makeLoader({
     prefix: '/api/v1/auth/list-messages',
-    name: 'MessagesLoader'})
+    name: 'MessagesLoader'
+})
 
 
 var SearchLoader = makeLoader({
     prefix: '/api/v1/public/search',
-    name: 'SearchLoader'})
-
-
-var StatsLoader = makeLoader({
-    prefix: '/api/v1/public/stats',
-    name: 'StatsLoader'})
+    name: 'SearchLoader',
+})
 
 
 var BidsLoader = makeLoader({
     prefix: '/api/v1/public/bids/', // move to /api/v1/public/player-bids/
-    name: 'BidsLoader'})
+    name: 'BidsLoader'
+})
 
 
-var ProfileTool = function(profile) {
-    var self = this
+var profileUtil = (function() {
+    return {
+	defaultUrl: function(p) {
+	    return p.custom_name ? '/id/{0}'.fs(p.custom_name) : '/profile/{0}'.fs(p.id64)
+	},
 
-    self.defaultUrl = function() {
-	    return profile.custom_name ? '/id/{0}'.fs(profile.custom_name) : '/profile/{0}'.fs(profile.id64)
+	defaultUserAuthError: function(request, status, error) {
+	    $('#content-login-link')
+		.attr('href', '/login?next=' + encodeURIComponent(window.location.href))
+	    $('#content-search-link, #content-quick-backpack').fadeIn()
+	},
+
+	defaultUserAuthOkay: function(p) {
+	    $('#content-user-buttons, #content-logout-link').fadeIn()
+	    $('#content-login-link').fadeOut()
+	    $('#content-player-profile-link').attr('href', profileUtil.defaultUrl(p))
+	    profileUtil.put(p)
+	},
+
+	put: function(p) {
+	    $('#content-avatar-pod')
+		.html(makeImg({src: p.avatar, width: 24, height: 24}))
+		.show()
+	    new StatusLoader({
+		suffix: p.id64, success: function(status) {
+		    $('#content-avatar-pod img').addClass(status.online_state)
+		    $('#content-avatar-pod img').addClass('profile-status')
+		}
+	    })
+	}
     }
+})()
 
-    self.defaultUserAuthError = function(request, status, error) {
-	$('#content-login-link')
-	    .attr('href', '/login?next=' + encodeURIComponent(window.location.href))
-	$('#content-search-link, #content-quick-backpack').fadeIn()
-    }
-
-    self.defaultUserAuthOkay = function() {
-	$('#content-user-buttons, #content-logout-link').fadeIn()
-	$('#content-login-link').fadeOut()
-	$('#content-player-profile-link').attr('href', self.defaultUrl())
-	self.put()
-    }
-
-    self.put = function() {
-	$('#content-avatar-pod')
-	    .html(makeImg({src: profile.avatar, width: 24, height: 24}))
-	    .show()
-	new StatusLoader({
-	    suffix: profile.id64, success: function(status) {
-		$('#content-avatar-pod img').addClass(status.online_state)
-		$('#content-avatar-pod img').addClass('profile-status')
-	    }
-	})
-    }
-
-}
 
 
 var SchemaTool = function(schema) {
@@ -322,6 +368,7 @@ var SchemaTool = function(schema) {
 	    })
 	    return self._attrById
 	})
+	self.tooltips = new TooltipView(self)
     }
 
     self.asPlayerItem = function(i) {
@@ -335,12 +382,7 @@ var SchemaTool = function(schema) {
 	}
     }
 
-    // this is a better name:
-    self.putImages = function(settings) {
-	self.setImages(settings)
-    }
-
-    self.setImages = function(settings) {
+    self.putImages = function(settings, callback) {
 	// replace any items on the page that have the "schema
 	// definition index replace" class with the url of the item
 	// specified in the content.
@@ -389,6 +431,7 @@ var SchemaTool = function(schema) {
 		    .addClass('border-quality-{0} background-quality-{1}'.fs( pitem.quality, pitem.quality ))
 	    }
 	})
+        if (callback) { callback() }
     }
 
     self.select = function(key, match) {
@@ -453,11 +496,11 @@ var SchemaTool = function(schema) {
 		}
 	    })
 	})
-	    $.each(items, function(idx, def) {
-		if (!(def.defindex in cannot) && !(def.defindex in stock)) {
-		    can[def.defindex] = def
-		}
-	    })
+	$.each(items, function(idx, def) {
+	    if (!(def.defindex in cannot) && !(def.defindex in stock)) {
+		can[def.defindex] = def
+	    }
+	})
 	return can
     }
 
@@ -542,56 +585,268 @@ var initExtensions = function(jq) {
 initExtensions(jQuery)
 
 
+var listingView = (function () {
+    return {
+	putMany: function(options) {
+	    $.each(options.listings, function(idx, listing) {
+		var clone = options.prototype.clone()
+		listingView.putOne(listing, clone, options.prefix)
+		if (options.withStatus) {
+		    listingView.putStatus(listing, clone)
+		}
+		options.target.append(clone)
+	    })
+	},
 
-/*
+	putStatus: function(listing, target) {
+	    new StatusLoader({
+		suffix: listing.owner.id64,
+		success: function(status) {
+		    $('.listing-avatar', target)
+			.addClass('profile-status ' + status.online_state)
+		}
+	    })
+	},
 
-
-// copied from somewhere...
-
-var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
-function encode64(input) {
-    var output = new Array()
-    var chr1, chr2, chr3, enc1, enc2, enc3, enc4, i = 0;
-    while (i < input.length) {
-	chr1 = input.charCodeAt(i++)
-	chr2 = input.charCodeAt(i++)
-	chr3 = input.charCodeAt(i++)
-	enc1 = chr1 >> 2
-	enc2 = ((chr1 & 3) << 4) | (chr2 >> 4)
-	enc3 = ((chr2 & 15) << 2) | (chr3 >> 6)
-	enc4 = chr3 & 63
-	if (isNaN(chr2)) {
-	    enc3 = enc4 = 64
-	} else if (isNaN(chr3)) {
-	    enc4 = 64
+	putOne: function(listing, target, prefix) {
+	    target.removeClass('null prototype').addClass('listing-seed')
+	    if (listing.description) {
+		$('.listing-description', target).text(listing.description)
+	    } else {
+		$('.listing-description-label', target).empty()
+		$('.listing-description', target).empty()
+	    }
+	    $('.listing-owner', target)
+		.text(listing.owner.personaname)
+	    $('.listing-owner', target)
+		.parent().attr('href', '/profile/'+listing.owner.id64)
+	    $('.listing-avatar', target)
+		.attr('src', listing.owner.avatar)
+	    $('.listing-avatar', target)
+		.parent().attr('href', '/profile/'+listing.owner.id64)
+	    $('.bid-count-seed', target)
+		.text(listing.bid_count || '0') // bid_count because bids aren't fetched.
+	    var next = 0
+	    $.each(listing.items, function(index, item) {
+		$( $('.item-view div', target)[next]).append( $.toJSON(item) )
+		next += 1
+	    })
+	    if (listing.min_bid_dollar_use) {
+		$(prefix+'-listing-view-min-bid-dollar-use', target).removeClass('null')
+		$(prefix+'-listing-view-min-bid-dollar-use .dollars', target)
+		    .text('${0}'.fs(listing.min_bid_dollar_amount))
+		$(prefix+'-listing-view-min-bid', target).removeClass('null')
+	    } else {
+		if (listing.min_bid.length) {
+		    var next = 0
+		    $.each(listing.min_bid, function(index, defindex) {
+			$($(prefix+'-listing-view-min-bid .item-view div', target)[next])
+			    .append($.toJSON({defindex:defindex, quality:6}))
+			next += 1
+		    })
+		    $(prefix+'-listing-view-min-bid', target).removeClass('null')
+		} else {
+		    $(prefix+'-listing-view-min-bid', target).hide()
+		}
+	    }
+	    $(prefix+'-listing-view-link a', target)
+		.attr('href', '/listing/'+listing.id)
+	    $(prefix+'-listing-view-link', target)
+		.append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
 	}
-	output.push(keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4))
     }
-    return output.join('')
+})()
+
+
+
+var updateTimeLeft = function (expires, selector) {
+    expires = new Date(expires)
+    return function() {
+	var now = new Date(), delta = expires.getTime() - now.getTime()
+	if (delta < 0) {
+	    selector.text('expired')
+	} else {
+	    var days=0, hours=0, mins=0, secs=0, text=''
+	    delta = Math.floor(delta/1000)
+	    days = Math.floor(delta/86400)
+	    delta = delta % 86400
+	    hours = Math.floor(delta/3600)
+	    delta = delta % 3600
+	    mins = Math.floor(delta/60)
+	    delta = delta % 60
+	    secs = Math.floor(delta)
+	    if (days != 0) { text += days +'d ' }
+	    if (days != 0 || hours != 0) { text += hours + 'h ' }
+	    if (days != 0 || hours != 0 || mins != 0) { text += mins +'m ' }
+	    text += secs +'s'
+	    selector.text(text)
+	}
+    }
 }
 
-function decode64(input) {
-    var output = new Array()
-    var chr1, chr2, chr3, enc1, enc2, enc3, enc4, i = 0
-    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "")
-    while (i < input.length) {
-	enc1 = keyStr.indexOf(input.charAt(i++))
-	enc2 = keyStr.indexOf(input.charAt(i++))
-	enc3 = keyStr.indexOf(input.charAt(i++))
-	enc4 = keyStr.indexOf(input.charAt(i++))
-	chr1 = (enc1 << 2) | (enc2 >> 4)
-	chr2 = ((enc2 & 15) << 4) | (enc3 >> 2)
-	chr3 = ((enc3 & 3) << 6) | enc4
-	output.push(String.fromCharCode(chr1))
-	if (enc3 != 64) {
-	    output.push(String.fromCharCode(chr2))
-	}
-	if (enc4 != 64) {
-	    output.push(String.fromCharCode(chr3))
-	}
+
+
+var make$$ = function(prefix) {
+    return function(suffix, next) {
+	return $('{0}{1}'.fs(prefix, suffix), next)
     }
-    return output.join('')
 }
 
 
-*/
+//
+// This begins our small Model View Controller hierarchy.
+//
+// MVC is the root object that defines the 'extend' function for
+// creating new objects and a default 'init' funciton that does
+// nothing.
+//
+var MVC = {
+    children: [],
+    init: function() { return this },
+    extend: function(ext) {
+	var obj = Object.create(this)
+	if (ext) { $.extend(obj, ext) }
+	this.children.push(obj)
+	return obj
+    }
+}
+
+
+//
+// This is the root Controller object.  This is empty as we haven't
+// retrofitted any existing pages that need controller functionality.
+//
+var Controller = MVC.extend()
+
+
+//
+// This is the root Model object.  Model objects are typically
+// initialized automatically by their associated View.
+//
+// During initialization, Model objects call the 'join' method of the
+// associated view with the results of their loader.  The view is
+// responsible for placing the loaded records into the DOM.
+//
+var Model = MVC.extend({
+    children: [],
+    init: function(view, suffix) {
+	var self = this
+	var wrap = function(results) {
+	    self.results = results
+	    view.join.apply(view, [results])
+	}
+	new self.loader({success: wrap, suffix: suffix || self.loaderSuffix || ''})
+    }
+})
+
+
+//
+// This is a model object that is pre-configured for using the TF2
+// item schema as its data.  When initialized, this object (and any of
+// its clones) fetches the item schema and creates an instance of
+// SchemaTool, setting that instance as the 'tool' attribute.
+//
+var SchemaModel = Model.extend({
+    loader: SchemaLoader,
+    init: function(view) {
+	var self = this
+	var wrap = function(schema) {
+	    self.tool = new SchemaTool(schema)
+	    view.join.apply(view, [schema])
+	}
+	new self.loader({success: wrap})
+    }
+})
+
+
+//
+// This is the root View object.
+//
+// The View object and its clones provide several interesting behaviors:
+//
+// 1. if the 'authLoader' attribute is true, the View will invoke a
+// AuthProfileLoader with its success and error callbacks set to
+// 'authSuccess' and 'authError', respectively.  The 'authSuffix'
+// attribute is passed to the loader to indicate the level of detail
+// for the fetched profile.  Note that the AuthProfileLoader will be
+// called automatically during initialization.
+//
+// 2. the '$$' function provides prefixed jquery selectors via the
+// 'slug' attribute.
+//
+// 3. the 'proto' method creates DOM element clones based on the
+// 'cloneClass' attribute.
+//
+// 4. if the 'model' attribute is supplied, it will be initalized
+// after the view is initalized.
+//
+var View = MVC.extend({
+    children: [],
+    slug: '',
+    $$: function(suffix, next) { return $('{0}{1}'.fs(this.slug, suffix), next) },
+    authError: function() {},
+    authSuccess: function() {},
+
+    auth: function() {
+	if (this.authLoader) {
+	    var view = this
+	    var success = function(v) {
+		view.authSuccess.apply(view, [v])
+	    }
+	    var error = function(r, s, e) {
+		view.authError.apply(view, [r,s,e])
+	    }
+	    new AuthProfileLoader({
+		suffix: this.authSuffix,
+		success: success,
+		error: error
+	    })
+	}
+    },
+
+    init: function() {
+	if (this.model && !this.authLoader) {
+	    this.model.init.apply(this.model, [this])
+	}
+    },
+
+    proto: function() {
+	var cc = this.cloneClass
+	return $('.' + cc).clone().removeClass('prototype null ' + cc)
+    }
+
+})
+
+
+var SchemaView = View.extend({
+    putImages: function(p) {
+	this.model.tool.putImages(p)
+    },
+
+    putItems: function(target, items) {
+	var col = 0
+	$.each(items, function(idx, item) {
+	    if (!(col % 10)) { target.append('<tr></tr>') }
+	    col += 1
+	    $('tr:last', target).append(makeCell($.toJSON({defindex:item.defindex, quality:6})))
+	})
+        if ( col % 10 ) {
+	    var pad = new Array( 1 + (10 - col % 10)   ).join('<td><div></div></td>')
+	    $('tr:last', target).append(pad)
+	}
+    },
+
+    joinListings: function(options) {
+	listingView.putMany(options)
+    }
+
+
+})
+
+
+$(function() {
+    $.each(View.children, function(i, v) {
+	v.auth.apply(v)
+	v.init.apply(v)
+    })
+})

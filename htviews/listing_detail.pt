@@ -33,6 +33,9 @@
 		</div>
 		<div class="mt1" id="${slug}-min-bid-pod">
 		    <label>Minimum Bid:</label>
+		    <h3 class="null ml1" id="${slug}-min-bid-dollar-use">
+			<span class="text-right mono"></span>
+		    </h3>
 		    <div class="items-view" id="${slug}-min-bid"><table></table></div>
 		</div>
 		<div id="${slug}-auth-bid-cancelled" class="null"></div>
@@ -161,6 +164,13 @@
 
 	<div id="${slug}-place-bid-pod" class="null center">
             <h1><span class="hilite">&nbsp;</span>Place Your Bid</h1>
+	    <div class="ov null" id="${slug}-bid-dollar">
+		<div>Your Bid:</div>
+		{CUR}
+		<input type="text" class="mono text-right" id="${slug}-dollar-bid-amount" />
+		<a class="button" href="#" id="${slug}-dollar-bid-submit">Okay</a>
+		<a class="button" href="#" id="${slug}-dollar-bid-cancel">Cancel</a>
+	    </div>
 	    <div class="ov null" id="${slug}-own-backpack">
 		<metal:include
 		     tal:define="slug slug+'-bid'"

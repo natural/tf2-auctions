@@ -31,8 +31,7 @@
 
 	    <div id="${slug}-backpack-pod">
 		<h1 class="mt1"><span id="${slug}-backpack-title"></span></h1>
-
-		<div class="mt05 center w100 null" id="${slug}-backpack-inner">
+		<div class="mt05 center w100 null ov" id="${slug}-backpack-inner">
 		    <h2 class="null" id="${slug}-backpack-none"></h2>
 			<metal:include
 			     tal:define="include_unplaced True; slug 'bv'; "

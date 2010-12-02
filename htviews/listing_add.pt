@@ -14,103 +14,41 @@
 </head>
 <body>
     <metal:main fill-slot="main" tal:define="slug 'listing-add'">
-<style type="text/css">
-#listing-add-duration-slider {
-margin:0.5em 0 1em 0;
-width:75%;
-float:right;
-}
-
-#listing-add-duration {
-width:20%;
-float:left;
-padding-top:2%;
-}
-
-#add-bid-fields label, #listing-add-fields label {
-margin-top:0.5em;
-}
-
-#add-bid-fields textarea, #listing-add-fields textarea {
-margin-bottom:1em;
-}
-</style>
 	<h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Add a New Listing</h1>
 	<div class="ov null" id="${slug}-own-backpack">
-
 	    <h3 id="${slug}-title-a">Your Backpack</h3>
 	    <metal:include
 		 tal:define="include_unplaced True; slug 'a'"
 		 metal:use-macro="context.view_parts.macros.backpack_slim" />
-
-	    <h3 id="${slug}-title">
-		Your Listing <span id="${slug}-item-title-extra">(0 items)</span>
-	    </h3>
+	    <h3 id="${slug}-title">Your Listing <span id="${slug}-item-title-extra">(0 items)</span></h3>
 	    <metal:include
 		 tal:define="slug slug+'-item'"
 		 metal:use-macro="context.view_parts.macros.chooser_slim" />
-
-	    <div id="${slug}-fields" class="center">
-
-		<div class="any-slim center">
-		<label for="${slug}-fields">Description:</label>
- 		<div class="message null"><div class="error" id="${slug}-description-error"></div></div>
-		<textarea id="${slug}-description" name="${slug}-description"></textarea>
-		<label for="${slug}-duration">Duration:</label>
- 		<div class="message null"><div class="error" id="${slug}-duration-slider-error"></div></div>
+	    <div id="${slug}-fields" class="center any-slim">
+		<label class="mt05" for="${slug}-fields">Description:</label>
+		<div class="message null"><div class="error" id="${slug}-description-error"></div></div>
+		<textarea class="mb1" id="${slug}-description" name="${slug}-description"></textarea>
+		<label class="mt05" for="${slug}-duration">Duration:</label>
+		<div class="message null"><div class="error" id="${slug}-duration-slider-error"></div></div>
 		<div class="center">
-		    <div id="${slug}-duration">15 days</div>
-		    <div id="${slug}-duration-slider" name="duration"></div>
+		    <div id="${slug}-duration" class="w20 float-left">15 days</div>
+		    <div id="${slug}-duration-slider" name="duration" class="w75 float-right mt05 mb1"></div>
 		    <div class="clear"></div>
 		</div>
-
-		<div class="center notnullyet">
-		    <div class="mb1 mt1">
-			<label class="">
-			    <span class="min-bid-radio-seed">
-				<input type="radio" name="min-bid-type" value="dollars"  />&nbsp;
-			    </span>
-			    Minimum Bid Amount (Optional):
-			</label>
-
-			<div id="${slug}-min-bid-dollar-show" class="text-center mt05 mb05">
-			    <a href="#" class="nice">Click to Show + Enter Dollar Amount</a>
-			</div>
-
-			<div class="null" id="${slug}-min-bid-dollar-pod">
-			    <div class="help">Enter a dollar amount for a minimum bid</div>
-			    <div class="text-right">
-				<input class="text-right" type="text"
-				       name="${slug}-min-bid-dollar-amount"
-				       value="0.00" />
-			    </div>
-			</div>
-		    </div>
-		    <div class="clear"></div>
-		</div>
-
 		<div class="center">
-                    <label for="${slug}-min-bid" id="${slug}-min-bid-label">
-			<span class="min-bid-radio-seed">
-			    <input type="radio" name="min-bid-type" value="items" />&nbsp;
-			</span>
+		    <label class="mt05" for="${slug}-min-bid" id="${slug}-min-bid-label">
 			Minimum Bid Items (Optional):
 		    </label>
                 </div>
 		<div class="center text-center mt05">
-		    <span id="${slug}-min-bid-show">
-			<a href="#" class="nice">Click to Show Items</a>
-		    </span>
+		    <span id="${slug}-min-bid-show"><a href="#" class="nice">Click to Show Items</a></span>
 		</div>
-		</div>
-
-
 		<div class="null" id="${slug}-min-bid-pod">
 		    <div class="" id="${slug}-min-bid">
 			<metal:include
 			     tal:define="slug 'mb'; rows 5; cols 5;"
 			     metal:use-macro="context.view_parts.macros.backpack_thin" />
-			<label id="${slug}-min-bid-title" class="center any-slim">
+			<label id="${slug}-min-bid-title" class="center any-slim mt05">
 			    Minimum Bid <span id="${slug}-min-bid-title-extra">(0 items)</span>
 			</label>
 			<metal:include
@@ -119,11 +57,52 @@ margin-bottom:1em;
 		    </div>
 		</div>
 
-		<div class="center mt2 any-slim">
-                    <label for="" id="${slug}-terms-desc">Site Rules, Terms and Conditions:</label>
- 		    <div class="message null">
-			<div class="error" id="${slug}-terms-error"></div>
+
+		<div class="notnullyet msg mt2" id="${slug}-subscriber-pod">
+		    <div class="information p1">
+			<label class="center text-center">Premium Subscriber Features</label>
+
+			<label class="mt1">
+			    <input type="checkbox" name="${slug}-min-bid-dollar-use"
+				   id="${slug}-min-bid-dollar-use" />
+			    Minimum Bid as Dollar Amount (Optional)
+			</label>
+			<div class="help mb05">
+			    Check the box above to enter a dollar
+			    amount for a minimum bid.  Your listing
+			    can only have one type of minimum bid
+			    (dollar amount or items).
+			</div>
+
+			<div class="mb1" id="${slug}-min-bid-dollar-pod">
+			    <div class="text-right">
+				Minimum Bid:
+				<input class="text-right" type="text"
+				       id="${slug}-min-bid-dollar-amount"
+				       name="${slug}-min-bid-dollar-amount"
+				       disabled="disabled"
+				       value="0.00" />
+			    </div>
+			</div>
+
+			<label class="mt1">
+			    <input type="checkbox" name="${slug}-feature-listing"
+				   id="${slug}-feature-listing" />
+			    Make Featured Listing (Optional)
+			</label>
+			<div class="help">
+			    Check the box above if you would like your
+			    listing to be featured on the first page
+			    and in search results.
+			</div>
+
 		    </div>
+		</div>
+
+
+		<div class="center mt2 any-slim">
+		    <label class="mt05" for="" id="${slug}-terms-desc">Site Rules, Terms and Conditions:</label>
+		    <div class="message null"><div class="error" id="${slug}-terms-error"></div></div>
 		    <div class="mt05">
 			<input type="checkbox" id="${slug}-terms" />
 			I Agree to
@@ -131,9 +110,8 @@ margin-bottom:1em;
 			    <a href="#" class="nice" id="${slug}-show-terms">the Site Rules and Terms of Use</a>.
 			</span>
 		    </div>
-                </div>
+		</div>
 	    </div>
-
 	    <div id="${slug}-buttons" class="center text-center m2">
 		<span class="mr05">
 		    <a href="#" id="${slug}-submit" class="button">OK, Post It</a>
@@ -142,7 +120,6 @@ margin-bottom:1em;
 		    <a href="#" id="${slug}-cancel" class="button">Nah, Cancel</a>
 		</span>
 	    </div>
-
 	    <div id="${slug}-response" class="center text-center">
 		<div id="${slug}-working" class="m1 null"></div>
 		<div id="${slug}-success" class="m1 null">
@@ -154,10 +131,7 @@ margin-bottom:1em;
 		    <div id="${slug}-error" class="error m1"></div>
 		</div>
             </div>
-
-
 	</div>
-
     </metal:main>
 </body>
 </html>

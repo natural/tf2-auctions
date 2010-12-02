@@ -1,4 +1,4 @@
-var $$ = function(suffix, next) { return $('#profile-'+suffix, next) }
+var $$ = make$$('#profile-')
 var id64Internal = null
 var id64View = function() { return id64Internal || pathTail() }
 
@@ -349,7 +349,6 @@ var otherProfileOkay = function(profile) {
 // player profile if the user isn't viewing their own page.
 //
 var authProfileOkay = function(profile) {
-    new ProfileTool(profile).defaultUserAuthOkay()
     var id64 = id64View()
     if (id64 != profile.id64 && id64 != profile.custom_name ) {
 	// authorized user viewing another profile. load separately:
@@ -442,7 +441,6 @@ var NotifyListingTool = function() {
 // given player profile.
 //
 var authProfileError = function(request, status, error) {
-    new ProfileTool().defaultUserAuthError(request, status, error)
     if (request.status == 401) {
 	setHeadings()
 	siteMessage('Loading profile...')
@@ -463,22 +461,10 @@ var authProfileError = function(request, status, error) {
 //
 var schemaReady = function(schema) {
     new AuthProfileLoader({
+	suffix: '?settings=1&complete=1',
 	success: authProfileOkay,
-	error: authProfileError,
-	suffix: '?settings=1&complete=1'
+	error: authProfileError
     })
-    var st = new SchemaTool(schema)
-    var tt = new TooltipView(st)
-    var hoverItem = function(e) { tt.show(e); $(this).addClass('outline')  }
-    var unhoverItem = function(e) {  tt.hide(e);  $(this).removeClass('outline') }
-    $('div.ov td.item-view, #backpack-ac td')
-	.live('mouseover', hoverItem)
-    $('div.ov td.item-view, #backpack-ac td')
-	.live('mouseout', unhoverItem)
-    $('.listing-view')
-	.live('mouseover', function() { $(this).addClass('listing-hover') })
-    $('.listing-view')
-	.live('mouseout', function() { $(this).removeClass('listing-hover') })
 }
 
 

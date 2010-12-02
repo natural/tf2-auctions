@@ -323,6 +323,13 @@ padding:0.5em;
 text-align:center;
 }
 
+
+.msg div {
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
+color:#fff;
+opacity:0.9;
+}
+
 .winner {
 background-color:rgba(146, 71, 56, 0.5);
 border:0.25em solid rgba(146, 71, 56, 1);
@@ -360,6 +367,7 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 
 .w12  { width:12%; }
 .w15  { width:15%; }
+.w20  { width:20%; }
 .w25  { width:25%; }
 .w40  { width:40%; }
 .w49  { width:49%; }

@@ -56,3 +56,7 @@ class Subscription(db.Model, UserId64Mixin):
 
     def encode_builtin(self):
 	return {'status':self.status}
+
+
+    def is_subscriber(self):
+	return self.status == 'Verified'

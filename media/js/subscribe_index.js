@@ -2,7 +2,6 @@ var $$ = function(suffix, next) { return $('#subscribe-'+suffix, next) }
 
 
 var authOkay = function(profile) {
-    new ProfileTool(profile).defaultUserAuthOkay()
     if (profile.subscription && profile.subscription.status == 'Verified') {
 	$$('thanks-pod').slideDown()
     } else {
@@ -14,7 +13,6 @@ var authOkay = function(profile) {
 
 
 var authFail = function(request, status, error) {
-    new ProfileTool().defaultUserAuthError(request, status, error)
     var pod = $$('login-pod')
     pod.slideDown()
 }

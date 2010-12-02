@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from cgi import parse_qs
-from logging import info, warn
+from logging import info
 from re import search
 from time import time
 
-from google.appengine.api import memcache
-from google.appengine.api import users
+from chameleon.zpt.loader import TemplateLoader as BaseTemplateLoader
+from google.appengine.api import memcache, users
 from google.appengine.ext.webapp import RequestHandler, Request, Response
 from google.appengine.ext.webapp.util import run_wsgi_app
-
 from simplejson import dumps as json_dumps, loads as json_loads
-from chameleon.zpt.loader import TemplateLoader as BaseTemplateLoader
 
 from tf2auctions import features
 
@@ -141,6 +139,7 @@ class View(LocalHandler):
     ## javascripts for every template; values are modified to include
     ## script media prefix and app version number
     default_js = (
+	'backpack.js',
 	'tools.js',
     )
 

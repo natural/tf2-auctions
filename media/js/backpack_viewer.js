@@ -148,15 +148,7 @@ var doSearch = function(value) {
 
 
 $(function() {
-    new AuthProfileLoader({
-	success: function(profile) {
-	    new ProfileTool(profile).defaultUserAuthOkay()
-	},
-	error: function(request, error, status) {
-	    new ProfileTool().defaultUserAuthError(request, error, status)
-	}
-    })
-
+    new AuthProfileLoader()
     $$('result-many-choose').change(showSelection)
     $$('search-value').val(defaultSearch).select()
     $$('search').click(function() {

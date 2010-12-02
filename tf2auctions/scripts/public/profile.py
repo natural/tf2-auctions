@@ -7,7 +7,7 @@ from tf2auctions.models.settings import PlayerSettings
 class Profile(View):
     template_name = 'profile.pt'
     related_css = ('profile.css', )
-    related_js = ('backpack.js', 'profile.js', )
+    related_js = ('profile.js', )
 
     def extra_context(self):
 	## we're using the schema to create the form and thereby avoid
