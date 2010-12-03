@@ -16,12 +16,8 @@ var PageModel = SchemaModel.extend({
 
 
 var PageView = SchemaView.extend({
-    authLoader: true,
-    authSuffix: '',
     cloneClass: 'group-proto-seed',
     slug: '#all-items-',
-    model: PageModel,
-
     join: function() {
 	$.each(this.model.groups(), function(idx, group) {
 	    var clone = PageView.proto()
@@ -32,3 +28,6 @@ var PageView = SchemaView.extend({
         this.putImages()
     },
 })
+
+
+var PageController = Controller.extend({model: PageModel, view: PageView})

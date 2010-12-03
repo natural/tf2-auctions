@@ -163,9 +163,9 @@ var makeLoader = function(config) {
 
     return function(options) {
 	options = options || {}
+	var url = prefix + (options.suffix || '')
 	successCallbacks.push(options.success ? options.success : ident)
 	errorCallbacks.push(options.error ? options.error : ident)
-	var url = prefix + (options.suffix || '')
 
 	var loadSuccess = function(data) {
 	    cache[url] = {data:data}
@@ -245,7 +245,7 @@ var AuthProfileLoader = makeLoader({
     prefix: '/api/v1/auth/profile',
     name: 'AuthProfileLoader',
     successEvent: 'authProfileLoaded',
-    errorEvent: 'authProfileError'
+    errorEvent: 'authProfileError',
 })
 
 
@@ -268,7 +268,7 @@ var SchemaLoader = makeLoader({
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsSchemaLoader',
     name: 'SchemaLoader',
-    successEvent: 'schemaLoaded',
+    successEvent: 'schemaLoaded'
 })
 
 
@@ -713,29 +713,115 @@ var MVC = {
 
 
 //
-// This is the root Controller object.  This is empty as we haven't
-// retrofitted any existing pages that need controller functionality.
+// This is the root Controller object.
 //
-var Controller = MVC.extend()
+// Wikipedia: The controller receives input and initiates a response
+// by making calls on model objects. A controller accepts input from
+// the user and instructs the model and view to perform actions
+// based on that input.  The controller has direct associations to the
+// view and model.
+//
+var Controller = MVC.extend({
+    children: [],
+    init: function() {
+        var self = this
+	// initalize the model associated with this controller.  the
+	// model will initalize the view when it's ready.
+	self.model.init.apply(self.model, [self.view, self.config])
+
+	// initialize anything in the namespace that looks like an
+	// event listener.
+	var enames = keys($.attrFn)
+	$.merge(enames, keys($.event.special))
+
+        $.each(keys(self), function(idx, key) {
+            var value = self[key]
+            if (typeof key == 'string' && (typeof value == 'function' || typeof value == 'object')) {
+		var names = key.split(' '), name = names.pop()
+		if (name == 'ready') {
+		    $(value)
+		} else if (name && enames.indexOf(name) > -1) {
+		    names = names.join(' ')
+		    $(names).bind(name, value)
+		}
+	    }
+        })
+    }
+})
 
 
 //
-// This is the root Model object.  Model objects are typically
-// initialized automatically by their associated View.
+// This is the root Model object.  Model objects are
+// initialized automatically by their associated Controller.
 //
-// During initialization, Model objects call the 'join' method of the
-// associated view with the results of their loader.  The view is
-// responsible for placing the loaded records into the DOM.
+// During initialization, Model objects make one or more network
+// reqeusts to load data.  After all requests are completed, the model
+// object calls the 'join' method of the associated view.
+//
+// At initialization, Model and its clones invoke a AuthProfileLoader
+// with its success and error callbacks set to the functions
+// 'authSuccess' and 'authError', respectively.
+//
+
+// Wikipedia: The model manages the behavior and data of the
+// application domain, responds to requests for information about its
+// state (usually from the view), and responds to instructions to
+// change state (usually from the controller). In event-driven
+// systems, the model notifies observers (usually views) when the
+// information changes so that they can react.  The model has an indirect
+// association with a view.
 //
 var Model = MVC.extend({
     children: [],
-    init: function(view, suffix) {
+    requests: [],
+    name: 'Model',
+
+    authSuccess: function(profile) {
+	this.view.authSuccess.apply(this.view, [profile])
+    },
+
+    authError: function(req, status, err) {
+        this.view.authError.apply(this.view, [req, status, err])
+    },
+
+    init: function(view, config) {
 	var self = this
-	var wrap = function(results) {
-	    self.results = results
-	    view.join.apply(view, [results])
-	}
-	new self.loader({success: wrap, suffix: suffix || self.loaderSuffix || ''})
+	self.view = view
+        view.init.apply(view, [self])
+
+	// request the authorized user profile
+        self.requests.push(function() {
+            var success = function(p) { self.authSuccess.apply(self, [p]) }
+            var error = function(r, s, e) { self.authError.apply(self, [r,s,e]) }
+            var s = (config && config.auth && config.auth.settings ? 'settings=1' : '')
+            s = s ? ('?' + s) : ''
+	    new AuthProfileLoader({suffix: s, success: success, error: error})
+        })
+
+	// request the model data
+	self.requests.push(function() {
+            var success = function(v) { self.ready.apply(self, [v]) }
+            new self.loader({success: success, suffix: self.loaderSuffix || ''})
+        })
+        var binder = $('<foo />')
+	binder.bind('ajaxStop.{0}'.fs(self.name), function() {
+            view.join.apply(view, [self.results])
+            binder.unbind('ajaxStop.{0}'.fs(self.name))
+        })
+        $.each(self.requests, function(i, r) {  r.apply(self)  })
+    },
+
+    // default implementation that sets the results as an attribute on
+    // the model
+    ready: function(results) {
+	this.results = results
+    },
+
+    // convenience function for cloning the Model object with
+    // parameters for a new loader
+    make: function(mc, lc) {
+	if (lc) { mc.loader = makeLoader(lc) }
+	return Model.extend(mc)
     }
 })
 
@@ -748,14 +834,11 @@ var Model = MVC.extend({
 //
 var SchemaModel = Model.extend({
     loader: SchemaLoader,
-    init: function(view) {
-	var self = this
-	var wrap = function(schema) {
-	    self.tool = new SchemaTool(schema)
-	    view.join.apply(view, [schema])
-	}
-	new self.loader({success: wrap})
-    }
+
+    ready: function(results) {
+        this.results = results
+        this.tool = new SchemaTool(results)
+    },
 })
 
 
@@ -763,13 +846,6 @@ var SchemaModel = Model.extend({
 // This is the root View object.
 //
 // The View object and its clones provide several interesting behaviors:
-//
-// 1. if the 'authLoader' attribute is true, the View will invoke a
-// AuthProfileLoader with its success and error callbacks set to
-// 'authSuccess' and 'authError', respectively.  The 'authSuffix'
-// attribute is passed to the loader to indicate the level of detail
-// for the fetched profile.  Note that the AuthProfileLoader will be
-// called automatically during initialization.
 //
 // 2. the '$$' function provides prefixed jquery selectors via the
 // 'slug' attribute.
@@ -780,41 +856,31 @@ var SchemaModel = Model.extend({
 // 4. if the 'model' attribute is supplied, it will be initalized
 // after the view is initalized.
 //
+// Wikipedia: The view renders the model into a form suitable for
+// interaction, typically a user interface element. Multiple views can
+// exist for a single model for different purposes. A viewport
+// typically has a one to one correspondence with a display surface
+// and knows how to render to it.  The view has a direct association
+// to a model and an indirect association with one or more
+// controllers.
+//
 var View = MVC.extend({
     children: [],
     slug: '',
     $$: function(suffix, next) { return $('{0}{1}'.fs(this.slug, suffix), next) },
     authError: function() {},
     authSuccess: function() {},
-
-    auth: function() {
-	if (this.authLoader) {
-	    var view = this
-	    var success = function(v) {
-		view.authSuccess.apply(view, [v])
-	    }
-	    var error = function(r, s, e) {
-		view.authError.apply(view, [r,s,e])
-	    }
-	    new AuthProfileLoader({
-		suffix: this.authSuffix,
-		success: success,
-		error: error
-	    })
-	}
-    },
-
-    init: function() {
-	if (this.model && !this.authLoader) {
-	    this.model.init.apply(this.model, [this])
-	}
-    },
+    init: function(model) { this.model = model },
+    join: function() {},
 
     proto: function() {
 	var cc = this.cloneClass
 	return $('.' + cc).clone().removeClass('prototype null ' + cc)
-    }
+    },
 
+    message: function(v) {
+	return siteMessage(v)
+    }
 })
 
 
@@ -845,8 +911,6 @@ var SchemaView = View.extend({
 
 
 $(function() {
-    $.each(View.children, function(i, v) {
-	v.auth.apply(v)
-	v.init.apply(v)
-    })
+    // initialize each direct clone of the Controller object:
+    $.each(Controller.children, function(i, c) { c.init.apply(c) })
 })
