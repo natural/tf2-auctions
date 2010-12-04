@@ -1,11 +1,19 @@
 #listing-detail-left {
 float:left;
-width:68%;
+width:44.5%;
+a-border:1px solid red;
+}
+
+#listing-detail-center {
+float:left;
+width:24.5%;
+a-border:1px solid blue;
 }
 
 #listing-detail-right {
 float:right;
-width:30%;
+width:28.5%;
+a-border:1px solid green;
 }
 
 #listing-detail-place-bid-pod > h1:first-child {
@@ -50,7 +58,7 @@ margin-bottom:0.75em;
 }
 
 div.detail-view, div.ov {
-padding:1em;
+padding:0.5em;
 }
 
 
@@ -116,4 +124,10 @@ width:3em;
 .rating-view {
 background-color:#3C352E;
 border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
+}
+
+
+.owner {
+padding:0.5em;
+margin:-2.5em 0.5em -2.5em 0;
 }

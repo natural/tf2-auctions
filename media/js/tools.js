@@ -28,12 +28,11 @@ String.prototype.fs = function() {
 var ident = function(a) { return a }
 
 
-// it's the end of the line for you, i'm afraid
+// this should move to the default View or Controller object
 var pathTail = function() { return window.location.pathname.split('/').pop() }
 
 
-// is it document.title, window.title or $(something).title?  i can
-// never remember.
+// this should move to the default View or Controller object
 var setTitle = function(name) { document.title = document.title + ' - ' + name }
 
 
@@ -63,7 +62,7 @@ var lazy = function(def) {
 
 
 // closure over a settings object
-var settingsView = function(settings) {
+var settingsUtil = function(settings) {
     var valid = settings && keys(settings).length
     return {
 	showEquipped: (valid ? settings['badge-equipped'] : true),
@@ -120,26 +119,8 @@ var itemUtil = function(item, schema) {
 }
 
 
-// makes a table cell with a lazy div
+// makes a table cell with a lazy div; move this to SchemaView
 var makeCell = function(v) { return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v) }
-
-
-// makes tooltip hover in/out functions
-var makeHovers = function(tool) {
-    return {
-	enter: function(event) {
-	    tool.show(event)
-	    try {
-		var data = $('div', this).data('node')
-		$(this).addClass('outline')
-	    } catch (e) {}
-	},
-	leave: function(event) {
-	    tool.hide(event)
-	    $(this).removeClass('outline')
-	}
-    }
-}
 
 
 // makes a nice img tag with all the trimmings.
@@ -220,18 +201,26 @@ var makeLoader = function(config) {
 }
 
 
+// if and when the profile is loaded for an authorized user, perform
+// the default actions for that kind of user.
 $(document).bind('authProfileLoaded', function(event, profile) {
     profileUtil.defaultUserAuthOkay(profile)
 })
 
 
+// if and when a profile cannot be loaded (because the user isn't
+// authorized, i.e., anon), perform the default actions for that kind
+// of user.
 $(document).bind('authProfileError', function(event, req, status, err) {
     profileUtil.defaultUserAuthError(req, status, err)
 })
 
+
+// if and when the items schema is loaded, hook it up to a SchemaTool
+// and a ItemHoverTool.
 $(document).bind('schemaLoaded', function(event, schema) {
-    var st = new SchemaTool(schema)
-    var tt = new TooltipView(st)
+    var st = new SchemaTool(schema),
+        tt = new ItemHoverTool(st)
     $('div.ov td.item-view, #backpack-ac td, .backpack td')
 	.live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
 	.live('mouseout',  function(e) {  tt.hide(e);  $(this).removeClass('outline') })
@@ -309,6 +298,7 @@ var BidsLoader = makeLoader({
 })
 
 
+// this should become ProfileView or similar
 var profileUtil = (function() {
     return {
 	defaultUrl: function(p) {
@@ -368,7 +358,7 @@ var SchemaTool = function(schema) {
 	    })
 	    return self._attrById
 	})
-	self.tooltips = new TooltipView(self)
+	self.tooltips = new ItemHoverTool(self)
     }
 
     self.asPlayerItem = function(i) {
@@ -388,7 +378,7 @@ var SchemaTool = function(schema) {
 	// specified in the content.
 	var itemImg = function(url) { return makeImg({src:url, width:64, height:64}) }
 	var toolDefs = self.tools(), actionDefs = self.actions()
-	var settingV = settingsView(settings)
+	var settingV = settingsUtil(settings)
 	$('.defindex-lazy').each(function(index, tag) {
 	    var data = $.parseJSON($(tag).text())
 	    if (!data) { return }
@@ -517,12 +507,12 @@ var SchemaTool = function(schema) {
     }
 }
 
-
+// this should move to the default View object
 var hiliteSpan = function(after) {
     return '<span class="hilite">&nbsp;</span><span>{0}</span>'.fs(after)
 }
 
-
+// this should also move to the default View object
 var siteMessage = function(text) {
     if (text) {
 	return $('#content-site-message').removeClass('null').fadeIn().text(text)
@@ -543,6 +533,7 @@ var listingItemsUids = bidItemsUids = itemsUids = function(src) {
 }
 
 
+// again, the default view object
 var showTermsDialog = function(e) {
     var okay = function(text) {
 	$('#content-terms-dialog').html(text).dialog({
@@ -685,11 +676,9 @@ var updateTimeLeft = function (expires, selector) {
 }
 
 
-
+// this should be culled
 var make$$ = function(prefix) {
-    return function(suffix, next) {
-	return $('{0}{1}'.fs(prefix, suffix), next)
-    }
+    return function(suffix, next) { return $('{0}{1}'.fs(prefix, suffix), next) }
 }
 
 
@@ -701,12 +690,12 @@ var make$$ = function(prefix) {
 // nothing.
 //
 var MVC = {
-    children: [],
+    clones: [],
     init: function() { return this },
     extend: function(ext) {
 	var obj = Object.create(this)
 	if (ext) { $.extend(obj, ext) }
-	this.children.push(obj)
+	this.clones.push(obj)
 	return obj
     }
 }
@@ -722,7 +711,9 @@ var MVC = {
 // view and model.
 //
 var Controller = MVC.extend({
-    children: [],
+    clones: [],
+    eventNames: $.merge(keys($.attrFn), keys($.event.special)),
+
     init: function() {
         var self = this
 	// initalize the model associated with this controller.  the
@@ -731,18 +722,15 @@ var Controller = MVC.extend({
 
 	// initialize anything in the namespace that looks like an
 	// event listener.
-	var enames = keys($.attrFn)
-	$.merge(enames, keys($.event.special))
-
         $.each(keys(self), function(idx, key) {
             var value = self[key]
             if (typeof key == 'string' && (typeof value == 'function' || typeof value == 'object')) {
 		var names = key.split(' '), name = names.pop()
 		if (name == 'ready') {
-		    $(value)
-		} else if (name && enames.indexOf(name) > -1) {
+		    $( function() { value.apply(self, arguments) })
+		} else if (name && self.eventNames.indexOf(name) > -1) {
 		    names = names.join(' ')
-		    $(names).bind(name, value)
+		    $(names).bind(name, function(e) { e.controller = self; value(e) })
 		}
 	    }
         })
@@ -772,11 +760,12 @@ var Controller = MVC.extend({
 // association with a view.
 //
 var Model = MVC.extend({
-    children: [],
+    clones: [],
     requests: [],
     name: 'Model',
 
     authSuccess: function(profile) {
+	this.profile = profile
 	this.view.authSuccess.apply(this.view, [profile])
     },
 
@@ -865,7 +854,7 @@ var SchemaModel = Model.extend({
 // controllers.
 //
 var View = MVC.extend({
-    children: [],
+    clones: [],
     slug: '',
     $$: function(suffix, next) { return $('{0}{1}'.fs(this.slug, suffix), next) },
     authError: function() {},
@@ -880,7 +869,9 @@ var View = MVC.extend({
 
     message: function(v) {
 	return siteMessage(v)
-    }
+    },
+
+    showTermsDialog: function() { showTermsDialog() }
 })
 
 
@@ -889,18 +880,24 @@ var SchemaView = View.extend({
 	this.model.tool.putImages(p)
     },
 
-    putItems: function(target, items) {
-	var col = 0
+    putItems: function(target, items, cols) {
+	var col = 0,
+	    cols = cols || 10
 	$.each(items, function(idx, item) {
-	    if (!(col % 10)) { target.append('<tr></tr>') }
+	    if (!(col % cols)) { target.append('<tr></tr>') }
 	    col += 1
-	    $('tr:last', target).append(makeCell($.toJSON({defindex:item.defindex, quality:6})))
+            item = item.quality == 'undefined' ? {defindex:item.defindex, quality:6} : item
+	    var cell = makeCell($.toJSON(item))
+            if (item.data) { $('div', cell).data('node', item) }
+	    $('tr:last', target).append(cell)
 	})
-        if ( col % 10 ) {
-	    var pad = new Array( 1 + (10 - col % 10)   ).join('<td><div></div></td>')
+        if (col % cols) {
+	    var pad = new Array( 1 + (cols - col % cols)   ).join('<td><div></div></td>')
 	    $('tr:last', target).append(pad)
 	}
+	$('td div:empty', target).parent().remove()
     },
+
 
     joinListings: function(options) {
 	listingView.putMany(options)
@@ -912,5 +909,6 @@ var SchemaView = View.extend({
 
 $(function() {
     // initialize each direct clone of the Controller object:
-    $.each(Controller.children, function(i, c) { c.init.apply(c) })
+    $.each(Controller.clones, function(i, c) { c.init.apply(c) })
 })
+

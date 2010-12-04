@@ -19,7 +19,9 @@
 	    <span id="${slug}-title"></span> (<span id="${slug}-status"></span>)
 	</h1>
 
+
 	<div id="${slug}-content" class="null center detail-view">
+	    <!-- replace with 3 cell table -->
 	    <div id="${slug}-left">
 		<div class="mb1">
 		    <label>Description:</label>
@@ -29,37 +31,36 @@
 		</div>
 		<div>
 		    <label>Items:</label>
-		    <div class="items-view" id="${slug}-items"><table></table></div>
+		    <div class="items-view backpack" id="${slug}-items"><table></table></div>
 		</div>
 		<div class="mt1" id="${slug}-min-bid-pod">
 		    <label>Minimum Bid:</label>
 		    <h3 class="null ml1" id="${slug}-min-bid-dollar-use">
 			<span class="text-right mono"></span>
 		    </h3>
-		    <div class="items-view" id="${slug}-min-bid"><table></table></div>
-		</div>
-		<div id="${slug}-auth-bid-cancelled" class="null"></div>
-		<div id="${slug}-auth-bid-pod" class="null mtb1">
-		    <a class="button" id="${slug}-place-start" href="#">Place Your Bid</a>
-		    <span class="null">
-			<a class="button" id="${slug}-existing-bid-cancel" href="#"></a>
-			<span class="null" id="${slug}-existing-bid-confirm">
-			    Are you sure you want to cancel your bid?
-			    <a class="button" href="#" id="${slug}-existing-bid-cancel-yes">Yes</a>
-			    <a class="button" href="#" id="${slug}-existing-bid-cancel-no">No</a>
-			</span>
-		    </span>
+		    <div class="items-view backpack" id="${slug}-min-bid"><table></table></div>
 		</div>
 
 		<metal:macro tal:define="slug 'bidder'"
 		     metal:use-macro="context.view_parts.macros.leave_feedback" />
-		<!-- move this -->
-		<div id="${slug}-login-pod" class="null mtb1">
-		    <h2>You have to login to place a bid for these items.</h2>
-		</div>
             </div>
+	    <div id="${slug}-center" class="ml1">
+		<div class="mb1">
+		    <label>Time Left:</label>
+		    <div class="ml1"><strong id="${slug}-timeleft" class="mono">&nbsp;</strong></div>
+		</div>
+		<div class="mb1">
+		    <label>Expires:</label>
+		    <div class="ml1"><strong id="${slug}-expires" class="mono"></strong></div>
+		</div>
+		<div class="mb1">
+		    <label>Created:</label>
+		    <div class="ml1"><strong id="${slug}-created" class="mono"></strong></div>
+		</div>
+
+	    </div>
 	    <div id="${slug}-right">
-		<div class="owner p05">
+		<div class="owner np05">
 		    <label>Created by
 			<span><a id="${slug}-owner-link" href="#"></a></span>
 		    </label>
@@ -96,7 +97,7 @@
 			</table>
                     </div>
 
-		    <div class="owner-links m1-top" id="${slug}-owner-links">
+		    <div class="owner-links m1-top null" id="${slug}-owner-links">
 			<ul>
 			    <li>
 				<img src="/media/img/iconAddFriend.png" />
@@ -113,12 +114,16 @@
 			</ul>
 		    </div>
 
+
+
 		    <div id="${slug}-owner-controls" class="null center mtb1">
 			<div id="${slug}-owner-controls-cancel" class="null">
-			    <div class="m1">You own this listing, so you may cancel it:</div>
-			    <div class="center text-center" id="${slug}-cancel-prompt">
+			    <label>Tools:</label>
+			    <div class="mt05 mb05 text-center" id="${slug}-cancel-prompt">
 				<a href="#" id="${slug}-cancel-show-confirm" class="button">Cancel this Listing</a>
 			    </div>
+			    <div class="help text-center">You own this listing, so you may cancel it.</div>
+
 			    <div class="center text-center null" id="${slug}-cancel-confirm">
 				<label class="m1">Are you sure you want to cancel this listing?</label>
 				<a href="#" class="button" id="${slug}-cancel-submit">Yes, Do It</a>
@@ -133,18 +138,8 @@
 			    </div>
 			</div>
                     </div>
-		</div>
-		<div class="mtb1">
-		    <label>Time Left:</label>
-		    <div class="ml1"><strong id="${slug}-timeleft" class="mono">&nbsp;</strong></div>
-		</div>
-		<div class="mb1">
-		    <label>Expires:</label>
-		    <div class="ml1"><strong id="${slug}-expires" class="mono"></strong></div>
-		</div>
-		<div class="mb1">
-		    <label>Created:</label>
-		    <div class="ml1"><strong id="${slug}-created" class="mono"></strong></div>
+
+
 		</div>
             </div>
 	    <div class="clear"></div>
@@ -152,8 +147,28 @@
 
 	<div id="${slug}-existing-bids-pod" class="null">
 	    <div id="${slug}-existing-bids">
+
+		<div id="${slug}-auth-tools-pod" class="">
+		    <div id="${slug}-login-pod" class="null mtb1">
+			<h2>You have to login to place a bid for these items.</h2>
+		    </div>
+		</div>
+
+		<div id="${slug}-auth-bid-cancelled" class="null"></div>
+		<div id="${slug}-auth-bid-pod" class="null mtb1">
+		    <a class="button" id="${slug}-place-start" href="#">Place Your Bid</a>
+		    <span class="null">
+			<a class="button" id="${slug}-existing-bid-cancel" href="#"></a>
+			<span class="null" id="${slug}-existing-bid-confirm">
+			    Are you sure you want to cancel your bid?
+			    <a class="button" href="#" id="${slug}-existing-bid-cancel-yes">Yes</a>
+			    <a class="button" href="#" id="${slug}-existing-bid-cancel-no">No</a>
+			</span>
+		    </span>
+		</div>
+
 		<h1 class="pt05"><span class="hilite">&nbsp;</span>&nbsp;<span id="${slug}-bidcount"></span></h1>
-		<div id="${slug}-bids">
+		<div id="${slug}-bids" class="mt05">
 		    <metal:include
 			tal:define="slug slug+'-profile'; use_view False"
 			metal:use-macro="context.view_parts.macros.bids_large" />

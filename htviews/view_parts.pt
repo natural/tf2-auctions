@@ -416,9 +416,7 @@ large bids: ...
 				Leave Feedback
 				</a>
 			    </div>
-
-			    <metal:display use-macro="macros.items_view" />
-
+			    <div class="items-view backpack"><table class="chooser"></table></div>
 			    <div class="mb1 null">
 				<strong class="bid-message-label-private">Private Message:</strong>
 				<div class="bid-message-private"></div>

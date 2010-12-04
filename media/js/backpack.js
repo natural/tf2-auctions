@@ -91,7 +91,7 @@ var formatCalcMap = {
 //
 // tool for formatting and showing a nice tooltip.
 //
-var TooltipView = function(schema) {
+var ItemHoverTool = function(schema) {
     var self = this
     var quals = schema.qualityMap()
 
@@ -327,7 +327,7 @@ var BackpackItemsTool = function(options) {
 
     self.putItems = function(items, settings) {
         var schema = new SchemaTool()
-	var newIdx = -1, settings = settingsView(settings)
+	var newIdx = -1, settings = settingsUtil(settings)
 	var toolDefs = schema.tools(), actionDefs = schema.actions()
 
 	$.each(items, function(index, item) {
@@ -375,7 +375,7 @@ var BackpackItemsTool = function(options) {
 	var showTooltips = options.toolTips
 	if (showTooltips) {
 	    var schema = new SchemaTool()
-	    var tipTool = new TooltipView(schema)
+	    var tipTool = new ItemHoverTool(schema)
 	    // this is a very general selector that picks up just
 	    // about everything on the page that's backpack-ish,
 	    // including choosers:
