@@ -312,6 +312,13 @@ class ListingItem(PlayerItem):
 	args = (self.listing, self.uniqueid, self.defindex, )
 	return '<ListingItem listing=%s, uniqueid=%s, defindex=%s>' % args
 
+    def simple_desc(self, lookup=None):
+	defindex = self.defindex
+	if lookup:
+	    item = lookup[defindex]
+	else:
+	    item = str(defindex)
+	return str(item)
 
 
 class Bid(db.Model):

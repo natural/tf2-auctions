@@ -36,3 +36,6 @@ def item_categories(items, schema):
 
 def item_type_map(schema):
     return dict((i['defindex'], i['item_type_name']) for i in schema['result']['items']['item'])
+
+def def_map(schema):
+    return dict((i['defindex'], i) for i in schema['result']['items']['item'])

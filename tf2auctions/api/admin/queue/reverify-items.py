@@ -3,7 +3,7 @@
 from datetime import datetime, timedelta
 from logging import error, info, warn
 
-from google.appengine.api.labs import taskqueue
+from google.appengine.api import taskqueue
 
 from tf2auctions import features
 from tf2auctions.lib import ApiHandler, user_steam_id

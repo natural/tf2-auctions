@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from google.appengine.api.labs import taskqueue
+from google.appengine.api import taskqueue
 from tf2auctions.lib import user_steam_id
 
 

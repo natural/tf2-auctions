@@ -35,7 +35,7 @@ class ListingSearch(object):
 
 
 class BasicSearch(ListingSearch):
-    def run(self):
+    def run(self, encoded=True):
 	q = Listing.all().filter('status = ', 'active')
 	qs = self.qs
 	@cache(self.rqs, ttl=180)
@@ -53,7 +53,9 @@ class BasicSearch(ListingSearch):
 		limit = min(self.limit, int(qs['limit'][0]))
 	    except (Exception, ), exc:
 		limit = self.limit
-	    listings = [lst.encode_builtin() for lst in q.fetch(limit)]
+	    listings = q.fetch(limit)
+	    if encoded:
+		listings = [lst.encode_builtin() for lst in listings]
 	    return listings, self.next_qs(q, qs), self.more(q)
 
 	return inner_search()
@@ -63,7 +65,7 @@ class AdvancedSearch(ListingSearch):
     limit = 20
     max_defs = 4
 
-    def run(self):
+    def run(self, encoded=True):
 	@cache(self.rqs, ttl=180)
 	def inner_search():
 	    listings, qs = [], self.qs
@@ -77,7 +79,8 @@ class AdvancedSearch(ListingSearch):
 		listings += Listing.get(i.parent() for i in q.fetch(self.limit))
 	    listings = dict((lst.key(), lst) for lst in listings).values() ## remove dupes
 	    listings.sort(key=lambda o:o.expires) ## TODO:  verify this is desired
-	    listings = [lst.encode_builtin() for lst in listings]
+	    if encoded:
+		listings = [lst.encode_builtin() for lst in listings]
 	    return listings, '', False
 	return inner_search()
 
@@ -86,7 +89,7 @@ class ReverseSearch(ListingSearch):
     limit = 20
     max_defs = 4
 
-    def run(self):
+    def run(self, encoded=True):
 	@cache(self.rqs, ttl=180)
 	def inner_search():
 	    listings, qs = [], self.qs
@@ -100,7 +103,8 @@ class ReverseSearch(ListingSearch):
 		listings += q.fetch(self.limit)
 	    listings = dict((lst.key(), lst) for lst in listings).values() ## remove dupes
 	    listings.sort(key=lambda o:o.expires) ## TODO:  verify this is desired
-	    listings = [lst.encode_builtin() for lst in listings]
+	    if encoded:
+		listings = [lst.encode_builtin() for lst in listings]
 	    return listings, '', False
 	return inner_search()
 

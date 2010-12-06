@@ -147,6 +147,9 @@ class View(LocalHandler):
     ## same manner as scripts in default_js
     related_js = ()
 
+    ## rss feeds for the view
+    related_rss = ()
+
     def default_context(self):
 	import itertools
 	return (
@@ -196,6 +199,10 @@ class View(LocalHandler):
 	for js in self.default_js + self.related_js:
 	    yield '%s/%s?v=%s' % (prefix, js, version, )
 
+    def iter_rss(self, prefix_path=''):
+	for rss in self.related_rss:
+	    yield rss
+
     def login_url_key(self):
 	return 'login-url:%s?%s' % (self.request.uri, self.request.query_string, )
 
@@ -228,6 +235,26 @@ class View(LocalHandler):
 	return self.template_loader.load(self.template_name if name is None else name)
 
 
+class RssView(View):
+    template_name = 'rss.pt'
+    description = 'RSS Description'
+    title = 'RSS Title'
+    ttl = 60 * 3 # minutes
+    url = '/rss'
+
+    def pub_date(self):
+	return 'Sat, 07 Sep 2002 00:00:01 GMT'
+
+    def extra_context(self):
+	return ()
+
+    def get(self):
+	self.render()
+
+    def items(self):
+	return ()
+
+
 def wsgi_local(app, debug):
     methods = ('get', 'post', 'head', 'options', 'put', 'delete', 'trace')
     def local(environ, start_response):
@@ -255,11 +282,11 @@ def make_main(app, debug=features.devel):
     return main
 
 
-def template_main(template_name, related_css=None, related_js=None, debug=features.devel):
-    return make_main(basic_view(template_name, related_css, related_js), debug)
+def template_main(template_name, related_css=None, related_js=None, related_rss=None, debug=features.devel):
+    return make_main(basic_view(template_name, related_css, related_js, related_rss), debug)
 
 
-def basic_view(template_name, related_css=None, related_js=None):
+def basic_view(template_name, related_css=None, related_js=None, related_rss=None):
 
     class Basic(View):
 	pass
@@ -273,6 +300,10 @@ def basic_view(template_name, related_css=None, related_js=None):
 	if isinstance(related_js, (basestring, )):
 	    related_js = (related_js, )
         Basic.related_js = related_js
+    if related_rss is not None:
+	if isinstance(related_rss, (basestring, )):
+	    related_rss = (related_rss, )
+        Basic.related_rss = related_rss
     return Basic
 
 

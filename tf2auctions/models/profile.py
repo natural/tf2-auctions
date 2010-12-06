@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from logging import error, info
 from re import match
 
-from google.appengine.api.labs import taskqueue
+from google.appengine.api import taskqueue
 from google.appengine.ext import db
 
 from tf2auctions.lib import json_dumps, json_loads, user_steam_id

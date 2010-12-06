@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+    <channel>
+        <title tal:content="controller.title" />
+        <link tal:content="controller.url" />
+        <description tal:content="controller.description" />
+
+	<category tal:condition="getattr(controller, 'category', None)" tal:content="controller.category" />
+	<copyright tal:condition="getattr(controller, 'copyright', None)" tal:content="controller.copyright" />
+	<image tal:condition="getattr(controller, 'image', None)" tal:content="controller.image" />
+	<language tal:condition="getattr(controller, 'language', None)" tal:content="controller.language" />
+
+        <pubDate tal:content="controller.pub_date()" />
+        <ttl tal:content="controller.ttl" />
+
+        <item tal:repeat="item controller.items()">
+            <title tal:content="item.title" />
+	    <link tal:content="item.link" />
+	    <description tal:content="item.description" />
+
+	    <author tal:condition="item.get('author')" tal:content="item.author" />
+	    <category tal:condition="item.get('category')" tal:content="item.category" />
+	    <comments tal:condition="item.get('comments')" tal:content="item.comments" />
+	    <enclosure tal:condition="item.get('enclosure')" tal:content="item.enclosure" />
+	    <guid tal:condition="item.get('guid')" tal:content="item.guid" />
+	    <pubDate tal:condition="item.get('pub_date')" tal:content="item.pub_date" />
+	    <source tal:condition="item.get('source')" tal:content="item.source" />
+	</item>
+    </channel>
+</rss>

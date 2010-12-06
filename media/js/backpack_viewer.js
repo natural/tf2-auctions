@@ -162,7 +162,7 @@ var BackpackController = Controller.extend({
     '#backpack-viewer-search-value keypress' : function(e) {
 	var self = BackpackController,
 	    code = (e.keyCode ? e.keyCode : e.which)
-	if (code == 13) { self.search($(this).val()) }
+	if (code == 13) { self.search(self.view.searchText()) }
     },
 
     '#backpack-viewer-result-many-choose change' : function(e) {
