@@ -246,7 +246,7 @@ backpack navigator buttons
 
 -->
 <metal:macro metal:define-macro="backpack_navigator">
-    <div class="bp-nav text-right mt1 build-font pb05 mr05" id="bp-nav-${slug}">
+    <div class="bp-nav text-right mt1 build-font pb05 mr05 null" id="bp-nav-${slug}">
 	<span class="bp-nav-filter null">
 	    <span class="help"></span>
 	    <select class="bp-nav-filter build-font" id="bp-nav-filter-${slug}"></select>
@@ -430,18 +430,7 @@ large bids: ...
 				 metal:use-macro="macros.leave_feedback" />
 			</td>
 			<td class="valign-top">
-			    <div>
-				<strong class="bid-status-label">Status:</strong>
-				<div class="ml1">
-				    <span class="bid-status"></span>
-				</div>
-				<div class="null message"><div class="winner">Winner!</div></div>
-			    </div>
-			    <div class="mt1">
-				<strong class="bid-created-label">Placed:</strong>
-				<div class="bid-created ml1 mono"></div>
-			    </div>
-			    <div tal:condition="use_created" class="mt1">
+			    <div tal:condition="use_created">
 				<strong>Created By:</strong>
 				<div class="bid-owner-seed">
 				    <a href="#">
@@ -451,6 +440,17 @@ large bids: ...
 					<span class="bid-owner center"></span>
 				    </a>
 				</div>
+			    </div>
+			    <div class="mt1">
+				<strong class="bid-created-label">Placed:</strong>
+				<div class="bid-created ml1 mono"></div>
+			    </div>
+			    <div class="mt1">
+				<strong class="bid-status-label">Status:</strong>
+				<div class="ml1">
+				    <span class="bid-status"></span>
+				</div>
+				<div class="null message"><div class="winner">Winner!</div></div>
 			    </div>
 			</td>
 		    </tr>

@@ -1,39 +1,5 @@
-var $$ = function(suffix, next) { return $('#listing-detail-{0}'.fs(suffix), next) }
-
-
-var bidData = function() {
-    return $$('bids div.ov').map(function(idx, ele) { return $(ele).data('bid') })
-}
-
-
-var putFeedback = function(feedback, context, prefix, title) {
-    $(prefix+'-feedback-seed', context).slideUp()
-    $(prefix+'-rating', context).text('{0}{1}'.fs( feedback.rating > 0 ? '+' : '', feedback.rating))
-    $(prefix+'-rating-text', context).text(feedback.comment)
-    $(prefix+'-rating-label', context).text(title)
-    $(prefix+'-rating-seed', context).slideDown()
-}
-
-
-var putFeedbackLister = function(feedback, context) {
-    putFeedback(feedback, context, '.lister', 'Feedback from Listing Owner:')
-}
-
-
-var putFeedbackBidder = function(feedback, context) {
-    putFeedback(feedback, context, '.bidder', 'Feedback from Winning Bidder:')
-}
-
-
-var sendListingWinner = function(bid, success) {
-    $.ajax({
-	url: '/api/v1/auth/choose-winner',
-	type: 'POST',
-	data: $.toJSON({id: pathTail(), bid: bid}),
-	dataType: 'json',
-	success: success
-    })
-}
+var pid = function () { return window.location.pathname.split('/').pop() }
+var $$ = function(suffix, next) { return $('#listing-detail-' + suffix, next) }
 
 
 var NewBidModel = Model.extend({
@@ -62,92 +28,141 @@ var NewBidModel = Model.extend({
 
     ready: function(backpack) {
 	this.backpack = backpack
-	console.log('NewBidModel ready')
-    }
+    },
 
+    submit: function(params) {
+	var output = {
+            id: pid(),
+            private_msg: params.private_msg,
+            public_msg: params.public_msg,
+            update: params.update,
+	    items: []
+        }
+	$.each(params.items, function(idx, img) {
+	    if ( ! $(img).parents('td').hasClass('cannot-trade') ) {
+		output.items.push( $(img).data('node') )
+	    }
+	})
+        // TODO: check the length on the items array to make sure
+        // we're posting at least 1 item or 1 new item.
+	$.ajax({
+	    url: '/api/v1/auth/add-bid',
+	    type: 'POST',
+	    dataType:'json',
+	    data: $.toJSON(output),
+	    success: params.success,
+	    error: params.error
+	})
+    }
 })
 
 
+var makeBpTool = function(model) {
+    return new BackpackItemsTool({
+        items: model.backpack,
+        listingUids: listingItemsUids(model.listings),
+        bidUids: bidItemsUids(model.bids),
+        slug: 'listing-detail-bid',
+        navigator: true,
+        toolTips: true,
+        select: true,
+        outlineHover: true,
+        cols: 5,
+        title: 'Your Backpack',
+        help: 'Drag items from your backpack to the bid area below.  You can also double click an item to move it.'
+    })
+}
+
+var makeChTool = function(afterDropMove) {
+    return new BackpackChooserTool({
+        backpackSlug: 'listing-detail-bid',
+        chooserSlug: 'listing-detail-add-bid-item',
+        afterDropMove: afterDropMove,
+        help: 'Remove items from your bid by dragging them back to your backpack.  Double click removes, too.'
+    })
+}
+
+
 var NewBidView = View.extend({
+    hide: function (after) {
+	$$('place-bid-pod').slideUp('slow', after)
+    },
+
     join: function() {
-        this.setUpdate($$('place-start').data('update'))
+	var self = this
+	self.putBackpack()
+	self.putDefaults()
+        self.show()
+    },
 
-	this.message('').fadeOut()
-	$$('msg-backpack').fadeOut()
-	$$('own-backpack').fadeIn()
-	$$('place-start').fadeOut()
-	$$('existing-bid-cancel').fadeOut()
-	var model = this.model,
-	    bpTool = new BackpackItemsTool({
-	        items: model.backpack,
-	        listingUids: listingItemsUids(model.listings),
-	        bidUids: bidItemsUids(model.bids),
-	        slug: 'listing-detail-bid',
-	        navigator: true,
-	        toolTips: true,
-	        select: true,
-	        outlineHover: true,
-	        cols: 5,
-	        help: 'Drag items from your backpack to the bid area below.  You can also double click an item to move it.'
-            }),
-            chTool = new BackpackChooserTool({
-	        backpackSlug: 'listing-detail-bid',
-	        chooserSlug: 'listing-detail-add-bid-item',
-	        afterDropMove: this.itemMoved,
-	        help: 'Remove items from your bid by dragging them back to your backpack.  Double click removes, too.'
-            })
-        bpTool.init(this.model.profile.settings)
-        chTool.init(this.model.profile.settings)
-	var width = $('#bp-chooser-listing-detail-add-bid-item tbody').width()
-	$$('add-bid-fields').width(width)
-	$$('add-bid-fields textarea').width(width).height(width/4).text()
-	$$('add-bid-terms-desc').parent().width(width)
-	$.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
-		   $('#listing-detail-{0}'.fs(value)).text( $('#listing-detail-{0}-default'.fs(value)).text() )
-		   $('#listing-detail-{0}'.fs(value)).focusin(function() {
-	               var area = $(this)
-	               if (area.text() == $('#listing-detail-{0}-default'.fs(area.context.id)).text()) { area.text('') }
-	            })
+    show: function() {
+	var self = this
+	self.message('').fadeOut()
+	$$('auth-bid-pod').slideUp(function() {
+            $$('own-backpack').fadeIn(self.putFields)
         })
-        $$('bid-cancel').click(this.cancelNewBid)
-        $$('bid-submit').click(this.submitNewBid)
-        // these next three need wrappers for itemMoved (or pass in itemMoved to the chooser?)
-        $('#bp-listing-detail-bid td div img').live('dblclick',  chTool.moveToChooser)
-        $('#bp-unplaced-listing-detail-bid td div img').live('dblclick', chTool.moveToChooser)
-        $('#bp-chooser-listing-detail-add-bid-item td div img').live('dblclick', chTool.moveToOriginal)
+	$$('place-bid-pod').fadeIn(function() {
+            // the controller should do this, but it's easier to do it here:
+       	    $('#listing-detail-existing-bids-pod').scrollTopAni()
+        })
     },
 
-    setUpdate: function(update) {
-	this.update = update
-	if (update) { this.showUpdate() }
+    showErrors: function(errors) {
+	$.each(errors, function(index, error) {
+	    var ele = $('{0}-error'.fs(error.id))
+	    ele.text('Error: {0}'.fs(error.msg)).parent().fadeIn()
+	    if (index==0) { ele.parent().scrollTopAni() }
+	})
     },
 
-    showUpdate: function() {
-	try {
-	    var bids = this.model.bids,
-                current = $(bids).filter(function (idx, item) {
-		    return item.listing.id == pathTail()
-	        })[0],
-                currentIds = $(current.items).map(function (idx, item) {
-		    return item.uniqueid
+    putBackpack: function() {
+	var self = this
+        self.backpack = makeBpTool(self.model)
+        self.chooser = makeChTool(function() { self.showMetMinBid.apply(self, [arguments]) })
+        self.backpack.init(self.model.profile.settings)
+        self.chooser.init(self.model.profile.settings)
+	if ($$('place-start').data('update')) {
+	    try {
+		var bids = self.model.bids,
+                    current = $(bids).filter(function (idx, item) {
+		        return item.listing.id == pid()
+	            })[0],
+                    currentIds = $(current.items).map(function (idx, item) {
+		        return item.uniqueid
+	            })
+	        $.each($('td.active-bid'), function(idx, existing) {
+		    var data = $('img', existing).data('node')
+		    if ( $.inArray(''+data.id, currentIds) > -1 ) {
+		        var img = $('img', existing)
+		        img.detach()
+		        $(existing).removeClass('active-bid cannot-trade')
+	    	        var target = $('#bp-chooser-listing-detail-add-bid-item td div:empty').first()
+		        target.prepend(img).parent().addClass('active-bid cannot-trade')
+		    }
 	        })
-	    $.each($('td.active-bid'), function(idx, existing) {
-		var data = $('img', existing).data('node')
-		if ( $.inArray(''+data.id, currentIds) > -1 ) {
-		    var img = $('img', existing)
-		    img.detach()
-		    $(existing).removeClass('active-bid cannot-trade')
-	    	    var target = $('#bp-chooser-listing-detail-add-bid-item td div:empty').first()
-		    target.prepend(img).parent().addClass('active-bid cannot-trade')
-		}
-	    })
-	} catch (e) {
-	    console.error(e)
+	    } catch (e) {
+	        console.error(e)
+	    }
 	}
     },
 
-    itemMoved: function(item) {
-	var listing = NewBidView.model.listing,
+    putDefaults: function() {
+	$.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
+            $('#listing-detail-{0}'.fs(value)).text(
+                $('#listing-detail-{0}-default'.fs(value)).text()
+            )
+        })
+    },
+
+    putFields: function() {
+        var width = $('#bp-chooser-listing-detail-add-bid-item tbody').width()
+	$$('add-bid-fields').width(width)
+	$$('add-bid-fields textarea').width(width).height(width/4).text()
+	$$('add-bid-terms-desc').parent().width(width)
+    },
+
+    showMetMinBid: function(item) {
+	var listing = this.model.listing,
 	    items = $('#bp-chooser-listing-detail-add-bid-item img'),
 	    metBid = true,
 	    minItems = items.length >= listing.min_bid.length,
@@ -167,74 +182,55 @@ var NewBidView = View.extend({
 	$('#bp-chooser-listing-detail-add-bid-item-error').parent().slideUp()
     },
 
-    cancelNewBid: function(event) {
-	$$('place-bid-pod').slideUp('slow')
-	$('body').scrollTopAni()
-	$$('place-start').fadeIn().unbind().click(function() {
-	    $$('place-bid-pod').fadeIn()
-	    $$('msg-backpack').fadeOut()
-	    $$('own-backpack').fadeIn()
-	    $$('place-start').fadeOut()
-	    siteMessage('').fadeOut()
-	    setTimeout(function() { $$('place-bid-pod h1').scrollTopAni() }, 500)
-	})
-	return false
-    },
-
-    postOkay: function(data, status, req) {
+    showBidSuccess: function() {
 	$$('add-bid-working').text('Complete.  Click the link to view your bid.')
 	$$('add-bid-success').fadeIn()
     },
 
-    postError: function(req, status, err) {
+    showBidError: function() {
 	$$('add-bid-working').text('Something went wrong.  Check the error below.').fadeIn()
 	$$('add-bid-error').text(req.statusText).parent().fadeIn()
+    }
+
+
+})
+
+
+// just the definition; instantiated later
+var NewBidController = {
+    view: NewBidView,
+    model: NewBidModel,
+    profile: null,
+    reinit: function() {
+	this.view.show.apply(this.view, [])
     },
 
-    showErrors: function(errors) {
-	$.each(errors, function(index, error) {
-	    var ele = $('{0}-error'.fs(error.id))
-	    ele.text('Error: {0}'.fs(error.msg)).parent().fadeIn()
-	    if (index==0) { ele.parent().scrollTopAni() }
-	})
+    removeDefaultText : function(target, defsel) {
+        var area = $(target)
+        if (area.text() == $(defsel).text()) {
+	    area.text('')
+        }
     },
 
-    addBid: function(input) {
-	var output = {
-	        id: pathTail(),
-	        private_msg: input.private_msg,
-	        public_msg: input.public_msg,
-	        update:this.update
-            },
-	    items = output.items = []
-	$.each(input.items, function(idx, img) {
-	    if ( ! $(img).parents('td').hasClass('cannot-trade') ) {
-		items.push( $(img).data('node') )
-	    }
-	})
-        // TODO: check the length on the items array to make sure
-        // we're posting at least 1 item or 1 new item.
-	// TODO:  move this to the model:
-	$.ajax({
-	    url: '/api/v1/auth/add-bid',
-	    type: 'POST',
-	    dataType:'json',
-	    data: $.toJSON(output),
-	    success: this.postOkay,
-	    error: this.postError
-	})
+    cancelNewBid: function() {
+	this.view.hide(function() {
+            $('body').scrollTopAni()
+            $$('auth-bid-pod').slideDown()
+        })
     },
 
-    submitNewBid: function(event) {
-	var errs = []
+    submitBid: function() {
+	var self = this, errs = [],
+	    items = $('#bp-chooser-listing-detail-add-bid-item img'),
+	    private_msg = $$('bid-private-msg').val(),
+            public_msg = $$('bid-public-msg').val()
+
 	// 1.  bid items
-	var items = $('#bp-chooser-listing-detail-add-bid-item img')
 	if (items.length < 1 || items.length > 10) {
 	    errs.push({id:'#bp-chooser-listing-detail-add-bid-item',
 		       msg:'Select 1-10 items from your backpack.'})
 	}
 	// 2. private msg
-	var private_msg = $$('bid-private-msg').val()
 	private_msg = (private_msg ==  $$('bid-private-msg-default').text() ? '' : private_msg)
 	if (private_msg.length > 400) {
 	    $$("bid-private-msg").keyup(function (a) {
@@ -246,7 +242,6 @@ var NewBidView = View.extend({
 		       msg:'Too much text.  Make your message shorter.'})
 	}
 	// 3. private msg
-	var public_msg = $$('bid-public-msg').val()
 	public_msg = (public_msg ==  $$('bid-public-msg-default').text() ? '' : public_msg)
 	if (public_msg.length > 400) {
 	    $$("bid-public-msg").keyup(function (a) {
@@ -270,308 +265,140 @@ var NewBidView = View.extend({
 		       msg:'You must read and agree with site rules, terms, and conditions.'})
 	}
 	if (errs.length) {
-	    NewBidView.showErrors(errs)
+	    self.view.showErrors(errs)
 	} else {
 	    $$('bid-buttons').slideUp('slow')
 	    $$('add-bid-working').removeClass('null').text('Working...').fadeIn('fast')
-	    NewBidView.addBid({items: items, public_msg: public_msg, private_msg: private_msg})
+	    self.model.submit({
+                items: items,
+                public_msg: public_msg,
+                private_msg: private_msg,
+                update: $$('place-start').data('update'),
+                success: self.view.showBidSuccess,
+                error: self.view.showBidError
+            })
 	}
-	return false
+    },
+
+    '#listing-detail-bid-private-msg focusin' : function(e) {
+	e.controller.removeDefaultText(e.target, '#listing-detail-bid-private-msg-default')
+    },
+
+    '#listing-detail-bid-public-msg focusin' : function(e) {
+	e.controller.removeDefaultText(e.target, '#listing-detail-bid-public-msg-default')
+    },
+
+    '#bp-listing-detail-bid td div img live:dblclick' : function(e) {
+	e.controller.view.chooser.moveToChooser(e)
+    },
+
+    '#bp-unplaced-listing-detail-bid td div img live:dblclick': function(e) {
+        e.controller.view.chooser.moveToChooser(e)
+    },
+
+    '#bp-chooser-listing-detail-add-bid-item td div img live:dblclick': function(e) {
+        e.controller.view.chooser.moveToOriginal(e)
+    },
+
+    '#listing-detail-bid-submit click': function(e) {
+	e.controller.submitBid.apply(e.controller, [])
+    },
+
+    '#listing-detail-bid-cancel click': function(e) {
+	e.controller.cancelNewBid.apply(e.controller, [])
+    },
+
+    '#listing-detail-add-bid-success-view click': function() {
+	window.location.reload()
     }
 
-
-})
-
-
-// just the definition; instantiated later
-var NewBidControllerDefn = {
-    view: NewBidView,
-    model: NewBidModel,
-    profile: null
 }
 
 
-var ListingDetailModel = Model.extend({
-    loader: ListingLoader,
-    loaderSuffix: pathTail(),
-
-    init: function(view, config) {
-	var self = this
-	this.requests.push(function() {
-            new SchemaLoader({
-                success: function(s) { self.tool = new SchemaTool(s) }
-            })
-        })
-	Model.init.apply(this, [view, config])
-    },
-
-    ready: function(listing) {
-	this.listing = listing
-	Model.ready.apply(this, [listing])
-    },
-
-    cancelBid: function(bid, success, error) {
-	$.ajax({
-            url: '/api/v1/auth/cancel-bid',
-	    type: 'POST',
-	    data: $.toJSON({key:bid.key}),
-	    dataType: 'json',
-	    success: success,
-            error: error
-	})
-    },
-
-    cancelListing: function(id, success, error) {
-	$.ajax({
-	    url: '/api/v1/auth/cancel-listing',
-	    type: 'POST',
-	    data: $.toJSON({id: id}),
-	    dataType: 'json',
-	    success: success,
-            error: error
-        })
-    }
-
-})
-
-
-var ListingDetailView = SchemaView.extend({
-    profile: null,
-    timeLeftId: null,
-
-    authSuccess: function(profile) {
-	this.profile = profile
-    },
-
-    join: function(listing) {
-	this.listing = listing
-	$$('title').html('Listing ' + pathTail())
-	document.title += ' ' + pathTail()
-	this.putListing(listing)
-	this.putListingOwner(listing.owner)
-	this.putListingBids(listing.bids)
-	if (this.profile) {
-	    this.putProfile(this.profile, listing)
-	} else {
-	    $$('login-pod').fadeIn()
+var DetailView = SchemaView.extend({
+    join: function() {
+	var self = this,
+	    model = self.model,
+	    listing = self.listing = model.listing,
+	    profile = self.profile = self.model.profile
+	self.putListing()
+	self.putListingOwner()
+	if (!profile) {
+	    self.putAnonTools()
 	}
-	this.putImages(this.profile)
-	$$('title-pod').fadeIn()
-	$$('content').fadeIn()
-	$$('existing-bids-pod').fadeIn()
-	this.message('').fadeOut()
-    },
-
-    isWinner: function(profile) {
-        return $.grep(bidData(), function(bid, idx) {
-	    return (bid.owner.steamid==profile.steamid) && (bid.status=='awarded') }
-        )[0]
-    },
-
-    putBidCount: function(count) {
-	$$('bidcount').text(count ? ('Bids (' + count + ')') : 'No Bids')
-    },
-
-    putProfile: function(profile, listing) {
-	if (profile.steamid == listing.owner.steamid) {
-	    this.putProfileOwner(profile, listing)
-	} else if ( this.isWinner(profile) ) {
-	    this.putProfileWinner(profile, listing)
-	} else {
-	    this.putProfileOther(profile, listing)
+	if (profile && (profile.id64 == listing.owner.id64)) {
+	    self.putOwnerTools()
 	}
+	if (profile && (profile.id64 != listing.owner.id64)) {
+	    self.putAuthTools()
+	}
+        model.tool.putImages(profile ? profile.settings : null)
+        $$('content').fadeIn(function() {
+            self.putListingOwnerStatus()
+        })
     },
 
-    putProfileOwner: function (profile, listing) {
-	$$('owner-links').fadeOut()
-	$$('owner-controls').slideDown()
+    putListing: function() {
+	var self = this, listing = self.listing
+	$$('status').text(listing.status)
+	$$('title').text('Listing {0}'.fs(listing.id)).parent().fadeIn()
+        self.putItems($$('items table').first(), listing.items, 5)
+	if (listing.description) {
+	    $$('description').text(listing.description).parent().removeClass('null')
+	}
+	if (listing.min_bid_dollar_use) {
+            $$('min-bid-dollar-use span.mono')
+		.value(listing.min_bid_dollar_amount)
+	        .parent().removeClass('null')
+	} else if (listing.min_bid.length > 0) {
+	    self.putItems($$('min-bid table').first(), listing.min_bid, 5)
+	} else {
+	    $$('min-bid').empty().text('No Minimum').removeClass('null')
+	}
 	if (listing.status == 'active') {
-	    $$('owner-controls-cancel').slideDown()
+	    self.timeLeftId = setInterval(
+		updateTimeLeft(listing.expires, $$('timeleft')), 1000
+	    )
+        } else {
+	    $$('timeleft').parent().hide()
+	    $('label', $$('expires').parent()).text('Expired:')
 	}
-	if (listing.status == 'ended') {
-	    $$('owner-controls-choose-winner').slideDown()
-	    $('.listing-detail-profile-bid-view-select-winner-link').fadeIn()
-	    $('.listing-detail-profile-bid-view-select-winner-link > a').click(function (e) {
-	        $('.listing-detail-profile-choose-confirm').fadeOut()
-	        $('span', $(this).parent()).fadeIn()
-	    })
-	    $('.listing-detail-profile-choose-winner-cancel').click(function (e) {
-	        $(this).parents('.listing-detail-profile-choose-confirm').fadeOut()
-	    })
-	    // WRONG: this (a) doesn't hide all of the other "Select
-	    // Winner" divs and also shows "Leave Feedback" in too
-	    // many places
-	    $('.listing-detail-profile-choose-winner-submit').click(function (e) {
-	        var self = $(this)
-	        self.parents('.listing-detail-profile-choose-confirm').fadeOut()
-	        var bid = self.parents('div.ov').data('bid')
-	        if (bid) {
-		    var cb = function(response) {
-		        $('.listing-detail-profile-bid-view-select-winner-link').fadeOut()
-			$('div.winner', self.parents('div.ov')).fadeIn()
-			var ele = self.parents('table')
-			$('.bid-status', ele).text('')
-			$('.winner', ele).text('Winner!').parent().show()
-			$('.listing-detail-profile-bid-view-refresh', ele).fadeIn()
-			$('.listing-detail-profile-bid-view-refresh a.leave-feedback', ele)
-			    .click(function () { window.location.reload() })
-		    }
-		    sendListingWinner(bid, cb)
-		}
-	    })
-        }
-        if (listing.status == 'awarded') {
-	    $.each($$('bids div.ov'), function(idx, element) {
-	        element = $(element)
-	        var bid = element.data('bid')
-	        if (bid && bid.status == 'awarded' && bid.feedback) {
-		    putFeedbackLister(bid.feedback, element)
-	        } else if (bid && bid.status == 'awarded' && !bid.feedback) {
-		    var sliderChange = function(event, ui) {
-		        var v = ui.value
-		        $(".lister-rating", element).text('Rating: ' + v)
-		    }
-		    var slider = $(".lister-rating-slider", element).slider({
-		        animate: true,
-		        max: 100,
-		        min:-100,
-		        value: 100,
-		        change: sliderChange,
-		        slide: sliderChange
-		    })
-		    $('.lister-rating').text('Rating: 100')
-		    $('.lister-feedback-help').text('Enter your feedback for this bid and the player who posted it.')
-		    $('.lister-feedback-seed', element).slideDown()
-		    $('a.save-button', element).click(function () {
-		        var data = {
-			    bid: bid.key,
-			    listing: listing.key,
-			    rating: slider.slider('value'),
-			    source: 'lister',
-			    text: $('.lister-feedback-text').val().slice(0,400)
-			}
-		        $.ajax({
-			    url: '/api/v1/auth/add-feedback',
-			    type: 'POST',
-			    data: $.toJSON(data),
-			    dataType: 'json',
-			    success: function (r) {
-			        putFeedbackLister(r, element)
-			    }
-		        })
-		    })
-		    $('a.cancel-button', element).click(function () {
-		        $('.lister-feedback-seed').slideUp()
-		    })
-	        }
-	    })
-        }
-    },
-
-    putProfileOther: function(profile, listing) {
-        if (listing.status == 'active') {
-            $$('auth-bid-pod').fadeIn()
-	    if ($.inArray(profile.steamid, $(listing.bids).map(function(i, x) { return x.owner.steamid })) > -1)  {
-	        $$('place-start').text('Update Your Bid').data('update', true)
-		$$('existing-bid-cancel')
-		    .text('Cancel Your Bid')
-		    .data('cancel', true)
-		    .parent().fadeIn()
-	    } else {
-		$$('place-start').data('update', false)
-	    }
-        }
-    },
-
-    putProfileWinner: function(profile, listing) {
-	$('.winner:contains("Winner!")').text('You Won!')
-	var bid = this.isWinner(profile)
-	if (listing.status == 'awarded' && !listing.feedback) {
-	    var element = $$('left')
-	    $('.bidder-feedback-seed').slideDown()
-	    var sliderChange = function(event, ui) {
-		var v = ui.value
-		$(".bidder-rating", element).text('Rating: ' + v)
-	    }
-	    var slider = $(".bidder-rating-slider", element).slider({
-	        animate: true,
-	        max: 100,
-	        min:-100,
-	        value: 100,
-	        change: sliderChange,
-	        slide: sliderChange
-	    })
-	    $('.bidder-rating').text('Rating: 100')
-	    $('.bidder-feedback-help').text('Enter your feedback for this listing and the player who posted it.')
-	    $('.bidder-feedback-seed', element).slideDown()
-	    $('a.save-button', element).click(function () {
-	        var data = {
-		    bid: bid.key,
-		    listing: listing.key,
-		    rating: slider.slider('value'),
-		    source: 'bidder',
-		    text: $('.bidder-feedback-text').val().slice(0,400)
-	        }
-	        $.ajax({
-		    url: '/api/v1/auth/add-feedback',
-		    type: 'POST',
-		    data: $.toJSON(data),
-		    dataType: 'json',
-		    success: function (r) {
-		        putFeedbackBidder(r, element)
-		    }
-	        })
-	    })
-	    $('a.cancel-button', element).click(function () {
-	        $('.bidder-feedback-seed').slideUp()
-	    })
-        }
-    },
-
-    putListing: function(listing) {
-	this.putBidCount(listing.bid_count)
-	this.putItems($$('items table'), listing.items, 5)
-        $.each(['description', 'status'], function(idx, name) {
-	    if (listing[name]) {
-                $$(name).text(listing[name])
-	    } else {
-		$$(name).parent().parent().remove()
-	    }
-        })
 	$.each(['created', 'expires'], function(idx, name) {
 	    $$(name).text(new Date(listing[name] + ' GMT').format())
         })
-	if (listing.min_bid_dollar_use) {
-	    $$('min-bid-dollar-use').show()
-	    $$('min-bid-dollar-use .mono').text('${0}'.fs(listing.min_bid_dollar_amount))
-	} else {
-	    if (listing.min_bid.length) {
-		this.putItems($$('min-bid table'),
-			      $.map(listing.min_bid, function(e) { return {defindex:e} }), 5)
-	    } else {
-	        $$('min-bid').html('No minimum.')
-	    }
-        }
-	if (listing.status == 'active') {
-	    this.timeLeftId = setInterval(updateTimeLeft(listing.expires, $$('timeleft')), 1000)
-	}
-	if (listing.status != 'active') {
-	    $$('place-start').fadeOut()
-	    $$('timeleft').text(listing.status)
-	    $$('login-pod').fadeOut()
-	    $$('min-bid-pod').fadeOut()
-	}
-	if (listing.status == 'awarded' && listing.feedback) {
-	    putFeedbackBidder(listing.feedback, $$('left'))
-	}
+	self.putListingBids()
     },
 
-    putListingBids: function(bids) {
-	var self = this
+    putListingOwner: function() {
+	var self = this, listing = self.listing, owner = listing.owner
+	$$('owner-link').attr('href')
+	$$('owner-profile-link').attr('href')
+	if (owner.avatar) { $$('owner-avatar').attr('src', owner.avatarmedium) }
+	$$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(owner.steamid))
+	$$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(owner.steamid))
+	$$('owner-listings').attr('href', '/profile/' + owner.id64 + '#tabs-1')
+	$$('owner-links').show()
+        var possum = owner.rating[0],
+            poscnt = owner.rating[1],
+            negsum = owner.rating[2],
+            negcnt = owner.rating[3],
+            pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
+            neg = Math.round(negcnt > 0 ? negsum / negcnt : 0)
+        $$('owner-pos-label').text('{0}% Positive'.fs( pos ))
+        $$('owner-pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
+        $('div.padding', $$('owner-pos-bar').parent()).width('{0}%'.fs(100-pos) )
+        $$('owner-neg-label').text('{0}% Negative'.fs( neg ))
+        $$('owner-neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
+        $('div.padding', $$('owner-neg-bar').parent()).width('{0}%'.fs(100-neg) )
+    },
+
+    putListingBids: function() {
+	var self = this,
+	    listing = self.listing,
+	    bids = listing.bids
+        self.putBidCount(bids.length)
 	$.each(bids, function(idx, bid) {
-	    var clone = $$('bids .prototype').clone()
-	    clone.removeClass('null prototype')
-	    $$('bids').prepend(clone)
+	    var clone = $$('bids .prototype').clone().removeClass('null prototype')
             self.putItems( $('table.chooser', clone), bid.items)
 	    $('.bid-status', clone).text(bid.status)
 	    $('.bid-created', clone).text('' + new Date(bid.created))
@@ -598,77 +425,51 @@ var ListingDetailView = SchemaView.extend({
 	        $('.bid-message, .bid-message-label', clone).remove()
 	    }
 	    if (bid.message_private) {
-	        $('.bid-message-private', clone)
-		    .text(bid.message_private).parent().fadeIn()
+	        $('.bid-message-private', clone).text(bid.message_private).parent().fadeIn()
 	    } else {
 		$('.bid-message-private', clone).parent().remove()
 	    }
+	    $$('bids').prepend(clone)
 	})
+	$$('existing-bid-pod').show()
     },
 
-    putListingOwner: function(owner) {
-	if (!(this.profile) || (owner.steamid != this.profile.steamid)) {
-	    $$('add-owner-friend')
-		.attr('href', 'steam://friends/add/{0}'.fs(owner.steamid))
-	    $$('chat-owner')
-		.attr('href', 'steam://friends/message/{0}'.fs(owner.steamid))
-	    $$('owner-links').slideDown()
-        }
-	$$('owner-link').text(owner.personaname)
-	if (owner.avatar) {
-	    $$('owner-avatar').attr('src', owner.avatarmedium)
-	}
+    putListingOwnerStatus: function() {
 	new StatusLoader({
-	    suffix: owner.id64,
+            suffix: this.listing.owner.id64,
 	    success: function(status) {
 	        $$('owner-avatar').addClass('profile-status ' + status.online_state)
-	        $$('owner-status').html(status.message_state).addClass(status.online_state)
-	    }
-        })
-        $$('owner-listings').attr('href', '/profile/' + owner.id64 + '#tabs-1')
-	$$('owner-profile-link')
-            .attr('href', profileUtil.defaultUrl(owner))
-            .attr('title', 'Profile for ' + owner.personaname)
-        var possum = owner.rating[0],
-            poscnt = owner.rating[1],
-            negsum = owner.rating[2],
-            negcnt = owner.rating[3],
-            pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
-            neg = Math.round(negcnt > 0 ? negsum / negcnt : 0)
-        $$('owner-pos-label').text('{0}% Positive'.fs( pos ))
-        $$('owner-pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
-        $('div.padding', $$('owner-pos-bar').parent()).width('{0}%'.fs(100-pos) )
-        $$('owner-neg-label').text('{0}% Negative'.fs( neg ))
-        $$('owner-neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
-        $('div.padding', $$('owner-neg-bar').parent()).width('{0}%'.fs(100-neg) )
-    },
-
-    hideCancelBid: function() {
-	$$('existing-bid-confirm').fadeOut(function() {
-	    $$('existing-bid-cancel').fadeIn()
-        })
-    },
-
-    showCancelBid: function() {
-        $$('existing-bid-cancel').fadeOut(function() {
-            $$('existing-bid-confirm').fadeIn()
-        })
-    },
-
-    afterCancelBid: function(bid) {
-        $$('auth-bid-pod').fadeOut()
-	$$('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
-	this.putBidCount(this.listing.bid_count-1)
-	$.each($$('bids div.ov'), function(idx, ele) {
-	    ele = $(ele)
-	    if (ele.data('bid') && ele.data('bid').key == bid.key) {
-	        ele.slideUp()
-	    }
+		$$('owner-status').html(status.message_state).addClass(status.online_state)
+		}
 	})
     },
 
-    beforeCancelBid: function() {
-	$$('existing-bid-confirm').fadeOut()
+    putBidCount: function(count) {
+	$$('bidcount').text(count ? ('Bids (' + count + ')') : 'No Bids')
+    },
+
+    putOwnerTools: function() {
+	$$('owner-links').hide()
+	if (this.listing.status == 'active') {
+	    $$('owner-controls').removeClass('null')
+	}
+    },
+
+    putAuthTools: function() {
+	if (this.listing.status == 'active') {
+	    $$('auth-bid-pod').show()
+	    if ($.inArray(this.profile.steamid, $(this.listing.bids).map(function(i, x) { return x.owner.steamid })) > -1) {
+	        $$('place-start').text('Update It').data('update', true)
+		$$('existing-bid-cancel').text('Cancel It').data('cancel', true).parent().show()
+	    }
+        }
+    },
+
+    putAnonTools: function() {
+	if (this.listing.status == 'active') {
+	    $$('login-link').attr('href', profileUtil.loginUrl())
+	    $$('login-pod').removeClass('null')
+        }
     },
 
     hideCancelListing: function() {
@@ -694,42 +495,102 @@ var ListingDetailView = SchemaView.extend({
 	$$('owner-controls').slideUp()
     },
 
-    showPlaceBid: function() {
-	var listing = this.listing, profile = this.profile
-        $$('place-bid-pod').fadeIn()
-        if (listing.min_bid_dollar_use) {
-	    $$('place-start').fadeOut()
-	    $$('bid-dollar').slideDown()
-	    $$('dollar-bid-submit').click(function() { return false } )
-	    $$('dollar-bid-cancel').click(function() {
-	        $$('place-bid-pod').fadeOut()
-	        $$('place-start').fadeIn()
-	        $('body').scrollTopAni()
-	        return false
-	    })
-	    $$('dollar-bid-amount').keyup(function () {
-	        this.value = this.value.replace(/[^0-9\.]/g,'')
-	    })
-	    this.scrollToBidPod()
-        } else {
-	    var self = this
-	    this.message('Loading your backpack...').fadeIn()
-            var controllerDef = $.extend({}, NewBidControllerDefn, {config: {listing: listing, profile:profile}})
-	    var controller = Controller.extend(controllerDef)
-	    controller.init()
-        }
+    showPlaceDollarBid: function(existing) {
+	//
     },
 
-    scrollToBidPod: function() {
-	setTimeout(function() { $$('place-bid-pod h1').scrollTopAni() }, 500)
-    }
+    afterCancelBid: function(bid) {
+        $$('auth-bid-pod').fadeOut()
+	$$('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
+	this.putBidCount(this.listing.bid_count-1)
+	$.each($$('bids div.ov'), function(idx, ele) {
+	    ele = $(ele)
+	    if (ele.data('bid') && ele.data('bid').key == bid.key) {
+	        ele.slideUp()
+	    }
+	})
+    },
+
+    beforeCancelBid: function() {
+	$$('existing-bid-confirm').fadeOut()
+    },
+
+    hideCancelBid: function() {
+	$$('existing-bid-confirm').fadeOut(function() {
+	    $$('existing-bid-cancel').fadeIn()
+        })
+    },
+
+    showCancelBid: function() {
+        $$('existing-bid-cancel').fadeOut(function() {
+            $$('existing-bid-confirm').fadeIn()
+        })
+    },
+
+    showPlaceItemBid: function(existing) {
+	if (!this.bidController) {
+	    this.message('Loading your backpack...')
+	    var listing = this.listing, profile = this.profile,
+                condef = $.extend({config: {listing: listing, profile:profile}}, NewBidController)
+            this.bidController = Controller.extend(condef)
+            this.bidController.init()
+         } else {
+	     this.bidController.reinit()
+	 }
+    },
+
 })
 
 
-var ListingDetailController = Controller.extend({
-    view: ListingDetailView,
-    model: ListingDetailModel,
+var DetailModel = SchemaModel.extend({
+    init: function(view, config) {
+	var self = this
+	self.requests.push(function() {
+            new ListingLoader({
+                suffix: pid(),
+                success: function(l) { self.listing = l	}
+            })
+        })
+        SchemaModel.init.apply(self, arguments)
+    },
+
+    cancelBid: function(bid, success, error) {
+	$.ajax({
+            url: '/api/v1/auth/cancel-bid',
+	    type: 'POST',
+	    data: $.toJSON({key:bid.key}),
+	    dataType: 'json',
+	    success: success,
+            error: error
+	})
+    },
+
+    cancelListing: function(id, success, error) {
+	$.ajax({
+	    url: '/api/v1/auth/cancel-listing',
+	    type: 'POST',
+	    data: $.toJSON({id: id}),
+	    dataType: 'json',
+	    success: success,
+            error: error
+        })
+    },
+
+    existingBid: function() {
+	return null
+    }
+
+})
+
+var bidData = function() {
+    return $$('bids div.ov').map(function(idx, ele) { return $(ele).data('bid') })
+}
+
+
+var DetailController = Controller.extend({
     config: {auth: {settings: true}},
+    model:DetailModel,
+    view:DetailView,
 
     profileBid: function(profile) {
         return $.grep(bidData(), function(bid, idx) {
@@ -737,49 +598,42 @@ var ListingDetailController = Controller.extend({
         )[0]
     },
 
-    'ready': function() {
-	this.view.message('Loading...')
+    '#listing-detail-cancel-show-confirm click' : function(e) {
+	e.controller.view.showCancelListing()
     },
 
-    '#listing-detail-add-bid-show-terms click' : function(event) {
-        event.controller.view.showTermsDialog()
+    '#listing-detail-cancel-submit click': function(e) {
+	var c = e.controller, v = c.view, m = c.model
+	v.beforeListingCancel()
+	m.cancelListing(m.listing.id, function() { v.afterListingCancel.apply(v) })
     },
 
-    '#listing-detail-add-bid-success-view click' : function() {
-        window.location.reload()
+    '#listing-detail-cancel-cancel click': function(e) {
+	e.controller.view.hideCancelListing()
     },
 
-    '#listing-detail-place-start click' : function(event) {
-	event.controller.view.showPlaceBid()
+    '#listing-detail-place-start click' : function(e) {
+	var c = e.controller, m = c.model, l = m.listing, v = c.view
+	if (l.min_bid_dollar_use) {
+	    v.showPlaceDollarBid.apply(v, [m.existingBid()])
+	} else {
+	    v.showPlaceItemBid.apply(v, [m.existingBid()])
+	}
     },
 
-    '#listing-detail-existing-bid-cancel click' : function(event) {
-	event.controller.view.showCancelBid()
+    '#listing-detail-existing-bid-cancel click': function(e) {
+	e.controller.view.showCancelBid()
     },
 
-    '#listing-detail-existing-bid-cancel-no click' : function(event) {
-	event.controller.view.hideCancelBid()
+    '#listing-detail-existing-bid-cancel-no click' : function(e) {
+	return e.controller.view.hideCancelBid()
     },
 
-    '#listing-detail-existing-bid-cancel-yes click' : function(event) {
-	var c = event.controller,
-	    bid = c.profileBid(c.model.profile)
+    '#listing-detail-existing-bid-cancel-yes click' : function(e) {
+	var c = e.controller, b = c.profileBid(c.model.profile)
         c.view.beforeCancelBid()
-	c.model.cancelBid(bid, function() { c.view.afterCancelBid(bid) })
-    },
-
-
-    '#listing-detail-cancel-show-confirm click' : function(event) {
-	event.controller.view.showCancelListing()
-    },
-
-    '#listing-detail-cancel-submit click': function(event) {
-	var c = event.controller
-	c.view.beforeListingCancel()
-	c.model.cancelListing(c.model.listing.id, c.view.afterListingCancel)
-    },
-
-    '#listing-detail-cancel-cancel click': function(event) {
-	event.controller.view.hideCancelListing()
+	c.model.cancelBid(b, function() { c.view.afterCancelBid(b) })
     }
+
+
 })

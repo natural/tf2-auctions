@@ -41,7 +41,7 @@ var prefixCheckMap = {
     9: 'self'
 }
 
-itemFilterLabels = [
+var itemFilterLabels = [
     ['tradable', 'All Items'],
     ['', ''],
     ['wearables', 'Hats / Wearables'],
@@ -64,7 +64,6 @@ itemFilterLabels = [
 ]
 
 
-
 // functions to convert schema values into tooltip display values
 var formatCalcMap = {
     value_is_additive: function(a) { return a },
@@ -85,6 +84,17 @@ var formatCalcMap = {
     value_is_account_id: function (v) {
 	return '7656' + (v + 1197960265728)
     }
+}
+
+
+var moveClasses = function(source, target, expr) {
+    $.each(source.attr('class').split(' '), function(idx, name) {
+	if (name.match(expr)) { target.addClass(name); source.removeClass(name) }
+    })
+}
+
+var moveSalad = function(source, target) {
+    return moveClasses(source, target, /(border|background)-quality/)
 }
 
 
@@ -123,7 +133,6 @@ var ItemHoverTool = function(schema) {
 	}
 	self.hide()
 	var schemaItem = schema.itemDefs()[type]
-
 	// set the main title and maybe adjust its style and prefix
 	var h4 = $('#tooltip h4'), desc = playerItem['custom_name'] ? '"{0}"'.fs(playerItem['custom_name']) : schemaItem['item_name']
 	h4.text(desc)
@@ -226,10 +235,15 @@ var BackpackNavTool = function(options) {
 	if (options.filters) {
 	    var select = $('#bp-nav-filter-{0}'.fs(slug)).change(self.applyFilter)
 	    $.each(itemFilterLabels, function(idx, val) {
-		select.append('<option value="{0}">{1}</option>'.fs(val[0], val[1]))
+		var opt = '<option value="{0}">{1}</option>'.fs(
+		    val[0], val[1]
+                )
+		$(opt).css('background-image', 'url(/media/img/{0}.png)'.fs(val[0]))
+		select.append(opt)
 	    })
             select.parent().show()
 	}
+        $('#bp-nav-{0}'.fs(slug)).show()
     }
 
     self.applyFilter = function(event) {
@@ -406,10 +420,15 @@ var BackpackItemsTool = function(options) {
 		}
 	    )
 	}
-	var help = options.help || ''
+        var help = options.help || ''
 	if (help) {
 	    $('#bp-{0} span.help:first'.fs(slug)).text(help)
 	}
+
+	var title = options.title || ''
+	if (title) {
+	    $('#bp-{0} > div > h3:first'.fs(slug)).text(title)
+        }
     }
 
     self.setEquipped = function(itemutil, image, defindex, settings) {

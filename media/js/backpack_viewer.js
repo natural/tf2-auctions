@@ -85,7 +85,7 @@ var BackpackView = SchemaView.extend({
         window.location.hash = id64
         if (!backpack.length || backpack[0]==null) {
 	    $('#backpack-viewer-backpack-title')
-		.html(hiliteSpan('Backpack is Private or Empty'))
+		.html(self.hiliteSpan('Backpack is Private or Empty'))
 		.fadeIn()
             self.clear()
 	    self.message().fadeOut()
@@ -97,7 +97,7 @@ var BackpackView = SchemaView.extend({
 	        suffix: id64,
 	        success: function(bids) {
 		    $('#backpack-viewer-backpack-title')
-			.html(hiliteSpan('Backpack - {0}'.fs(name)))
+			.html(self.hiliteSpan('Backpack - {0}'.fs(name)))
 		    self.put(backpack, listings, bids)
 	        }
 	    })
@@ -171,9 +171,10 @@ var BackpackController = Controller.extend({
     },
 
     'ready' : function() {
-	var self = BackpackController
+	var self = BackpackController,
+	    hash = self.hash()
         self.view.searchText(self.defaultSearchText).select()
-	if (getHash()) { self.search(getHash()) }
+	if (hash) { self.search(hash) }
     },
 
     search: function(value) {

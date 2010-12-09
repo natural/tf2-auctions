@@ -34,6 +34,14 @@
 	</div>
 
 	<div id="${slug}-news-blog-pod" class="float-left w59">
+	    <div id="${slug}-blog" class="null mt2 mb1">
+		<div class="blog-seed null prototype mb1">
+		    <label><span class="blog-title-seed"></span></label>
+		    <div class="blog-intro-seed"></div>
+		    <div class="blog-encoded-seed"></div>
+		</div>
+		<h1 class="mb05"><span class="hilite">&nbsp;</span>Site News</h1>
+            </div>
 	    <div id="${slug}-news" class="null mb1">
 		<div class="news-seed null prototype mb1">
 		    <label>
@@ -48,15 +56,6 @@
 		</div>
 		<h1 class="mb05"><span class="hilite">&nbsp;</span>TF2 News</h1>
 	    </div>
-
-	    <div id="${slug}-blog" class="null mt2 mb1">
-		<div class="blog-seed null prototype mb1">
-		    <label><span class="blog-title-seed"></span></label>
-		    <div class="blog-intro-seed"></div>
-		    <div class="blog-encoded-seed"></div>
-		</div>
-		<h1 class="mb05"><span class="hilite">&nbsp;</span>Site News</h1>
-            </div>
 	</div>
 	<div class="clear"></div>
 

@@ -14,6 +14,9 @@ a-border:1px solid blue;
 float:right;
 width:28.5%;
 a-border:1px solid green;
+margin:-2.5em 0.5em -2.5em 0;
+}
+
 }
 
 #listing-detail-place-bid-pod > h1:first-child {
@@ -31,16 +34,12 @@ padding:0.25em;
 }
 
 
-.listing-detail-profile-bid-cancel-link a.small-button,
-#listing-detail-auth-bid-pod a.button,
-#listing-detail-cancel-prompt a.button  {
+#content-main-pod a.button, #content-main-pod a.small-button  {
 background-color:#385c78;
 color:#ece3cb;
 }
 
-.listing-detail-profile-bid-cancel-link a.small-button:hover,
-#listing-detail-auth-bid-pod a.button:hover,
-#listing-detail-cancel-prompt a.button:hover {
+#content-main-pod a.button:hover, #content-main-pod a.small-button:hover  {
 background-color:#9d302f;
 }
 
@@ -129,5 +128,5 @@ border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 
 .owner {
 padding:0.5em;
-margin:-2.5em 0.5em -2.5em 0;
+
 }

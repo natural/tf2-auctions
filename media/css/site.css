@@ -19,7 +19,7 @@ h1 { color:#ebe2ca; font-size:135%; }
 h2 { color:#827868; font-size:110%; }
 img { border:none; }
 label { display:block; font-family:"TF2Build"; }
-p { color:#827868; font-size:110%; margin-bottom:1em; }
+p { color:#827868; font-size:110%; margin-bottom:1em; line-height:140%; }
 strong { font-family:"TF2Build"; }
 
 input[type=text] {

@@ -28,14 +28,6 @@ String.prototype.fs = function() {
 var ident = function(a) { return a }
 
 
-// this should move to the default View or Controller object
-var pathTail = function() { return window.location.pathname.split('/').pop() }
-
-
-// this should move to the default View or Controller object
-var setTitle = function(name) { document.title = document.title + ' - ' + name }
-
-
 // returns the keys of the given object
 var keys = function(obj) {
     var ks = []
@@ -57,18 +49,6 @@ var lazy = function(def) {
     var cache = []
     return function(i) {
 	return (i in cache) ? cache[i] : (cache[i] = def.call(arguments.callee, i))
-    }
-}
-
-
-// closure over a settings object
-var settingsUtil = function(settings) {
-    var valid = settings && keys(settings).length
-    return {
-	showEquipped: (valid ? settings['badge-equipped'] : true),
-	showPainted: (valid ? settings['badge-painted'] : true),
-	showUseCount: (valid ? settings['badge-usecount'] : true),
-	showAngrySalad: (valid ? settings['angry-fruit-salad'] : false)
     }
 }
 
@@ -119,8 +99,117 @@ var itemUtil = function(item, schema) {
 }
 
 
-// makes a table cell with a lazy div; move this to SchemaView
-var makeCell = function(v) { return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v) }
+var listingUtil = Object.create({
+    putMany: function(options) {
+	var self = this
+	$.each(options.listings, function(idx, listing) {
+	    var clone = options.prototype.clone()
+	    self.putOne(listing, clone, options.prefix)
+	    if (options.withStatus) { self.putStatus(listing, clone) }
+	    options.target.append(clone)
+	})
+    },
+
+    putStatus: function(listing, target) {
+	new StatusLoader({
+            suffix: listing.owner.id64,
+	    success: function(status) {
+		$('.listing-avatar', target)
+		    .addClass('profile-status ' + status.online_state)
+	    }
+        })
+    },
+
+    putOne: function(listing, target, prefix) {
+        target.removeClass('null prototype').addClass('listing-seed')
+        if (listing.description) {
+	    $('.listing-description', target).text(listing.description)
+	} else {
+	    $('.listing-description-label', target).empty()
+	    $('.listing-description', target).empty()
+	}
+	$('.listing-owner', target).text(listing.owner.personaname)
+	$('.listing-owner', target).parent().attr('href', '/profile/'+listing.owner.id64)
+	$('.listing-avatar', target).attr('src', listing.owner.avatar)
+	$('.listing-avatar', target).parent().attr('href', '/profile/'+listing.owner.id64)
+	$('.bid-count-seed', target).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
+	var next = 0
+	$.each(listing.items, function(index, item) {
+	   $( $('.item-view div', target)[next]).append( $.toJSON(item) )
+	   next += 1
+	})
+	if (listing.min_bid_dollar_use) {
+	    $(prefix+'-listing-view-min-bid-dollar-use', target).removeClass('null')
+	    $(prefix+'-listing-view-min-bid-dollar-use .dollars', target)
+		.text('${0}'.fs(listing.min_bid_dollar_amount))
+	    $(prefix+'-listing-view-min-bid', target).removeClass('null')
+	} else {
+	    if (listing.min_bid.length) {
+		var next = 0
+		$.each(listing.min_bid, function(index, defindex) {
+	            $($(prefix+'-listing-view-min-bid .item-view div', target)[next])
+			       .append($.toJSON({defindex:defindex, quality:6}))
+		     next += 1
+		})
+		$(prefix+'-listing-view-min-bid', target).removeClass('null')
+	    } else {
+		$(prefix+'-listing-view-min-bid', target).hide()
+	    }
+	}
+	$(prefix+'-listing-view-link a', target).attr('href', '/listing/'+listing.id)
+	$(prefix+'-listing-view-link', target)
+	    .append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
+    }
+})
+
+
+var profileUtil = {
+    loginUrl: function() {
+	return '/login?next=' + encodeURIComponent(window.location.href)
+    },
+
+    defaultUrl: function(p) {
+	return p.custom_name ? '/id/{0}'.fs(p.custom_name) : '/profile/{0}'.fs(p.id64)
+    },
+
+    defaultUserAuthError: function(request, status, error) {
+	$('#content-login-link')
+	    .attr('href', profileUtil.loginUrl())
+	$('#content-search-link, #content-quick-backpack').fadeIn()
+    },
+
+    defaultUserAuthOkay: function(p) {
+	$('#content-user-buttons, #content-logout-link').fadeIn()
+	$('#content-login-link').fadeOut()
+	$('#content-player-profile-link').attr('href', profileUtil.defaultUrl(p))
+	profileUtil.put(p)
+    },
+
+    put: function(p) {
+	$('#content-avatar-pod')
+	    .html(makeImg({src: p.avatar, width: 24, height: 24}))
+	    .show()
+	new StatusLoader({
+	    suffix: p.id64,
+            success: function(status) {
+	        $('#content-avatar-pod img').addClass(status.online_state)
+	        $('#content-avatar-pod img').addClass('profile-status')
+	    }
+        })
+    }
+}
+
+
+// closure over a settings object
+var settingsUtil = function(settings) {
+    var valid = settings && keys(settings).length
+    return {
+	showEquipped: (valid ? settings['badge-equipped'] : true),
+	showPainted: (valid ? settings['badge-painted'] : true),
+	showUseCount: (valid ? settings['badge-usecount'] : true),
+	showAngrySalad: (valid ? settings['angry-fruit-salad'] : false)
+    }
+}
 
 
 // makes a nice img tag with all the trimmings.
@@ -201,35 +290,6 @@ var makeLoader = function(config) {
 }
 
 
-// if and when the profile is loaded for an authorized user, perform
-// the default actions for that kind of user.
-$(document).bind('authProfileLoaded', function(event, profile) {
-    profileUtil.defaultUserAuthOkay(profile)
-})
-
-
-// if and when a profile cannot be loaded (because the user isn't
-// authorized, i.e., anon), perform the default actions for that kind
-// of user.
-$(document).bind('authProfileError', function(event, req, status, err) {
-    profileUtil.defaultUserAuthError(req, status, err)
-})
-
-
-// if and when the items schema is loaded, hook it up to a SchemaTool
-// and a ItemHoverTool.
-$(document).bind('schemaLoaded', function(event, schema) {
-    var st = new SchemaTool(schema),
-        tt = new ItemHoverTool(st)
-    $('div.ov td.item-view, #backpack-ac td, .backpack td')
-	.live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
-	.live('mouseout',  function(e) {  tt.hide(e);  $(this).removeClass('outline') })
-    $('.listing-view')
-	.live('mouseover', function() { $(this).addClass('listing-hover') })
-	.live('mouseout', function() { $(this).removeClass('listing-hover') })
-})
-
-
 var AuthProfileLoader = makeLoader({
     prefix: '/api/v1/auth/profile',
     name: 'AuthProfileLoader',
@@ -257,7 +317,8 @@ var SchemaLoader = makeLoader({
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsSchemaLoader',
     name: 'SchemaLoader',
-    successEvent: 'schemaLoaded'
+    successEvent: 'schemaLoaded',
+    debug: true
 })
 
 
@@ -298,41 +359,7 @@ var BidsLoader = makeLoader({
 })
 
 
-// this should become ProfileView or similar
-var profileUtil = (function() {
-    return {
-	defaultUrl: function(p) {
-	    return p.custom_name ? '/id/{0}'.fs(p.custom_name) : '/profile/{0}'.fs(p.id64)
-	},
-
-	defaultUserAuthError: function(request, status, error) {
-	    $('#content-login-link')
-		.attr('href', '/login?next=' + encodeURIComponent(window.location.href))
-	    $('#content-search-link, #content-quick-backpack').fadeIn()
-	},
-
-	defaultUserAuthOkay: function(p) {
-	    $('#content-user-buttons, #content-logout-link').fadeIn()
-	    $('#content-login-link').fadeOut()
-	    $('#content-player-profile-link').attr('href', profileUtil.defaultUrl(p))
-	    profileUtil.put(p)
-	},
-
-	put: function(p) {
-	    $('#content-avatar-pod')
-		.html(makeImg({src: p.avatar, width: 24, height: 24}))
-		.show()
-	    new StatusLoader({
-		suffix: p.id64, success: function(status) {
-		    $('#content-avatar-pod img').addClass(status.online_state)
-		    $('#content-avatar-pod img').addClass('profile-status')
-		}
-	    })
-	}
-    }
-})()
-
-
+var schemaUtil = function(s) { return new SchemaTool(s) }
 
 var SchemaTool = function(schema) {
     var self = this
@@ -377,8 +404,9 @@ var SchemaTool = function(schema) {
 	// definition index replace" class with the url of the item
 	// specified in the content.
 	var itemImg = function(url) { return makeImg({src:url, width:64, height:64}) }
-	var toolDefs = self.tools(), actionDefs = self.actions()
-	var settingV = settingsUtil(settings)
+	var toolDefs = self.tools(),
+	    actionDefs = self.actions(),
+	    settingV = settingsUtil(settings)
 	$('.defindex-lazy').each(function(index, tag) {
 	    var data = $.parseJSON($(tag).text())
 	    if (!data) { return }
@@ -507,10 +535,6 @@ var SchemaTool = function(schema) {
     }
 }
 
-// this should move to the default View object
-var hiliteSpan = function(after) {
-    return '<span class="hilite">&nbsp;</span><span>{0}</span>'.fs(after)
-}
 
 // this should also move to the default View object
 var siteMessage = function(text) {
@@ -553,101 +577,6 @@ var showTermsDialog = function(e) {
 	   });
     return false
 }
-
-
-var moveClasses = function(source, target, expr) {
-    $.each(source.attr('class').split(' '), function(idx, name) {
-	if (name.match(expr)) { target.addClass(name); source.removeClass(name) }
-    })
-}
-
-var moveSalad = function(source, target) {
-    return moveClasses(source, target, /(border|background)-quality/)
-}
-
-var getHash = function() { return location.hash.slice(1) }
-
-
-var initExtensions = function(jq) {
-    jq.fn.fadeAway = function() { this.each(function() { jq(this).fadeTo(750, 0) }); return this }
-    jq.fn.fadeBack = function() { this.each(function() { jq(this).fadeTo(750, 100) }); return this }
-    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
-}
-initExtensions(jQuery)
-
-
-var listingView = (function () {
-    return {
-	putMany: function(options) {
-	    $.each(options.listings, function(idx, listing) {
-		var clone = options.prototype.clone()
-		listingView.putOne(listing, clone, options.prefix)
-		if (options.withStatus) {
-		    listingView.putStatus(listing, clone)
-		}
-		options.target.append(clone)
-	    })
-	},
-
-	putStatus: function(listing, target) {
-	    new StatusLoader({
-		suffix: listing.owner.id64,
-		success: function(status) {
-		    $('.listing-avatar', target)
-			.addClass('profile-status ' + status.online_state)
-		}
-	    })
-	},
-
-	putOne: function(listing, target, prefix) {
-	    target.removeClass('null prototype').addClass('listing-seed')
-	    if (listing.description) {
-		$('.listing-description', target).text(listing.description)
-	    } else {
-		$('.listing-description-label', target).empty()
-		$('.listing-description', target).empty()
-	    }
-	    $('.listing-owner', target)
-		.text(listing.owner.personaname)
-	    $('.listing-owner', target)
-		.parent().attr('href', '/profile/'+listing.owner.id64)
-	    $('.listing-avatar', target)
-		.attr('src', listing.owner.avatar)
-	    $('.listing-avatar', target)
-		.parent().attr('href', '/profile/'+listing.owner.id64)
-	    $('.bid-count-seed', target)
-		.text(listing.bid_count || '0') // bid_count because bids aren't fetched.
-	    var next = 0
-	    $.each(listing.items, function(index, item) {
-		$( $('.item-view div', target)[next]).append( $.toJSON(item) )
-		next += 1
-	    })
-	    if (listing.min_bid_dollar_use) {
-		$(prefix+'-listing-view-min-bid-dollar-use', target).removeClass('null')
-		$(prefix+'-listing-view-min-bid-dollar-use .dollars', target)
-		    .text('${0}'.fs(listing.min_bid_dollar_amount))
-		$(prefix+'-listing-view-min-bid', target).removeClass('null')
-	    } else {
-		if (listing.min_bid.length) {
-		    var next = 0
-		    $.each(listing.min_bid, function(index, defindex) {
-			$($(prefix+'-listing-view-min-bid .item-view div', target)[next])
-			    .append($.toJSON({defindex:defindex, quality:6}))
-			next += 1
-		    })
-		    $(prefix+'-listing-view-min-bid', target).removeClass('null')
-		} else {
-		    $(prefix+'-listing-view-min-bid', target).hide()
-		}
-	    }
-	    $(prefix+'-listing-view-link a', target)
-		.attr('href', '/listing/'+listing.id)
-	    $(prefix+'-listing-view-link', target)
-		.append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
-	}
-    }
-})()
-
 
 
 var updateTimeLeft = function (expires, selector) {
@@ -704,12 +633,6 @@ var MVC = {
 //
 // This is the root Controller object.
 //
-// Wikipedia: The controller receives input and initiates a response
-// by making calls on model objects. A controller accepts input from
-// the user and instructs the model and view to perform actions
-// based on that input.  The controller has direct associations to the
-// view and model.
-//
 var Controller = MVC.extend({
     clones: [],
     eventNames: $.merge(keys($.attrFn), keys($.event.special)),
@@ -725,16 +648,21 @@ var Controller = MVC.extend({
         $.each(keys(self), function(idx, key) {
             var value = self[key]
             if (typeof key == 'string' && (typeof value == 'function' || typeof value == 'object')) {
-		var names = key.split(' '), name = names.pop()
+		var names = key.split(' '),
+	            name = names.pop()
 		if (name == 'ready') {
-		    $( function() { value.apply(self, arguments) })
-		} else if (name && self.eventNames.indexOf(name) > -1) {
-		    names = names.join(' ')
-		    $(names).bind(name, function(e) { e.controller = self; value(e) })
-		}
+		    $(function() { value.apply(self, arguments) })
+		} else if (name.indexOf('live:') == 0) {
+		    var inner = name.split(':')
+		    $(names.join(' ')).live(inner[1], function(e) { e.controller = self; value(e) })
+	        } else if (name && self.eventNames.indexOf(name) > -1) {
+	            $(names.join(' ')).bind(name, function(e) { e.controller = self; value(e) })
+                }
 	    }
         })
-    }
+    },
+
+    hash: function() { return location.hash.slice(1) }
 })
 
 
@@ -749,15 +677,6 @@ var Controller = MVC.extend({
 // At initialization, Model and its clones invoke a AuthProfileLoader
 // with its success and error callbacks set to the functions
 // 'authSuccess' and 'authError', respectively.
-//
-
-// Wikipedia: The model manages the behavior and data of the
-// application domain, responds to requests for information about its
-// state (usually from the view), and responds to instructions to
-// change state (usually from the controller). In event-driven
-// systems, the model notifies observers (usually views) when the
-// information changes so that they can react.  The model has an indirect
-// association with a view.
 //
 var Model = MVC.extend({
     clones: [],
@@ -845,14 +764,6 @@ var SchemaModel = Model.extend({
 // 4. if the 'model' attribute is supplied, it will be initalized
 // after the view is initalized.
 //
-// Wikipedia: The view renders the model into a form suitable for
-// interaction, typically a user interface element. Multiple views can
-// exist for a single model for different purposes. A viewport
-// typically has a one to one correspondence with a display surface
-// and knows how to render to it.  The view has a direct association
-// to a model and an indirect association with one or more
-// controllers.
-//
 var View = MVC.extend({
     clones: [],
     slug: '',
@@ -871,7 +782,12 @@ var View = MVC.extend({
 	return siteMessage(v)
     },
 
-    showTermsDialog: function() { showTermsDialog() }
+    showTermsDialog: function() { showTermsDialog() },
+
+    hiliteSpan: function(after) {
+	return '<span class="hilite">&nbsp;</span><span>{0}</span>'.fs(after)
+    }
+
 })
 
 
@@ -882,11 +798,18 @@ var SchemaView = View.extend({
 
     putItems: function(target, items, cols) {
 	var col = 0,
-	    cols = cols || 10
+	    cols = cols || 10,
+	    makeCell = function(v) {
+                return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v)
+            }
 	$.each(items, function(idx, item) {
 	    if (!(col % cols)) { target.append('<tr></tr>') }
 	    col += 1
-            item = item.quality == 'undefined' ? {defindex:item.defindex, quality:6} : item
+            if (typeof(item)=='number') {
+		item = {defindex:item, quality:6}
+	    } else if (typeof(item.quality)=='undefined'){
+		item = {defindex:item.defindex, quality:6}
+	    }
 	    var cell = makeCell($.toJSON(item))
             if (item.data) { $('div', cell).data('node', item) }
 	    $('tr:last', target).append(cell)
@@ -898,12 +821,52 @@ var SchemaView = View.extend({
 	$('td div:empty', target).parent().remove()
     },
 
-
     joinListings: function(options) {
-	listingView.putMany(options)
+	listingUtil.putMany(options)
     }
 
 
+})
+
+
+//
+// document and library initialization
+//
+
+var initExtensions = function(jq) {
+    jq.fn.fadeAway = function() { this.each(function() { jq(this).fadeTo(750, 0) }); return this }
+    jq.fn.fadeBack = function() { this.each(function() { jq(this).fadeTo(750, 100) }); return this }
+    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
+}
+initExtensions(jQuery)
+
+
+// if and when the profile is loaded for an authorized user, perform
+// the default actions for that kind of user.
+$(document).bind('authProfileLoaded', function(event, profile) {
+    profileUtil.defaultUserAuthOkay(profile)
+})
+
+
+// if and when a profile cannot be loaded (because the user isn't
+// authorized, i.e., anon), perform the default actions for that kind
+// of user.
+$(document).bind('authProfileError', function(event, req, status, err) {
+    profileUtil.defaultUserAuthError(req, status, err)
+})
+
+
+// if and when the items schema is loaded, hook it up to a SchemaTool
+// and a ItemHoverTool.
+$(document).bind('schemaLoaded', function(event, schema) {
+    var st = new SchemaTool(schema),
+        tt = new ItemHoverTool(st)
+    $('div.ov td.item-view, #backpack-ac td, .backpack td')
+	.live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
+	.live('mouseout',  function(e) {  tt.hide(e);  $(this).removeClass('outline') })
+    $('.listing-view')
+	.live('mouseover', function() { $(this).addClass('listing-hover') })
+	.live('mouseout', function() { $(this).removeClass('listing-hover') })
 })
 
 
@@ -911,4 +874,3 @@ $(function() {
     // initialize each direct clone of the Controller object:
     $.each(Controller.clones, function(i, c) { c.init.apply(c) })
 })
-

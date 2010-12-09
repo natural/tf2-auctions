@@ -21,13 +21,10 @@
 
 
 	<div id="${slug}-content" class="null center detail-view">
-	    <!-- replace with 3 cell table -->
 	    <div id="${slug}-left">
-		<div class="mb1">
+		<div class="mb1 null">
 		    <label>Description:</label>
-		    <div class="m1">
-			<div class="desc" id="${slug}-description"></div>
-		    </div>
+		    <div class="desc m1" id="${slug}-description"></div>
 		</div>
 		<div>
 		    <label>Items:</label>
@@ -47,25 +44,25 @@
 	    <div id="${slug}-center" class="ml1">
 		<div class="mb1">
 		    <label>Time Left:</label>
-		    <div class="ml1"><strong id="${slug}-timeleft" class="mono">&nbsp;</strong></div>
+		    <strong id="${slug}-timeleft" class="ml1 mono">&nbsp;</strong>
 		</div>
 		<div class="mb1">
 		    <label>Expires:</label>
-		    <div class="ml1"><strong id="${slug}-expires" class="mono"></strong></div>
+		    <strong id="${slug}-expires" class="ml1 mono"></strong>
 		</div>
 		<div class="mb1">
 		    <label>Created:</label>
-		    <div class="ml1"><strong id="${slug}-created" class="mono"></strong></div>
+		    <strong id="${slug}-created" class="ml1 mono"></strong>
 		</div>
 
 	    </div>
 	    <div id="${slug}-right">
-		<div class="owner np05">
-		    <label>Created by
-			<span><a id="${slug}-owner-link" href="#"></a></span>
+		<div class="owner np05 ">
+		    <label>Created by:
+			<span><a id="${slug}-owner-link" href="#" onclick="return false"></a></span>
 		    </label>
 		    <div class="center text-center m1">
-			<a href="#" id="${slug}-owner-profile-link">
+			<a href="#" id="${slug}-owner-profile-link" onclick="return false">
 			    <img class="avatar" id="${slug}-owner-avatar" alt="foo" />
 			</a>
 			<div class="mt05" id="${slug}-owner-status"></div>
@@ -101,11 +98,11 @@
 			<ul>
 			    <li>
 				<img src="/media/img/iconAddFriend.png" />
-				<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
+				<a href="#" id="${slug}-add-owner-friend" onclick="return false">Add Steam Friend</a>
 			    </li>
 			    <li>
 				<img src="/media/img/iconChat.png" />
-				<a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
+				<a href="#" id="${slug}-chat-owner" onclick="return false">Start Steam Chat</a>
 			    </li>
 			    <li>
 				<img src="/media/img/iconListings.png" />
@@ -117,17 +114,16 @@
 
 
 		    <div id="${slug}-owner-controls" class="null center mtb1">
-			<div id="${slug}-owner-controls-cancel" class="null">
+			<div id="${slug}-owner-controls-cancel">
 			    <label>Tools:</label>
-			    <div class="mt05 mb05 text-center" id="${slug}-cancel-prompt">
-				<a href="#" id="${slug}-cancel-show-confirm" class="button">Cancel this Listing</a>
+			    <div class="mt1 mb05 text-center" id="${slug}-cancel-prompt">
+				<a href="#" id="${slug}-cancel-show-confirm" class="button" onclick="return false">Cancel this Listing</a>
 			    </div>
-			    <div class="help text-center">You own this listing, so you may cancel it.</div>
-
 			    <div class="center text-center null" id="${slug}-cancel-confirm">
-				<label class="m1">Are you sure you want to cancel this listing?</label>
-				<a href="#" class="button" id="${slug}-cancel-submit">Yes, Do It</a>
-				<a href="#" class="button" id="${slug}-cancel-cancel">No, Don't</a>
+				<div class="m1 nowrap">Are you sure?
+				<a href="#" class="button" id="${slug}-cancel-submit" onclick="return false">Yes</a>
+				<a href="#" class="button" id="${slug}-cancel-cancel" onclick="return false">No</a>
+				</div>
 			    </div>
 			</div>
 			<div id="${slug}-owner-controls-choose-winner" class="null">
@@ -145,29 +141,32 @@
 	    <div class="clear"></div>
         </div>
 
-	<div id="${slug}-existing-bids-pod" class="null">
-	    <div id="${slug}-existing-bids">
+	<div id="${slug}-existing-bids-pod">
+	    <div id="${slug}-login-pod" class="null mtb1">
+		<h2><span class="hilite">&nbsp;</span>You have to
+		    <a id="${slug}-login-link" class="nice" href="">login to place a bid</a>
+		    for these items</h2>
+	    </div>
+	    <div id="${slug}-auth-bid-cancelled" class="null"></div>
+	    <div id="${slug}-auth-bid-pod" class="null mtb1">
+		<h1 class="mb1"><span class="hilite">&nbsp;</span>Your Bid</h1>
 
-		<div id="${slug}-auth-tools-pod" class="">
-		    <div id="${slug}-login-pod" class="null mtb1">
-			<h2>You have to login to place a bid for these items.</h2>
-		    </div>
-		</div>
-
-		<div id="${slug}-auth-bid-cancelled" class="null"></div>
-		<div id="${slug}-auth-bid-pod" class="null mtb1">
-		    <a class="button" id="${slug}-place-start" href="#">Place Your Bid</a>
-		    <span class="null">
-			<a class="button" id="${slug}-existing-bid-cancel" href="#"></a>
-			<span class="null" id="${slug}-existing-bid-confirm">
-			    Are you sure you want to cancel your bid?
-			    <a class="button" href="#" id="${slug}-existing-bid-cancel-yes">Yes</a>
-			    <a class="button" href="#" id="${slug}-existing-bid-cancel-no">No</a>
-			</span>
+		<div class="m1">
+		<a class="button" id="${slug}-place-start" onclick="return false" href="#">Place Your Bid</a>
+		<span class="null">
+		    <a class="button" id="${slug}-existing-bid-cancel" href="#" onclick="return false"></a>
+		    <span class="null" id="${slug}-existing-bid-confirm">
+			Are you sure you want to cancel your bid?
+			<a class="button" href="#" id="${slug}-existing-bid-cancel-yes" onclick="return false">Yes</a>
+			<a class="button" href="#" id="${slug}-existing-bid-cancel-no" onclick="return false">No</a>
 		    </span>
+		</span>
 		</div>
 
-		<h1 class="pt05"><span class="hilite">&nbsp;</span>&nbsp;<span id="${slug}-bidcount"></span></h1>
+
+	    </div>
+	    <div id="${slug}-existing-bid-pod" class="null">
+		<h1 class="pt05"><span class="hilite">&nbsp;</span><span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids" class="mt05">
 		    <metal:include
 			tal:define="slug slug+'-profile'; use_view False"
@@ -178,40 +177,35 @@
 
 
 	<div id="${slug}-place-bid-pod" class="null center">
-            <h1><span class="hilite">&nbsp;</span>Place Your Bid</h1>
+            <h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Place Your Bid</h1>
 	    <div class="ov null" id="${slug}-bid-dollar">
 		<div>Your Bid:</div>
 		{CUR}
 		<input type="text" class="mono text-right" id="${slug}-dollar-bid-amount" />
-		<a class="button" href="#" id="${slug}-dollar-bid-submit">Okay</a>
-		<a class="button" href="#" id="${slug}-dollar-bid-cancel">Cancel</a>
+		<a class="button" href="#" id="${slug}-dollar-bid-submit" onclick="return false">Okay</a>
+		<a class="button" href="#" id="${slug}-dollar-bid-cancel" onclick="return false">Cancel</a>
 	    </div>
 	    <div class="ov null" id="${slug}-own-backpack">
 		<metal:include
 		     tal:define="slug slug+'-bid'"
 		     metal:use-macro="context.view_parts.macros.backpack_slim" />
-
 		<h3 id="${slug}-title">
 		    Your Bid <span id="${slug}-add-bid-item-title-extra">(0 items)</span>
 		</h3>
-
 		<metal:include
 		     tal:define="slug slug+'-add-bid-item'"
 		     metal:use-macro="context.view_parts.macros.chooser_slim" />
-
 		<div id="${slug}-add-bid-fields" class="center">
-		<label>Private Message (Optional):</label>
-		<div class="null" id="${slug}-bid-private-msg-default">You can enter a private message for the listing owner here.</div>
- 		<div class="message null"><div class="error" id="${slug}-bid-private-msg-error"></div></div>
-		<textarea id="${slug}-bid-private-msg" name="bid-private-msg"></textarea>
+		    <label class="mt1">Private Message (Optional):</label>
+		    <div class="null" id="${slug}-bid-private-msg-default">You can enter a private message for the listing owner here.</div>
+ 		    <div class="message null"><div class="error" id="${slug}-bid-private-msg-error"></div></div>
+		    <textarea id="${slug}-bid-private-msg" name="bid-private-msg"></textarea>
 
-		<label>Public Message (Optional):</label>
-		<div class="null" id="${slug}-bid-public-msg-default">You can also enter a message with your bid that will be visible to everyone.</div>
- 		<div class="message null"><div class="error" id="${slug}-bid-public-msg-error"></div></div>
-		<textarea id="${slug}-bid-public-msg" name="bid-public-msg"></textarea>
+		    <label class="mt1">Public Message (Optional):</label>
+		    <div class="null" id="${slug}-bid-public-msg-default">You can also enter a message with your bid that will be visible to everyone.</div>
+ 		    <div class="message null"><div class="error" id="${slug}-bid-public-msg-error"></div></div>
+		    <textarea id="${slug}-bid-public-msg" name="bid-public-msg"></textarea>
 		</div>
-
-
 		<div class="center mt2" id="${slug}-terms-pod">
                     <label for="" id="${slug}-add-bid-terms-desc">Site Rules, Terms and Conditions:</label>
  		    <div class="message null">
@@ -221,42 +215,29 @@
 			<input type="checkbox" id="${slug}-add-bid-terms" />
 			I Agree to
                         <span>
-			    <a href="#" class="nice" id="${slug}-add-bid-show-terms">the Site Rules and Terms of Use</a>.
+			    <a href="#" class="nice" id="${slug}-add-bid-show-terms" onclick="return false">the Site Rules and Terms of Use</a>.
 			</span>
 		    </div>
                 </div>
-
 		<div id="${slug}-bid-buttons" class="center text-center m1 mt2">
-		    <span class="button mr05">
-			<a href="#" id="${slug}-bid-submit">Place Bid</a>
-		    </span>
-		    <span class="button">
-			<a href="#" id="${slug}-bid-cancel">Cancel</a>
-		    </span>
+		    <a class="button" href="#" id="${slug}-bid-submit" onclick="return false">Place Bid</a>
+		    <a class="button" href="#" id="${slug}-bid-cancel" onclick="return false">Cancel</a>
 		</div>
-
-	    <div id="${slug}-add-bid-response" class="center text-center">
-		<div id="${slug}-add-bid-working" class="m1 null"></div>
-		<div id="${slug}-add-bid-success" class="m1 null">
-		    <span class="mr05">
-			<a href="#" id="${slug}-add-bid-success-view"
-			   class="button">View Bid</a>
-		    </span>
+		<div id="${slug}-add-bid-response" class="center text-center">
+		    <div id="${slug}-add-bid-working" class="m1 null"></div>
+		    <div id="${slug}-add-bid-success" class="m1 null">
+			<span class="mr05">
+			    <a href="#" id="${slug}-add-bid-success-view" onclick="return false"
+			       class="button">View Bid</a>
+			</span>
+		    </div>
+		    <div class="message null">
+			<div id="${slug}-add-bid-error" class="error m1"></div>
+		    </div>
 		</div>
-		<div class="message null">
-		    <div id="${slug}-add-bid-error" class="error m1"></div>
-		</div>
-            </div>
-
-
-
 	    </div>
-
-
 	</div>
 	<div class="clear"></div>
-
-
     </div>
 </body>
 </html>

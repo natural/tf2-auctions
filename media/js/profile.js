@@ -1,6 +1,8 @@
 var $$ = make$$('#profile-')
 var id64Internal = null
+var pathTail = function() { return window.location.pathname.split('/').pop() }
 var id64View = function() { return id64Internal || pathTail() }
+var setTitle = function(name) { document.title = document.title + ' - ' + name }
 
 
 //
