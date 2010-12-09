@@ -13,7 +13,10 @@ slim chooser:  default 2 rows * 5 cols
 		 cols cols | 5;
 		 ordered ordered | False; ">
     <div class="bp bp-slim" id="bp-chooser-${slug}">
-	<div><span class="help"></span></div>
+	<div id="${slug}-ch-intro-pod">
+	    <h3><span id="${slug}-title-extra"></span></h3>
+	    <div><span class="help"></span></div>
+	</div>
 	<table class="bp-chooser center">
 	    <caption>
 		<div class="message null">
@@ -92,8 +95,10 @@ slim backpack: 5 rows * 5 cols * 8 pages
      tal:define="slug slug | ''; ">
 
     <div class="bp bp-slim" id="bp-${slug}">
-        <div><h3></h3></div>
-	<div><span class="help"></span></div>
+	<div id="${slug}-bp-intro-pod">
+            <div><h3></h3></div>
+	    <div><span class="help"></span></div>
+	</div>
 	<div class="bp-view">
 	    <metal:unplaced
 		 tal:define="cols 5"

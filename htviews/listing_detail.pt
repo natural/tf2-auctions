@@ -147,12 +147,11 @@
 		    <a id="${slug}-login-link" class="nice" href="">login to place a bid</a>
 		    for these items</h2>
 	    </div>
-	    <div id="${slug}-auth-bid-cancelled" class="null"></div>
 	    <div id="${slug}-auth-bid-pod" class="null mtb1">
 		<h1 class="mb1"><span class="hilite">&nbsp;</span>Your Bid</h1>
-
 		<div class="m1">
 		<a class="button" id="${slug}-place-start" onclick="return false" href="#">Place Your Bid</a>
+		<span id="${slug}-auth-bid-cancelled" class="null"></span>
 		<span class="null">
 		    <a class="button" id="${slug}-existing-bid-cancel" href="#" onclick="return false"></a>
 		    <span class="null" id="${slug}-existing-bid-confirm">
@@ -189,9 +188,6 @@
 		<metal:include
 		     tal:define="slug slug+'-bid'"
 		     metal:use-macro="context.view_parts.macros.backpack_slim" />
-		<h3 id="${slug}-title">
-		    Your Bid <span id="${slug}-add-bid-item-title-extra">(0 items)</span>
-		</h3>
 		<metal:include
 		     tal:define="slug slug+'-add-bid-item'"
 		     metal:use-macro="context.view_parts.macros.chooser_slim" />

@@ -427,7 +427,7 @@ var BackpackItemsTool = function(options) {
 
 	var title = options.title || ''
 	if (title) {
-	    $('#bp-{0} > div > h3:first'.fs(slug)).text(title)
+	    $('#bp-{0} > div > div > h3:first'.fs(slug)).text(title)
         }
     }
 
@@ -626,6 +626,10 @@ var BackpackChooserTool = function(options) {
 		function(e) { $(this).removeClass('selected-delete') }
 	    )
 	}
+
+	if (options.title) {
+	    $('#bp-chooser-{0} > div > h3:first'.fs(chooserSlug)).text(options.title)
+       }
     }
 
     self.updateCount = function() {

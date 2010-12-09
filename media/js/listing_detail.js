@@ -78,16 +78,13 @@ var makeChTool = function(afterDropMove) {
         backpackSlug: 'listing-detail-bid',
         chooserSlug: 'listing-detail-add-bid-item',
         afterDropMove: afterDropMove,
+        title: 'Your Bid',
         help: 'Remove items from your bid by dragging them back to your backpack.  Double click removes, too.'
     })
 }
 
 
 var NewBidView = View.extend({
-    hide: function (after) {
-	$$('place-bid-pod').slideUp('slow', after)
-    },
-
     join: function() {
 	var self = this
 	self.putBackpack()
@@ -95,11 +92,20 @@ var NewBidView = View.extend({
         self.show()
     },
 
+    isUpdate: function(v) {
+	return $$('place-start').data('update', v)
+    },
+
+    hide: function (after) {
+	$$('place-bid-pod').slideUp('slow', after)
+    },
+
+
     show: function() {
 	var self = this
 	self.message('').fadeOut()
 	$$('auth-bid-pod').slideUp(function() {
-            $$('own-backpack').fadeIn(self.putFields)
+            $$('own-backpack').slideDown(self.putFields)
         })
 	$$('place-bid-pod').fadeIn(function() {
             // the controller should do this, but it's easier to do it here:
@@ -110,7 +116,7 @@ var NewBidView = View.extend({
     showErrors: function(errors) {
 	$.each(errors, function(index, error) {
 	    var ele = $('{0}-error'.fs(error.id))
-	    ele.text('Error: {0}'.fs(error.msg)).parent().fadeIn()
+	    ele.text('Error: {0}'.fs(error.msg)).parent().slideDown()
 	    if (index==0) { ele.parent().scrollTopAni() }
 	})
     },
@@ -121,7 +127,7 @@ var NewBidView = View.extend({
         self.chooser = makeChTool(function() { self.showMetMinBid.apply(self, [arguments]) })
         self.backpack.init(self.model.profile.settings)
         self.chooser.init(self.model.profile.settings)
-	if ($$('place-start').data('update')) {
+	if (self.isUpdate()) {
 	    try {
 		var bids = self.model.bids,
                     current = $(bids).filter(function (idx, item) {
@@ -159,6 +165,9 @@ var NewBidView = View.extend({
 	$$('add-bid-fields').width(width)
 	$$('add-bid-fields textarea').width(width).height(width/4).text()
 	$$('add-bid-terms-desc').parent().width(width)
+
+	$$('bid-bp-intro-pod').addClass('center').animate({width:width})
+	$$('add-bid-item-ch-intro-pod').addClass('center').animate({width:width})
     },
 
     showMetMinBid: function(item) {
@@ -233,7 +242,7 @@ var NewBidController = {
 	// 2. private msg
 	private_msg = (private_msg ==  $$('bid-private-msg-default').text() ? '' : private_msg)
 	if (private_msg.length > 400) {
-	    $$("bid-private-msg").keyup(function (a) {
+	    $$('bid-private-msg').keyup(function (a) {
 		if ( $(this).val().length <= 400) {
 		    $$('bid-private-msg-error:visible').slideUp()
 		}
@@ -244,7 +253,7 @@ var NewBidController = {
 	// 3. private msg
 	public_msg = (public_msg ==  $$('bid-public-msg-default').text() ? '' : public_msg)
 	if (public_msg.length > 400) {
-	    $$("bid-public-msg").keyup(function (a) {
+	    $$('bid-public-msg').keyup(function (a) {
 		if ( $(this).val().length <= 400) {
 		    $$('bid-public-msg-error:visible').slideUp()
 		}
@@ -273,7 +282,7 @@ var NewBidController = {
                 items: items,
                 public_msg: public_msg,
                 private_msg: private_msg,
-                update: $$('place-start').data('update'),
+                update: self.view.isUpdate(),
                 success: self.view.showBidSuccess,
                 error: self.view.showBidError
             })
@@ -458,6 +467,7 @@ var DetailView = SchemaView.extend({
     putAuthTools: function() {
 	if (this.listing.status == 'active') {
 	    $$('auth-bid-pod').show()
+	    // bleh
 	    if ($.inArray(this.profile.steamid, $(this.listing.bids).map(function(i, x) { return x.owner.steamid })) > -1) {
 	        $$('place-start').text('Update It').data('update', true)
 		$$('existing-bid-cancel').text('Cancel It').data('cancel', true).parent().show()
@@ -500,7 +510,10 @@ var DetailView = SchemaView.extend({
     },
 
     afterCancelBid: function(bid) {
-        $$('auth-bid-pod').fadeOut()
+	$$('place-start').data('update', false).text('Refresh for New Bid').unbind().click(function() {
+            window.location.reload()
+        })
+        $$('auth-bid-pod').slideDown()
 	$$('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
 	this.putBidCount(this.listing.bid_count-1)
 	$.each($$('bids div.ov'), function(idx, ele) {

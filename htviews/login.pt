@@ -13,8 +13,8 @@
 
 		<div id="login-link" class="text-center mt1">
 		    <a href="${controller.login_url()}" title="Sign in through Steam">
-			<img alt="Sign in through Steam" width="154" height="23"
-			     src="http://steamcommunity.com/public/images/signinthroughsteam/sits_small.png" />
+			<img alt="Sign in through Steam" width="118" height="51"
+			     src="http://steamcommunity.com/public/images/signinthroughsteam/sits_large_border.png" />
 		    </a>
 		</div>
 	    </div>
