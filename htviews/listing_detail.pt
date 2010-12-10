@@ -32,7 +32,7 @@
 		</div>
 		<div class="mt1" id="${slug}-min-bid-pod">
 		    <label>Minimum Bid:</label>
-		    <h3 class="null ml1" id="${slug}-min-bid-dollar-use">
+		    <h3 class="null ml1" id="${slug}-min-bid-currency-use">
 			<span class="text-right mono"></span>
 		    </h3>
 		    <div class="items-view backpack" id="${slug}-min-bid"><table></table></div>
@@ -177,12 +177,12 @@
 
 	<div id="${slug}-place-bid-pod" class="null center">
             <h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Place Your Bid</h1>
-	    <div class="ov null" id="${slug}-bid-dollar">
+	    <div class="ov null" id="${slug}-bid-currency">
 		<div>Your Bid:</div>
 		{CUR}
-		<input type="text" class="mono text-right" id="${slug}-dollar-bid-amount" />
-		<a class="button" href="#" id="${slug}-dollar-bid-submit" onclick="return false">Okay</a>
-		<a class="button" href="#" id="${slug}-dollar-bid-cancel" onclick="return false">Cancel</a>
+		<input type="text" class="mono text-right" id="${slug}-currency-bid-amount" />
+		<a class="button" href="#" id="${slug}-currency-bid-submit" onclick="return false">Okay</a>
+		<a class="button" href="#" id="${slug}-currency-bid-cancel" onclick="return false">Cancel</a>
 	    </div>
 	    <div class="ov null" id="${slug}-own-backpack">
 		<metal:include

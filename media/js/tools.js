@@ -1,10 +1,8 @@
-// define a console if we don't have one.
 if (typeof console == 'undefined') {
     var console = {log: $.noop, error: $.noop}
 }
 
 
-// as defined by Crockford:
 if (typeof Object.create !== 'function') {
     Object.create = function (proto) {
         var obj = function() {}
@@ -14,7 +12,6 @@ if (typeof Object.create !== 'function') {
 }
 
 
-// a very simple but useful string formatting function
 String.prototype.fs = function() {
     var formatted = this
     for (var i=0; i<arguments.length; i++) {
@@ -24,11 +21,9 @@ String.prototype.fs = function() {
 }
 
 
-// oh javascript, i wish you were more functional
 var ident = function(a) { return a }
 
 
-// returns the keys of the given object
 var keys = function(obj) {
     var ks = []
     for (var k in obj) { ks.push(k) }
@@ -36,7 +31,6 @@ var keys = function(obj) {
 }
 
 
-// returns the values of the given object
 var values = function(obj) {
     var vs = []
     for (var k in obj) { vs.push(obj[k]) }
@@ -44,7 +38,6 @@ var values = function(obj) {
 }
 
 
-// more lazy than a Sunday afternoon
 var lazy = function(def) {
     var cache = []
     return function(i) {
@@ -53,8 +46,6 @@ var lazy = function(def) {
 }
 
 
-// group of functions closed over an item definition and an item
-// schema.
 var itemUtil = function(item, schema) {
     return {
 	canTrade: function() {
@@ -138,10 +129,10 @@ var listingUtil = Object.create({
 	   $( $('.item-view div', target)[next]).append( $.toJSON(item) )
 	   next += 1
 	})
-	if (listing.min_bid_dollar_use) {
-	    $(prefix+'-listing-view-min-bid-dollar-use', target).removeClass('null')
-	    $(prefix+'-listing-view-min-bid-dollar-use .dollars', target)
-		.text('${0}'.fs(listing.min_bid_dollar_amount))
+	if (listing.min_bid_currency_use) {
+	    $(prefix+'-listing-view-min-bid-currency-use', target).removeClass('null')
+	    $(prefix+'-listing-view-min-bid-currency-use .currency', target)
+		.text('${0}'.fs(listing.min_bid_currency_amount))
 	    $(prefix+'-listing-view-min-bid', target).removeClass('null')
 	} else {
 	    if (listing.min_bid.length) {
@@ -163,7 +154,7 @@ var listingUtil = Object.create({
 })
 
 
-var profileUtil = {
+var profileUtil = Object.create({
     loginUrl: function() {
 	return '/login?next=' + encodeURIComponent(window.location.href)
     },
@@ -197,7 +188,7 @@ var profileUtil = {
 	    }
         })
     }
-}
+})
 
 
 // closure over a settings object
@@ -298,12 +289,6 @@ var AuthProfileLoader = makeLoader({
 })
 
 
-var ProfileLoader = makeLoader({
-    prefix: '/api/v1/public/profile/',
-    name: 'ProfileLoader'
-})
-
-
 var BackpackLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/items/',
     dataType: 'jsonp',
@@ -329,21 +314,9 @@ var StatusLoader = makeLoader({
 })
 
 
-var ListingLoader = makeLoader({
-    prefix: '/api/v1/public/listing/',
-    name: 'ListingLoader'
-})
-
-
 var ListingsLoader = makeLoader({
     prefix: '/api/v1/public/listings/',
-    name: 'ListingLoader'
-})
-
-
-var MessagesLoader = makeLoader({
-    prefix: '/api/v1/auth/list-messages',
-    name: 'MessagesLoader'
+    name: 'ListingsLoader'
 })
 
 
@@ -654,9 +627,9 @@ var Controller = MVC.extend({
 		    $(function() { value.apply(self, arguments) })
 		} else if (name.indexOf('live:') == 0) {
 		    var inner = name.split(':')
-		    $(names.join(' ')).live(inner[1], function(e) { e.controller = self; value(e) })
+		    $(names.join(' ')).live(inner[1], function(e) { e.controller = self; value.apply(self, [e]) })
 	        } else if (name && self.eventNames.indexOf(name) > -1) {
-	            $(names.join(' ')).bind(name, function(e) { e.controller = self; value(e) })
+	            $(names.join(' ')).bind(name, function(e) { e.controller = self; value.apply(self, [e]) })
                 }
 	    }
         })
@@ -824,8 +797,6 @@ var SchemaView = View.extend({
     joinListings: function(options) {
 	listingUtil.putMany(options)
     }
-
-
 })
 
 

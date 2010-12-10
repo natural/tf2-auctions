@@ -2,6 +2,12 @@ var pid = function () { return window.location.pathname.split('/').pop() }
 var $$ = function(suffix, next) { return $('#listing-detail-' + suffix, next) }
 
 
+var ListingLoader = makeLoader({
+    prefix: '/api/v1/public/listing/',
+    name: 'ListingLoader'
+})
+
+
 var NewBidModel = Model.extend({
     loader: BackpackLoader,
     loaderSuffix: null, // updated in init
@@ -144,6 +150,7 @@ var NewBidView = View.extend({
 		        $(existing).removeClass('active-bid cannot-trade')
 	    	        var target = $('#bp-chooser-listing-detail-add-bid-item td div:empty').first()
 		        target.prepend(img).parent().addClass('active-bid cannot-trade')
+			target.append($('span.equipped, span.quantity, span.jewel', existing))
 		    }
 	        })
 	    } catch (e) {
@@ -302,7 +309,7 @@ var NewBidController = {
     },
 
     '#bp-unplaced-listing-detail-bid td div img live:dblclick': function(e) {
-        e.controller.view.chooser.moveToChooser(e)
+//        e.controller.view.chooser.moveToChooser(e)
     },
 
     '#bp-chooser-listing-detail-add-bid-item td div img live:dblclick': function(e) {
@@ -355,9 +362,9 @@ var DetailView = SchemaView.extend({
 	if (listing.description) {
 	    $$('description').text(listing.description).parent().removeClass('null')
 	}
-	if (listing.min_bid_dollar_use) {
-            $$('min-bid-dollar-use span.mono')
-		.value(listing.min_bid_dollar_amount)
+	if (listing.min_bid_currency_use) {
+            $$('min-bid-currency-use span.mono')
+		.text(listing.min_bid_currency_amount)
 	        .parent().removeClass('null')
 	} else if (listing.min_bid.length > 0) {
 	    self.putItems($$('min-bid table').first(), listing.min_bid, 5)
@@ -425,7 +432,7 @@ var DetailView = SchemaView.extend({
 	    $('.bid-owner', clone).parent().attr('href', '/profile/'+bid.owner.id64)
 	    if (bid.status == 'awarded') {
 	        $('.winner', clone).text('Winner!').parent().show()
-	        $('.bid-status', clone).text('')
+	        $('.bid-status', clone).text('Winner!')
 	    }
             clone.data('bid', bid)
             if (bid.message_public) {
@@ -434,7 +441,7 @@ var DetailView = SchemaView.extend({
 	        $('.bid-message, .bid-message-label', clone).remove()
 	    }
 	    if (bid.message_private) {
-	        $('.bid-message-private', clone).text(bid.message_private).parent().fadeIn()
+	        $('.bid-message-private', clone).text(bid.message_private)
 	    } else {
 		$('.bid-message-private', clone).parent().remove()
 	    }
@@ -458,13 +465,20 @@ var DetailView = SchemaView.extend({
     },
 
     putOwnerTools: function() {
+	var status = this.listing.status
 	$$('owner-links').hide()
-	if (this.listing.status == 'active') {
+	if (status == 'active') {
 	    $$('owner-controls').removeClass('null')
 	}
+        if (status == 'active' || status == 'ended') {
+            $('.listing-detail-profile-bid-view-select-winner-link').show()
+	}
+        $('.bid-message-private').parent().show()
     },
 
+
     putAuthTools: function() {
+        $('.bid-message-private').parent().show()
 	if (this.listing.status == 'active') {
 	    $$('auth-bid-pod').show()
 	    // bleh
@@ -505,7 +519,7 @@ var DetailView = SchemaView.extend({
 	$$('owner-controls').slideUp()
     },
 
-    showPlaceDollarBid: function(existing) {
+    showPlaceCurrencyBid: function(existing) {
 	//
     },
 
@@ -591,6 +605,17 @@ var DetailModel = SchemaModel.extend({
 
     existingBid: function() {
 	return null
+    },
+
+    selectWinner: function(bid, success, error) {
+	$.ajax({
+	    url: '/api/v1/auth/choose-winner',
+	    type: 'POST',
+	    data: $.toJSON({id: pid(), bid: bid}),
+	    dataType: 'json',
+	    success: success,
+            error: error
+        })
     }
 
 })
@@ -627,8 +652,8 @@ var DetailController = Controller.extend({
 
     '#listing-detail-place-start click' : function(e) {
 	var c = e.controller, m = c.model, l = m.listing, v = c.view
-	if (l.min_bid_dollar_use) {
-	    v.showPlaceDollarBid.apply(v, [m.existingBid()])
+	if (l.min_bid_currency_use) {
+	    v.showPlaceCurrencyBid.apply(v, [m.existingBid()])
 	} else {
 	    v.showPlaceItemBid.apply(v, [m.existingBid()])
 	}
@@ -646,7 +671,14 @@ var DetailController = Controller.extend({
 	var c = e.controller, b = c.profileBid(c.model.profile)
         c.view.beforeCancelBid()
 	c.model.cancelBid(b, function() { c.view.afterCancelBid(b) })
-    }
+    },
 
+    '.listing-detail-profile-bid-view-select-winner-link a live:click' : function(e) {
+	var bid = $(e.target).parents('div.ov').data('bid')
+	console.log('select winner', bid)
+	this.model.selectWinner(bid, function() {
+				     console.log('winner selected')
+				})
+    }
 
 })

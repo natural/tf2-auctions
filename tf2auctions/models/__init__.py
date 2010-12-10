@@ -34,8 +34,8 @@ class Listing(db.Model):
     bid_count = db.IntegerProperty('Bid Count', default=0)
 
     ## subscriber fields:
-    min_bid_dollar_use = db.BooleanProperty('Minimum Bid is Dollars', default=False)
-    min_bid_dollar_amount = db.FloatProperty('Minimum Bid Dollars Amount', default=0.0)
+    min_bid_currency_use = db.BooleanProperty('Minimum Bid is Currencys', default=False)
+    min_bid_currency_amount = db.FloatProperty('Minimum Bid Currencys Amount', default=0.0)
     featured = db.BooleanProperty('Featured Listing', indexed=True, default=False)
 
     @classmethod
@@ -65,8 +65,8 @@ class Listing(db.Model):
     @classmethod
     def build_transaction(cls, owner, profile, item_ids, desc, days, min_bid=None,
 			  is_subscriber=False,
-			  min_bid_dollar_use=False,
-			  min_bid_dollar_amount=0,
+			  min_bid_currency_use=False,
+			  min_bid_currency_amount=0,
 			  feature_listing=False):
 	## 1.  check the user, get their backpack and verify the
 	## inidicated items belong to them.
@@ -108,8 +108,8 @@ class Listing(db.Model):
 
 	## 4b.  set subscriber features:
 	if is_subscriber:
-	    listing.min_bid_dollar_use = min_bid_dollar_use
-	    listing.min_bid_dollar_amount = float(min_bid_dollar_amount)
+	    listing.min_bid_currency_use = min_bid_currency_use
+	    listing.min_bid_currency_amount = float(min_bid_currency_amount)
 	    listing.featured = feature_listing
 
 	key = listing.put()
@@ -160,7 +160,8 @@ class Listing(db.Model):
 	    if self.bid_count:
 		## can't release the listing items or bid items yet
 		## because no winner has been choosen:
-		self.set_status('ended', reason, set_items=False, set_bids=False)
+		## FIXED (now releases items and bid items)
+		self.set_status('ended', reason, set_items=True, set_bids=True)
 		queue_tool.expire_listing(str(self.key()), datetime.now() + timedelta(days=1))
 	    else:
 		self.status = 'ended'
@@ -184,7 +185,7 @@ class Listing(db.Model):
 
 	"""
 	status = self.status
-	if status == 'ended':
+	if status == 'ended' or status == 'active':
 	    k = bid_details['key']
 	    bid = Bid.get(k)
 	    bid.set_status('awarded', 'Bid chosen as winner.')
@@ -261,8 +262,8 @@ class Listing(db.Model):
 	    'bids' : [b.encode_builtin(listing=False, private=private) for b in bids],
 	    'feedback' : bfb.encode_builtin() if bfb else None,
 	    'featured' : self.featured,
-	    'min_bid_dollar_use' : self.min_bid_dollar_use,
-	    'min_bid_dollar_amount' : self.min_bid_dollar_amount,
+	    'min_bid_currency_use' : self.min_bid_currency_use,
+	    'min_bid_currency_amount' : self.min_bid_currency_amount,
 	}
 
 

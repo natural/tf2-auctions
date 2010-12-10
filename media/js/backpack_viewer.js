@@ -155,26 +155,22 @@ var BackpackController = Controller.extend({
     defaultSearchText: 'Enter a player name or Steam ID',
 
     '#backpack-viewer-search click' : function(e) {
-	var self = BackpackController
-	self.search(self.view.searchText())
+	this.search(this.view.searchText())
     },
 
     '#backpack-viewer-search-value keypress' : function(e) {
-	var self = BackpackController,
-	    code = (e.keyCode ? e.keyCode : e.which)
-	if (code == 13) { self.search(self.view.searchText()) }
+	var code = (e.keyCode ? e.keyCode : e.which)
+	if (code == 13) { this.search(this.view.searchText()) }
     },
 
     '#backpack-viewer-result-many-choose change' : function(e) {
-	var self = BackpackController
-	self.view.showSelection(e)
+	this.view.showSelection(e)
     },
 
     'ready' : function() {
-	var self = BackpackController,
-	    hash = self.hash()
-        self.view.searchText(self.defaultSearchText).select()
-	if (hash) { self.search(hash) }
+	var hash = this.hash()
+        this.view.searchText(this.defaultSearchText).select()
+	if (hash) { this.search(hash) }
     },
 
     search: function(value) {

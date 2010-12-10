@@ -35,6 +35,8 @@
 		    <div id="${slug}-duration-slider" name="duration" class="w75 float-right mt05 mb1"></div>
 		    <div class="clear"></div>
 		</div>
+
+		<div id="${slug}-min-bid-wrapper-pod">
 		<div class="center">
 		    <label class="mt05" for="${slug}-min-bid" id="${slug}-min-bid-label">
 			Minimum Bid Items (Optional):
@@ -56,6 +58,7 @@
 			     metal:use-macro="context.view_parts.macros.chooser_slim" />
 		    </div>
 		</div>
+		</div>
 
 
 		<div class="notnullyet msg mt2" id="${slug}-subscriber-pod">
@@ -63,23 +66,23 @@
 			<label class="center text-center">Premium Subscriber Features</label>
 
 			<label class="mt1">
-			    <input type="checkbox" name="${slug}-min-bid-dollar-use"
-				   id="${slug}-min-bid-dollar-use" />
-			    Minimum Bid as Dollar Amount (Optional)
+			    <input type="checkbox" name="${slug}-min-bid-currency-use"
+				   id="${slug}-min-bid-currency-use" />
+			    Minimum Bid as Currency Amount (Optional)
 			</label>
 			<div class="help mb05">
-			    Check the box above to enter a dollar
+			    Check the box above to enter a currency
 			    amount for a minimum bid.  Your listing
 			    can only have one type of minimum bid
-			    (dollar amount or items).
+			    (currency amount or items).
 			</div>
 
-			<div class="mb1" id="${slug}-min-bid-dollar-pod">
+			<div class="mb1" id="${slug}-min-bid-currency-pod">
 			    <div class="text-right">
 				Minimum Bid:
 				<input class="text-right" type="text"
-				       id="${slug}-min-bid-dollar-amount"
-				       name="${slug}-min-bid-dollar-amount"
+				       id="${slug}-min-bid-currency-amount"
+				       name="${slug}-min-bid-currency-amount"
 				       disabled="disabled"
 				       value="0.00" />
 			    </div>

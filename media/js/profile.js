@@ -5,6 +5,18 @@ var id64View = function() { return id64Internal || pathTail() }
 var setTitle = function(name) { document.title = document.title + ' - ' + name }
 
 
+var MessagesLoader = makeLoader({
+    prefix: '/api/v1/auth/list-messages',
+    name: 'MessagesLoader'
+})
+
+
+var ProfileLoader = makeLoader({
+    prefix: '/api/v1/public/profile/',
+    name: 'ProfileLoader'
+})
+
+
 //
 // set various page headings
 //

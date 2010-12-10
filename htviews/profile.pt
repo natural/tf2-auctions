@@ -171,9 +171,9 @@
 
 			    <div class="field">
 				<div class="field-container">
-				    <label>Listings w/ Minimum Bid Dollar Amounts</label>
+				    <label>Listings w/ Minimum Bid Currency Amounts</label>
 				    <div class="help">
-					You can create listings with dollar amounts as the minimum bid.
+					You can create listings with currency amounts as the minimum bid.
 					You do this on the <a href="/listing/add">Add Listing</a> page.
 				    </div>
 				</div>

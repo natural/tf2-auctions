@@ -368,8 +368,8 @@ large listings: um...
 			<td tal:attributes="width '70%' if use_bids else '100%'">
 			    <div class="${slug}-listing-view-min-bid null mt1">
 				<label>Minimum Bid:</label>
-				<h3 class="null ${slug}-listing-view-min-bid-dollar-use">
-				    <span class="dollars"></span>
+				<h3 class="null ${slug}-listing-view-min-bid-currency-use">
+				    <span class="currency"></span>
 				</h3>
 				<metal:display
 				     tal:define="rows 2; cols 5"
@@ -404,11 +404,12 @@ large bids: ...
             <table class="w100">
 		<tbody>
                     <tr>
-			<td tal:attributes="width '70%'">
+			<td tal:attributes="width '70%'; valign 'top'">
 			    <div class="${slug}-bid-view-link m05" tal:condition="use_view">
 				<a class="small-button small-item-button">View</a>
 			    </div>
-			    <div class="${slug}-bid-view-select-winner-link m05 null">
+			    <div class="items-view backpack"><table class="chooser"></table></div>
+			    <div class="${slug}-bid-view-select-winner-link mt05 mb1 null">
 				<a href="#" onclick="return false" class="small-button">Select Winner</a>
 				<span class="${slug}-choose-confirm null">
 				    <span class="m1">Are you sure?</span>
@@ -421,12 +422,10 @@ large bids: ...
 				Leave Feedback
 				</a>
 			    </div>
-			    <div class="items-view backpack"><table class="chooser"></table></div>
 			    <div class="mb1 null">
 				<strong class="bid-message-label-private">Private Message:</strong>
 				<div class="bid-message-private"></div>
 			    </div>
-
 			    <div>
 				<strong class="bid-message-label">Message:</strong>
 				<div class="bid-message"></div>

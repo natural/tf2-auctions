@@ -65,11 +65,11 @@ var BackpackListingTool = function(params) {
 	    console.log(profile)
 	    if (profile.subscription && profile.subscription.status == 'Verified') {
 		$$('subscriber-pod').show()
-		$$('min-bid-dollar-amount').keyup(function () {
+		$$('min-bid-currency-amount').keyup(function () {
 		    this.value = this.value.replace(/[^0-9\.]/g,'');
 		})
-		$$('min-bid-dollar-use').click(function() {
-		    $$('min-bid-dollar-amount').attr('disabled', !$$('min-bid-dollar-use').attr('checked'))
+		$$('min-bid-currency-use').click(function() {
+		    $$('min-bid-currency-amount').attr('disabled', !$$('min-bid-currency-use').attr('checked'))
 		})
 	    } else {
 		$$('subscriber-pod').remove()
@@ -125,15 +125,15 @@ var BackpackListingTool = function(params) {
 	var output = {}
 	var items = output.items = []
 	var min_bid = output.min_bid = []
-	output.min_bid_dollar_use = input.min_bid_dollar_use
-	output.min_bid_dollar_amount = input.min_bid_dollar_amount
+	output.min_bid_currency_use = input.min_bid_currency_use
+	output.min_bid_currency_amount = input.min_bid_currency_amount
 	output.feature_listing = input.feature_listing
 	output.days = input.days
 	output.desc = input.desc
 	$.each(input.items, function(idx, img) {
 	    items.push( $(img).data('node'))
 	})
-	if (!input.min_bid_dollar_use) {
+	if (!input.min_bid_currency_use) {
             $.each(input.min_bid, function(idx, img) {
 		min_bid.push( $(img).data('node').defindex )
 	    })
@@ -193,11 +193,11 @@ var BackpackListingTool = function(params) {
             errs.push({id:'#bp-chooser-listing-add-min-bid',
 		       msg:'Too many items. Select 0-10 items as a minimum bid.'})
 	}
-	// 5.  premium subscriber min bid dollars: checkbox + amount
-	var min_bid_dollar_use = $$('min-bid-dollar-use').attr('checked')
-	var min_bid_dollar_amount = 0.0
-	if (min_bid_dollar_use) {
-	    min_bid_dollar_amount = $$('min-bid-dollar-amount').val()
+	// 5.  premium subscriber min bid currency: checkbox + amount
+	var min_bid_currency_use = $$('min-bid-currency-use').attr('checked')
+	var min_bid_currency_amount = 0.0
+	if (min_bid_currency_use) {
+	    min_bid_currency_amount = $$('min-bid-currency-amount').val()
 	    min_bid = []
 	}
 	// 6.  premium subscriber featured listing
@@ -223,8 +223,8 @@ var BackpackListingTool = function(params) {
 	    $$('working').removeClass('null').text('Working...').fadeIn('fast')
 	    self.addListing({
 		items: items, desc: desc, days: days, min_bid: min_bid,
-		min_bid_dollar_use: min_bid_dollar_use,
-		min_bid_dollar_amount: min_bid_dollar_amount,
+		min_bid_currency_use: min_bid_currency_use,
+		min_bid_currency_amount: min_bid_currency_amount,
 		feature_listing: feature_listing,
 	    })
 	}
@@ -319,7 +319,15 @@ var schemaReady = function(schema) {
 }
 
 
+
 $(document).ready(function() {
+    $$('min-bid-currency-use').click(function() {
+        if ($(this).attr('checked')) {
+	    $$('min-bid-wrapper-pod').slideUp()
+	} else {
+	    $$('min-bid-wrapper-pod').slideDown()
+	}
+    })
     siteMessage('Loading item schema...')
     new SchemaLoader({success: schemaReady})
     $$('min-bid-show a').click(showMinBid)
