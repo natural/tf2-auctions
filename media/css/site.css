@@ -807,4 +807,13 @@ width:23.25em;
 }
 
 
-.featured { border-color: red !important }
+
+#featured-listings-pod .ov {
+background-color:#393431;
+border-color:#766b5e;
+}
+
+#featured-listings-pod td.item-view {
+border-color:#393431;
+background-color:#2e2b2a;
+}

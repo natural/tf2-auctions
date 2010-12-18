@@ -384,7 +384,6 @@ var authProfileOkay = function(profile) {
 	    }
 	})
 	$$('settings-tab').fadeIn()
-	console.log(profile)
 	if (profile.subscription && profile.subscription.status == 'Verified') {
 	    var nlt = new NotifyListingTool()
 	    var removeFromChooser = function(e) {

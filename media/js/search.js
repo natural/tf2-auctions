@@ -73,7 +73,10 @@ var SearchModel = SchemaModel.extend({
 	var q = self.hash()
         new SearchLoader({
             suffix: '?' + q,
-            success: function(rs) { self.view.join(rs, q) }
+            success: function(rs) {
+		self.searchResults = rs
+		self.view.joinSearch(rs, q)
+	    }
         })
 	SchemaModel.init.apply(this, arguments)
     },
@@ -140,10 +143,7 @@ var SearchView = SchemaView.extend({
         $('#search-bottom-prev').unbind().click(navPrevBottom)
     },
 
-    join: function(search, query) {
-        // temporary -- we've been called by the loader but we don't
-        // support that yet:
-        if (search.result) { return }
+    joinSearch: function(search, query) {
 	var self = this
 	if (query) { window.location.hash = query }
 	if (! $('#search-filter-inputs').children().length) {
@@ -159,7 +159,7 @@ var SearchView = SchemaView.extend({
 	    })
 	    $('input[name="sort"]').first().click()
         }
-        this.putListings(search)
+        this.putListings(search, true)
         this.message().fadeAway()
         $('#search-controls').fadeIn('fast')
         $('#search-listings').fadeIn('fast')
@@ -167,9 +167,9 @@ var SearchView = SchemaView.extend({
         self.contentWidths.results = $('#search-listing-pod').width()
     },
 
-    putListings: function(results) {
+    putListings: function(results, init) {
 	var self = this
-	$('div.listing-seed').remove()
+	$('#search-listings div.listing-seed').remove()
 	if (!results.listings.length) {
 	    $('#search-no-listings').text('Nothing found.  You should add a listing.').show()
 	    $('#search-some-listings').hide()
@@ -182,12 +182,13 @@ var SearchView = SchemaView.extend({
 	    $('#search-nav').fadeBack()
 	    $('#search-bottom-nav').fadeBack()
 	}
-	var proto = $('#search-listings div.prototype')
+	var proto = $('#search-listings div.prototype'),
+	    target = $('#search-listings')
 	$.each(results.listings, function(idx, listing) {
-	    self.putListing(
-                listing,
-	        proto.clone().addClass('listing-seed').removeClass('null prototype')
-            )
+            var clone = proto.clone()
+		       .addClass('listing-seed')
+		       .removeClass('null prototype')
+	    self.putListing(listing, clone, target)
 	})
 	if (results.more) {
 	    self.configNext(results)
@@ -205,6 +206,14 @@ var SearchView = SchemaView.extend({
 	    $('#search-prev-link, #search-bottom-prev-link').hide()
 	    $('#search-prev-none, #search-bottom-prev-none').show()
 	}
+	if (init && results.featured && results.featured.length) {
+	    var proto = $('#featured-listings div.prototype').clone()
+		        .addClass('listing-seed')
+		        .removeClass('null prototype'),
+                target = $('#featured-listings')
+	    self.putListing(results.featured[0], proto, target)
+	    $('#featured-listings-pod').slideDown()
+	}
 	new SchemaLoader({
             success: function(schema) {
 	        new AuthProfileLoader({
@@ -219,7 +228,7 @@ var SearchView = SchemaView.extend({
 	$('#search-nav-extra').fadeIn()
     },
 
-    putListing: function(listing, clone) {
+    putListing: function(listing, clone, target) {
 	if (listing.description) {
 	    $('.listing-description', clone).text(listing.description)
 	} else {
@@ -256,12 +265,13 @@ var SearchView = SchemaView.extend({
 	} else {
             $('.search-listing-view-min-bid', clone).hide()
 	}
-	$('.search-listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
-	$('.search-listing-view-link', clone)
+	$('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
+	$('.listing-view-link', clone)
 	    .append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
 	if (listing.featured) {clone.addClass('featured')}
-	$('#search-listings').append(clone)
+	target.append(clone)
     },
+
     searchTitle: function(v) {
 	return $('#search-title').text(v)
     },
@@ -385,11 +395,22 @@ var SearchController = Controller.extend({
     config: {auth: {required: false, settings: true}},
     model: SearchModel,
     view: SearchView,
-    hash: function() { return location.hash.slice(1) },
 
-    '#search-reverse-link click' : function(e) { e.controller.view.showReverse(e) },
-    '#search-advanced-link click' : function(e) { e.controller.view.showAdvanced(e) },
-    '#search-basic-link click' : function(e) { e.controller.view.showBasic(e) },
+    hash: function() {
+	return location.hash.slice(1)
+    },
+
+    '#search-reverse-link click' : function(e) {
+	e.controller.view.showReverse(e)
+    },
+
+    '#search-advanced-link click' : function(e) {
+	e.controller.view.showAdvanced(e)
+    },
+
+    '#search-basic-link click' : function(e) {
+	e.controller.view.showBasic(e)
+    },
 
     '#search-controls input[type="checkbox"] live:click' : function(e) {
 	e.controller.model.searchStack.optionChanged(e)

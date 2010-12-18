@@ -141,6 +141,10 @@ class Listing(db.Model):
 	queue_tool.notify_listing(subscription_key=None, listing_key=key, transactional=True)
 	return key
 
+    @classmethod
+    def basic_query(cls, status='active'):
+	return cls.all().filter('status = ', status)
+
     def cancel(self, reason=''):
 	""" Workflow function to cancel a listing.  Called by the user
 	    via a script.

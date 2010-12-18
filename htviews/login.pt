@@ -6,7 +6,7 @@
     <metal:fill fill-slot="main">
 	<div id="login-content" class="w40 center mt1">
 	    <div class="">
-		<h1><span class="hilite">&nbsp;</span>Safe and Secure Login.  It's Safe.  And Secure.</h1>
+		<h1><span class="hilite">&nbsp;</span>Safe and Secure Login</h1>
 
 		Click the link to sign in with your Steam account.
 		This site never gets your username or your password.
@@ -22,13 +22,16 @@
 	    <div class="m1 w100 center" style="margin:5em auto 0 auto;">
 		<h3 class="mt2">Q:  Is it safe?  A:  Yes, it's safe.</h3>
 		<p class="mt05">
+
 		    To log in, you'll be taken to
-		    <a class="nice" target="_new" href="https://steamcommunity.com">steamcommunity.com</a>.
+		    <a class="nice" target="_new"
+		    href="https://steamcommunity.com">steamcommunity.com</a>.
 		    That's a Valve web server.  That's where you enter
-		    your username and password.  Click the login link
-		    to see for yourself.  If you're using a modern web
-		    browser, you'll notice that the login page is
-		    secure.  Nifty, huh?
+		    your username and password.  You never, ever enter
+		    your username and password on this site.  Click
+		    the login link to see for yourself.  If you're
+		    using a modern web browser, you'll notice that the
+		    login page is secure.  Nifty, huh?
 		</p>
 
 		<h3 class="mt2">Q:  No, really, is it safe?  A:  Yes, really, it's safe.</h3>

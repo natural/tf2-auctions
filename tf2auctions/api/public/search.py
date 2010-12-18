@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from cgi import parse_qs
+from random import shuffle
 
 from tf2auctions import features
 from tf2auctions.lib import ApiHandler, cache
@@ -36,7 +37,7 @@ class ListingSearch(object):
 
 class BasicSearch(ListingSearch):
     def run(self, encoded=True):
-	q = Listing.all().filter('status = ', 'active')
+	q = Listing.basic_query()
 	qs = self.qs
 	@cache(self.rqs, ttl=180)
 	def inner_search():
@@ -85,6 +86,27 @@ class AdvancedSearch(ListingSearch):
 	return inner_search()
 
 
+class FeaturedSearch(ListingSearch):
+    limit = 20
+    qs = {}
+    rqs = ''
+
+    def __init__(self):
+	pass
+
+    def run(self, encoded=True):
+	@cache(self.__class__.__name__, ttl=180)
+	def inner_search():
+	    q = Listing.basic_query()
+	    q.filter('featured =', True)
+	    q.order('-created')
+	    listings = q.fetch(self.limit)
+	    if encoded:
+		listings = [lst.encode_builtin() for lst in listings]
+	    return listings
+	return inner_search()
+
+
 class ReverseSearch(ListingSearch):
     limit = 20
     max_defs = 4
@@ -98,7 +120,7 @@ class ReverseSearch(ListingSearch):
 		    mb = int(mb)
 		except (ValueError, ):
 		    continue
-		q = Listing.all().filter('status = ', 'active')
+		q = Listing.basic_query()
 		q.filter('min_bid =', mb)
 		listings += q.fetch(self.limit)
 	    listings = dict((lst.key(), lst) for lst in listings).values() ## remove dupes
@@ -119,6 +141,12 @@ def buildSearch(raw_qs):
 	return BasicSearch(qs, raw_qs)
 
 
+def featuredSearch():
+    featured = FeaturedSearch().run()
+    shuffle(featured)
+    return featured
+
+
 class ListingSearchHandler(ApiHandler):
     def get(self):
 	search = buildSearch(self.request.query_string)
@@ -129,6 +157,7 @@ class ListingSearchHandler(ApiHandler):
 	    'more' : more,
 	    'next_qs' : next_qs,
 	    'orders' : search.order_items(),
+	    'featured' : featuredSearch(),
 	})
 
 

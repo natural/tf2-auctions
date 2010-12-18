@@ -1,5 +1,5 @@
-var pid = function () { return window.location.pathname.split('/').pop() }
 var $$ = function(suffix, next) { return $('#listing-detail-' + suffix, next) }
+var pid = function () { return window.location.pathname.split('/').pop() }
 
 
 var ListingLoader = makeLoader({
@@ -14,22 +14,22 @@ var NewBidModel = Model.extend({
 
     init: function(view, config) {
 	var self = this
-	this.listing = config.listing
-	this.profile = config.profile
-	this.requests.push(function() {
+	self.listing = config.listing
+	self.profile = config.profile
+	self.requests.push(function() {
             new ListingsLoader({
                 suffix: config.profile.id64,
                 success: function(listings) { self.listings = listings }
             })
         })
-	this.requests.push(function() {
+	self.requests.push(function() {
             new BidsLoader({
                 suffix: config.profile.id64,
                 success: function(bids) { self.bids = bids }
 	   })
         })
-        this.loaderSuffix = config.profile.id64
-        Model.init.apply(this, [view, config])
+        self.loaderSuffix = config.profile.id64
+        Model.init.apply(self, [view, config])
     },
 
     ready: function(backpack) {
@@ -38,7 +38,7 @@ var NewBidModel = Model.extend({
 
     submit: function(params) {
 	var output = {
-            id: pid(),
+            id: this.listing.id,
             private_msg: params.private_msg,
             public_msg: params.public_msg,
             update: params.update,
@@ -49,8 +49,6 @@ var NewBidModel = Model.extend({
 		output.items.push( $(img).data('node') )
 	    }
 	})
-        // TODO: check the length on the items array to make sure
-        // we're posting at least 1 item or 1 new item.
 	$.ajax({
 	    url: '/api/v1/auth/add-bid',
 	    type: 'POST',
@@ -106,7 +104,6 @@ var NewBidView = View.extend({
 	$$('place-bid-pod').slideUp('slow', after)
     },
 
-
     show: function() {
 	var self = this
 	self.message('').fadeOut()
@@ -137,7 +134,7 @@ var NewBidView = View.extend({
 	    try {
 		var bids = self.model.bids,
                     current = $(bids).filter(function (idx, item) {
-		        return item.listing.id == pid()
+		        return (item.listing.id == self.model.listing.id)
 	            })[0],
                     currentIds = $(current.items).map(function (idx, item) {
 		        return item.uniqueid
@@ -172,7 +169,6 @@ var NewBidView = View.extend({
 	$$('add-bid-fields').width(width)
 	$$('add-bid-fields textarea').width(width).height(width/4).text()
 	$$('add-bid-terms-desc').parent().width(width)
-
 	$$('bid-bp-intro-pod').addClass('center').animate({width:width})
 	$$('add-bid-item-ch-intro-pod').addClass('center').animate({width:width})
     },
@@ -217,15 +213,14 @@ var NewBidController = {
     view: NewBidView,
     model: NewBidModel,
     profile: null,
+
     reinit: function() {
 	this.view.show.apply(this.view, [])
     },
 
     removeDefaultText : function(target, defsel) {
         var area = $(target)
-        if (area.text() == $(defsel).text()) {
-	    area.text('')
-        }
+        if (area.text() == $(defsel).text()) { area.text('') }
     },
 
     cancelNewBid: function() {
@@ -236,11 +231,11 @@ var NewBidController = {
     },
 
     submitBid: function() {
-	var self = this, errs = [],
+	var self = this,
+	    errs = [],
 	    items = $('#bp-chooser-listing-detail-add-bid-item img'),
 	    private_msg = $$('bid-private-msg').val(),
             public_msg = $$('bid-public-msg').val()
-
 	// 1.  bid items
 	if (items.length < 1 || items.length > 10) {
 	    errs.push({id:'#bp-chooser-listing-detail-add-bid-item',
@@ -308,10 +303,6 @@ var NewBidController = {
 	e.controller.view.chooser.moveToChooser(e)
     },
 
-    '#bp-unplaced-listing-detail-bid td div img live:dblclick': function(e) {
-//        e.controller.view.chooser.moveToChooser(e)
-    },
-
     '#bp-chooser-listing-detail-add-bid-item td div img live:dblclick': function(e) {
         e.controller.view.chooser.moveToOriginal(e)
     },
@@ -327,7 +318,6 @@ var NewBidController = {
     '#listing-detail-add-bid-success-view click': function() {
 	window.location.reload()
     }
-
 }
 
 
@@ -355,7 +345,8 @@ var DetailView = SchemaView.extend({
     },
 
     putListing: function() {
-	var self = this, listing = self.listing
+	var self = this,
+            listing = self.listing
 	$$('status').text(listing.status)
 	$$('title').text('Listing {0}'.fs(listing.id)).parent().fadeIn()
         self.putItems($$('items table').first(), listing.items, 5)
@@ -471,11 +462,10 @@ var DetailView = SchemaView.extend({
 	    $$('owner-controls').removeClass('null')
 	}
         if (status == 'active' || status == 'ended') {
-            $('.listing-detail-profile-bid-view-select-winner-link').show()
+            $('.select-winner-seed').show()
 	}
         $('.bid-message-private').parent().show()
     },
-
 
     putAuthTools: function() {
         $('.bid-message-private').parent().show()
@@ -566,6 +556,18 @@ var DetailView = SchemaView.extend({
 	 }
     },
 
+    hideSelectWinner: function(context) {
+	$('.select-winner-confirm', context).fadeOut(function() {
+            $('.select-winner-link', context).fadeIn()
+        })
+    },
+
+    showSelectWinner: function(context) {
+	$('.select-winner-link', context).fadeOut(function() {
+            $('.select-winner-confirm', context).fadeIn()
+        })
+    }
+
 })
 
 
@@ -575,7 +577,7 @@ var DetailModel = SchemaModel.extend({
 	self.requests.push(function() {
             new ListingLoader({
                 suffix: pid(),
-                success: function(l) { self.listing = l	}
+                success: function(listing) { self.listing = listing }
             })
         })
         SchemaModel.init.apply(self, arguments)
@@ -592,11 +594,11 @@ var DetailModel = SchemaModel.extend({
 	})
     },
 
-    cancelListing: function(id, success, error) {
+    cancelListing: function(success, error) {
 	$.ajax({
 	    url: '/api/v1/auth/cancel-listing',
 	    type: 'POST',
-	    data: $.toJSON({id: id}),
+	    data: $.toJSON({id: this.listing.id}),
 	    dataType: 'json',
 	    success: success,
             error: error
@@ -607,22 +609,18 @@ var DetailModel = SchemaModel.extend({
 	return null
     },
 
+//MARK
     selectWinner: function(bid, success, error) {
 	$.ajax({
 	    url: '/api/v1/auth/choose-winner',
 	    type: 'POST',
-	    data: $.toJSON({id: pid(), bid: bid}),
+	    data: $.toJSON({id: this.listing.id, bid: bid}),
 	    dataType: 'json',
 	    success: success,
             error: error
         })
     }
-
 })
-
-var bidData = function() {
-    return $$('bids div.ov').map(function(idx, ele) { return $(ele).data('bid') })
-}
 
 
 var DetailController = Controller.extend({
@@ -631,9 +629,9 @@ var DetailController = Controller.extend({
     view:DetailView,
 
     profileBid: function(profile) {
-        return $.grep(bidData(), function(bid, idx) {
-	    return (bid.owner.steamid==profile.steamid) }
-        )[0]
+        var bd = $$('bids div.ov').map(function(i, e) { return $(e).data('bid') }),
+	    pd = $.grep(bd, function(b, i) { return (b.owner.steamid==profile.steamid) })
+        return pd ? pd[0] : undefined
     },
 
     '#listing-detail-cancel-show-confirm click' : function(e) {
@@ -643,7 +641,7 @@ var DetailController = Controller.extend({
     '#listing-detail-cancel-submit click': function(e) {
 	var c = e.controller, v = c.view, m = c.model
 	v.beforeListingCancel()
-	m.cancelListing(m.listing.id, function() { v.afterListingCancel.apply(v) })
+	m.cancelListing(function() { v.afterListingCancel.apply(v) })
     },
 
     '#listing-detail-cancel-cancel click': function(e) {
@@ -673,12 +671,17 @@ var DetailController = Controller.extend({
 	c.model.cancelBid(b, function() { c.view.afterCancelBid(b) })
     },
 
-    '.listing-detail-profile-bid-view-select-winner-link a live:click' : function(e) {
+    '.select-winner-link live:click' : function(e) {
+        e.controller.view.showSelectWinner( $(e.target).parents('div.ov') )
+    },
+
+    '.select-winner-submit live:click' : function(e) {
 	var bid = $(e.target).parents('div.ov').data('bid')
-	console.log('select winner', bid)
-	this.model.selectWinner(bid, function() {
-				     console.log('winner selected')
-				})
+	e.controller.model.selectWinner(bid, function() { window.location.reload() })
+    },
+
+    '.select-winner-cancel live:click' : function(e) {
+	e.controller.view.hideSelectWinner($(e.target).parents('div.ov'))
     }
 
 })

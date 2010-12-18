@@ -23,10 +23,8 @@
 		<h2 class="null mb05" id="${slug}-some-listings"></h2>
 		<div class="" id="${slug}-results-pod">
 		    <metal:include
-			 tal:define="use_minbid True;
-				     rows 2; cols 5;
+			 tal:define="rows 2; cols 5;
 				     slug 'new-listings';
-				     use_created True;
 				     use_bids False"
 			 metal:use-macro="context.view_parts.macros.listings_large" />
 		</div>

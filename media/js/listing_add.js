@@ -6,6 +6,8 @@ var $$ = function(suffix, next) { return $('{0}-{1}'.fs(pid, suffix), next) }
 // encapsulates the minimum bid items tool and the corresponding
 // chooser.
 //
+// initMinBid(schema) = function(schema) {
+// }
 var MinBidTool = function() {
     var schemaTool = new SchemaTool()
     var bpTool = new BackpackItemsTool({
@@ -46,13 +48,15 @@ var BackpackListingTool = function(params) {
 	select: true,
 	outlineHover: true,
 	cols: 5,
+        title: 'Your Backpack',
 	help: 'Drag items from your backpack into the area below.  Double click works, too.',
     })
 
     var chTool = self.chooser = new BackpackChooserTool({
 	backpackSlug: 'a',
-	help: 'Remove items by dragging them to your backpack.  Double click will remove, too.',
 	chooserSlug: 'listing-add-item',
+        title: 'Your Listing',
+	help: 'Remove items by dragging them to your backpack.  Double click will remove, too.',
 	afterDropMove: function(item) { $('#bp-chooser-listing-add-item-error').parent().slideUp() }
     })
 
@@ -81,6 +85,8 @@ var BackpackListingTool = function(params) {
 	$$('own-backpack').fadeBack()
 	var width = $('table.bp-placed').width()
 	$$('fields textarea').width(width).height(width/4).text(defDesc)
+	$('#a-bp-intro-pod, #listing-add-item-ch-intro-pod')
+	    .addClass('center').animate({width:width})
 	$$('cancel').click(self.cancel)
 	$$('submit').click(self.submit)
 	$$('description').focusin(function() {

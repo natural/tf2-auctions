@@ -518,6 +518,7 @@ var BackpackChooserTool = function(options) {
     self.init = function(settings) {
 	self.initDrag()
 	self.initOptional()
+        self.updateCount()
     }
 
     self.initDrag = function() {
@@ -628,7 +629,7 @@ var BackpackChooserTool = function(options) {
 	}
 
 	if (options.title) {
-	    $('#bp-chooser-{0} > div > h3:first'.fs(chooserSlug)).text(options.title)
+	    $('#bp-chooser-{0} > div > h3:first'.fs(chooserSlug)).prepend(options.title)
        }
     }
 

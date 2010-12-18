@@ -14,7 +14,7 @@ slim chooser:  default 2 rows * 5 cols
 		 ordered ordered | False; ">
     <div class="bp bp-slim" id="bp-chooser-${slug}">
 	<div id="${slug}-ch-intro-pod">
-	    <h3><span id="${slug}-title-extra"></span></h3>
+	    <h3>&nbsp;<span id="${slug}-title-extra"></span></h3>
 	    <div><span class="help"></span></div>
 	</div>
 	<table class="bp-chooser center">
@@ -328,20 +328,16 @@ large listings: um...
 -->
 <metal:macro
      metal:define-macro="listings_large"
-     tal:define="use_created use_created | True;
-		 use_bids use_bids | True;
-		 use_minbid use_minbid | False">
-
+     tal:define="use_created use_created | True; use_bids use_bids | True">
     <div id="${slug}-listings">
 	<div class="null prototype ov">
             <table class="listing-view w100">
 		<tbody>
                     <tr>
 			<td tal:attributes="width '70%' if use_bids else '100%'">
-			    <div class="${slug}-listing-view-link m05">
+			    <div class="listing-view-link m05">
 				<a class="small-button small-item-button">View</a>
 			    </div>
-
 			    <metal:display use-macro="macros.items_view" />
 			    <strong class="listing-description-label">Description:</strong>
 			    <div class="listing-description desc"></div>
@@ -363,7 +359,6 @@ large listings: um...
 			    </div>
 			</td>
 		    </tr>
-
                     <tr>
 			<td tal:attributes="width '70%' if use_bids else '100%'">
 			    <div class="${slug}-listing-view-min-bid null mt1">
@@ -371,14 +366,11 @@ large listings: um...
 				<h3 class="null ${slug}-listing-view-min-bid-currency-use">
 				    <span class="currency"></span>
 				</h3>
-				<metal:display
-				     tal:define="rows 2; cols 5"
-				     use-macro="macros.items_view" />
+				<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
 			    </div>
 			</td>
 			<td></td>
 		    </tr>
-
 		</tbody>
             </table>
 	</div>
@@ -386,6 +378,68 @@ large listings: um...
 </metal:macro>
 
 
+<!--
+
+featured listings: um...
+
+-->
+<metal:macro define-macro="featured_large">
+    <div class="w83 float-left">
+	<div id="${slug}-listings">
+	    <div class="null prototype ov">
+		<table class="listing-view w100">
+		    <tbody>
+			<tr>
+			    <td width="70%">
+				<div class="listing-view-link m05">
+				    <a class="small-button small-item-button">View</a>
+				</div>
+				<metal:display use-macro="macros.items_view" />
+				<strong class="listing-description-label">Description:</strong>
+				<div class="listing-description desc"></div>
+			    </td>
+			    <td>
+				<strong>Created By:</strong>
+				<div class="listing-owner-seed mb1">
+				    <a href="#"><img class="listing-avatar" /></a>
+				    <a href="#"><span class="listing-owner"></span></a>
+				</div>
+				<div><strong>Bids: <span class="bid-count-seed"></span></strong></div>
+			    </td>
+			</tr>
+			<tr>
+			    <td width="70%">
+				<div class="${slug}-listing-view-min-bid null mt1">
+				    <label>Minimum Bid:</label>
+				    <h3 class="null ${slug}-listing-view-min-bid-currency-use">
+					<span class="currency"></span>
+				    </h3>
+				    <metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
+				</div>
+			    </td>
+			    <td></td>
+			</tr>
+		    </tbody>
+		</table>
+	    </div>
+	</div>
+    </div>
+    <div class="w15 float-right" style="border:1px solid red">
+	<h2>Featured Listings</h2>
+	<div class="w100 null" id="${slug}-nav-featured">
+	    <div class="float-right tools w100" id="${slug}-featured-nav">
+		<div class="navs text-right build-font nowrap">
+		<span class="nonav" id="${slug}-featured-prev-none">&lt;</span>
+		<span class="nav" id="${slug}-featured-prev-link"><a href="" id="${slug}-featured-prev">&lt;</a></span>
+		<span class="nav" id="${slug}-featured-next-link"><a href="" id="${slug}-featured-next">&gt;</a></span>
+		<span class="nonav" id="${slug}-featured-next-none">&gt;</span>
+		</div>
+	    </div>
+	    <div class="clear"></div>
+	</div>
+    </div>
+    <div class="clear"></div>
+</metal:macro>
 
 
 <!--
@@ -409,12 +463,12 @@ large bids: ...
 				<a class="small-button small-item-button">View</a>
 			    </div>
 			    <div class="items-view backpack"><table class="chooser"></table></div>
-			    <div class="${slug}-bid-view-select-winner-link mt05 mb1 null">
-				<a href="#" onclick="return false" class="small-button">Select Winner</a>
-				<span class="${slug}-choose-confirm null">
-				    <span class="m1">Are you sure?</span>
-				    <a href="#" class="small-button ${slug}-choose-winner-submit" onclick="return false">Yes</a>
-				    <a href="#" class="small-button ${slug}-choose-winner-cancel" onclick="return false">No</a>
+			    <div class="select-winner-seed mt05 mb1 null">
+				<a href="#" onclick="return false" class="small-button select-winner-link">Select Winner</a>
+				<span class="select-winner-confirm null">
+				    <span class="mr1">Are you sure this bid is the winner?</span>
+				    <a href="#" class="small-button select-winner-submit" onclick="return false">Yep, This one Wins!</a>
+				    <a href="#" class="small-button select-winner-cancel" onclick="return false">Cancel</a>
 			        </span>
 			    </div>
 			    <div class="${slug}-bid-view-refresh null m05">

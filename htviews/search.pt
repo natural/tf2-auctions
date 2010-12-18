@@ -14,11 +14,12 @@
 </head>
 <body>
 <metal:fill fill-slot="main" tal:define="slug 'search'">
-    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search Listings</span></h1>
+
 
     <div id="${slug}-pod" class="w100 pt05 desc">
-
 	<div id="${slug}-controls" class="null build-font float-left w15 controls">
+	    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search Listings</span></h1>
+
 	    <div id="${slug}-controls-nav">
 		<h2>Page:</h2>
 		<div class="tools" id="${slug}-nav">
@@ -105,11 +106,19 @@
 	</div>
 
 	<div id="${slug}-listing-pod" class="ml1 float-left w83">
+
+	    <div class="null w100" id="featured-listings-pod">
+		<metal:include
+		     tal:define="slug 'featured'; rows 2; cols 5;"
+		     metal:use-macro="context.view_parts.macros.featured_large">
+                </metal:include>
+	    </div>
+
 	    <h2 class="null" id="${slug}-no-listings"></h2>
 	    <h2 class="null mb05" id="${slug}-some-listings"></h2>
 	    <div class="" id="${slug}-results-pod">
 		<metal:include
-		     tal:define="slug 'search'; use_minbid True; rows 2; cols 5"
+		     tal:define="slug 'search'; rows 2; cols 5"
 		     metal:use-macro="context.view_parts.macros.listings_large" />
 		<div class="w100 null" id="${slug}-nav-extra">
 		    <div class="float-right tools w100" id="${slug}-bottom-nav">

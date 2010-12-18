@@ -16,11 +16,9 @@
     <metal:main fill-slot="main" tal:define="slug 'listing-add'">
 	<h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Add a New Listing</h1>
 	<div class="ov null" id="${slug}-own-backpack">
-	    <h3 id="${slug}-title-a">Your Backpack</h3>
 	    <metal:include
 		 tal:define="include_unplaced True; slug 'a'"
 		 metal:use-macro="context.view_parts.macros.backpack_slim" />
-	    <h3 id="${slug}-title">Your Listing <span id="${slug}-item-title-extra">(0 items)</span></h3>
 	    <metal:include
 		 tal:define="slug slug+'-item'"
 		 metal:use-macro="context.view_parts.macros.chooser_slim" />

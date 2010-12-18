@@ -69,7 +69,7 @@
 			 height="82" width="340" />
 		</a>
 	    </div>
-	    <div id="${slug}-site-buttons" class="">
+	    <div id="${slug}-site-buttons" class="null">
 		<span class="null" id="${slug}-user-buttons">
 		    <span id="${slug}-avatar-pod"></span>
 		    <a id="${slug}-player-profile-link" class="big-button" href="#">My Profile</a>

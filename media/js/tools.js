@@ -147,8 +147,8 @@ var listingUtil = Object.create({
 		$(prefix+'-listing-view-min-bid', target).hide()
 	    }
 	}
-	$(prefix+'-listing-view-link a', target).attr('href', '/listing/'+listing.id)
-	$(prefix+'-listing-view-link', target)
+	$('.listing-view-link a', target).attr('href', '/listing/'+listing.id)
+	$('.listing-view-link', target)
 	    .append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
     }
 })
@@ -164,16 +164,17 @@ var profileUtil = Object.create({
     },
 
     defaultUserAuthError: function(request, status, error) {
-	$('#content-login-link')
-	    .attr('href', profileUtil.loginUrl())
-	$('#content-search-link, #content-quick-backpack').fadeIn()
+	$('#content-login-link').attr('href', profileUtil.loginUrl())
+	$('#content-search-link, #content-quick-backpack').show()
+        $('#content-site-buttons').show()
     },
 
     defaultUserAuthOkay: function(p) {
-	$('#content-user-buttons, #content-logout-link').fadeIn()
-	$('#content-login-link').fadeOut()
 	$('#content-player-profile-link').attr('href', profileUtil.defaultUrl(p))
 	profileUtil.put(p)
+	$('#content-login-link').hide()
+	$('#content-user-buttons, #content-logout-link').show()
+        $('#content-site-buttons').show()
     },
 
     put: function(p) {
@@ -302,8 +303,7 @@ var SchemaLoader = makeLoader({
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsSchemaLoader',
     name: 'SchemaLoader',
-    successEvent: 'schemaLoaded',
-    debug: true
+    successEvent: 'schemaLoaded'
 })
 
 
@@ -322,7 +322,7 @@ var ListingsLoader = makeLoader({
 
 var SearchLoader = makeLoader({
     prefix: '/api/v1/public/search',
-    name: 'SearchLoader',
+    name: 'SearchLoader'
 })
 
 
