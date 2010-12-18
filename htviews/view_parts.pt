@@ -47,7 +47,7 @@ thin backpack: dynamic rows, cols, and pages
 <metal:macro
      metal:define-macro="backpack_thin"
      tal:define="slug slug | '';
-		 item_count item_count | 212;
+		 item_count item_count | 277;
 		 rows rows | 4;
 		 cols cols | 4; ">
     <div class="bp bp-thin" id="bp-${slug}">
@@ -84,7 +84,7 @@ thin backpack: dynamic rows, cols, and pages
 
 <!--
 
-slim backpack: 5 rows * 5 cols * 8 pages
+slim backpack: 5 rows * 5 cols * 12 pages
 
 -->
 <metal:macro
@@ -163,6 +163,7 @@ slim backpack: 5 rows * 5 cols * 8 pages
 			    <tr><td id="${slug}191"><div></div></td><td id="${slug}192"><div></div></td><td id="${slug}193"><div></div></td><td id="${slug}194"><div></div></td><td id="${slug}195"><div></div></td></tr>
 			</tbody>
 		    </table>
+
 		    <table class="bp-placed bp-8 null bp-page-${slug}">
 			<tbody>
 			    <tr><td id="${slug}156"><div></div></td><td id="${slug}157"><div></div></td><td id="${slug}158"><div></div></td><td id="${slug}159"><div></div></td><td id="${slug}160"><div></div></td></tr>
@@ -172,6 +173,44 @@ slim backpack: 5 rows * 5 cols * 8 pages
 			    <tr><td id="${slug}196"><div></div></td><td id="${slug}197"><div></div></td><td id="${slug}198"><div></div></td><td id="${slug}199"><div></div></td><td id="${slug}200"><div></div></td></tr>
 			</tbody>
 		    </table>
+		    <table class="bp-placed bp-9 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}201"><div></div></td><td id="${slug}202"><div></div></td><td id="${slug}203"><div></div></td><td id="${slug}204"><div></div></td><td id="${slug}205"><div></div></td></tr>
+			    <tr><td id="${slug}211"><div></div></td><td id="${slug}212"><div></div></td><td id="${slug}213"><div></div></td><td id="${slug}214"><div></div></td><td id="${slug}215"><div></div></td></tr>
+			    <tr><td id="${slug}221"><div></div></td><td id="${slug}222"><div></div></td><td id="${slug}223"><div></div></td><td id="${slug}224"><div></div></td><td id="${slug}225"><div></div></td></tr>
+			    <tr><td id="${slug}231"><div></div></td><td id="${slug}232"><div></div></td><td id="${slug}233"><div></div></td><td id="${slug}234"><div></div></td><td id="${slug}235"><div></div></td></tr>
+			    <tr><td id="${slug}241"><div></div></td><td id="${slug}242"><div></div></td><td id="${slug}243"><div></div></td><td id="${slug}244"><div></div></td><td id="${slug}245"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-10 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}206"><div></div></td><td id="${slug}207"><div></div></td><td id="${slug}208"><div></div></td><td id="${slug}209"><div></div></td><td id="${slug}210"><div></div></td></tr>
+			    <tr><td id="${slug}216"><div></div></td><td id="${slug}217"><div></div></td><td id="${slug}218"><div></div></td><td id="${slug}219"><div></div></td><td id="${slug}220"><div></div></td></tr>
+			    <tr><td id="${slug}226"><div></div></td><td id="${slug}227"><div></div></td><td id="${slug}228"><div></div></td><td id="${slug}229"><div></div></td><td id="${slug}230"><div></div></td></tr>
+			    <tr><td id="${slug}236"><div></div></td><td id="${slug}237"><div></div></td><td id="${slug}238"><div></div></td><td id="${slug}239"><div></div></td><td id="${slug}240"><div></div></td></tr>
+			    <tr><td id="${slug}246"><div></div></td><td id="${slug}247"><div></div></td><td id="${slug}248"><div></div></td><td id="${slug}249"><div></div></td><td id="${slug}250"><div></div></td></tr>
+			</tbody>
+		    </table>
+
+		    <table class="bp-placed bp-11 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}251"><div></div></td><td id="${slug}252"><div></div></td><td id="${slug}253"><div></div></td><td id="${slug}254"><div></div></td><td id="${slug}255"><div></div></td></tr>
+			    <tr><td id="${slug}261"><div></div></td><td id="${slug}262"><div></div></td><td id="${slug}263"><div></div></td><td id="${slug}264"><div></div></td><td id="${slug}265"><div></div></td></tr>
+			    <tr><td id="${slug}271"><div></div></td><td id="${slug}272"><div></div></td><td id="${slug}273"><div></div></td><td id="${slug}274"><div></div></td><td id="${slug}275"><div></div></td></tr>
+			    <tr><td id="${slug}281"><div></div></td><td id="${slug}282"><div></div></td><td id="${slug}283"><div></div></td><td id="${slug}284"><div></div></td><td id="${slug}285"><div></div></td></tr>
+			    <tr><td id="${slug}291"><div></div></td><td id="${slug}292"><div></div></td><td id="${slug}293"><div></div></td><td id="${slug}294"><div></div></td><td id="${slug}295"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed bp-12 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}256"><div></div></td><td id="${slug}257"><div></div></td><td id="${slug}258"><div></div></td><td id="${slug}259"><div></div></td><td id="${slug}260"><div></div></td></tr>
+			    <tr><td id="${slug}266"><div></div></td><td id="${slug}267"><div></div></td><td id="${slug}268"><div></div></td><td id="${slug}269"><div></div></td><td id="${slug}270"><div></div></td></tr>
+			    <tr><td id="${slug}276"><div></div></td><td id="${slug}277"><div></div></td><td id="${slug}278"><div></div></td><td id="${slug}279"><div></div></td><td id="${slug}280"><div></div></td></tr>
+			    <tr><td id="${slug}286"><div></div></td><td id="${slug}287"><div></div></td><td id="${slug}288"><div></div></td><td id="${slug}289"><div></div></td><td id="${slug}290"><div></div></td></tr>
+			    <tr><td id="${slug}296"><div></div></td><td id="${slug}297"><div></div></td><td id="${slug}298"><div></div></td><td id="${slug}299"><div></div></td><td id="${slug}300"><div></div></td></tr>
+			</tbody>
+		    </table>
+
 		    <metal:nav metal:use-macro="macros.backpack_navigator" />
 		</div>
             </div>
@@ -183,7 +222,7 @@ slim backpack: 5 rows * 5 cols * 8 pages
 
 <!--
 
-full width backpack: 5 rows * 10 cols * 4 pages
+full width backpack: 5 rows * 10 cols * 6 pages
 
 -->
 <metal:macro
@@ -230,6 +269,24 @@ full width backpack: 5 rows * 10 cols * 4 pages
 			    <tr><td id="${slug}171"><div></div></td><td id="${slug}172"><div></div></td><td id="${slug}173"><div></div></td><td id="${slug}174"><div></div></td><td id="${slug}175"><div></div></td><td id="${slug}176"><div></div></td><td id="${slug}177"><div></div></td><td id="${slug}178"><div></div></td><td id="${slug}179"><div></div></td><td id="${slug}180"><div></div></td></tr>
 			    <tr><td id="${slug}181"><div></div></td><td id="${slug}182"><div></div></td><td id="${slug}183"><div></div></td><td id="${slug}184"><div></div></td><td id="${slug}185"><div></div></td><td id="${slug}186"><div></div></td><td id="${slug}187"><div></div></td><td id="${slug}188"><div></div></td><td id="${slug}189"><div></div></td><td id="${slug}190"><div></div></td></tr>
 			    <tr><td id="${slug}191"><div></div></td><td id="${slug}192"><div></div></td><td id="${slug}193"><div></div></td><td id="${slug}194"><div></div></td><td id="${slug}195"><div></div></td><td id="${slug}196"><div></div></td><td id="${slug}197"><div></div></td><td id="${slug}198"><div></div></td><td id="${slug}199"><div></div></td><td id="${slug}200"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed center bp-5 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}201"><div></div></td><td id="${slug}202"><div></div></td><td id="${slug}203"><div></div></td><td id="${slug}204"><div></div></td><td id="${slug}205"><div></div></td><td id="${slug}206"><div></div></td><td id="${slug}207"><div></div></td><td id="${slug}208"><div></div></td><td id="${slug}209"><div></div></td><td id="${slug}210"><div></div></td></tr>
+			    <tr><td id="${slug}211"><div></div></td><td id="${slug}212"><div></div></td><td id="${slug}213"><div></div></td><td id="${slug}214"><div></div></td><td id="${slug}215"><div></div></td><td id="${slug}216"><div></div></td><td id="${slug}217"><div></div></td><td id="${slug}218"><div></div></td><td id="${slug}219"><div></div></td><td id="${slug}220"><div></div></td></tr>
+			    <tr><td id="${slug}221"><div></div></td><td id="${slug}222"><div></div></td><td id="${slug}223"><div></div></td><td id="${slug}224"><div></div></td><td id="${slug}225"><div></div></td><td id="${slug}226"><div></div></td><td id="${slug}227"><div></div></td><td id="${slug}228"><div></div></td><td id="${slug}229"><div></div></td><td id="${slug}230"><div></div></td></tr>
+			    <tr><td id="${slug}231"><div></div></td><td id="${slug}232"><div></div></td><td id="${slug}233"><div></div></td><td id="${slug}234"><div></div></td><td id="${slug}235"><div></div></td><td id="${slug}236"><div></div></td><td id="${slug}237"><div></div></td><td id="${slug}238"><div></div></td><td id="${slug}239"><div></div></td><td id="${slug}240"><div></div></td></tr>
+			    <tr><td id="${slug}241"><div></div></td><td id="${slug}242"><div></div></td><td id="${slug}243"><div></div></td><td id="${slug}244"><div></div></td><td id="${slug}245"><div></div></td><td id="${slug}246"><div></div></td><td id="${slug}247"><div></div></td><td id="${slug}248"><div></div></td><td id="${slug}249"><div></div></td><td id="${slug}250"><div></div></td></tr>
+			</tbody>
+		    </table>
+		    <table class="bp-placed center bp-6 null bp-page-${slug}">
+			<tbody>
+			    <tr><td id="${slug}251"><div></div></td><td id="${slug}252"><div></div></td><td id="${slug}253"><div></div></td><td id="${slug}254"><div></div></td><td id="${slug}255"><div></div></td><td id="${slug}256"><div></div></td><td id="${slug}257"><div></div></td><td id="${slug}258"><div></div></td><td id="${slug}259"><div></div></td><td id="${slug}260"><div></div></td></tr>
+			    <tr><td id="${slug}261"><div></div></td><td id="${slug}262"><div></div></td><td id="${slug}263"><div></div></td><td id="${slug}264"><div></div></td><td id="${slug}265"><div></div></td><td id="${slug}266"><div></div></td><td id="${slug}267"><div></div></td><td id="${slug}268"><div></div></td><td id="${slug}269"><div></div></td><td id="${slug}270"><div></div></td></tr>
+			    <tr><td id="${slug}271"><div></div></td><td id="${slug}272"><div></div></td><td id="${slug}273"><div></div></td><td id="${slug}274"><div></div></td><td id="${slug}275"><div></div></td><td id="${slug}276"><div></div></td><td id="${slug}277"><div></div></td><td id="${slug}278"><div></div></td><td id="${slug}279"><div></div></td><td id="${slug}280"><div></div></td></tr>
+			    <tr><td id="${slug}281"><div></div></td><td id="${slug}282"><div></div></td><td id="${slug}283"><div></div></td><td id="${slug}284"><div></div></td><td id="${slug}285"><div></div></td><td id="${slug}286"><div></div></td><td id="${slug}287"><div></div></td><td id="${slug}288"><div></div></td><td id="${slug}289"><div></div></td><td id="${slug}290"><div></div></td></tr>
+			    <tr><td id="${slug}291"><div></div></td><td id="${slug}292"><div></div></td><td id="${slug}293"><div></div></td><td id="${slug}294"><div></div></td><td id="${slug}295"><div></div></td><td id="${slug}296"><div></div></td><td id="${slug}297"><div></div></td><td id="${slug}298"><div></div></td><td id="${slug}299"><div></div></td><td id="${slug}300"><div></div></td></tr>
 			</tbody>
 		    </table>
 		    <metal:nav metal:use-macro="macros.backpack_navigator" />
