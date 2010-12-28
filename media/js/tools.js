@@ -178,6 +178,9 @@ var profileUtil = Object.create({
     },
 
     put: function(p) {
+        if (p.message_count) {
+	    $('#content-player-profile-link').text('{0} ({1})'.fs($('#content-player-profile-link').text(), p.message_count))
+	}
 	$('#content-avatar-pod')
 	    .html(makeImg({src: p.avatar, width: 24, height: 24}))
 	    .show()
@@ -552,12 +555,12 @@ var showTermsDialog = function(e) {
 }
 
 
-var updateTimeLeft = function (expires, selector) {
+var updateTimeLeft = function (expires, onChange, onExpires) {
     expires = new Date(expires)
     return function() {
 	var now = new Date(), delta = expires.getTime() - now.getTime()
 	if (delta < 0) {
-	    selector.text('expired')
+	    onExpires()
 	} else {
 	    var days=0, hours=0, mins=0, secs=0, text=''
 	    delta = Math.floor(delta/1000)
@@ -572,7 +575,7 @@ var updateTimeLeft = function (expires, selector) {
 	    if (days != 0 || hours != 0) { text += hours + 'h ' }
 	    if (days != 0 || hours != 0 || mins != 0) { text += mins +'m ' }
 	    text += secs +'s'
-	    selector.text(text)
+	    onChange(text)
 	}
     }
 }

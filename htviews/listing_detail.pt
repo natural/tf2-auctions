@@ -143,9 +143,9 @@
 
 	<div id="${slug}-existing-bids-pod">
 	    <div id="${slug}-login-pod" class="null mtb1">
-		<h2><span class="hilite">&nbsp;</span>You have to
+		<h1><span class="hilite">&nbsp;</span>You have to
 		    <a id="${slug}-login-link" class="nice" href="">login to place a bid</a>
-		    for these items</h2>
+		    for these items</h1>
 	    </div>
 	    <div id="${slug}-auth-bid-pod" class="null mtb1">
 		<h1 class="mb1"><span class="hilite">&nbsp;</span>Your Bid</h1>

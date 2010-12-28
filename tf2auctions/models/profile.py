@@ -9,6 +9,7 @@ from google.appengine.ext import db
 
 from tf2auctions.lib import json_dumps, json_loads, user_steam_id
 from tf2auctions.lib.proxyutils import fetch
+from tf2auctions.models.message import PlayerMessage
 from tf2auctions.models.settings import PlayerSettings
 from tf2auctions.models.subscriber import Subscription
 
@@ -153,6 +154,7 @@ class PlayerProfile(db.Expando):
 	else:
 	    psub = {}
 	res['subscription'] = psub
+	res['message_count'] = PlayerMessage.count_for_user(id64)
 	return res
 
     def add_rating(self, value):

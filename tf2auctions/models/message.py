@@ -38,6 +38,11 @@ class PlayerMessage(db.Model):
 	dec(message_counter_cache_key(msg))
 
     @classmethod
+    def count_for_user(cls, user, limit=100):
+	user = user_steam_id(user) if hasattr(user, 'nickname') else user
+	return cls.all().filter('target =', user).order('-created').count(limit)
+
+    @classmethod
     def get_for_user(cls, user, limit=100):
 	user = user_steam_id(user) if hasattr(user, 'nickname') else user
 	return cls.all().filter('target =', user).order('-created').fetch(limit)

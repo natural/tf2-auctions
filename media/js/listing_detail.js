@@ -364,8 +364,13 @@ var DetailView = SchemaView.extend({
 	}
 	if (listing.status == 'active') {
 	    self.timeLeftId = setInterval(
-		updateTimeLeft(listing.expires, $$('timeleft')), 1000
-	    )
+		updateTimeLeft(
+		    listing.expires,
+	            function (v) { $$('timeleft').text(v) },
+		    function () {
+			$$('timeleft').text('Expired')
+			$$('status').text('Expired')
+		    }), 1000)
         } else {
 	    $$('timeleft').parent().hide()
 	    $('label', $$('expires').parent()).text('Expired:')
@@ -424,6 +429,7 @@ var DetailView = SchemaView.extend({
 	    if (bid.status == 'awarded') {
 	        $('.winner', clone).text('Winner!').parent().show()
 	        $('.bid-status', clone).text('Winner!')
+		clone.addClass('winner')
 	    }
             clone.data('bid', bid)
             if (bid.message_public) {

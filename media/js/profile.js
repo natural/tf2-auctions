@@ -16,6 +16,14 @@ var ProfileLoader = makeLoader({
     name: 'ProfileLoader'
 })
 
+var makeStatusLoader = function(id) {
+    return makeLoader({
+        prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
+	dataType: 'jsonp',
+	name: 'StatusLoader' + id
+    })
+}
+
 
 //
 // set various page headings
@@ -57,8 +65,8 @@ var putMessages = function(msgs) {
     $.each(msgs.messages, function(idx, msg) {
 	var clone = $$('view-msg-pod div.prototype').clone()
 	$('.profile-msg-text-seed', clone).text(msg.message)
-
-	new StatusLoader({
+	var loader = makeStatusLoader(msg.source)
+	new loader({
 	    suffix: msg.source,
 	    success: function(status) {
 		var link = '<a href="/profile/{0}">{1}</a>'

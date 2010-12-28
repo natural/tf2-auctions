@@ -131,7 +131,8 @@ var BackpackView = SchemaView.extend({
 	                 toolTips: true,
 	                 select: true,
 	                 selectMulti: true,
-	                 outlineHover: true
+	                 outlineHover: true,
+                         altBuild: true
             })
         new AuthProfileLoader({
 	    suffix: '?settings=1&complete=1',

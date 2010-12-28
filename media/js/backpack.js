@@ -196,6 +196,10 @@ var ItemHoverTool = function(schema) {
 		} catch (e) { }
 	    })
 	}
+	if (playerItem['custom_desc']) {
+	    var current = $('#tooltip .alt').html()
+	    $('#tooltip .alt').html('"{0}"'.fs( (current ? current + '<br />' : '') + playerItem['custom_desc']))
+	}
 	// position and show
 	tooltip.css({
 	    left: Math.max(0, cell.offset().left - (tooltip.width()/2) + (cell.width()/2)),
@@ -318,6 +322,44 @@ var BackpackNavTool = function(options) {
 
 }
 
+var backpackPagesSlim = [
+    [[  1,   2,   3,   4,   5],
+     [ 11,  12,  13,  14,  15],
+     [ 21,  22,  23,  24,  25],
+     [ 31,  32,  33,  34,  35],
+     [ 41,  42,  43,  44,  45]],
+
+    [[  6,   7,   8,   9,  10],
+     [ 16,  17,  18,  19,  20],
+     [ 26,  27,  28,  29,  30],
+     [ 36,  37,  38,  39,  40],
+     [ 46,  47,  48,  49,  50]],
+]
+
+var makeBackbackCellIds = function(x, y, z) {
+    // x is the number of columns
+    // y is the number of rows
+    // z is the number of pages
+    var k = 0, pages = []
+
+    while (k < z) {
+	var page = [], j = 0
+	pages.push(page)
+
+	while (j < y) {
+	    var row = [], i = 0
+	    page.push(row)
+
+	    while (i < x) {
+		row.push( i+1 +(10*j) + k*5)
+		i += 1
+	    }
+	    j += 1
+	}
+	k += 1
+    }
+    return pages
+}
 
 //
 // tool for showing items in a backpack.
@@ -330,6 +372,16 @@ var BackpackItemsTool = function(options) {
         cols = options.cols || 10
 
     self.init = function(settings) {
+
+if (false && options.altBuild) {
+    console.log('BackpackItemsTool', slug)
+    $('#bp-{0} tbody'.fs(slug)).empty()
+    $('#bp-unplaced-{0}'.fs(slug)).empty()
+
+}
+
+
+
 	self.putItems(options.items, settings)
 	self.initOptional()
 	// TODO: restate this such that it works for both unplaced and

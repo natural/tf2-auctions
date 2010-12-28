@@ -53,7 +53,7 @@ var SearchModel = SchemaModel.extend({
 	        var q = chooserQuery(selector, qprefix)
 	        new SearchLoader({
 		    suffix: '?' + q,
-		    success: function(rs) { self.view.join(rs, q) }
+		    success: function(rs) { self.view.joinSearch(rs, q) }
 	        })
 	    },
 	    optionChanged: function() {
@@ -61,7 +61,7 @@ var SearchModel = SchemaModel.extend({
 	        var q = optionsQuery()
 	        new SearchLoader({
 		    suffix: '?' + q,
-		    success: function(rs) { self.view.join(rs, q) }
+		    success: function(rs) { self.view.joinSearch(rs, q) }
 	        })
 	    }
         }
@@ -75,7 +75,7 @@ var SearchModel = SchemaModel.extend({
             suffix: '?' + q,
             success: function(rs) {
 		self.searchResults = rs
-		self.view.joinSearch(rs, q)
+		self.view.joinSearch(rs, q, true)
 	    }
         })
 	SchemaModel.init.apply(this, arguments)
@@ -143,7 +143,7 @@ var SearchView = SchemaView.extend({
         $('#search-bottom-prev').unbind().click(navPrevBottom)
     },
 
-    joinSearch: function(search, query) {
+    joinSearch: function(search, query, init) {
 	var self = this
 	if (query) { window.location.hash = query }
 	if (! $('#search-filter-inputs').children().length) {
@@ -159,7 +159,7 @@ var SearchView = SchemaView.extend({
 	    })
 	    $('input[name="sort"]').first().click()
         }
-        this.putListings(search, true)
+        this.putListings(search, init)
         this.message().fadeAway()
         $('#search-controls').fadeIn('fast')
         $('#search-listings').fadeIn('fast')
