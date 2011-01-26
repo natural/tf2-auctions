@@ -7,10 +7,19 @@ known_categories = [
     ('weapon', 'Weapons'),
     ('craft_bar', 'Metal'),
 #    ('bundle', 'Bundles'),
+    ('', ''),
+    ('vintage', 'Vintage'),
+    ('unusual', 'Unusual'),
+    ('', ''),
     ('craft_token', 'Tokens'),
     ('supply_crate', 'Crates'),
     ('tool', 'Tools'),
 ]
+
+some_qualities = {
+    3 : 'vintage',
+    5 : 'unusual',
+}
 
 
 def item_craft_class(item):
@@ -31,7 +40,9 @@ def item_craft_class(item):
 def item_categories(items, schema):
     schema_items = schema['result']['items']['item']
     schema_cats = dict((s['defindex'], item_craft_class(s)) for s in schema_items)
-    return set(schema_cats[i['defindex']] for i in items)
+    classes = set(schema_cats[i['defindex']] for i in items)
+    rarities = set(some_qualities.get(i['quality']) for i in items)
+    return set(i for i in classes | rarities if i)
 
 
 def item_type_map(schema):

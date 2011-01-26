@@ -362,8 +362,12 @@ var searchOkay = function(search, query) {
     }
     if (! $$('filter-inputs').children().length) {
 	$.each(search.filters, function(idx, filter) {
-	    var input = '<input type="checkbox" name="{0}" />{1}<br />'.fs(filter[0], filter[1])
-	    $$('filter-inputs').append(input)
+	    if (!(filter[0])) {
+		var item = '<br />'
+            } else {
+		var item = '<input type="checkbox" name="{0}" />{1}<br />'.fs(filter[0], filter[1])
+	    }
+	    $$('filter-inputs').append(item)
 	})
 	$$('controls input[type="checkbox"]').click(searchStack.optionChanged)
     }
