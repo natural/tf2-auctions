@@ -179,7 +179,11 @@ var profileUtil = Object.create({
 
     put: function(p) {
         if (p.message_count) {
-	    $('#content-player-profile-link').text('{0} ({1})'.fs($('#content-player-profile-link').text(), p.message_count))
+	    var b = $('#content-player-profile-link')
+	    if (!b.data('msg-count')) {
+		b.text('{0} ({1})'.fs(b.text(), p.message_count))
+		b.data('msg-count', p.message_count)
+	    }
 	}
 	$('#content-avatar-pod')
 	    .html(makeImg({src: p.avatar, width: 24, height: 24}))

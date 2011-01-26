@@ -322,44 +322,73 @@ var BackpackNavTool = function(options) {
 
 }
 
-var backpackPagesSlim = [
-    [[  1,   2,   3,   4,   5],
-     [ 11,  12,  13,  14,  15],
-     [ 21,  22,  23,  24,  25],
-     [ 31,  32,  33,  34,  35],
-     [ 41,  42,  43,  44,  45]],
 
-    [[  6,   7,   8,   9,  10],
-     [ 16,  17,  18,  19,  20],
-     [ 26,  27,  28,  29,  30],
-     [ 36,  37,  38,  39,  40],
-     [ 46,  47,  48,  49,  50]],
-]
+/*
+  a1  ... a5
+  a11 ... a15
+  a21 ... a25
+  a31 ... a35
+  a41 ... a45
 
-var makeBackbackCellIds = function(x, y, z) {
-    // x is the number of columns
-    // y is the number of rows
-    // z is the number of pages
-    var k = 0, pages = []
+  a6  ... a10
+  a16 ... a20
+  a26 ... a30
+  a36 ... a40
+  a46 ... a50
 
-    while (k < z) {
-	var page = [], j = 0
-	pages.push(page)
+  ...
 
-	while (j < y) {
-	    var row = [], i = 0
-	    page.push(row)
+  a256 ... a260
+  a266 ... a270
+  a276 ... a280
+  a286 ... a290
+  a296 ... a300
+*/
 
-	    while (i < x) {
-		row.push( i+1 +(10*j) + k*5)
-		i += 1
+var BackpackPages = {
+    slim: function(items) {
+	var rows = this.rows(items, 5), curr = [], next = [], pages = [], i = 0
+	while (i <= rows.length) {
+	    if (i && !(i % 5)) {
+		pages.push(curr)
+		pages.push(next)
+		curr = []
+		next = []
 	    }
-	    j += 1
+	    curr.push(rows[i])
+	    next.push(rows[i+1])
+	    i += 2
 	}
-	k += 1
+	return pages
+    },
+
+    full: function(items) {
+	var rows = this.rows(items, 10), page = [], pages = [], i = 0
+	while (i <= rows.length) {
+	    if (i && !(i % 5)) {
+		pages.push(page)
+		page = []
+	    }
+	    page.push(rows[i])
+	    i += 1
+	}
+	return pages
+    },
+
+    rows: function(items, cols) {
+	var i = 0, rows = [], row = []
+	while (i < items) {
+	    if (!(i % cols)) {
+		row = []
+		rows.push(row)
+	    }
+	    row.push(i+1)
+	    i += 1
+	}
+	return rows
     }
-    return pages
 }
+
 
 //
 // tool for showing items in a backpack.
@@ -373,14 +402,25 @@ var BackpackItemsTool = function(options) {
 
     self.init = function(settings) {
 
-if (false && options.altBuild) {
-    console.log('BackpackItemsTool', slug)
-    $('#bp-{0} tbody'.fs(slug)).empty()
-    $('#bp-unplaced-{0}'.fs(slug)).empty()
-
-}
-
-
+	if (options.altBuild) {
+	    // support for the alternate (wipe and recreate) backpack
+	    // page construction.
+            $('#bp-{0} tbody'.fs(slug)).empty()
+            $('#bp-unplaced-{0}'.fs(slug)).empty()
+	    $.each(BackpackPages.full(400), function(index, rows) {
+		var target = $('#bp-placed-{0} table:eq({1}) tbody'.fs(slug, index))
+		if (!target.length) {
+		    // FIXME:  append is wrong; should be after
+		    $('#bp-placed-{0} div.bp-pages'.fs(slug)).append('<table class="bp-placed null bp-page-{0}"><tbody></tbody></table>'.fs(slug))
+		    var target = $('#bp-placed-{0} table:eq({1}) tbody'.fs(slug, index))
+		}
+		$.each(rows, function(index, row) {
+		    target.append('<tr>{0}</tr>'.fs(
+			$.map(row, function(id) { return '<td id="{0}{1}"><div></div></td>'.fs(slug, id) }).join('')
+		    ))
+		})
+	    })
+	}
 
 	self.putItems(options.items, settings)
 	self.initOptional()

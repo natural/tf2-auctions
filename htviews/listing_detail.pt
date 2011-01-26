@@ -38,8 +38,10 @@
 		    <div class="items-view backpack" id="${slug}-min-bid"><table></table></div>
 		</div>
 
+<!--
 		<metal:macro tal:define="slug 'bidder'"
 		     metal:use-macro="context.view_parts.macros.leave_feedback" />
+-->
             </div>
 	    <div id="${slug}-center" class="ml1">
 		<div class="mb1">
@@ -142,28 +144,53 @@
         </div>
 
 	<div id="${slug}-existing-bids-pod">
+
+	    <tal:comment condition="False">
+		this block is shown when the user isn't logged in
+	    </tal:comment>
 	    <div id="${slug}-login-pod" class="null mtb1">
 		<h1><span class="hilite">&nbsp;</span>You have to
-		    <a id="${slug}-login-link" class="nice" href="">login to place a bid</a>
-		    for these items</h1>
+		    <a id="${slug}-login-link" class="nice"
+		       href="">login to place a bid</a> for these items
+		</h1>
 	    </div>
+
+	    <tal:comment condition="False">
+	        this block is shown when the user is logged in; may be
+		changed by the page scripts to allow for bid update
+	    </tal:comment>
 	    <div id="${slug}-auth-bid-pod" class="null mtb1">
 		<h1 class="mb1"><span class="hilite">&nbsp;</span>Your Bid</h1>
+
 		<div class="m1">
-		<a class="button" id="${slug}-place-start" onclick="return false" href="#">Place Your Bid</a>
-		<span id="${slug}-auth-bid-cancelled" class="null"></span>
-		<span class="null">
-		    <a class="button" id="${slug}-existing-bid-cancel" href="#" onclick="return false"></a>
-		    <span class="null" id="${slug}-existing-bid-confirm">
-			Are you sure you want to cancel your bid?
-			<a class="button" href="#" id="${slug}-existing-bid-cancel-yes" onclick="return false">Yes</a>
-			<a class="button" href="#" id="${slug}-existing-bid-cancel-no" onclick="return false">No</a>
+		    <a class="button" id="${slug}-place-start"
+		       onclick="return false" href="#">Place Your Bid</a>
+		    <span id="${slug}-auth-bid-cancelled" class="null"></span>
+		    <span class="null">
+			<a class="button" id="${slug}-existing-bid-cancel"
+			   href="#" onclick="return false"></a>
+			<span class="null" id="${slug}-existing-bid-confirm">
+			    Are you sure you want to cancel your bid?
+			    <a class="button" href="#" onclick="return false"
+			       id="${slug}-existing-bid-cancel-yes">Yes</a>
+			    <a class="button" href="#" onclick="return false"
+			       id="${slug}-existing-bid-cancel-no">No</a>
+			</span>
 		    </span>
-		</span>
 		</div>
-
-
+		<div id="${slug}-auth-bid-feedback-pod" class="null">
+		    <h1 class=""><span class="hilite">&nbsp;</span>Your Feedback</h1>
+		    <div class="m1">
+			<metal:macro tal:define="slug 'bidder'"
+				     use-macro="context.view_parts.macros.leave_feedback2" />
+		    </div>
+		</div>
 	    </div>
+
+
+	    <tal:comment condition="False">
+		this block is a list of existing bids
+	    </tal:comment>
 	    <div id="${slug}-existing-bid-pod" class="null">
 		<h1 class="pt05"><span class="hilite">&nbsp;</span><span id="${slug}-bidcount"></span></h1>
 		<div id="${slug}-bids" class="mt05">
@@ -172,9 +199,12 @@
 			metal:use-macro="context.view_parts.macros.bids_large" />
 		</div>
 	    </div>
+
+
 	</div>
 
 
+	<!-- wrapper for new/update bid controls -->
 	<div id="${slug}-place-bid-pod" class="null center">
             <h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Place Your Bid</h1>
 	    <div class="ov null" id="${slug}-bid-currency">

@@ -18,7 +18,7 @@
 
     <div id="${slug}-pod" class="w100 pt05 desc">
 	<div id="${slug}-controls" class="null build-font float-left w15 controls">
-	    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search Listings</span></h1>
+	    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search</span></h1>
 
 	    <div id="${slug}-controls-nav">
 		<h2>Page:</h2>

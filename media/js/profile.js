@@ -275,14 +275,17 @@ var putListing = function(listing, clone) {
     }
     $('.listing-owner', clone).text(listing.owner.personaname)
     $('.listing-avatar', clone).attr('src', listing.owner.avatar)
-    var next = 0
+    var next = 0, prefix = '.profile'
     $.each(listing.items, function(index, item) {
 	$($('.item-view div', clone)[next]).append($.toJSON(item))
 	next += 1
     })
-    $('.profile-listing-view-link a', clone).attr('href', '/listing/'+listing.id)
+    $('.listing-view-link a', clone).attr('href', '/listing/'+listing.id)
     $('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
+    // TODO:  add min bid
     $$('listings').append(clone)
+
+
 }
 
 
@@ -359,7 +362,8 @@ var submitMessage = function() {
 var otherProfileOkay = function(profile) {
     $$('leave-msg-title')
 	.text('Leave a message for {0}:'.fs(profile.personaname))
-    $$('leave-msg-txt').width('50%').height(150)
+    $$('leave-msg-txt').width('90%').height(150)
+    $$('leave-msg-submit').parent().width('90%')
     $$('leave-msg-pod').slideDown()
     $$('leave-msg-submit').click(submitMessage)
     playerProfileOkay(profile)

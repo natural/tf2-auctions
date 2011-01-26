@@ -208,6 +208,62 @@ var NewBidView = View.extend({
 })
 
 
+var BidderFeedbackModel = Model.extend({
+    init: function(view, config) {
+	var self = this
+	self.view = view
+        view.init.apply(view, [self])
+    },
+
+    init___: function(view, config) {
+	var self = this
+	self.requests.push(function() {
+            new ListingLoader({
+                suffix: pid(),
+                success: function(listing) { self.listing = listing }
+            })
+        })
+        SchemaModel.init.apply(self, arguments)
+    },
+
+})
+
+
+var BidderFeedbackView = View.extend({
+    init: function() {
+	console.log('BidderFeedbackView.init()', this)
+	// the slider bits belong in the controller...
+	var slider = $('#bidder-feedback-rating-slider').slider({
+	        animate: true,
+	        max: 100,
+	        min:-100,
+	        value: 100,
+	        change: this.sliderChange,
+	        slide: this.sliderChange
+	    })
+	$('#bidder-feedback-rating-value').text('100')
+	$$('auth-bid-feedback-pod').show()
+    },
+
+    sliderChange: function(event, ui) {
+	var v = ui.value
+	$('#bidder-feedback-rating-value').text(''+v)
+    }
+})
+
+
+
+
+
+// just the definition; instantiated later
+var BidderFeedbackController = {
+    view: BidderFeedbackView,
+    model: BidderFeedbackModel,
+    reinit: function() {
+	console.log('BidderFeedbackController.reinit()')
+    }
+}
+
 // just the definition; instantiated later
 var NewBidController = {
     view: NewBidView,
@@ -370,6 +426,7 @@ var DetailView = SchemaView.extend({
 		    function () {
 			$$('timeleft').text('Expired')
 			$$('status').text('Expired')
+			$$('auth-bid-pod').slideUp()
 		    }), 1000)
         } else {
 	    $$('timeleft').parent().hide()
@@ -481,6 +538,19 @@ var DetailView = SchemaView.extend({
 	    if ($.inArray(this.profile.steamid, $(this.listing.bids).map(function(i, x) { return x.owner.steamid })) > -1) {
 	        $$('place-start').text('Update It').data('update', true)
 		$$('existing-bid-cancel').text('Cancel It').data('cancel', true).parent().show()
+
+		if (!this.bidFeedbackController) {
+		    var bfcondef = $.extend({}, BidderFeedbackController)
+		    this.bidFeedbackController = Controller.extend(bfcondef)
+		    this.bidFeedbackController.init()
+		} else {
+//		    this.bidFeedbackController.reinit()
+		}
+
+
+		// fetch feedback, if found, put it
+		// otherwise show feedback form
+
 	    }
         }
     },
@@ -524,6 +594,7 @@ var DetailView = SchemaView.extend({
             window.location.reload()
         })
         $$('auth-bid-pod').slideDown()
+	$$('auth-bid-feedback-pod').slideUp()
 	$$('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
 	this.putBidCount(this.listing.bid_count-1)
 	$.each($$('bids div.ov'), function(idx, ele) {

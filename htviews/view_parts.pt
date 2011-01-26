@@ -625,4 +625,53 @@ leave feedback form:
 
 
 
+<!--
+
+
+leave feedback form (new):
+
+
+-->
+<metal:macro define-macro="leave_feedback2" tal:define="default_feedback default_feedback|''">
+
+    <div class="null w75 p1 mt05 rating-view" id="${slug}-feedback-rating-pod">
+	<table class="">
+	    <tr>
+		<td class="w25">
+		    <div id="${slug}-rating" class="rating-badge"></div>
+		</td>
+		<td class="w75">
+		    <div id="${slug}-rating-text" class="desc"></div>
+		</td>
+	    </tr>
+	</table>
+    </div>
+
+    <div class="w100" id="${slug}-feedback-comment-pod">
+	<div id="${slug}-feedback-comment-value" class="null">text</div>
+	<div id="${slug}-feedback-controls" class="feedback-controls w50">
+	    <div id="${slug}-feedback-comment-help">Enter your feedback:</div>
+	    <div>
+		<textarea id="${slug}-feedback-comment-text">${default_feedback}</textarea>
+	    </div>
+	    <table class="mt1 mb1">
+		<tr>
+		    <td class="w25">
+			<div id="${slug}-feedback-rating-value-label">Rating:</div>
+			<div id="${slug}-feedback-rating-value"></div>
+		    </td>
+		    <td class="w75">
+			<div id="${slug}-feedback-rating-slider" class="w100 mt05 mr1" name=""></div>
+		    </td>
+		    <td>
+			<a href="#" onclick="return false" class="button save-button">Save Feedback</a>
+			<a href="#" onclick="return false" class="null button cancel-button">Cancel</a>
+		    </td>
+		</tr>
+	    </table>
+	</div>
+    </div>
+</metal:macro>
+
+
 </metal:parts>
