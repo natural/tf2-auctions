@@ -86,10 +86,10 @@
 	    </div>
 	    <div id="${slug}-site-categories" class="build-font">
 		<span class="mr1">Find stuff fast:</span>
+		<a class="nice " href="/search#unusual=on">Unusuals</a>&nbsp;&middot;&nbsp;
 		<a class="nice " href="/search#hat=on">Hats</a>&nbsp;&middot;&nbsp;
 		<a class="nice " href="/search#weapon=on">Weapons</a>&nbsp;&middot;&nbsp;
 		<a class="nice " href="/search#craft_bar=on">Metal</a>&nbsp;&middot;&nbsp;
-		<a class="nice " href="/search#tool=on">Tools</a>&nbsp;&middot;&nbsp;
 		<a class="nice" href="/search">more...</a>
 	    </div>
 	</div>

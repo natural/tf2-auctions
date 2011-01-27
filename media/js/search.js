@@ -148,10 +148,14 @@ var SearchView = SchemaView.extend({
 	if (query) { window.location.hash = query }
 	if (! $('#search-filter-inputs').children().length) {
 	    $.each(search.filters, function(idx, filter) {
-	        var input = '<input type="checkbox" name="{0}" />{1}<br />'.fs(filter[0], filter[1])
-	        $('#search-filter-inputs').append(input)
+		if (!(filter[0])) {
+		    var item = '<br />'
+		} else {
+		    var item = '<input type="checkbox" name="{0}" />{1}<br />'.fs(filter[0], filter[1])
+	        }
+		$('#search-filter-inputs').append(item)
 	    })
-        }
+		}
         if (!$('#search-sort-inputs').children().length) {
 	    $.each(search.orders, function(idx, order) {
 	        var input = '<input type="radio" name="sort" value="{0}" />{1}<br />'.fs(order[0], order[1])

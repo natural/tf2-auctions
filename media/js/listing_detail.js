@@ -441,7 +441,7 @@ var DetailView = SchemaView.extend({
     putListingOwner: function() {
 	var self = this, listing = self.listing, owner = listing.owner
 	$$('owner-link').attr('href')
-	$$('owner-profile-link').attr('href')
+	$$('owner-profile-link').attr('href', profileUtil.defaultUrl(owner))
 	if (owner.avatar) { $$('owner-avatar').attr('src', owner.avatarmedium) }
 	$$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(owner.steamid))
 	$$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(owner.steamid))
