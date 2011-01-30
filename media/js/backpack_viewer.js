@@ -81,9 +81,10 @@ var BackpackView = SchemaView.extend({
     },
 
     ready: function(id64, name, backpack) {
+	GBACKPACK = backpack
 	var self = BackpackView
         window.location.hash = id64
-        if (!backpack.length || backpack[0]==null) {
+        if (false) { //!backpack.length || backpack[0]==null) {
 	    $('#backpack-viewer-backpack-title')
 		.html(self.hiliteSpan('Backpack is Private or Empty'))
 		.fadeIn()
@@ -123,7 +124,7 @@ var BackpackView = SchemaView.extend({
     put: function(backpack, listings, bids) {
 	var self = BackpackView,
             bpTool = new BackpackItemsTool({
-	                 items: backpack,
+	                 items: backpack.result.items.item,
 	                 listingUids: listingItemsUids(listings),
                   	 bidUids: bidItemsUids(bids),
                          slug: 'bv',
@@ -132,7 +133,8 @@ var BackpackView = SchemaView.extend({
 	                 select: true,
 	                 selectMulti: true,
 	                 outlineHover: true,
-                         altBuild: true
+                         altBuild: true,
+		         slots: backpack.result.num_backpack_slots
             })
         new AuthProfileLoader({
 	    suffix: '?settings=1&complete=1',

@@ -298,7 +298,7 @@ var AuthProfileLoader = makeLoader({
 
 
 var BackpackLoader = makeLoader({
-    prefix: 'http://tf2apiproxy.appspot.com/api/v1/items/',
+    prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/items/',
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsBackpackLoader',
     name: 'BackpackLoader'

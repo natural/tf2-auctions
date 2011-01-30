@@ -674,4 +674,28 @@ leave feedback form (new):
 </metal:macro>
 
 
+<metal:macro
+     metal:define-macro="backpack_full_void"
+     tal:define="slug slug | '';">
+
+    <div class="bp bp-full" id="bp-${slug}">
+        <div><h3></h3></div>
+	<div class="bp-view">
+	    <metal:unplaced metal:use-macro="macros.backpack_unplaced" />
+	    <div class="bp-placed p05" id="bp-placed-${slug}">
+		<div class="bp-pages center">
+		    <metal:nav metal:use-macro="macros.backpack_navigator" />
+		</div>
+            </div>
+        </div>
+    </div>
+</metal:macro>
+
+
+
+
+
+
+
+
 </metal:parts>

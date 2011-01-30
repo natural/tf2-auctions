@@ -285,6 +285,7 @@ var BackpackNavTool = function(options) {
     }
 
     self.navigate = function(offset) {
+	console.log('nav: ', offset, pageCurrent, pageCount)
 	if ((pageCurrent + offset) > 0 && (pageCurrent + offset <= pageCount)) {
 	    var prev = pageCurrent
 	    var newMargin = $('div.bp-pages', outerContext).width() * (offset>0 ? -1 : 1)
@@ -406,13 +407,18 @@ var BackpackItemsTool = function(options) {
 	    // support for the alternate (wipe and recreate) backpack
 	    // page construction.
             $('#bp-{0} tbody'.fs(slug)).empty()
-            $('#bp-unplaced-{0}'.fs(slug)).empty()
-	    $.each(BackpackPages.full(400), function(index, rows) {
+//            $('#bp-unplaced-{0}'.fs(slug)).empty()
+
+	    $.each(BackpackPages.full(options.slots), function(index, rows) {
 		var target = $('#bp-placed-{0} table:eq({1}) tbody'.fs(slug, index))
 		if (!target.length) {
-		    // FIXME:  append is wrong; should be after
-		    $('#bp-placed-{0} div.bp-pages'.fs(slug)).append('<table class="bp-placed null bp-page-{0}"><tbody></tbody></table>'.fs(slug))
+		    $('#bp-placed-{0} div.bp-pages div.bp-nav'.fs(slug)).before(
+			'<table class="bp-placed null bp-{0} bp-page-{1}"><tbody></tbody></table>'.fs(1+index, slug)
+		    )
 		    var target = $('#bp-placed-{0} table:eq({1}) tbody'.fs(slug, index))
+		}
+		if (!index) {
+		    $('#bp-placed-{0} div.bp-pages table.bp-placed:eq(0)'.fs(slug)).removeClass('null')
 		}
 		$.each(rows, function(index, row) {
 		    target.append('<tr>{0}</tr>'.fs(
