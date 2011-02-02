@@ -115,10 +115,10 @@
 	    </div>
 	    <div id="${slug}-buttons" class="center text-center m2">
 		<span class="mr05">
-		    <a href="#" id="${slug}-submit" class="button">OK, Post It</a>
+		    <a href="#" id="${slug}-submit" class="button">Yep, I'm Sure!  Post It!</a>
 		</span>
 		<span class="">
-		    <a href="#" id="${slug}-cancel" class="button">Nah, Cancel</a>
+		    <a href="#" id="${slug}-cancel" class="button">Cancel</a>
 		</span>
 	    </div>
 	    <div id="${slug}-response" class="center text-center">

@@ -81,10 +81,9 @@ var BackpackView = SchemaView.extend({
     },
 
     ready: function(id64, name, backpack) {
-	GBACKPACK = backpack
-	var self = BackpackView
+	var self = BackpackView, items = backpack.result.items.item
         window.location.hash = id64
-        if (false) { //!backpack.length || backpack[0]==null) {
+        if (!items.length || items[0]==null) {
 	    $('#backpack-viewer-backpack-title')
 		.html(self.hiliteSpan('Backpack is Private or Empty'))
 		.fadeIn()
@@ -108,12 +107,15 @@ var BackpackView = SchemaView.extend({
     },
 
     clear: function() {
-        $('.bp-unplaced tbody').remove()
-        $('.bp-placed td div').empty()
-        $('.bp-placed td').removeClass()
+	console.log('BackpackView.clear()')
+	if (self.bpTool) { self.bpTool.reinit(); self.bpTool.reinit2() }
+        //$('.bp-unplaced tbody').remove()
+        //$('.bp-placed').remove()
+        //$('.bp-placed td').removeClass()
     },
 
     reset: function() {
+	console.log('BackpackView.reset()')
 	$('#backpack-viewer-search-controls')
 	    .animate({'margin-left':0, 'width':'100%'})
 	$('#backpack-viewer-result-none').text('')
@@ -122,6 +124,7 @@ var BackpackView = SchemaView.extend({
     },
 
     put: function(backpack, listings, bids) {
+	console.log('BackpackView.put(backpack:', backpack, ', listings:', listings, ', bids:', bids, ')')
 	var self = BackpackView,
             bpTool = new BackpackItemsTool({
 	                 items: backpack.result.items.item,
@@ -145,8 +148,6 @@ var BackpackView = SchemaView.extend({
         if (!self.put.initOnce) {
 	    $('#backpack-viewer-backpack-inner').fadeIn()
 	    self.put.initOnce = true
-        } else {
-	    bpTool.navigator.reinit()
         }
     }
 })

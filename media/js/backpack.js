@@ -1,5 +1,9 @@
 // haven't found these definitions anywhere in the source files:
 var itemEffects = {
+    2:  'Flying Bits',
+    3:  'Nemesis Burst',
+    4:  'Community Sparkle',
+    5:  'Holy Glow',
     6:  'Green Confetti',
     7:  'Purple Confetti',
     8:  'Haunted Ghosts',
@@ -12,7 +16,9 @@ var itemEffects = {
     15: 'Searing Plasma',
     16: 'Vivid Plasma',
     17: 'Sunbeams',
-    18: 'Circling Peace Sign'
+    18: 'Circling Peace Sign',
+    19: 'Circling Heart',
+    20: 'Map Stamps'
 }
 
 
@@ -189,12 +195,22 @@ var ItemHoverTool = function(schema) {
 		    if (attrDef['description_string']=='%s1% damage done') { return }
 		    if (attrDef['description_string']=='unused') { return }
 		    if (attrDef['attribute_class']=='set_employee_number') { return }
-		    var extra = formatSchemaAttr(attrDef, schemaAttr['value']),
-		        etype = effectTypeMap[attrDef['effect_type']],
+		    var etype = effectTypeMap[attrDef['effect_type']],
 		        current = $('#tooltip .' + etype).html()
+		    // particle effects defined in the schema, not the item:
+		    if (attrDef['attribute_class'] == 'set_attached_particle') {
+			var extra = formatSchemaAttr(attrDef, itemEffects[schemaAttr['value']])
+		    } else {
+			var extra = formatSchemaAttr(attrDef, schemaAttr['value'])
+		    }
 		    $('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
 		} catch (e) { }
 	    })
+	}
+	if (schemaItem['item_description']) {
+	    var current = $('#tooltip .alt').html(),
+	        desc = schemaItem['item_description']
+	    $('#tooltip .alt').html('{0}'.fs( (current ? current + '<br />' : '') + desc))
 	}
 	if (playerItem['custom_desc']) {
 	    var current = $('#tooltip .alt').html()
@@ -228,10 +244,11 @@ var BackpackNavTool = function(options) {
         initWidth = 0
 
     self.init = function() {
+	console.log('BackpackNavTool.init()')
 	initWidth = $('body').width() // sucks, but it's better than 0
         $('table.bp-page-{0}:gt(0)'.fs(slug), pagesContext).css('margin-left', initWidth)
-	$('a', navPrev).click(function (event) { self.navigate(-1); return false })
-	$('a', navNext).click(function (event) { self.navigate( 1); return false })
+	$('a', navPrev).unbind().click(function (event) { self.navigate(-1); return false })
+	$('a', navNext).unbind().click(function (event) { self.navigate( 1); return false })
 	self.updateButtons()
 
 	// maybe enable a select element for filtering by class and
@@ -248,6 +265,8 @@ var BackpackNavTool = function(options) {
             select.parent().show()
 	}
         $('#bp-nav-{0}'.fs(slug)).show()
+        $('table.bp-page-{0}'.fs(slug), pagesContext).css('display', 'none')
+        $('table.bp-page-{0}:eq(0)'.fs(slug), pagesContext).css('margin-left', 0).show()
     }
 
     self.applyFilter = function(event) {
@@ -282,10 +301,11 @@ var BackpackNavTool = function(options) {
 	while (pageCurrent > 1) {
 	    self.navigate(-1)
 	}
+	console.log('BackpackNavTool.reinit()')
     }
 
     self.navigate = function(offset) {
-	console.log('nav: ', offset, pageCurrent, pageCount)
+	console.log('BackpackNavTool.navigate(offset=', offset, ', pageCurrent=', pageCurrent, ', pageCount=', pageCount, ')')
 	if ((pageCurrent + offset) > 0 && (pageCurrent + offset <= pageCount)) {
 	    var prev = pageCurrent
 	    var newMargin = $('div.bp-pages', outerContext).width() * (offset>0 ? -1 : 1)
@@ -402,14 +422,13 @@ var BackpackItemsTool = function(options) {
         cols = options.cols || 10
 
     self.init = function(settings) {
-
+	console.log('BackpackItemsTool.init()')
 	if (options.altBuild) {
 	    // support for the alternate (wipe and recreate) backpack
 	    // page construction.
             $('#bp-{0} tbody'.fs(slug)).empty()
-//            $('#bp-unplaced-{0}'.fs(slug)).empty()
-
-	    $.each(BackpackPages.full(options.slots), function(index, rows) {
+	    var rowGroups = BackpackPages.full(options.slots)
+	    $.each(rowGroups, function(index, rows) {
 		var target = $('#bp-placed-{0} table:eq({1}) tbody'.fs(slug, index))
 		if (!target.length) {
 		    $('#bp-placed-{0} div.bp-pages div.bp-nav'.fs(slug)).before(
@@ -426,6 +445,11 @@ var BackpackItemsTool = function(options) {
 		    ))
 		})
 	    })
+	    // trim any extras
+	    var tables = $('#bp-placed-{0} table.bp-placed'.fs(slug))
+	    if (tables.length > rowGroups.length) {
+		$('#bp-placed-{0} table.bp-placed:gt({1})'.fs(slug, rowGroups.length-1)).remove()
+	    }
 	}
 
 	self.putItems(options.items, settings)

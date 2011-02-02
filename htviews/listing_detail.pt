@@ -211,7 +211,7 @@
 		<div>Your Bid:</div>
 		{CUR}
 		<input type="text" class="mono text-right" id="${slug}-currency-bid-amount" />
-		<a class="button" href="#" id="${slug}-currency-bid-submit" onclick="return false">Okay</a>
+		<a class="button" href="#" id="${slug}-currency-bid-submit" onclick="return false">Yep, I'm Sure!</a>
 		<a class="button" href="#" id="${slug}-currency-bid-cancel" onclick="return false">Cancel</a>
 	    </div>
 	    <div class="ov null" id="${slug}-own-backpack">

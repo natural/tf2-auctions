@@ -508,7 +508,7 @@ font-size:11pt;
 #tooltip .level { color:#756b5e; }
 #tooltip .vintage { color:#476291; }
 #tooltip .ctrl { color:#fff; text-align:left; }
-#tooltip .alt { color:#e4dbc4; }
+#tooltip .alt { color:#e4dbc4; max-width:24em; }
 #tooltip .positive { color:#8dbceb; }
 #tooltip .negative { color:#eb3b3b; }
 
