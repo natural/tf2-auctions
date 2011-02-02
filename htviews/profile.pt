@@ -220,7 +220,7 @@
 				    </div>
 				    <metal:include
 					 tal:define="slug 'notify-listing'"
-					 metal:use-macro="context.view_parts.macros.chooser_slim" />
+					 metal:use-macro="context.view_parts.macros.chooser" />
 				    </div>
 				</div>
 			    </div>

@@ -2,22 +2,25 @@
 // creates and initializes a backpack and chooser tool.
 //
 var initBackpack = function(schema, bpSlug, chSlug, afterDrop) {
-    var bpTool = new BackpackItemsTool({
-	items: schema.tradableBackpack(),
-	slug: bpSlug,
-	navigator: true,
-	toolTips: true,
-	select: true,
-	outlineHover: true,
-	filters: true
-    }),
-    chTool = new BackpackChooserTool({
-	backpackSlug: bpSlug,
-	chooserSlug: chSlug,
-	copy:true,
-	selectDeleteHover: true,
-	afterDropMove: afterDrop
-    })
+    var items = schema.tradableBackpack(),
+        bpTool = new BackpackItemsTool({
+	    items: items,
+            slug: bpSlug,
+            navigator: true,
+            toolTips: true,
+	    select: true,
+	    outlineHover: true,
+	    filters: true,
+	    rowGroups: BackpackPages.thin(Math.round(items.length*0.01) / 0.01),
+	    altOrdering: true
+        }),
+        chTool = new BackpackChooserTool({
+	    backpackSlug: bpSlug,
+	    chooserSlug: chSlug,
+	    copy: true,
+	    selectDeleteHover: true,
+	    afterDropMove: afterDrop
+        })
     bpTool.init()
     chTool.init()
 }

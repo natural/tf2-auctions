@@ -42,15 +42,15 @@
 		    <span class="help">Drag items to the search area below.  Double click works, too.
 		    </span>
 		    <metal:include
-			 tal:define="slug 'ac'; cols 4"
-			 metal:use-macro="context.view_parts.macros.backpack_thin" />
+			 tal:define="slug 'ac'"
+			 metal:use-macro="context.view_parts.macros.backpack_slim" />
 		    <label>Your Search:</label>
 		    <span class="help">Double click an item to remove it or
 			<a href="#" id="${slug}-advanced-reset" onclick="return false">remove all</a>.
 		    </span>
 		    <metal:include
 			 tal:define="slug 'advanced-search'; rows 1; cols 4"
-			 metal:use-macro="context.view_parts.macros.chooser_slim" />
+			 metal:use-macro="context.view_parts.macros.chooser" />
 		</div>
 	    </div>
 
@@ -63,15 +63,15 @@
 		    <span class="help">Drag items to the search area below.  Double click works, too.
 		    </span>
 		    <metal:include
-			 tal:define="slug 'rv'; cols 4"
-			 metal:use-macro="context.view_parts.macros.backpack_thin" />
+			 tal:define="slug 'rv'"
+			 metal:use-macro="context.view_parts.macros.backpack_slim" />
 		    <label>Your Search:</label>
 		    <span class="help">Double click an item to remove it or
 			<a href="#" id="${slug}-reverse-reset" onclick="return false">remove all</a>.
 		    </span>
 		    <metal:include
 			 tal:define="slug 'reverse-search'; rows 1; cols 4"
-			 metal:use-macro="context.view_parts.macros.chooser_slim" />
+			 metal:use-macro="context.view_parts.macros.chooser" />
 		</div>
 	    </div>
 

@@ -220,7 +220,7 @@
 		     metal:use-macro="context.view_parts.macros.backpack_slim" />
 		<metal:include
 		     tal:define="slug slug+'-add-bid-item'"
-		     metal:use-macro="context.view_parts.macros.chooser_slim" />
+		     metal:use-macro="context.view_parts.macros.chooser" />
 		<div id="${slug}-add-bid-fields" class="center">
 		    <label class="mt1">Private Message (Optional):</label>
 		    <div class="null" id="${slug}-bid-private-msg-default">You can enter a private message for the listing owner here.</div>

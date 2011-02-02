@@ -21,7 +21,7 @@
 		 metal:use-macro="context.view_parts.macros.backpack_slim" />
 	    <metal:include
 		 tal:define="slug slug+'-item'"
-		 metal:use-macro="context.view_parts.macros.chooser_slim" />
+		 metal:use-macro="context.view_parts.macros.chooser" />
 	    <div id="${slug}-fields" class="center any-slim">
 		<label class="mt05" for="${slug}-fields">Description:</label>
 		<div class="message null"><div class="error" id="${slug}-description-error"></div></div>
@@ -53,7 +53,7 @@
 			</label>
 			<metal:include
 			     tal:define="slug 'listing-add-min-bid'"
-			     metal:use-macro="context.view_parts.macros.chooser_slim" />
+			     metal:use-macro="context.view_parts.macros.chooser" />
 		    </div>
 		</div>
 		</div>

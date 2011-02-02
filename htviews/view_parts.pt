@@ -7,7 +7,7 @@ slim chooser:  default 2 rows * 5 cols
 
 -->
 <metal:macro
-     metal:define-macro="chooser_slim"
+     metal:define-macro="chooser"
      tal:define="slug slug | '';
 		 rows rows | 2;
 		 cols cols | 5;
@@ -36,49 +36,6 @@ slim chooser:  default 2 rows * 5 cols
 		</metal:loop>
 	    </tbody>
 	</table>
-    </div>
-</metal:macro>
-
-
-
-
-<!--
-
-thin backpack: dynamic rows, cols, and pages
-
--->
-<metal:macro
-     metal:define-macro="backpack_thin"
-     tal:define="slug slug | '';
-		 item_count item_count | 277;
-		 rows rows | 4;
-		 cols cols | 4; ">
-    <div class="bp bp-thin" id="bp-${slug}">
-	<div><h3></h3></div>
-	<div class="bp-view">
-	    <div class="bp-ordered" id="bp-ordered-${slug}">
-		<div class="bp-pages center">
-		    <div><span class="help"></span></div>
-		    <metal:dynamic tal:define="pages range(1+(item_count / (rows*cols)));
-					       rows range(rows);
-					       cols range(cols);
-					       cell_counter itertools.count(1)">
-			<metal:loop tal:repeat="page pages">
-			    <table class="bp-ordered bp-${page+1} bp-page-${slug} ${page and 'null' or ''}">
-				<tbody>
-				    <tr tal:repeat="row rows">
-					<td tal:repeat="col cols" id="${slug}${cell_counter.next()}">
-					    <div></div>
-					</td>
-				    </tr>
-				</tbody>
-			    </table>
-			</metal:loop>
-		    </metal:dynamic>
-		    <metal:nav metal:use-macro="macros.backpack_navigator" />
-		</div>
-	    </div>
-	</div>
     </div>
 </metal:macro>
 
@@ -455,6 +412,9 @@ leave feedback form (new):
 </metal:macro>
 
 
+
+<!-- full and slim backpack macros; these should be collapsed into one -->
+
 <metal:macro
      metal:define-macro="backpack_full"
      tal:define="slug slug | '';">
@@ -492,12 +452,6 @@ leave feedback form (new):
         </div>
     </div>
 </metal:macro>
-
-
-
-
-
-
 
 
 </metal:parts>

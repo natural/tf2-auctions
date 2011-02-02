@@ -367,6 +367,23 @@ var BackpackNavTool = function(options) {
 */
 
 var BackpackPages = {
+    // replace 'thin' and 'slim' with 'narrow(items, width:5 or 4)'
+    thin: function(items) {
+	var rows = this.rows(items, 4), curr = [], next = [], pages = [], i = 0
+	while (i <= rows.length) {
+	    if (i && !(i % 5)) {
+		pages.push(curr)
+		pages.push(next)
+		curr = []
+		next = []
+	    }
+	    curr.push(rows[i])
+	    next.push(rows[i+1])
+	    i += 2
+	}
+	return pages
+    },
+
     slim: function(items) {
 	var rows = this.rows(items, 5), curr = [], next = [], pages = [], i = 0
 	while (i <= rows.length) {
