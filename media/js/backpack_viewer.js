@@ -136,8 +136,7 @@ var BackpackView = SchemaView.extend({
 	                 select: true,
 	                 selectMulti: true,
 	                 outlineHover: true,
-                         altBuild: true,
-		         slots: backpack.result.num_backpack_slots
+		         rowGroups: BackpackPages.full(backpack.result.num_backpack_slots)
             })
         new AuthProfileLoader({
 	    suffix: '?settings=1&complete=1',

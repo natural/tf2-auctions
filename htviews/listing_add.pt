@@ -18,7 +18,7 @@
 	<div class="ov null" id="${slug}-own-backpack">
 	    <metal:include
 		 tal:define="include_unplaced True; slug 'a'"
-		 metal:use-macro="context.view_parts.macros.backpack_slim" />
+		 metal:use-macro="context.view_parts.macros.backpack_slim_void" />
 	    <metal:include
 		 tal:define="slug slug+'-item'"
 		 metal:use-macro="context.view_parts.macros.chooser_slim" />
@@ -46,8 +46,8 @@
 		<div class="null" id="${slug}-min-bid-pod">
 		    <div class="" id="${slug}-min-bid">
 			<metal:include
-			     tal:define="slug 'mb'; rows 5; cols 5;"
-			     metal:use-macro="context.view_parts.macros.backpack_thin" />
+			     tal:define="slug 'mb'"
+			     metal:use-macro="context.view_parts.macros.backpack_slim_void" />
 			<label id="${slug}-min-bid-title" class="center any-slim mt05">
 			    Minimum Bid <span id="${slug}-min-bid-title-extra">(0 items)</span>
 			</label>

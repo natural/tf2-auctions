@@ -9,16 +9,18 @@ var $$ = function(suffix, next) { return $('{0}-{1}'.fs(pid, suffix), next) }
 // initMinBid(schema) = function(schema) {
 // }
 var MinBidTool = function() {
-    var schemaTool = new SchemaTool()
+    var schemaTool = new SchemaTool(),
+        items = schemaTool.tradableBackpack()
     var bpTool = new BackpackItemsTool({
-	items: schemaTool.tradableBackpack(),
+	items: items,
 	slug: 'mb',
 	navigator: true,
 	toolTips: true,
 	select: true,
 	outlineHover: true,
 	filters: true,
-	help: 'Select the minimum items you will consider for a trade. You can select up to 10 items.'
+	help: 'Select the minimum items you will consider for a trade. You can select up to 10 items.',
+	rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01)
     })
     var chTool = this.chooser = new BackpackChooserTool({
 	backpackSlug: 'mb',
@@ -35,22 +37,22 @@ var MinBidTool = function() {
 // encapsulates the user's backpack when adding a listing.
 //
 var BackpackListingTool = function(params) {
-    var self = this
-    var defDesc  = 'Enter a description.'
-
-    var bpTool = new BackpackItemsTool({
-	items: params.backpack,
-	listingUids: params.listingUids,
-	bidUids: params.bidUids,
-	slug: 'a',
-	navigator: true,
-	toolTips: true,
-	select: true,
-	outlineHover: true,
-	cols: 5,
-        title: 'Your Backpack',
-	help: 'Drag items from your backpack into the area below.  Double click works, too.',
-    })
+    var self = this,
+        defDesc  = 'Enter a description.',
+        bpTool = new BackpackItemsTool({
+	    items: params.backpack.result.items.item,
+	    listingUids: params.listingUids,
+	    bidUids: params.bidUids,
+	    slug: 'a',
+	    navigator: true,
+	    toolTips: true,
+	    select: true,
+	    outlineHover: true,
+	    cols: 5,
+            title: 'Your Backpack',
+	    help: 'Drag items from your backpack into the area below.  Double click works, too.',
+	    rowGroups: BackpackPages.slim(params.backpack.result.num_backpack_slots)
+	})
 
     var chTool = self.chooser = new BackpackChooserTool({
 	backpackSlug: 'a',
@@ -66,7 +68,6 @@ var BackpackListingTool = function(params) {
 	    var settings = profile.settings
 	    bpTool.init(profile.settings)
 	    chTool.init(profile.settings)
-	    console.log(profile)
 	    if (profile.subscription && profile.subscription.status == 'Verified') {
 		$$('subscriber-pod').show()
 		$$('min-bid-currency-amount').keyup(function () {
@@ -286,7 +287,9 @@ var backpackReady = function(backpack, listings, bids, profile) {
     $('#bp-chooser-listing-add-item td div img')
 	.live('dblclick', addTool.chooser.moveToOriginal)
     siteMessage().fadeAway()
-    addTool.show()
+    // lame, quick hack until this module gets a rewrite for the MVC
+    // framework:
+    window.setTimeout(addTool.show, 1000)
 }
 
 
@@ -303,7 +306,6 @@ var listingsReady = function(listings, bids, profile) {
 
 var profileReady = function(profile) {
     siteMessage('Profile loaded.')
-    console.log(profile)
     var listingsLoaded = function(listings) {
 	new BidsLoader({
 	    suffix: profile.steamid,

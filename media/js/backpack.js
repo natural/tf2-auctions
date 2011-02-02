@@ -423,12 +423,11 @@ var BackpackItemsTool = function(options) {
 
     self.init = function(settings) {
 	console.log('BackpackItemsTool.init()')
-	if (options.altBuild) {
+	if (options.rowGroups) {
 	    // support for the alternate (wipe and recreate) backpack
 	    // page construction.
             $('#bp-{0} tbody'.fs(slug)).empty()
-	    var rowGroups = BackpackPages.full(options.slots)
-	    $.each(rowGroups, function(index, rows) {
+	    $.each(options.rowGroups, function(index, rows) {
 		var target = $('#bp-placed-{0} table:eq({1}) tbody'.fs(slug, index))
 		if (!target.length) {
 		    $('#bp-placed-{0} div.bp-pages div.bp-nav'.fs(slug)).before(
@@ -447,8 +446,8 @@ var BackpackItemsTool = function(options) {
 	    })
 	    // trim any extras
 	    var tables = $('#bp-placed-{0} table.bp-placed'.fs(slug))
-	    if (tables.length > rowGroups.length) {
-		$('#bp-placed-{0} table.bp-placed:gt({1})'.fs(slug, rowGroups.length-1)).remove()
+	    if (tables.length > options.rowGroups.length) {
+		$('#bp-placed-{0} table.bp-placed:gt({1})'.fs(slug, options.rowGroups.length-1)).remove()
 	    }
 	}
 
