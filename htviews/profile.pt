@@ -213,13 +213,13 @@
 				    </div>
 				    <div class="ov">
 				    <metal:include
-					 tal:define="slug 'nl'; cols 5;"
-					 metal:use-macro="context.view_parts.macros.backpack_thin" />
+					 tal:define="slug 'nl'"
+					 metal:use-macro="context.view_parts.macros.backpack_slim" />
 				    <div class="help">Double click an item to remove it or
 					<a href="#" id="${slug}-notify-listing-reset" onclick="return false">remove all</a>.
 				    </div>
 				    <metal:include
-					 tal:define="slug 'notify-listing'; rows 2; cols 5"
+					 tal:define="slug 'notify-listing'"
 					 metal:use-macro="context.view_parts.macros.chooser_slim" />
 				    </div>
 				</div>

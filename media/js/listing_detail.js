@@ -1,3 +1,5 @@
+// yellow: #FEFB00
+// green:  #00F800
 var $$ = function(suffix, next) { return $('#listing-detail-' + suffix, next) }
 var pid = function () { return window.location.pathname.split('/').pop() }
 
@@ -63,7 +65,7 @@ var NewBidModel = Model.extend({
 
 var makeBpTool = function(model) {
     return new BackpackItemsTool({
-        items: model.backpack,
+        items: model.backpack.result.items.item,
         listingUids: listingItemsUids(model.listings),
         bidUids: bidItemsUids(model.bids),
         slug: 'listing-detail-bid',
@@ -73,7 +75,8 @@ var makeBpTool = function(model) {
         outlineHover: true,
         cols: 5,
         title: 'Your Backpack',
-        help: 'Drag items from your backpack to the bid area below.  You can also double click an item to move it.'
+        help: 'Drag items from your backpack to the bid area below.  You can also double click an item to move it.',
+        rowGroups: BackpackPages.slim(model.backpack.result.num_backpack_slots)
     })
 }
 
@@ -241,13 +244,14 @@ var BidderFeedbackView = View.extend({
 	        change: this.sliderChange,
 	        slide: this.sliderChange
 	    })
-	$('#bidder-feedback-rating-value').text('100')
+	$('#bidder-feedback-rating-value').text('+100').addClass('rate-pos')
 	$$('auth-bid-feedback-pod').show()
     },
 
     sliderChange: function(event, ui) {
-	var v = ui.value
-	$('#bidder-feedback-rating-value').text(''+v)
+	var v = ui.value, e = $('#bidder-feedback-rating-value')
+	e.text('{0}{1}'.fs(v>0 ? '+' : '', v)).removeClass('rate-pos rate-neg rate-zero')
+	e.addClass(v > 0 ? 'rate-pos' : (v<0 ? 'rate-neg' : 'rate-zero'))
     }
 })
 

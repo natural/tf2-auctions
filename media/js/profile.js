@@ -139,13 +139,14 @@ var backpackReady = function(backpack) {
 
 var putBackpack = function(backpack, listings, bids) {
     var bpTool = new BackpackItemsTool({
-	items: backpack,
+	items: backpack.result.items.item,
 	listingUids: listingItemsUids(listings),
 	bidUids: bidItemsUids(bids),
 	navigator: true,
 	slug: 'profile',
 	toolTips: true,
-	outlineHover: true
+	outlineHover: true,
+        rowGroups: BackpackPages.full(backpack.result.num_backpack_slots)
     })
     new AuthProfileLoader({
 	suffix: '?settings=1&complete=1',
@@ -440,15 +441,17 @@ var authProfileOkay = function(profile) {
 
 var NotifyListingTool = function() {
     var self = this
-    var schemaTool = self.schemaTool = new SchemaTool()
+    var schemaTool = self.schemaTool = new SchemaTool(),
+        items = schemaTool.tradableBackpack()
     var bpTool = new BackpackItemsTool({
-	items: schemaTool.tradableBackpack(),
+	items: items,
 	slug: 'nl',
 	navigator: true,
 	toolTips: true,
 	select: true,
 	outlineHover: true,
-	filters: true
+	filters: true,
+	rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01),
     })
     var chTool = this.chooser = new BackpackChooserTool({
 	backpackSlug: 'nl',
@@ -591,6 +594,7 @@ $(document).ready(function() {
     }
 
     $('#tabs').tabs({
+	fx: {height: 'toggle', opacity: 'toggle', duration: 'slow'},
 	show: function(event, ui) {
 	    if (ui.index in tabCallbacks) {
 		// munge the hash (to prevent the browser from jumping

@@ -468,8 +468,17 @@ var BackpackItemsTool = function(options) {
 	    item.flag_active_listing = (item.id in listingUids)
 	    item.flag_active_bid = (item.id in bidUids)
 	    var iutil = itemUtil(item, schema), defindex = item['defindex']
+	    GOBJ = {item:item, iutil:iutil}
 	    if (iutil.pos() > 0) {
-		var ele = $('#' + slug + iutil.pos() + ' div').append(iutil.img())
+		// alternate ordering selects the first available div
+		// for the image, which is more natural looking for
+		// some backpacks (e.g., min bid)
+		if (options.altOrdering) {
+		    var ele = $('#bp-placed-{0} td div:empty'.fs(slug)).first()
+		} else {
+		    var ele = $('#{0}{1} div'.fs(slug, iutil.pos()))
+		}
+	        ele.append(iutil.img())
 		var img = $('img', ele).data('node', item)
 		self.setEquipped(iutil, img, defindex, settings)
 		self.setTradable(iutil, ele, item, settings)

@@ -20,7 +20,8 @@ var MinBidTool = function() {
 	outlineHover: true,
 	filters: true,
 	help: 'Select the minimum items you will consider for a trade. You can select up to 10 items.',
-	rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01)
+	rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01),
+	altOrdering: true,
     })
     var chTool = this.chooser = new BackpackChooserTool({
 	backpackSlug: 'mb',
