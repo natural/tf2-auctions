@@ -186,6 +186,15 @@ text-align:center;
 vertical-align:middle;
 }
 
+#featured-listings div.tools {
+margin:0;
+margin-right:0.25em;
+}
+
+#featured-listings div.listing-seed {
+margin-bottom:0;
+}
+
 div.tools div.navs span.nav a:active  { color:#2a2725 !important;}
 div.tools div.navs span.nonav { color:#2a2725; }
 div.tools div.navs span.nav a { color:#ece3cb; }

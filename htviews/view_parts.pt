@@ -3,15 +3,54 @@
 
 <!--
 
-slim chooser:  default 2 rows * 5 cols
+backpack_full: a wide backpack
 
 -->
-<metal:macro
-     metal:define-macro="chooser"
-     tal:define="slug slug | '';
-		 rows rows | 2;
-		 cols cols | 5;
-		 ordered ordered | False; ">
+<metal:macro metal:define-macro="backpack_full" tal:define="slug slug | ''">
+    <div class="bp bp-full" id="bp-${slug}">
+        <div><h3></h3></div>
+	<div class="bp-view">
+	    <metal:unplaced metal:use-macro="macros.unplaced" />
+	    <div class="bp-placed p05" id="bp-placed-${slug}">
+		<div class="bp-pages center">
+		    <metal:nav metal:use-macro="macros.navigator" />
+		</div>
+            </div>
+        </div>
+    </div>
+</metal:macro>
+
+
+<!--
+
+backpack_slim: a narrow backpack
+
+-->
+<metal:macro metal:define-macro="backpack_slim" tal:define="slug slug | ''">
+    <div class="bp bp-slim" id="bp-${slug}">
+	<div id="${slug}-bp-intro-pod">
+            <div><h3></h3></div>
+	    <div><span class="help"></span></div>
+	</div>
+	<div class="bp-view">
+	    <metal:unplaced metal:use-macro="macros.unplaced" />
+	    <div class="bp-placed p05" id="bp-placed-${slug}">
+		<div class="bp-pages center">
+		    <metal:nav metal:use-macro="macros.navigator" />
+		</div>
+            </div>
+        </div>
+    </div>
+</metal:macro>
+
+
+<!--
+
+chooser:  a small area for backpack item drag and drop.
+
+-->
+<metal:macro metal:define-macro="chooser"
+     tal:define="slug slug | ''; rows rows | 2; cols cols | 5;">
     <div class="bp bp-slim" id="bp-chooser-${slug}">
 	<div id="${slug}-ch-intro-pod">
 	    <h3>&nbsp;<span id="${slug}-title-extra"></span></h3>
@@ -42,10 +81,10 @@ slim chooser:  default 2 rows * 5 cols
 
 <!--
 
-backpack navigator buttons
+navigator: buttons for backpack navigation
 
 -->
-<metal:macro metal:define-macro="backpack_navigator">
+<metal:macro metal:define-macro="navigator">
     <div class="bp-nav text-right mt1 build-font pb05 mr05 null" id="bp-nav-${slug}">
 	<span class="bp-nav-filter null">
 	    <span class="help"></span>
@@ -64,13 +103,10 @@ backpack navigator buttons
 
 <!--
 
-backpack chooser:  one prototypical row, default 10 cols
+unplaced: an area for unplaced backpack items
 
 -->
-<metal:macro
-     metal:define-macro="backpack_unplaced"
-     tal:define="cols cols | 10">
-
+<metal:macro metal:define-macro="unplaced" tal:define="cols cols | 10">
     <div class="bp-unplaced null center bp-pages" id="bp-unplaced-${slug}">
 	<label></label>
 	<table class="bp-unplaced">
@@ -86,18 +122,13 @@ backpack chooser:  one prototypical row, default 10 cols
 </metal:macro>
 
 
-
-
 <!--
 
 items view: default 1 row * 10 columns
 
 -->
-<metal:macro
-     metal:define-macro="items_view"
-     tal:define="rows rows | 1;
-		 cols cols | 10; ">
-
+<metal:macro metal:define-macro="items_view"
+     tal:define="rows rows | 1; cols cols | 10; ">
     <div class="item-view">
 	<table class="chooser">
             <tbody>
@@ -179,9 +210,9 @@ featured listings: um...
 
 -->
 <metal:macro define-macro="featured_large">
-    <div class="w83 float-left">
-	<div id="${slug}-listings">
-	    <div class="null prototype ov">
+    <div class="w100 mb05">
+	<div id="${slug}-listings" class="ov">
+	    <div class="null prototype">
 		<table class="listing-view w100">
 		    <tbody>
 			<tr>
@@ -194,6 +225,16 @@ featured listings: um...
 				<div class="listing-description desc"></div>
 			    </td>
 			    <td>
+				<div class="float-right tools">
+				    <div class="navs text-right build-font nowrap">
+					<h2 class="mb1"><span class="hi">Featured Listing!</span></h2>
+					<span class="nonav prev null">&lt;</span>
+					<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
+					<span class="nonav next null">&gt;</span>
+					<span class="nav next null"><a onclick="return false" href="#">&gt;</a></span>
+				    </div>
+				</div>
+				<div class="clear"></div>
 				<strong>Created By:</strong>
 				<div class="listing-owner-seed mb1">
 				    <a href="#"><img class="listing-avatar" /></a>
@@ -217,23 +258,12 @@ featured listings: um...
 		    </tbody>
 		</table>
 	    </div>
+
+
+
+
 	</div>
     </div>
-    <div class="w15 float-right" style="border:1px solid red">
-	<h2>Featured Listings</h2>
-	<div class="w100 null" id="${slug}-nav-featured">
-	    <div class="float-right tools w100" id="${slug}-featured-nav">
-		<div class="navs text-right build-font nowrap">
-		<span class="nonav" id="${slug}-featured-prev-none">&lt;</span>
-		<span class="nav" id="${slug}-featured-prev-link"><a href="" id="${slug}-featured-prev">&lt;</a></span>
-		<span class="nav" id="${slug}-featured-next-link"><a href="" id="${slug}-featured-next">&gt;</a></span>
-		<span class="nonav" id="${slug}-featured-next-none">&gt;</span>
-		</div>
-	    </div>
-	    <div class="clear"></div>
-	</div>
-    </div>
-    <div class="clear"></div>
 </metal:macro>
 
 
@@ -244,8 +274,7 @@ large bids: ...
 
 
 -->
-<metal:macro
-     metal:define-macro="bids_large"
+<metal:macro metal:define-macro="bids_large"
      tal:define="use_created use_created | True;
 		 use_view use_view | True;">
     <div id="${slug}-bids">
@@ -408,48 +437,6 @@ leave feedback form (new):
 		</tr>
 	    </table>
 	</div>
-    </div>
-</metal:macro>
-
-
-
-<!-- full and slim backpack macros; these should be collapsed into one -->
-
-<metal:macro
-     metal:define-macro="backpack_full"
-     tal:define="slug slug | '';">
-
-    <div class="bp bp-full" id="bp-${slug}">
-        <div><h3></h3></div>
-	<div class="bp-view">
-	    <metal:unplaced metal:use-macro="macros.backpack_unplaced" />
-	    <div class="bp-placed p05" id="bp-placed-${slug}">
-		<div class="bp-pages center">
-		    <metal:nav metal:use-macro="macros.backpack_navigator" />
-		</div>
-            </div>
-        </div>
-    </div>
-</metal:macro>
-
-
-<metal:macro
-     metal:define-macro="backpack_slim"
-     tal:define="slug slug | '';">
-
-    <div class="bp bp-slim" id="bp-${slug}">
-	<div id="${slug}-bp-intro-pod">
-            <div><h3></h3></div>
-	    <div><span class="help"></span></div>
-	</div>
-	<div class="bp-view">
-	    <metal:unplaced metal:use-macro="macros.backpack_unplaced" />
-	    <div class="bp-placed p05" id="bp-placed-${slug}">
-		<div class="bp-pages center">
-		    <metal:nav metal:use-macro="macros.backpack_navigator" />
-		</div>
-            </div>
-        </div>
     </div>
 </metal:macro>
 

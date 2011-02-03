@@ -11,7 +11,7 @@ var initBackpack = function(schema, bpSlug, chSlug, afterDrop) {
 	    select: true,
 	    outlineHover: true,
 	    filters: true,
-	    rowGroups: BackpackPages.thin(Math.round(items.length*0.01) / 0.01),
+	    rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01, 4),
 	    altOrdering: true
         }),
         chTool = new BackpackChooserTool({
@@ -213,14 +213,11 @@ var SearchView = SchemaView.extend({
 	    $('#search-prev-link, #search-bottom-prev-link').hide()
 	    $('#search-prev-none, #search-bottom-prev-none').show()
 	}
+
 	if (init && results.featured && results.featured.length) {
-	    var proto = $('#featured-listings div.prototype').clone()
-		        .addClass('listing-seed')
-		        .removeClass('null prototype'),
-                target = $('#featured-listings')
-	    self.putListing(results.featured[0], proto, target)
-	    $('#featured-listings-pod').slideDown()
+	    self.initFeatured(results.featured)
 	}
+
 	new SchemaLoader({
             success: function(schema) {
 	        new AuthProfileLoader({
@@ -277,6 +274,64 @@ var SearchView = SchemaView.extend({
 	    .append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
 	if (listing.featured) {clone.addClass('featured')}
 	target.append(clone)
+    },
+
+    initFeatured: function(featured) {
+	var target = $('#featured-listings'),
+	    self = this
+	$.each(featured, function(index, fitem) {
+            var proto = $('#featured-listings div.prototype').clone()
+		.addClass('listing-seed')
+	        .removeClass('prototype null')
+	    self.putListing(fitem, proto, target)
+	    //if (!index) { proto.removeClass('null') }
+	})
+	if (featured.length) {
+	    $('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
+	    $('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
+	    $('#featured-listings-pod').slideDown()
+	}
+	this.featured = {all: featured, current:featured[0]}
+    },
+
+    navFeatured: function(offset) {
+	var featured = this.featured,
+	     current = featured.current,
+	     index = featured.all.indexOf(current),
+	     count = featured.all.length
+	console.log('navFeatured', current, index, count)
+
+	if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
+	$('#featured-listings div.listing-seed').fadeOut().remove()
+	var target = $('#featured-listings'),
+            proto = $('#featured-listings div.prototype').clone()
+                .addClass('listing-seed')
+	        .removeClass('null prototype')
+
+	    featured.current = featured.all[index+offset]
+	    this.putListing(featured.current, proto, target)
+	    var nonPrev = $('#featured-listings div.listing-seed div.navs span.nonav.prev'),
+                navPrev = $('#featured-listings div.listing-seed div.navs span.nav.prev'),
+                nonNext = $('#featured-listings div.listing-seed div.navs span.nonav.next'),
+                navNext = $('#featured-listings div.listing-seed div.navs span.nav.next')
+
+	    if (index+offset == 0) {
+		nonPrev.show()
+		navPrev.hide()
+	    } else {
+		nonPrev.hide()
+		navPrev.show()
+	    }
+	    if (index+offset == count-1) {
+		nonNext.show()
+		navNext.hide()
+	    } else {
+		nonNext.hide()
+		navNext.show()
+	    }
+	    this.putImages() // needs user prefs
+	    $("#featured-listings td.item-view div:empty").parent().remove()
+	}
     },
 
     searchTitle: function(v) {
@@ -425,6 +480,14 @@ var SearchController = Controller.extend({
 
     '#search-controls input[type="radio"] live:click' : function(e) {
          e.controller.model.searchStack.optionChanged(e)
+    },
+
+    '#featured-listings div.listing-seed div.navs span.nav.next live:click' : function(e) {
+	e.controller.view.navFeatured(1)
+    },
+
+    '#featured-listings div.listing-seed div.navs span.nav.prev live:click' : function(e) {
+	e.controller.view.navFeatured(-1)
     },
 
     'ready' : function() {

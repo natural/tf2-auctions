@@ -340,52 +340,13 @@ var BackpackNavTool = function(options) {
 	    navNext.show()
 	}
     }
-
 }
 
 
-/*
-  a1  ... a5
-  a11 ... a15
-  a21 ... a25
-  a31 ... a35
-  a41 ... a45
-
-  a6  ... a10
-  a16 ... a20
-  a26 ... a30
-  a36 ... a40
-  a46 ... a50
-
-  ...
-
-  a256 ... a260
-  a266 ... a270
-  a276 ... a280
-  a286 ... a290
-  a296 ... a300
-*/
-
 var BackpackPages = {
-    // replace 'thin' and 'slim' with 'narrow(items, width:5 or 4)'
-    thin: function(items) {
-	var rows = this.rows(items, 4), curr = [], next = [], pages = [], i = 0
-	while (i <= rows.length) {
-	    if (i && !(i % 5)) {
-		pages.push(curr)
-		pages.push(next)
-		curr = []
-		next = []
-	    }
-	    curr.push(rows[i])
-	    next.push(rows[i+1])
-	    i += 2
-	}
-	return pages
-    },
-
-    slim: function(items) {
-	var rows = this.rows(items, 5), curr = [], next = [], pages = [], i = 0
+    slim: function(items, cols) {
+	cols = cols || 5
+	var rows = this.rows(items, cols), curr = [], next = [], pages = [], i = 0
 	while (i <= rows.length) {
 	    if (i && !(i % 5)) {
 		pages.push(curr)
