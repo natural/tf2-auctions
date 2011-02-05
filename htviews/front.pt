@@ -18,6 +18,13 @@
 		</div>
 	    </div>
 
+	    <div class="null w100" id="featured-listings-pod">
+		<metal:include
+		     tal:define="slug 'featured'; rows 2; cols 5;"
+		     metal:use-macro="context.view_parts.macros.featured_large">
+                </metal:include>
+	    </div>
+
 	    <div id="${slug}-new-listings-pod" class="null">
 		<h2 class="null mb05" id="${slug}-no-listings"></h2>
 		<h2 class="null mb05" id="${slug}-some-listings"></h2>

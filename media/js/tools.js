@@ -807,6 +807,61 @@ var SchemaView = View.extend({
 })
 
 
+var SearchBaseView = SchemaView.extend({
+    initFeatured: function(featured) {
+	var target = $('#featured-listings'),
+	    self = this
+	$.each(featured, function(index, fitem) {
+            var proto = $('#featured-listings div.prototype').clone()
+		.addClass('listing-seed')
+	        .removeClass('prototype')
+	    self.putListing(fitem, proto, target)
+	})
+	if (featured.length) {
+	    $('#featured-listings div.listing-seed.null:first').removeClass('null')
+	    $('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
+	    $('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
+	    $('#featured-listings-pod').slideDown()
+	}
+    },
+
+    navFeatured: function(offset) {
+	var current = $('#featured-listings div.listing-seed.listing-seed:visible'),
+	    others = $('#featured-listings div.listing-seed.listing-seed:hidden'),
+	    all = $('#featured-listings div.listing-seed.listing-seed'),
+	    index = all.index(current),
+            count = all.length
+
+	console.log('navFeatured', current, index, count)
+
+	if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
+	    current.fadeOut(function () { $(all[index+offset]).fadeIn() })
+	    var nonPrev = $('#featured-listings div.listing-seed div.navs span.nonav.prev'),
+                navPrev = $('#featured-listings div.listing-seed div.navs span.nav.prev'),
+                nonNext = $('#featured-listings div.listing-seed div.navs span.nonav.next'),
+                navNext = $('#featured-listings div.listing-seed div.navs span.nav.next')
+
+	    if (index+offset == 0) {
+		nonPrev.show()
+		navPrev.hide()
+	    } else {
+		nonPrev.hide()
+		navPrev.show()
+	    }
+	    if (index+offset == count-1) {
+		nonNext.show()
+		navNext.hide()
+	    } else {
+		nonNext.hide()
+		navNext.show()
+	    }
+	}
+    }
+
+})
+
+
+
 //
 // document and library initialization
 //

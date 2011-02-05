@@ -91,7 +91,7 @@ var SearchModel = Model.make({
 })
 
 
-var SearchView = SchemaView.extend({
+var SearchView = SearchBaseView.extend({
     authSuccess: function(profile) {
 	$$('auth').slideDown()
 	$$('auth > h1').text('Welcome, {0}!'.fs(profile.personaname))
@@ -118,10 +118,58 @@ var SearchView = SchemaView.extend({
 	    target: $$('results-pod'),
 	    prefix: '.new-listings'
 	})
+	if (results.featured && results.featured.length) {
+	    this.initFeatured(results.featured)
+	}
 	this.model.tool.putImages(this.profile.settings)
 	$('div.listing-seed td.item-view div:empty').parent().remove()
 	$$('new-listings-pod').slideDown()
+    },
+
+    putListing: function(listing, clone, target) {
+	if (listing.description) {
+	    $('.listing-description', clone).text(listing.description)
+	} else {
+	    $('.listing-description-label', clone).empty()
+	    $('.listing-description', clone).empty()
+	}
+	$('.listing-owner', clone).text(listing.owner.personaname)
+	$('.listing-owner', clone).parent()
+	    .attr('href', profileUtil.defaultUrl(listing.owner))
+	$('.listing-avatar', clone)
+	    .attr('src', listing.owner.avatar)
+	$('.listing-avatar', clone).parent()
+	    .attr('href', profileUtil.defaultUrl(listing.owner))
+	new StatusLoader({
+	    suffix: listing.owner.id64,
+	    success: function(status) {
+	        $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
+	    }
+        })
+	$('.bid-count-seed', clone).text(listing.bid_count || '0')
+        var next = 0
+	$.each(listing.items, function(index, item) {
+	   $($('.item-view div', clone)[next]).append($.toJSON(item))
+	   next += 1
+        })
+	if (listing.min_bid.length) {
+	    next = 0
+	    $.each(listing.min_bid, function(index, defindex) {
+	        $($('.search-listing-view-min-bid .item-view div', clone)[next])
+                    .append($.toJSON({defindex:defindex, quality:6}))
+		    next += 1
+            })
+            $('.search-listing-view-min-bid', clone).removeClass('null')
+	} else {
+            $('.search-listing-view-min-bid', clone).hide()
+	}
+	$('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
+	$('.listing-view-link', clone)
+	    .append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
+	if (listing.featured) {clone.addClass('featured')}
+	target.append(clone)
     }
+
 })
 
 
@@ -131,7 +179,15 @@ var SearchView = SchemaView.extend({
 var SearchController = Controller.extend({
     config: {auth: {required: false, settings: true}},
     model: SearchModel,
-    view: SearchView
+    view: SearchView,
+
+    '#featured-listings div.listing-seed div.navs span.nav.next live:click' : function(e) {
+	e.controller.view.navFeatured(1)
+    },
+
+    '#featured-listings div.listing-seed div.navs span.nav.prev live:click' : function(e) {
+	e.controller.view.navFeatured(-1)
+    }
 })
 
 

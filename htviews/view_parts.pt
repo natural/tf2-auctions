@@ -226,8 +226,8 @@ featured listings: um...
 			    </td>
 			    <td>
 				<div class="float-right tools">
-				    <div class="navs text-right build-font nowrap">
-					<h2 class="mb1"><span class="hi">Featured Listing!</span></h2>
+				    <div class="navs text-right build-font nowrap mt05">
+					<span class="mb1 hi">Featured Listing!</span>
 					<span class="nonav prev null">&lt;</span>
 					<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
 					<span class="nonav next null">&gt;</span>
