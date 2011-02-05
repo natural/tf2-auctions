@@ -213,11 +213,9 @@ var SearchView = SchemaView.extend({
 	    $('#search-prev-link, #search-bottom-prev-link').hide()
 	    $('#search-prev-none, #search-bottom-prev-none').show()
 	}
-
 	if (init && results.featured && results.featured.length) {
 	    self.initFeatured(results.featured)
 	}
-
 	new SchemaLoader({
             success: function(schema) {
 	        new AuthProfileLoader({
@@ -282,34 +280,29 @@ var SearchView = SchemaView.extend({
 	$.each(featured, function(index, fitem) {
             var proto = $('#featured-listings div.prototype').clone()
 		.addClass('listing-seed')
-	        .removeClass('prototype null')
+	        .removeClass('prototype')
 	    self.putListing(fitem, proto, target)
-	    //if (!index) { proto.removeClass('null') }
 	})
 	if (featured.length) {
+	    $('#featured-listings div.listing-seed.null:first').removeClass('null')
 	    $('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
 	    $('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
 	    $('#featured-listings-pod').slideDown()
 	}
-	this.featured = {all: featured, current:featured[0]}
+
     },
 
     navFeatured: function(offset) {
-	var featured = this.featured,
-	     current = featured.current,
-	     index = featured.all.indexOf(current),
-	     count = featured.all.length
+	var current = $('#featured-listings div.listing-seed.listing-seed:visible'),
+	    others = $('#featured-listings div.listing-seed.listing-seed:hidden'),
+	    all = $('#featured-listings div.listing-seed.listing-seed'),
+	    index = all.index(current),
+            count = all.length
+
 	console.log('navFeatured', current, index, count)
 
 	if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
-	$('#featured-listings div.listing-seed').fadeOut().remove()
-	var target = $('#featured-listings'),
-            proto = $('#featured-listings div.prototype').clone()
-                .addClass('listing-seed')
-	        .removeClass('null prototype')
-
-	    featured.current = featured.all[index+offset]
-	    this.putListing(featured.current, proto, target)
+	    current.fadeOut(function () { $(all[index+offset]).fadeIn() })
 	    var nonPrev = $('#featured-listings div.listing-seed div.navs span.nonav.prev'),
                 navPrev = $('#featured-listings div.listing-seed div.navs span.nav.prev'),
                 nonNext = $('#featured-listings div.listing-seed div.navs span.nonav.next'),
@@ -329,8 +322,6 @@ var SearchView = SchemaView.extend({
 		nonNext.hide()
 		navNext.show()
 	    }
-	    this.putImages() // needs user prefs
-	    $("#featured-listings td.item-view div:empty").parent().remove()
 	}
     },
 
