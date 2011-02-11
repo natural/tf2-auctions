@@ -164,8 +164,8 @@ var SearchView = SearchBaseView.extend({
             $('.search-listing-view-min-bid', clone).hide()
 	}
 	$('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
-	$('.listing-view-link', clone)
-	    .append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
+//	$('.listing-view-link', clone)
+//	    .append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
 	if (listing.featured) {clone.addClass('featured')}
 	target.append(clone)
     }

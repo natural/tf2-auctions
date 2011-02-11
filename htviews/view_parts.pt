@@ -163,6 +163,7 @@ large listings: um...
 			<td tal:attributes="width '70%' if use_bids else '100%'">
 			    <div class="listing-view-link m05">
 				<a class="small-button small-item-button">View</a>
+				<span class="expires"></span>
 			    </div>
 			    <metal:display use-macro="macros.items_view" />
 			    <strong class="listing-description-label">Description:</strong>
@@ -216,16 +217,13 @@ featured listings: um...
 		<table class="listing-view w100">
 		    <tbody>
 			<tr>
-			    <td width="70%">
+			    <td>
 				<div class="listing-view-link m05">
 				    <a class="small-button small-item-button">View</a>
 				</div>
-				<metal:display use-macro="macros.items_view" />
-				<strong class="listing-description-label">Description:</strong>
-				<div class="listing-description desc"></div>
 			    </td>
 			    <td>
-				<div class="float-right tools">
+				<div class="tools">
 				    <div class="navs text-right build-font nowrap mt05">
 					<span class="mb1 hi">Featured Listing!</span>
 					<span class="nonav prev null">&lt;</span>
@@ -234,27 +232,16 @@ featured listings: um...
 					<span class="nav next null"><a onclick="return false" href="#">&gt;</a></span>
 				    </div>
 				</div>
-				<div class="clear"></div>
-				<strong>Created By:</strong>
-				<div class="listing-owner-seed mb1">
-				    <a href="#"><img class="listing-avatar" /></a>
-				    <a href="#"><span class="listing-owner"></span></a>
-				</div>
-				<div><strong>Bids: <span class="bid-count-seed"></span></strong></div>
 			    </td>
 			</tr>
 			<tr>
-			    <td width="70%">
-				<div class="${slug}-listing-view-min-bid null mt1">
-				    <label>Minimum Bid:</label>
-				    <h3 class="null ${slug}-listing-view-min-bid-currency-use">
-					<span class="currency"></span>
-				    </h3>
-				    <metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
-				</div>
+			    <td colspan="2">
+				<metal:display use-macro="macros.items_view" />
+				<strong class="listing-description-label">Description:</strong>
+				<div class="listing-description desc"></div>
 			    </td>
-			    <td></td>
 			</tr>
+
 		    </tbody>
 		</table>
 	    </div>

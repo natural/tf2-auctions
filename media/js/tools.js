@@ -148,7 +148,7 @@ var listingUtil = Object.create({
 	    }
 	}
 	$('.listing-view-link a', target).attr('href', '/listing/'+listing.id)
-	$('.listing-view-link', target)
+	$('.listing-view-link > span.expires', target)
 	    .append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
     }
 })
@@ -826,21 +826,18 @@ var SearchBaseView = SchemaView.extend({
     },
 
     navFeatured: function(offset) {
-	var current = $('#featured-listings div.listing-seed.listing-seed:visible'),
-	    others = $('#featured-listings div.listing-seed.listing-seed:hidden'),
-	    all = $('#featured-listings div.listing-seed.listing-seed'),
+	var prefix = '#featured-listings div.listing-seed'
+	    current = $('{0}.listing-seed:visible'.fs(prefix)),
+	    others = $('{0}.listing-seed:hidden'.fs(prefix)),
+	    all = $('{0}.listing-seed'.fs(prefix)),
 	    index = all.index(current),
             count = all.length
-
-	console.log('navFeatured', current, index, count)
-
 	if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
 	    current.fadeOut(function () { $(all[index+offset]).fadeIn() })
-	    var nonPrev = $('#featured-listings div.listing-seed div.navs span.nonav.prev'),
-                navPrev = $('#featured-listings div.listing-seed div.navs span.nav.prev'),
-                nonNext = $('#featured-listings div.listing-seed div.navs span.nonav.next'),
-                navNext = $('#featured-listings div.listing-seed div.navs span.nav.next')
-
+	    var nonPrev = $('{0} div.navs span.nonav.prev'.fs(prefix)),
+                navPrev = $('{0} div.navs span.nav.prev'.fs(prefix)),
+                nonNext = $('{0} div.navs span.nonav.next'.fs(prefix)),
+                navNext = $('{0} div.navs span.nav.next'.fs(prefix))
 	    if (index+offset == 0) {
 		nonPrev.show()
 		navPrev.hide()
@@ -857,9 +854,7 @@ var SearchBaseView = SchemaView.extend({
 	    }
 	}
     }
-
 })
-
 
 
 //

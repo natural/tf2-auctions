@@ -343,6 +343,7 @@ opacity:0.9;
 .winner {
 background-color:rgba(146, 71, 56, 0.5);
 border:0.25em solid rgba(146, 71, 56, 1);
+
 }
 
 .error {
@@ -629,6 +630,7 @@ right:2px;
 top:2px;
 }
 
+.jewel-1 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/1.png'); }
 .jewel-10843461 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/10843461.png'); }
 .jewel-12955537 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/12955537.png'); }
 .jewel-1315860 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/1315860.png'); }
