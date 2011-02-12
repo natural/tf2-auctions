@@ -127,6 +127,8 @@
 			    <h1><span class="hilite">&nbsp;</span><span id="${slug}-bids-title"></span></h1>
 			</div>
 			<h2 class="null" id="${slug}-bids-loading"></h2>
+
+
 			<div class="null" id="${slug}-bids-inner">
 			    <h2 class="null" id="${slug}-bids-none"></h2>
 			    <metal:include

@@ -90,6 +90,7 @@ navigator: buttons for backpack navigation
 	    <span class="help"></span>
 	    <select class="bp-nav-filter build-font" id="bp-nav-filter-${slug}"></select>
 	</span>
+	<span class="all mr1 null"><a href="#" onclick="return false">Show All Pages</a></span>
 	<span class="non">&lt;</span>
 	<span class="nav"><a onclick="return false" href="#">&lt;</a></span>
 	<span class="bp-count" id="bp-count-${slug}">A/B</span>

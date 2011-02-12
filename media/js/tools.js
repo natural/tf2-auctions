@@ -388,7 +388,11 @@ var SchemaTool = function(schema) {
 	    actionDefs = self.actions(),
 	    settingV = settingsUtil(settings)
 	$('.defindex-lazy').each(function(index, tag) {
-	    var data = $.parseJSON($(tag).text())
+	    try {
+		var data = $.parseJSON($(tag).text())
+	    } catch (e) {
+		return
+	    }
 	    if (!data) { return }
 	    if (typeof(data) == 'object') {
 		var defindex = data.defindex
@@ -693,7 +697,7 @@ var Model = MVC.extend({
         })
         var binder = $('<foo />')
 	binder.bind('ajaxStop.{0}'.fs(self.name), function() {
-            view.join.apply(view, [self.results])
+            view.join.apply(view, [self.results, self])
             binder.unbind('ajaxStop.{0}'.fs(self.name))
         })
         $.each(self.requests, function(i, r) {  r.apply(self)  })

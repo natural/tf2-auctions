@@ -6,8 +6,6 @@ var $$ = function(suffix, next) { return $('{0}-{1}'.fs(pid, suffix), next) }
 // encapsulates the minimum bid items tool and the corresponding
 // chooser.
 //
-// initMinBid(schema) = function(schema) {
-// }
 var MinBidTool = function() {
     var schemaTool = new SchemaTool(),
         items = schemaTool.tradableBackpack()

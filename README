@@ -1,0 +1,129 @@
+Javascript MVC
+--------------
+
+The tools.js file contains a lightweight MVC framework for javascript.
+
+MVC
+---
+
+The MVC object is the root prototype for all other objects.  It's not
+very interesting, but it does define the `extend` function.  All
+members:
+
+    * proto.clones - an array of clones (children)
+
+    * proto.init() - simply returns `this`
+
+    * proto.extend(defn) - creates a new object from `proto`, extends
+      it with `defn`, and adds the new object to `proto.clones`
+
+
+Controller
+----------
+
+A Controller object coordinates the interaction between the DOM and an
+associated View and Model.
+
+Controller objects are automatically initialized by tools.js; the
+`init` method of every Controller clone is called when the DOM is
+ready.  This is important to note because the behavior is completely
+automatic: every defined Controller will be initialized when the DOM
+is initalized.
+
+To side-step automatic initialization, the pattern is to define a
+View, Model, and a controller definition (an object).  The definition
+object can then be used to create a Controller at runtime.  When this
+approach is used, the controller must be initialized explicitly.
+
+Controllers typically include DOM event handler functions in the form
+of "selector" : handler(event), where "selector" is a valid jQuery DOM
+selector and "handler(event)" is a function taking a single argument,
+the DOM event.  The DOM event argument is augmented with a
+"controller" attribute that points back to the original controller
+object.
+
+The selector strings can be any jQuery selector.  The "ready" selector
+is special-cased to allow controllers to have a specific function
+called when the DOM is ready.  Also, the selector can contain the
+"live:" prefix on events (e.g., "#foo live:click") to allow for DOM
+elements that are not yet created when the document is ready.
+
+Members:
+
+    * proto.hash() - returns the document anchor without the leading "#"
+
+    * proto.init() - initializes the controller's model and DOM events
+
+
+Model
+-----
+
+A Model object is responsible for data read/write/delete network
+calls.
+
+Model objects typically deal with one kind of data, such as a players
+backpack or a users settings.  When initialized, a Model queues
+requests for the authorized user profile (if available) and the
+request specified by its `loader` attribute.
+
+To include specific requests with the default queued requests, clones
+may override `init` and push functions to the `requests` array.
+
+Members:
+
+    * proto.name - a string used to identify the Model
+
+    * proto.requests - an array of functions to load data via ajax calls
+
+    * proto.results - if present, contains the deserialized object
+      from the default network call
+
+    * proto.authSuccess(profile) - called when an authorized user
+      profile is loaded; the default implementation sets `profile` and
+      calls `proto.view.authSuccess`
+
+    * proto.authError(req, status, error) - called when an authorized
+      user profile could not be loaded; the default implementation
+      simply calls `proto.view.authError`.
+
+    * proto.init(view, config) - this method queues the ajax requests
+      for model data, and initalizes the associated view.  
+
+    * proto.ready(results) - the default implementation sets the
+      `results` attribute.
+
+    * proto.make(modelDefn, loaderDefn) - creates a new object from
+      the Model prototype using the `modelDefn`.  If the `loaderDefn`
+      value is given, a loader is created from it and set as the model
+      `loader` attribute.
+
+View
+-----
+
+A View object manipulates the DOM.  View objects tend to be fairly
+passive, responding to calls from an associated Controller and/or
+Model.
+
+Members:
+
+    * proto.slug - a prefix string for the the selector function, `$$`
+
+    * proto.$$ - selector function with prefix applied
+
+    * proto.authError - called when the associated Model errors during
+      authorized user profile fetch.  Default implementation does
+      nothing.
+
+    * proto.authSuccess - called when the associated Model retrieves
+      an authorized user profile.  Default implementation does
+      nothing.
+
+
+
+
+Interesting Clones
+------------------
+
+SchemaModel is a preconfigured Model clone with a schema loader.  When
+the schema is loaded (via `ready`), the model creates a new
+`SchemaTool` and sets it to the `tool` attribute.

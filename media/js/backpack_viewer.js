@@ -10,17 +10,19 @@ var BackpackModel = SchemaModel.extend({
 
     findId: function(options) {
         new StatusLoader({
-            suffix: options.id,
             error: options.error,
             success: function(status) {
 	        options.success([{id: options.id, persona: status.name}])
-	    }
+	    },
+            suffix: options.id
         })
     },
 
     findNames: function(options) {
 	new PlayerSearchLoader({
-            suffix: options.name, success: options.success, error: options.error
+	    error: options.error,
+	    success: options.success,
+            suffix: options.name
         })
     }
 })
@@ -31,12 +33,16 @@ var BackpackView = SchemaView.extend({
 	var self = BackpackView
 	try {
 	    var data = $('option:selected', event.target).data('result')
-	} catch (e) { return }
-	if (data.id_type != 'id64') { return }
+	} catch (e) {
+	    return 
+	}
+	if (data.id_type != 'id64') {
+	    return
+	}
 	self.message('Loading backpack...')
 	new BackpackLoader({
-	    suffix: data.id,
-	    success: function(bp) { self.ready(data.id, data.persona, bp) }
+	    success: function(bp) { self.ready(data.id, data.persona, bp) },
+	    suffix: data.id
         })
     },
 
@@ -107,15 +113,10 @@ var BackpackView = SchemaView.extend({
     },
 
     clear: function() {
-	console.log('BackpackView.clear()')
-	if (self.bpTool) { self.bpTool.reinit(); self.bpTool.reinit2() }
-        //$('.bp-unplaced tbody').remove()
-        //$('.bp-placed').remove()
-        //$('.bp-placed td').removeClass()
+	if (self.bpTool) { self.bpTool.reinit() }
     },
 
     reset: function() {
-	console.log('BackpackView.reset()')
 	$('#backpack-viewer-search-controls')
 	    .animate({'margin-left':0, 'width':'100%'})
 	$('#backpack-viewer-result-none').text('')
@@ -124,7 +125,6 @@ var BackpackView = SchemaView.extend({
     },
 
     put: function(backpack, listings, bids) {
-	console.log('BackpackView.put(backpack:', backpack, ', listings:', listings, ', bids:', bids, ')')
 	var self = BackpackView,
             bpTool = new BackpackItemsTool({
 	                 items: backpack.result.items.item,
@@ -136,6 +136,7 @@ var BackpackView = SchemaView.extend({
 	                 select: true,
 	                 selectMulti: true,
 	                 outlineHover: true,
+		         showAll: true,
 		         rowGroups: BackpackPages.full(backpack.result.num_backpack_slots)
             })
         new AuthProfileLoader({
@@ -171,8 +172,8 @@ var BackpackController = Controller.extend({
     },
 
     'ready' : function() {
-	var hash = this.hash()
         this.view.searchText(this.defaultSearchText).select()
+	var hash = this.hash()
 	if (hash) { this.search(hash) }
     },
 

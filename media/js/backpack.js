@@ -264,6 +264,16 @@ var BackpackNavTool = function(options) {
 	    })
             select.parent().show()
 	}
+	// maybe enable the button for showing all pages
+	if (options.showAll) {
+            $('#bp-{0} .bp-nav span.all'.fs(slug)).show().click(function() {
+		$('#bp-{0} div.bp-placed table.bp-placed:gt(0)'.fs(slug)).addClass('mt2')
+		$('#bp-{0} div.bp-placed table.bp-placed'.fs(slug))
+		    .css('margin-left', 0)
+		    .fadeIn()
+		$('#bp-nav-{0}'.fs(slug)).fadeOut()
+	    })
+	}
         $('#bp-nav-{0}'.fs(slug)).show()
         $('table.bp-page-{0}'.fs(slug), pagesContext).css('display', 'none')
         $('table.bp-page-{0}:eq(0)'.fs(slug), pagesContext).css('margin-left', 0).show()
@@ -504,7 +514,8 @@ var BackpackItemsTool = function(options) {
 	    self.navigator = new BackpackNavTool({
 		slug: slug,
 		filters: options.filters,
-		itemTool: self
+		itemTool: self,
+		showAll: options.showAll
 	    })
 	    // we're in our own init, so init the navigator, too
 	    self.navigator.init()

@@ -94,7 +94,7 @@ width:90%;
 #bidder-feedback-rating-value {
 font-size:300%;
 font-family:"TF2Build";
-
+text-shadow: 0.05em 0.05em #000;
 }
 
 .rate-pos {

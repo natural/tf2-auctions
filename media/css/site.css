@@ -754,7 +754,7 @@ div.bp-nav {
 white-space:nowrap !important;
 }
 
-div.bp-nav span.non, div.bp-nav span.nav a {
+div.bp-nav span.non, div.bp-nav span.nav a, div.bp-nav span.all a {
 background-color:#766b5e;
 border-radius:0.25em; -moz-border-radius:0.25em; -webkit-border-radius:0.25em;
 padding:0.5em 0.75em 0.5em 0.75em;
@@ -764,7 +764,7 @@ vertical-align:middle;
 
 div.bp-nav span.non { color:#2a2725; }
 div.bp-nav span.nav a { color:#ece3cb; }
-div.bp-nav span.nav a:hover { background-color:#924738; color:#ece3cb; }
+div.bp-nav span.nav a:hover, div.bp-nav span.all a:hover { background-color:#924738; color:#ece3cb; }
 div.bp-nav span.nav a:active  { color:#2a2725 !important;}
 
 div.bp-nav span.bp-count {

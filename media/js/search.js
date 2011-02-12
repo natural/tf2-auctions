@@ -431,19 +431,17 @@ var SearchController = Controller.extend({
     },
 
     'ready' : function() {
-	var self = this
+	var self = this, q = self.hash()
 	self.view.message('Loading...')
-	var q = self.hash()
 	if (q) {
 	    window.setTimeout(function() {
-	    // initialize controls from hash.  this is fail.
-	    $.each(q.split('&'), function(idx, pair) {
+		$.each(q.split('&'), function(idx, pair) {
 	        try {
 		    var p = pair.split('='), name = p[0], val = p[1]
 		    $('input[name={0}]'.fs(name)).attr('checked', val=='on')
-	            } catch (e) {   }
+	        } catch (e) {  console.error('error:', e) }
 	         })
-	         }, 125)
+	    }, 500)
         }
     }
 })
