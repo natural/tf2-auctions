@@ -13,7 +13,8 @@ var NewsModel = Model.make({name:'NewsModel'}, {
 var NewsView = View.extend({
     cloneClass: 'news-seed',
 
-    join: function(news) {
+    join: function(model) {
+	var news = model.results
 	if (!news || !news[0]) { return }
 	$.each(news, function(idx, newsentry) {
             var clone = NewsView.proto()
@@ -39,7 +40,8 @@ var StatsModel = Model.make(
 )
 
 var StatsView = View.extend({
-    join: function(stats) {
+    join: function(model) {
+	var stats = model.results
 	$.each(keys(stats), function(idx, key) {
 	    $$(key.replace('_', '-')).text(stats[key])
 	})
@@ -56,7 +58,8 @@ var BlogModel = Model.make(
 var BlogView = View.extend({
     cloneClass: 'blog-seed',
 
-    join: function(entries) {
+    join: function(model) {
+	var entries = model.results
 	$.each(entries, function(idx, blogpost) {
 	    var clone = BlogView.proto()
 	    $('.blog-title-seed', clone).text(blogpost.title)
@@ -103,7 +106,8 @@ var SearchView = SearchBaseView.extend({
 	this.profile = {}
     },
 
-    join: function(results) {
+    join: function(model) {
+	var results = model.results
 	if (!results.listings.length) {
 	    $$('no-listings').text('Nothing found.').show()
 	    $$('some-listings').hide()

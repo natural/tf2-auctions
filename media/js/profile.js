@@ -1,105 +1,105 @@
-var id64Internal = null
-var pathTail = function() { return window.location.pathname.split('/').pop() }
-var id64View = function() { return id64Internal || pathTail() }
 
-// nulls for the lulz
-var NullLoader = function(options) {}
-var NullView = View.extend({})
-var NullModel = Model.extend({loader: NullLoader})
+var slug = '#profile-',
+    $$ = make$$(slug),
+    pathTail = function() { return window.location.pathname.split('/').pop() }
 
 
-// details tab -- messages, feedback and steam profile
-var MessagesLoader = makeLoader({
-    prefix: '/api/v1/auth/list-messages',
-    name: 'MessagesLoader'
-})
-var MessagesControllerDefn = {
-    name: 'MessagesController',
-    view: NullView,
-    model: NullModel
+var NotifyListingTool = function(model) {
+    this.schemaTool = new SchemaTool()
+    var items = this.schemaTool.tradableBackpack(),
+        bpTool = new BackpackItemsTool({
+	    items: items,
+	    slug: 'nl',
+	    navigator: true,
+	    toolTips: true,
+	    select: true,
+	    outlineHover: true,
+	    filters: true,
+	    cols: 5,
+	    rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01),
+	}),
+        chTool = this.chooser = new BackpackChooserTool({
+	    backpackSlug: 'nl',
+	    chooserSlug: 'notify-listing',
+	    selectDeleteHover: true,
+	    copy: true,
+        })
+    bpTool.init()
+    chTool.init()
 }
-var MessagesModel = Model.extend({
-    loader: MessagesLoader,
-})
 
+
+//
+// messages model and view for the details tab
+//
+var MessagesModel = Model.extend({
+    loader: makeLoader({prefix: '/api/v1/auth/list-messages', name: 'MessagesLoader'})
+})
 var MessagesView = View.extend({
 })
 
 
-var FeedbackControllerDefn = {
-    name: 'FeedBackController',
-    view: NullView,
-    model: NullModel
-}
+//
+// feedback model and view for the details tab
+//
 var FeedbackModel = Model.extend({
+    loader: function() {}
 })
 var FeedbackView = View.extend({
 })
 
 
-var SteamControllerDefn = {
-    name: 'SteamController',
-    view: NullView,
-    model: NullModel
-}
-var SteamModel = Model.extend({
-})
-var SteamView = View.extend({
-})
-
-
-// listings tab
+//
+// listings model and view for listings tab.
+//
 var ListingsModel = SchemaModel.extend({
     init: function(view, config) {
 	var self = this
 	self.requests.push(function() {
 	    new ListingsLoader({
-		suffix: id64View(),
-		success: function(ls) { self.listings = ls }
+		suffix: MainModel.id64(),
+		success: function(listings) { self.listings = listings }
 	    })
 	})
 	SchemaModel.init.apply(self, [view, config])
     }
 })
 
+
 var ListingsView = SchemaView.extend({
-    slug: '#profile-',
-    titlePrefix: '',
+    slug: slug,
+    title: 'Recent Listings',
     initOnce: false,
 
     authSuccess: function(profile) {
-	if (id64View() == profile.id64) {
-	    this.titlePrefix = 'My'
+	if (MainModel.id64() == profile.id64) {
+	    this.title = 'My ' + this.title
 	}
     },
 
-    join: function(data, model) {
-	var self = this, prefix = self.titlePrefix
-	self.$$('listings-title').text('{0}Recent Listings'.fs(prefix ? prefix+' ' : ''))
+    join: function(model) {
+	var self = this
+	$$('listings-title').text(self.title)
 	self.message('Listings loaded.').fadeOut()
-	self.$$('listings-inner').fadeIn(function() {
+	$$('listings-inner').fadeIn(function() {
 	    if (!model.listings.length) {
-		self.$$('listings-none').text('Nothing recent.').slideDown()
+		$$('listings-none').text('Nothing recent.').slideDown()
 	    } else {
-		self.putMany(model.listings)
+		self.putMany(model.listings, model.profile)
 	    }
 	})
     },
 
-    putMany: function(listings) {
+    putMany: function(listings, profile) {
 	var self = this
 	if (!self.initOnce) {
-	    var proto = self.$$('listings-inner div.prototype')
+	    var proto = $$('listings-inner div.prototype')
 	    $.each(listings, function(idx, listing) {
 		self.putOne(listing, proto.clone().addClass('listing-seed'))
 	    })
-	    new AuthProfileLoader({
-		suffix: '?settings=1&complete=1',
-		success: function(profile) { new SchemaTool().putImages(profile.settings) },
-		error: function(request, status, error) { new SchemaTool().putImages() }
-	    })
+	    new SchemaTool().putImages(profile ? profile.settings : null)
 	    $('div.listing-seed td.item-view div:empty').parent().remove()
-	    self.$$('listings-pod div.init-seed').slideDown('slow')
+	    $$('listings-pod div.init-seed').slideDown('slow')
 	    self.initOnce = true
 	}
     },
@@ -122,68 +122,62 @@ var ListingsView = SchemaView.extend({
         $('.listing-view-link a', clone).attr('href', '/listing/'+listing.id)
 	$('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
 	// TODO:  add min bid
-	this.$$('listings').append(clone)
+	$$('listings').append(clone)
     }
 })
 
 
-
-// bids tab
+//
+// bids model and view for the bids tab
+//
 var BidsModel = SchemaModel.extend({
     init: function(view, config) {
 	var self = this
 	self.requests.push(function() {
-	    var success = function(bs) { self.bidsReady(bs) }
-	    new BidsLoader({success: success, suffix: id64View()})
+	    new BidsLoader({
+		suffix: MainModel.id64(),
+		success: function(bids) { self.bids = bids }
+	    })
 	})
 	SchemaModel.init.apply(self, [view, config])
-    },
-
-    bidsReady: function(bids) {
-	this.view.bidsJoin(bids)
     }
 })
 
 
 var BidsView = SchemaView.extend({
     initOnce: false,
-    slug: '#profile-',
-    titlePrefix: '',
+    slug: slug,
+    title: 'Recent Bids',
 
     authSuccess: function(profile) {
-	if (id64View() == profile.id64) {
-	    this.titlePrefix = 'My'
+	if (MainModel.id64() == profile.id64) {
+	    this.title = 'My ' + this.title
 	}
     },
 
-    bidsJoin: function(bids) {
-	var self = this, prefix = self.titlePrefix
-	self.$$('bids-title').text('{0}Recent Bids'.fs(prefix ? prefix+' ' : ''))
-	self.$$('bids-inner').fadeIn(function() {
-	    if (!bids.length) {
-		self.$$('bids-none').text('Nothing recent.').slideDown()
-	    } else {
-		if (!self.initOnce) {
-		    self.initOnce = true
-		    self.putMany(bids)
+    join: function(model) {
+	if (!this.initOnce) {
+	    var self = this
+	    self.initOnce = true
+	    $$('bids-title').text(self.title)
+	    $$('bids-inner').fadeIn(function() {
+		if (!model.bids.length) {
+		    $$('bids-none').text('Nothing recent.').slideDown()
+		} else {
+		    self.putMany(model.bids, model.profile)
 		}
-	    }
-	})
+	    })
+	}
     },
 
-    putMany: function(bids) {
-	console.log('put many bids', bids)
-	var self = this, proto = self.$$('bids div.prototype')
+    putMany: function(bids, profile) {
+	var self = this, proto = $$('bids div.prototype')
 	$.each(bids, function(idx, bid) {
 	    self.putOne(bid, proto.clone().addClass('bid-marker'))
 	})
 	$('div.bid-marker td.item-view div:empty').parent().remove()
-	new AuthProfileLoader({
-	    suffix: '?settings=1&complete=1',
-	    success: function(profile) { new SchemaTool().putImages(profile.settings) },
-	    error: function(request, status, error) { new SchemaTool().putImages() }
-	})
-	self.$$('bids-pod div.init-seed').slideDown('slow')
+	new SchemaTool().putImages(profile ? profile.settings : null)
+	$$('bids-pod div.init-seed').slideDown('slow')
     },
 
     putOne: function(bid, clone) {
@@ -202,137 +196,330 @@ var BidsView = SchemaView.extend({
 	}
 	$('.bid-status', clone).text(bid.status)
 	$('.bid-created', clone).text('' + new Date(bid.created))
-	this.$$('bids').append(clone)
+	$$('bids').append(clone)
     }
 })
 
 
-// backpack tab
+//
+// backpack model and view for backpack tab
+//
 var BackpackModel = SchemaModel.extend({
     init: function(view, config) {
-	var id64 = id64View(), self = this
-	self.requests.push(function() {
-	    new ListingsLoader({
-		suffix: id64,
-		success: function(listings) { self.listings = listings }
-	    })
-	})
-	self.requests.push(function() {
-	    new BidsLoader({
-		suffix: id64,
-		success: function(bids) { self.bids = bids }
-	    })
-	})
-	self.requests.push(function() {
-	    new BackpackLoader({
-		suffix: id64,
-		success: function(backpack) { self.backpack = backpack }
-	    })
-	})
+	var id64 = MainModel.id64(), self = this
+	self.requests.push(
+	    function() {
+		new ListingsLoader({
+		    suffix: id64,
+		    success: function(listings) { self.listings = listings }
+		})
+	    },
+	    function() {
+		new BidsLoader({
+		    suffix: id64,
+		    success: function(bids) { self.bids = bids }
+		})
+	    },
+	    function() {
+		new BackpackLoader({
+		    suffix: id64,
+		    success: function(backpack) { self.backpack = backpack }
+		})
+	    }
+	)
 	SchemaModel.init.apply(self, [view, config])
-    },
+    }
 })
 
 
 var BackpackView = SchemaView.extend({
     initOnce: false,
-    slug: '#profile-',
-    titlePrefix: '',
+    slug: slug,
+    title: 'Backpack',
 
     authSuccess: function(profile) {
-	if (id64View() == profile.id64) {
-	    this.titlePrefix = 'My'
+	if (MainModel.id64() == profile.id64) {
+	    this.title = 'My ' + this.title
 	}
     },
 
-    join: function(data, model) {
-	var bpTool = new BackpackItemsTool({
-	    items: model.backpack.result.items.item,
-	    listingUids: listingItemsUids(model.listings),
-	    bidUids: bidItemsUids(model.bids),
-	    navigator: true,
-	    slug: 'profile',
-	    toolTips: true,
-	    outlineHover: true,
-	    showAll: true,
-            rowGroups: BackpackPages.full(model.backpack.result.num_backpack_slots)
+    join: function(model) {
+	if (!this.initOnce) {
+	    var self = this,
+	        bpTool = new BackpackItemsTool({
+		    items: model.backpack.result.items.item,
+		    listingUids: listingItemsUids(model.listings),
+		    bidUids: bidItemsUids(model.bids),
+		    navigator: true,
+		    slug: 'profile',
+		    toolTips: true,
+		    outlineHover: true,
+		    showAll: true,
+		    rowGroups: BackpackPages.full(model.backpack.result.num_backpack_slots)
+		})
+	    bpTool.init(model.profile ? model.profile.settings : null)
+	    self.initOnce = true
+	    $$('backpack-title').text(self.title)
+	    $$('backpack-title-pod').fadeIn(function() {
+		$$('backpack-inner').fadeIn()
+	    })
+	}
+    }
+})
+
+
+//
+// settings controller definition, model and view for the settings tab
+//
+
+var SettingsModel = SchemaModel.extend({
+    // user profile and settings loaded by the MainModel object
+
+    authSuccess: function(profile) {
+	this.profile = profile
+    },
+
+    save: function(values, success, error) {
+	$.ajax({
+	    url: '/api/v1/auth/save-settings',
+	    type: 'POST',
+	    dataType: 'json',
+	    data: $.toJSON(values),
+	    success: success,
+	    error: error
 	})
-	bpTool.init(model.profile ? model.profile.settings : null)
-	this.$$('backpack-inner').fadeIn()
     }
+
 })
 
 
-// settings tab
-var SettingsModel = Model.extend({
-})
 var SettingsView = View.extend({
+    join: function(model) {
+	var profile = model.profile, settings = profile.settings
+
+	$.each(keys(settings), function(index, key) {
+	    var value = settings[key]
+	    var pkey = 'profile-{0}'.fs(key)
+	    if (typeof(value) == 'boolean') {
+		$('#'+pkey).attr('checked', value)
+	    }
+	    if (typeof(value) == 'string') {
+		$('#'+pkey).val(value)
+	    }
+	})
+
+	if (profile.subscription && profile.subscription.status == 'Verified') {
+	    var nlt = new NotifyListingTool(model)
+	    var removeFromChooser = function(e) {
+		$('img', this).fadeOut().remove()
+		$(this).removeClass('selected selected-delete')
+	    }
+	    var copyToChooser = function(e) {
+		var source = $(e.target)
+		var target = $("#bp-chooser-notify-listing td div:empty").first()
+		if (!target.length) { return }
+		var clone = source.clone()
+		clone.data('node', source.data('node'))
+		target.prepend(clone)
+	    }
+	    var resetChooser = function() {
+		$.each( $('#bp-chooser-notify-listing td'), function(idx, cell) {
+		    $('img', cell).fadeOut().remove()
+		    $(cell).removeClass('selected selected-delete')
+		})
+	    }
+            if (profile.settings['notify-listing-defs']) {
+		$.each(profile.settings['notify-listing-defs'], function(idx, defindex) {
+		    var target = $("#bp-chooser-notify-listing td div:empty").first()
+		    target.text( $.toJSON( {defindex:defindex}) ).addClass('defindex-lazy')
+		})
+		nlt.schemaTool.putImages(profile.settings)
+	    }
+	    $('#bp-nl td div img').live('dblclick', copyToChooser)
+	    $('#bp-chooser-notify-listing td').live('dblclick', removeFromChooser)
+	    $$('notify-listing-reset').click(resetChooser)
+
+	    $$('premium-settings-pod').fadeIn()
+	} else {
+	    $$('premium-signup-pod').fadeIn()
+	}
+    },
+
+    saveSuccess: function() {
+	$$('settings-save-message div.information')
+	    .text('Saved!')
+	    .fadeIn()
+	    .delay(3000)
+	    .fadeOut()
+    },
+
+    saveError: function(msg) {
+	$$('settings-save-message div.error')
+            .text('Error: {0}'.fs(msg))
+	    .fadeIn()
+	    .delay(5000)
+	    .fadeOut()
+    },
+
+    emailError: function(v) {
+	if (v) {
+	    $$('email-error').text(v).parent().slideDown()
+	} else {
+	    $$('email-error').text('').parent().slideUp()
+	}
+    }
+
 })
 
 
-// page
+var SettingsControllerDefn = {
+    view: SettingsView,
+    model: SettingsModel,
+
+    init: function() {
+        this.validateNotifyBids()
+	Controller.init.apply(this)
+    },
+
+    validateNotifyBids: function() {
+	if ($$('notify-bids').attr('checked') && !$$('email').val().trim()) {
+	    this.view.emailError("Error: we can't send you notifications without an email address.")
+	} else {
+	    this.view.emailError()
+	}
+    },
+
+    saveSuccess: function() {
+	// it would be nice to reinitalize the profile here, but
+	// that's impractical because the listings/bids/backpack tabs
+	// might be initialized.
+	console.log(this)
+	this.view.saveSuccess()
+    },
+
+    saveError: function(request, error, status) {
+	try {
+	    var msg = $.parseJSON(request.responseText).description
+	} catch (e) {
+	    var msg = 'unknown error.  this is bad.'
+	}
+	this.view.saveError(msg)
+    },
+
+    '#profile-notify-bids click' : function(e) { e.controller.validateNotifyBids() },
+
+    '#profile-email keyup' : function(e) { e.controller.validateNotifyBids() },
+
+    '#profile-settings-save click' : function() {
+	var output = {}, 
+	    trim = function(i) { return i.replace('profile-', '') }
+
+	$.each($('div.field input[type="checkbox"]'), function(index, checkbox) {
+	    output[trim(checkbox.id)] = $(checkbox).attr('checked')
+	})
+        $.each($('div.field input[type="text"]'), function(index, input) {
+	    output[trim(input.id)] = $(input).val()
+	})
+        try {
+            output['notify-listing-defs'] = $.map(
+		$('#bp-chooser-notify-listing td img'),
+		function(image) { return $(image).data('node').defindex }
+	    )
+	} catch (e) {
+	    output['notify-listing-defs'] = []
+	}
+	$$('settings-save-message div.error').fadeOut()
+	$$('settings-save-message div.information').fadeOut()
+	var self = this
+	self.model.save(
+	    output,
+	    function() { self.saveSuccess.apply(self) },
+	    function() { self.saveError.apply(self, arguments) }
+	)
+    }
+}
+
+
+//
+// main model, view and controller
+//
 var MainModel = Model.extend({
-    loader: function() {},
+    loader: makeLoader({prefix: '/api/v1/public/profile/', name: 'MainLoader'}),
+    loaderSuffix: pathTail(),
+
     init: function(view, config) {
-	Model.init.apply(this, [view, config])
+	var self = this
+	self.authProfile = null
+	self.requests.push(
+	    function() {
+		new AuthProfileLoader({
+		    debug: true,
+		    suffix: '?settings=1&complete=1',
+		    success: function(profile) { self.authProfile = profile }
+		})
+	    }
+	)
+	Model.init.apply(self, [view, config])
+    },
+
+    id64: function() {
+	return this.results.id64
+    },
+
+    personaname: function() {
+	return this.results.personaname
     }
 })
+
+
 var MainView = View.extend({
-    init: function(model) {
-	View.init.apply(this, [model])
-	console.log('profile MainView.init()')
+    slug: slug,
+
+    join: function(model) {
+	if (model.profile && model.id64() == model.profile.id64) {
+	    $$('settings-tab').fadeIn()
+	}
     }
 })
+
 
 var MainController = Controller.extend({
-    initHash: window.location.hash,
+    config: {auth: {required: false, settings: true, complete: true}},
     model: MainModel,
-    view: MainView,
     subs: {},
+    view: MainView,
 
     detailsShow: function() {
-	this.setSub(MessagesControllerDefn, 'Loading messages...')
-	this.setSub(FeedbackControllerDefn, 'Loading feedback...')
-	this.setSub(SteamControllerDefn, 'Loading status...')
+	this.setSub('messages', {view: MessagesView, model: MessagesModel})
+	this.setSub('feedback', {view: FeedbackView, model: FeedbackModel})
     },
 
     listingsShow: function() {
-	this.setSub(
-	    {name: 'ListingsController', view: ListingsView, model: ListingsModel},
-	    'Loading listings...'
-	)
+	this.setSub('listings', {view: ListingsView, model: ListingsModel})
     },
 
     bidsShow: function() {
-	this.setSub(
-	    {name: 'BidsController', view: BidsView, model: BidsModel},
-	    'Loading bids...'
-	)
+	this.setSub('bids', {view: BidsView, model: BidsModel})
     },
 
     backpackShow: function() {
-	this.setSub(
-	    {name: 'BackpackController', view: BackpackView, model: BackpackModel},
-	    'Loading backpack...'
-	)
+	this.setSub('backpack', {view: BackpackView, model: BackpackModel})
     },
 
     settingsShow: function() {
-	this.setSub(
-	    {name: 'SettingsController', view: NullView, model: NullModel},
-	    'Loading settings...'
-	)
+	this.setSub('settings', SettingsControllerDefn)
     },
 
-    setSub: function(defn, msg) {
-	if (defn.name in this.subs) {
-	    var sub = this.subs[defn.name]
-	    console.log('reusing sub controller', sub.name, defn.name)
+    setSub: function(name, defn) {
+	if (name in this.subs) {
+	    var sub = this.subs[name]
+	    console.log('reusing sub controller', name)
 	} else {
-	    this.view.message(msg || 'Loading...')
-	    var sub = this.subs[defn.name] = Controller.extend(defn)
+	    this.view.message('Loading {0}...'.fs(name))
+	    defn.config = this.config
+	    var sub = this.subs[name] = Controller.extend(defn)
 	    sub.init()
-	    console.log('created new sub controller', sub.name, defn.name)
+	    console.log('created new sub controller', name)
 	    window.setTimeout(function() {MainView.message().fadeOut()}, 1000)
 	}
     },
@@ -346,9 +533,8 @@ var MainController = Controller.extend({
 		3: this.backpackShow,
 		4: this.settingsShow
 	    }
-
 	$('#tabs').tabs({
-	    fx: {height: 'toggle', opacity: 'toggle', duration: 'slow'},
+	    fx: {height: 'toggle', opacity: 'toggle', duration: 'fast'},
 	    show: function(event, ui) {
 		if (ui.index in tabCallbacks) {
 		    // munge the hash (to prevent the browser from jumping

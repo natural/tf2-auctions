@@ -687,6 +687,9 @@ var Model = MVC.extend({
             var error = function(r, s, e) { self.authError.apply(self, [r,s,e]) }
             var s = (config && config.auth && config.auth.settings ? 'settings=1' : '')
             s = s ? ('?' + s) : ''
+	    var c = (config && config.auth && config.auth.complete ? 'complete=1' : '')
+	    s = s + (c ? '&'+c : '')
+	    console.log('auth profile suffix: ', s)
 	    new AuthProfileLoader({suffix: s, success: success, error: error})
         })
 
@@ -697,7 +700,7 @@ var Model = MVC.extend({
         })
         var binder = $('<foo />')
 	binder.bind('ajaxStop.{0}'.fs(self.name), function() {
-            view.join.apply(view, [self.results, self])
+            view.join.apply(view, [self])
             binder.unbind('ajaxStop.{0}'.fs(self.name))
         })
         $.each(self.requests, function(i, r) {  r.apply(self)  })
@@ -755,7 +758,7 @@ var View = MVC.extend({
     authError: function() {},
     authSuccess: function() {},
     init: function(model) { this.model = model },
-    join: function() {},
+    join: function(model) {},
 
     proto: function() {
 	var cc = this.cloneClass
@@ -823,8 +826,10 @@ var SearchBaseView = SchemaView.extend({
 	})
 	if (featured.length) {
 	    $('#featured-listings div.listing-seed.null:first').removeClass('null')
-	    $('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
-	    $('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
+	    if (featured.length > 1) {
+		$('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
+		$('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
+	    }
 	    $('#featured-listings-pod').slideDown()
 	}
     },

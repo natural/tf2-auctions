@@ -19,7 +19,7 @@
 		<li><h4><a href="#tabs-1">Listings</a></h4></li>
 		<li><h4><a href="#tabs-2">Bids</a></h4></li>
 		<li><h4><a href="#tabs-3">Backpack</a></h4></li>
-		<li id="${slug}-settings-tab">
+		<li id="${slug}-settings-tab" class="null">
 		    <h4><a href="#tabs-4">Settings</a></h4>
 		</li>
 	    </ul>
@@ -141,12 +141,9 @@
 		<!-- backpack tab -->
 		<div id="tabs-3">
 		    <div id="${slug}-backpack-pod" class="">
-			<div class="init-seed null">
-			    <h1>
-				<span class="hilite">&nbsp;</span><span id="${slug}-backpack-title"></span>
-			    </h1>
-			</div>
-			<h2 class="null" id="${slug}-backpack-loading"></h2>
+		        <h1 id="${slug}-backpack-title-pod" class="null">
+			    <span class="hilite">&nbsp;</span><span id="${slug}-backpack-title"></span>
+			</h1>
 			<div class="ov null" id="${slug}-backpack-inner">
 			    <h2 class="null" id="${slug}-backpack-none"></h2>
 
@@ -155,6 +152,7 @@
 			     metal:use-macro="context.view_parts.macros.backpack_full" />
 
 			</div>
+
 		    </div>
 		</div>
 

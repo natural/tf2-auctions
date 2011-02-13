@@ -85,6 +85,7 @@ var makeChTool = function(afterDropMove) {
         backpackSlug: 'listing-detail-bid',
         chooserSlug: 'listing-detail-add-bid-item',
         afterDropMove: afterDropMove,
+	counter: true,
         title: 'Your Bid',
         help: 'Remove items from your bid by dragging them back to your backpack.  Double click removes, too.'
     })
@@ -92,7 +93,7 @@ var makeChTool = function(afterDropMove) {
 
 
 var NewBidView = View.extend({
-    join: function() {
+    join: function(model) {
 	var self = this
 	self.putBackpack()
 	self.putDefaults()
@@ -382,9 +383,8 @@ var NewBidController = {
 
 
 var DetailView = SchemaView.extend({
-    join: function() {
+    join: function(model) {
 	var self = this,
-	    model = self.model,
 	    listing = self.listing = model.listing,
 	    profile = self.profile = self.model.profile
 	self.putListing()

@@ -26,6 +26,7 @@ var MinBidTool = function() {
 	chooserSlug: 'listing-add-min-bid',
 	selectDeleteHover: true,
 	copy: true,
+	counter: true
     })
     bpTool.init()
     chTool.init()

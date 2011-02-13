@@ -749,7 +749,11 @@ var BackpackChooserTool = function(options) {
 
 	if (options.title) {
 	    $('#bp-chooser-{0} > div > h3:first'.fs(chooserSlug)).prepend(options.title)
-       }
+        }
+
+	if (!options.counter) {
+	    this.updateCount = function() {}
+	}
     }
 
     self.updateCount = function() {

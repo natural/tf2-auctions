@@ -18,8 +18,8 @@ var PageModel = SchemaModel.extend({
 var PageView = SchemaView.extend({
     cloneClass: 'group-proto-seed',
     slug: '#all-items-',
-    join: function() {
-	$.each(this.model.groups(), function(idx, group) {
+    join: function(model) {
+	$.each(model.groups(), function(idx, group) {
 	    var clone = PageView.proto()
 	    PageView.putItems($('.group-items-seed', clone), group[1]())
 	    $('.group-title-seed', clone).text(group[0])
