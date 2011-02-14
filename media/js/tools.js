@@ -177,11 +177,11 @@ var profileUtil = Object.create({
         $('#content-site-buttons').show()
     },
 
-    put: function(p) {
-        if (p.message_count) {
+    put: function(p, force) {
+        if (p.message_count || force) {
 	    var b = $('#content-player-profile-link')
-	    if (!b.data('msg-count')) {
-		b.text('{0} ({1})'.fs(b.text(), p.message_count))
+	    if (!b.data('msg-count') || force) {
+		b.text('My Profile ({0})'.fs(p.message_count))
 		b.data('msg-count', p.message_count)
 	    }
 	}
@@ -689,7 +689,6 @@ var Model = MVC.extend({
             s = s ? ('?' + s) : ''
 	    var c = (config && config.auth && config.auth.complete ? 'complete=1' : '')
 	    s = s + (c ? '&'+c : '')
-	    console.log('auth profile suffix: ', s)
 	    new AuthProfileLoader({suffix: s, success: success, error: error})
         })
 
@@ -773,8 +772,15 @@ var View = MVC.extend({
 
     hiliteSpan: function(after) {
 	return '<span class="hilite">&nbsp;</span><span>{0}</span>'.fs(after)
-    }
+    },
 
+    docTitle: function(v) {
+	if (v) {
+	    document.title = document.title + ' - ' + v
+	} else {
+	    return document.title
+	}
+    }
 })
 
 

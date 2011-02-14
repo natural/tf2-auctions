@@ -52,7 +52,6 @@
 		<!-- messages -->
 		<div class="" id="${slug}-msg-pod">
 
-<div class="w49 float-left" style="border:1px solid red">
 		    <!-- inner wrapper for msg drop  -->
 		    <div id="${slug}-leave-msg-pod" class="null">
 			<h1>
@@ -88,16 +87,13 @@
 			</div>
 		    </div>
 
-</div>
-<div class="w49 float-right" style="border:1px solid blue">
-<!-- leave feedback pod; enabled by js if the current user can leave
-     feedback as part of a listing/bid -->
-	    <div id="${slug}-leave-feedback-pod">
-		<h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-new-title">Leave Feedback</span></h1>
-	    </div>
-    <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-existing-title">Feedback</span></h1>
-</div>
-<div class="clear"></div>
+		    <div id="${slug}-existing-feedback-pod" class="null">
+		      <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-existing-title">Feedback</span></h1>
+		    </div>
+
+		    <div id="${slug}-leave-feedback-pod" class="null">
+		      <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-new-title">Leave Feedback</span></h1>
+		    </div>
 
 		</div>
 	    </div>
@@ -106,17 +102,18 @@
 		<!-- listings tab -->
 		<div id="tabs-1">
 		    <div id="${slug}-listings-pod">
+		        <h1 class="null mb05">
+		            <span class="hilite">&nbsp;</span><span id="${slug}-listings-title">Listings</span>
+		          </h1>
 			<div class="init-seed null">
-			    <h1><span class="hilite">&nbsp;</span><span id="${slug}-listings-title"></span></h1>
 			    <h2 class="null" id="${slug}-listings-loading"></h2>
-			    <div class="null" id="${slug}-listings-inner">
+			    <div class="" id="${slug}-listings-inner">
 				<h2 class="null" id="${slug}-listings-none"></h2>
 				<metal:include
 				     tal:define="rows 2; cols 5; use_created False"
 				     metal:use-macro="context.view_parts.macros.listings_large" />
 			    </div>
 			</div>
-
 		    </div>
 		</div>
 

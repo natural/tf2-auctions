@@ -4,6 +4,15 @@ var slug = '#profile-',
     pathTail = function() { return window.location.pathname.split('/').pop() }
 
 
+var makeStatusLoader = function(id) {
+    return makeLoader({
+        prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
+	dataType: 'jsonp',
+	name: 'StatusLoader' + id
+    })
+}
+
+
 var NotifyListingTool = function(model) {
     this.schemaTool = new SchemaTool()
     var items = this.schemaTool.tradableBackpack(),
@@ -33,9 +42,76 @@ var NotifyListingTool = function(model) {
 // messages model and view for the details tab
 //
 var MessagesModel = Model.extend({
-    loader: makeLoader({prefix: '/api/v1/auth/list-messages', name: 'MessagesLoader'})
+    loader: makeLoader({
+	prefix: '/api/v1/auth/list-messages',
+	name: 'MessagesLoader'
+    }),
+
+    authSuccess: function(profile) {
+	this.profile = profile
+    }
 })
+
+
 var MessagesView = View.extend({
+    join: function(model) {
+	var msgs = model.results,
+	    msgCount = msgs.messages.length,
+	    putCount = function(c) {
+		if (c) {
+		    $$('view-msg-count').text('({0})'.fs(c) )
+		} else {
+		    $$('msg-none').text('No messages.  Too bad.').fadeIn()
+		    $$('view-msg-count').text('')
+		}
+	    }
+	$$('view-msg-title').text('My Messages')
+	$$('view-msg-pod').slideDown()
+	putCount(msgCount)
+	if (!msgCount) { return }
+	$.each(msgs.messages, function(idx, msg) {
+	    var clone = $$('view-msg-pod div.prototype').clone()
+	    $('.profile-msg-text-seed', clone).text(msg.message)
+	    var loader = makeStatusLoader(msg.source)
+	    new loader({
+		suffix: msg.source,
+		success: function(status) {
+		    var link = '<a href="/profile/{0}">{1}</a>'
+		    if (status.avatar_icon) {
+			var img = '<img src="{0}" class="msg-avatar" />'.fs(status.avatar_icon)
+			$('.profile-msg-sender-name', clone)
+			    .append(link.fs(msg.source, img))
+			$('.profile-msg-sender-name img', clone)
+			    .addClass('profile-status ' + status.online_state)
+		    }
+		    $('.profile-msg-sender-name', clone)
+			.append('{0} wrote:'.fs( link.fs(msg.source, status.name)) )
+		}
+	    })
+	    $('.profile-msg-created-seed', clone).text('Left: {0}'.fs(msg.created))
+	    clone.removeClass('null prototype')
+	    $('.profile-msg-remove', clone).click(function (e) {
+		var removeMessageOkay = function(results) {
+		    msgCount -= 1
+		    putCount(msgCount)
+		    model.profile.message_count -= 1
+		    profileUtil.put(MessagesView.model.profile, true) 
+		}
+		clone.slideUp(function() {
+		    $.ajax({
+			url: '/api/v1/auth/remove-message',
+			type: 'POST',
+			dataType:'json',
+			data: $.toJSON({key: msg.key}),
+			success: removeMessageOkay,
+		    })
+		})
+	    })
+	    $$('view-msg-pod').append(clone)
+	})
+	    $$('view-msg-pod').slideDown()
+    }
+
 })
 
 
@@ -46,6 +122,12 @@ var FeedbackModel = Model.extend({
     loader: function() {}
 })
 var FeedbackView = View.extend({
+
+    __authSuccess: function(profile) {
+	if (MainModel.id64() != profile.id64) {
+	    $$('leave-feedback-pod').slideDown()
+	}
+    }
 })
 
 
@@ -79,7 +161,7 @@ var ListingsView = SchemaView.extend({
 
     join: function(model) {
 	var self = this
-	$$('listings-title').text(self.title)
+	$$('listings-title').text(self.title).parent().fadeIn()
 	self.message('Listings loaded.').fadeOut()
 	$$('listings-inner').fadeIn(function() {
 	    if (!model.listings.length) {
@@ -181,7 +263,6 @@ var BidsView = SchemaView.extend({
     },
 
     putOne: function(bid, clone) {
-	console.log('put one ', bid, clone)
 	clone.removeClass('null prototype')
 	var target = $('.items-view table.chooser', clone)
 	SchemaView.putItems(target, bid.items)
@@ -273,8 +354,6 @@ var BackpackView = SchemaView.extend({
 //
 
 var SettingsModel = SchemaModel.extend({
-    // user profile and settings loaded by the MainModel object
-
     authSuccess: function(profile) {
 	this.profile = profile
     },
@@ -393,7 +472,6 @@ var SettingsControllerDefn = {
 	// it would be nice to reinitalize the profile here, but
 	// that's impractical because the listings/bids/backpack tabs
 	// might be initialized.
-	console.log(this)
 	this.view.saveSuccess()
     },
 
@@ -449,16 +527,6 @@ var MainModel = Model.extend({
 
     init: function(view, config) {
 	var self = this
-	self.authProfile = null
-	self.requests.push(
-	    function() {
-		new AuthProfileLoader({
-		    debug: true,
-		    suffix: '?settings=1&complete=1',
-		    success: function(profile) { self.authProfile = profile }
-		})
-	    }
-	)
 	Model.init.apply(self, [view, config])
     },
 
@@ -468,7 +536,24 @@ var MainModel = Model.extend({
 
     personaname: function() {
 	return this.results.personaname
+    },
+
+    loadMessages: function() {
+	MainController.setSub('messages', {view: MessagesView, model: MessagesModel})
+    },
+
+    submitMsg: function(output) {
+	var self = this
+	$.ajax({
+	    url: '/api/v1/auth/leave-message',
+	    type: 'POST',
+	    dataType:'json',
+	    data: $.toJSON(output),
+	    success: self.view.leaveMsgSuccess,
+	    error: self.view.leaveMsgError
+	})
     }
+
 })
 
 
@@ -477,7 +562,62 @@ var MainView = View.extend({
 
     join: function(model) {
 	if (model.profile && model.id64() == model.profile.id64) {
+	    model.loadMessages()
 	    $$('settings-tab').fadeIn()
+	}
+	if (model.profile && model.id64() != model.profile.id64) {
+	    $$('leave-msg-title')
+		.text('Leave a message for {0}:'.fs(model.personaname()))
+	    $$('leave-msg-txt').width('90%').height(150)
+	    $$('leave-msg-submit').parent().width('90%')
+	    $$('leave-msg-pod').slideDown()
+	}
+	var profile = model.results,
+	    ownerid = profile.steamid
+	this.docTitle(profile.personaname)
+	$$('title').text(profile.personaname)
+	if (profile.avatarmedium) {
+	    $$('avatar').attr('src', profile.avatarmedium)
+	}
+	new StatusLoader({
+	    suffix: profile.id64,
+	    success: function(status) {
+		$$('avatar').addClass(status.online_state)
+		$$('status').html(status.message_state).addClass(status.online_state).slideDown()
+	    }
+	})
+	$$('badge').slideDown()
+	$('.init-seed').fadeIn()
+	$$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
+	$$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
+    },
+
+    leaveMsgText: function() {
+	return $$('leave-msg-txt').val().slice(0,400)
+    },
+
+    leaveMsgEmpty: function() {
+	$$('leave-msg-form').slideUp(function() {
+	    $$('leave-msg-title').text('Empty message?  Really?  Nothing sent!')
+	})
+    },
+
+    leaveMsgSuccess: function() {
+	$$('leave-msg-form').slideUp(function() {
+	    $$('leave-msg-title').text('Message sent!')
+	})
+    },
+
+    leaveMsgError: function(request, status, error) {
+	if (request.status==500) {
+	    try {
+		var err = $.parseJSON( request.responseText )
+		if (err.exception == 'Mailbox full') {
+		    $$('leave-msg-form').slideUp(function() {
+			$$('leave-msg-title').text('Your message was not sent!  Target mailbox is full.')
+		    })
+		}
+	    } catch (e) {}
 	}
     }
 })
@@ -490,8 +630,8 @@ var MainController = Controller.extend({
     view: MainView,
 
     detailsShow: function() {
-	this.setSub('messages', {view: MessagesView, model: MessagesModel})
-	this.setSub('feedback', {view: FeedbackView, model: FeedbackModel})
+	//this.setSub('messages', {view: MessagesView, model: MessagesModel})
+	//this.setSub('feedback', {view: FeedbackView, model: FeedbackModel})
     },
 
     listingsShow: function() {
@@ -513,14 +653,22 @@ var MainController = Controller.extend({
     setSub: function(name, defn) {
 	if (name in this.subs) {
 	    var sub = this.subs[name]
-	    console.log('reusing sub controller', name)
 	} else {
 	    this.view.message('Loading {0}...'.fs(name))
 	    defn.config = this.config
 	    var sub = this.subs[name] = Controller.extend(defn)
 	    sub.init()
-	    console.log('created new sub controller', name)
 	    window.setTimeout(function() {MainView.message().fadeOut()}, 1000)
+	}
+    },
+
+    '#profile-leave-msg-submit click': function(e) {
+	var ctrl = e.controller,
+            txt = ctrl.view.leaveMsgText()
+	if (txt) {
+	    ctrl.model.submitMsg({message: txt, target: ctrl.model.id64()})
+	} else {
+	    ctrl.view.leaveMsgEmpty()
 	}
     },
 
@@ -534,7 +682,7 @@ var MainController = Controller.extend({
 		4: this.settingsShow
 	    }
 	$('#tabs').tabs({
-	    fx: {height: 'toggle', opacity: 'toggle', duration: 'fast'},
+	    fx: {opacity: 'toggle', duration: 'slow'},
 	    show: function(event, ui) {
 		if (ui.index in tabCallbacks) {
 		    // munge the hash (to prevent the browser from jumping
@@ -545,6 +693,4 @@ var MainController = Controller.extend({
 	    }
 	})
     }
-
-
 })

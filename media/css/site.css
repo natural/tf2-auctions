@@ -216,7 +216,10 @@ span.hilite:before { content:">>"; }
 
 
 img.equipped { margin-top:-0.35em; }
-img.unequipped-133 { padding-top:0.5em; }
+img.unequipped-133 { padding-top:0.5em; padding-right:0.5em }
+img.unequipped-179 { padding-right:0.5em }
+img.unequipped-226 { padding-top:0.25em; }
+img.unequipped-287 { padding-right:0.5em }
 img.equipped-133 { margin-top:0; }
 img.equipped-183 { margin-top:0; }
 img.unequipped-5022, img.unequipped-5041, img.unequipped-5045, img.unequipped-5048 { margin-right: 0.5em }

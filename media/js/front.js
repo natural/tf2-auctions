@@ -1,11 +1,11 @@
 var $$ = make$$('#front-')
 
 
-var NewsModel = Model.make({name:'NewsModel'}, {
+var NewsModel = Model.make({name: 'NewsModel'}, {
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/news',
     dataType: 'jsonp',
     jsonpCallback: 'tf2auctionsNewsLoader',
-    name: 'NewsLoader',
+    name: 'NewsLoader'
 })
 
 
@@ -31,13 +31,14 @@ var NewsView = View.extend({
        })
        $$('news').slideDown()
     }
-
 })
 
 
-var StatsModel = Model.make(
-    {name:'StatsModel'}, {prefix: '/api/v1/public/stats', name: 'StatsLoader'}
-)
+var StatsModel = Model.make({name: 'StatsModel'}, {
+    prefix: '/api/v1/public/stats',
+    name: 'StatsLoader'
+})
+
 
 var StatsView = View.extend({
     join: function(model) {
@@ -50,9 +51,10 @@ var StatsView = View.extend({
 })
 
 
-var BlogModel = Model.make(
-    {name: 'BlogModel'}, {prefix: '/api/v1/public/blog-entries', name: 'BlogLoader'}
-)
+var BlogModel = Model.make({name: 'BlogModel'}, {
+    prefix: '/api/v1/public/blog-entries',
+    name: 'BlogLoader'
+})
 
 
 var BlogView = View.extend({

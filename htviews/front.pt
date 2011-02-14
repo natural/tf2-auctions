@@ -39,7 +39,7 @@
 	</div>
 
 	<div id="${slug}-news-blog-pod" class="float-left w59">
-	    <div id="${slug}-blog" class="null mt2 mb1">
+	    <div id="${slug}-blog" class="null mb1">
 		<div class="blog-seed null prototype mb1">
 		    <label><span class="blog-title-seed"></span></label>
 		    <div class="blog-intro-seed"></div>
