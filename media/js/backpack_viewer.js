@@ -30,7 +30,7 @@ var BackpackModel = SchemaModel.extend({
 
 var BackpackView = SchemaView.extend({
     showSelection: function(event) {
-	var self = BackpackView
+	var self = this
 	try {
 	    var data = $('option:selected', event.target).data('result')
 	} catch (e) {
@@ -51,13 +51,14 @@ var BackpackView = SchemaView.extend({
     },
 
     showError: function(request, status, error) {
-	var self = BackpackView
+	console.log('show error', request, status, error)
+	var self = this
 	self.reset()
         self.message('Error.  Lame').delay(3000).fadeOut()
     },
 
     showSearch: function(results) {
-	var self = BackpackView
+	var self = this
 	self.reset()
         var ready = function() {
             self.message().hide()
@@ -87,7 +88,7 @@ var BackpackView = SchemaView.extend({
     },
 
     ready: function(id64, name, backpack) {
-	var self = BackpackView, items = backpack.result.items.item
+	var self = this, items = backpack.result.items.item
         window.location.hash = id64
         if (!items.length || items[0]==null) {
 	    $('#backpack-viewer-backpack-title')
@@ -125,7 +126,7 @@ var BackpackView = SchemaView.extend({
     },
 
     put: function(backpack, listings, bids) {
-	var self = BackpackView,
+	var self = this,
             bpTool = new BackpackItemsTool({
 	                 items: backpack.result.items.item,
 	                 listingUids: listingItemsUids(listings),
@@ -156,7 +157,7 @@ var BackpackView = SchemaView.extend({
 var BackpackController = Controller.extend({
     model: BackpackModel,
     view: BackpackView,
-    defaultSearchText: 'Enter a player name or Steam ID',
+    defaultSearchText: 'Enter Steam ID, Player Name, or Steam Community URL',
 
     '#backpack-viewer-search click' : function(e) {
 	this.search(this.view.searchText())
@@ -180,7 +181,13 @@ var BackpackController = Controller.extend({
     search: function(value) {
         if (value == this.defaultSearchText) { return }
         this.view.message('Searching...')
-	var opts = {success: this.view.showSearch, error: this.view.showError}
+	var self = this,
+            opts = {
+		debug: true,
+		success: function() { self.view.showSearch.apply(self.view, arguments) },
+	        error: function() { self.view.showError.apply(self.view, arguments) }
+	    }
+	value = this.reformat(value)
 	if (value.match(/\d{17}/)) {
             var find = this.model.findId
 	    opts.id = value
@@ -189,6 +196,31 @@ var BackpackController = Controller.extend({
 	    opts.name = value
         }
         find(opts)
+    },
+
+    reformat: function(v) {
+	v = v.trim()
+	// http://steamcommunity.com/profiles/76561197992805111
+	var m = v.match(/\d{17}/)
+	if (m) {
+	    return m[0]
+	}
+
+	// http://steamcommunity.com/id/propeller_headz
+	// http://steamcommunity.com/id/propeller_headz/home
+	var m = v.match(/steamcommunity.com\/id\/(.+)/)
+	if (m) {
+	    return m[1].split('/')[0]
+	}
+
+        // steam://friends/add/76561198031408075
+	var m = v.match(/steam:\/\/friends\/add\/(\d{17})/)
+	if (m) {
+	    return m[1]
+	}
+	return v
     }
 
 })
+
+

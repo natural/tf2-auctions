@@ -106,9 +106,6 @@ Model.
 
 Members:
 
-    * proto.slug - a prefix string for the the selector function, `$$`
-
-    * proto.$$ - selector function with prefix applied
 
     * proto.authError - called when the associated Model errors during
       authorized user profile fetch.  Default implementation does

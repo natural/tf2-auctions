@@ -1,9 +1,26 @@
+//(function() {
 
-var slug = '#profile-',
-    $$ = make$$(slug),
-    pathTail = function() { return window.location.pathname.split('/').pop() }
+// fix up details
+//      anon: show feedback
+//      auth: show leave msg
+//      auth: show leave feedback
+//      owner: show msgs
+//      owner: remove msgs
+
+// fix up listings
+// fix up bids
+
+// BUG: when navigating to backpack and then bids tab, bids are not
+// show.  misbehavior probably in other cases, too.
+
+// done:  backpack
+// done:  settings
 
 
+
+var slug = '#profile-', $$ = make$$(slug)
+
+// this needed?
 var makeStatusLoader = function(id) {
     return makeLoader({
         prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
@@ -116,17 +133,55 @@ var MessagesView = View.extend({
 
 
 //
-// feedback model and view for the details tab
+// feedback loader, model, and view for the details tab
 //
-var FeedbackModel = Model.extend({
-    loader: function() {}
-})
-var FeedbackView = View.extend({
 
-    __authSuccess: function(profile) {
-	if (MainModel.id64() != profile.id64) {
-	    $$('leave-feedback-pod').slideDown()
+var FeedbackLoader = makeLoader({
+    prefix: '/api/v1/public/profile-feedback/',
+    name: 'FeedbackLoader'
+})
+
+var FeedbackModel = Model.extend({
+    init: function(view, config) {
+	var self = this
+	self.requests.push(function() {
+	    new FeedbackLoader({
+		suffix: MainModel.id64(),
+		success: function(feedback) { self.feedback = feedback }
+	    })
+	})
+	Model.init.apply(self, arguments)
+    }
+})
+
+
+var FeedbackView = View.extend({
+    authSuccess: function(profile) {
+	if (MainModel.isOwner(profile)) {
+	    $$('feedback-existing-title').text('My Feedback')
+	    $$('feedback-existing-pod').slideDown()
+	} else {
+	    // show leave feedback
 	}
+    },
+
+    authError: function() {
+	$$('feedback-existing-title').text('Feedback for {0}'.fs(MainModel.results.personaname))
+	$$('feedback-existing-pod').slideDown()
+    },
+
+    join: function(model) {
+	if (!model.feedback) {
+	    $$('feedback-none').text('No feedback.').fadeIn()
+	} else {
+	    this.putFeedback(model.feedback)
+	}
+    },
+
+    putFeedback: function(fbs) {
+	$.each(fbs, function(idx, fb) {
+	    console.log('put fb', fb)
+	})
     }
 })
 
@@ -143,18 +198,16 @@ var ListingsModel = SchemaModel.extend({
 		success: function(listings) { self.listings = listings }
 	    })
 	})
-	SchemaModel.init.apply(self, [view, config])
+	SchemaModel.init.apply(self, arguments)
     }
 })
 
 
 var ListingsView = SchemaView.extend({
-    slug: slug,
     title: 'Recent Listings',
-    initOnce: false,
 
     authSuccess: function(profile) {
-	if (MainModel.id64() == profile.id64) {
+	if (MainModel.isOwner(profile)) {
 	    this.title = 'My ' + this.title
 	}
     },
@@ -173,17 +226,14 @@ var ListingsView = SchemaView.extend({
     },
 
     putMany: function(listings, profile) {
-	var self = this
-	if (!self.initOnce) {
-	    var proto = $$('listings-inner div.prototype')
-	    $.each(listings, function(idx, listing) {
-		self.putOne(listing, proto.clone().addClass('listing-seed'))
-	    })
-	    new SchemaTool().putImages(profile ? profile.settings : null)
-	    $('div.listing-seed td.item-view div:empty').parent().remove()
-	    $$('listings-pod div.init-seed').slideDown('slow')
-	    self.initOnce = true
-	}
+	var self = this,
+            proto = $$('listings-inner div.prototype')
+	$.each(listings, function(idx, listing) {
+	    self.putOne(listing, proto.clone().addClass('listing-seed'))
+	})
+	new SchemaTool().putImages(profile ? profile.settings : null)
+	$('div.listing-seed td.item-view div:empty').parent().remove()
+	$$('listings-pod div.init-seed').slideDown('slow')
     },
 
     putOne: function(listing, clone) {
@@ -215,41 +265,38 @@ var ListingsView = SchemaView.extend({
 var BidsModel = SchemaModel.extend({
     init: function(view, config) {
 	var self = this
-	self.requests.push(function() {
-	    new BidsLoader({
-		suffix: MainModel.id64(),
-		success: function(bids) { self.bids = bids }
-	    })
-	})
-	SchemaModel.init.apply(self, [view, config])
+	self.requests.push(
+	    function() {
+	        new BidsLoader({
+		    suffix: MainModel.id64(),
+		    success: function(bids) { self.bids = bids }
+	        })
+	    }
+        )
+	SchemaModel.init.apply(self, arguments)
     }
 })
 
 
 var BidsView = SchemaView.extend({
-    initOnce: false,
-    slug: slug,
     title: 'Recent Bids',
 
     authSuccess: function(profile) {
-	if (MainModel.id64() == profile.id64) {
+	if (MainModel.isOwner(profile)) {
 	    this.title = 'My ' + this.title
 	}
     },
 
     join: function(model) {
-	if (!this.initOnce) {
-	    var self = this
-	    self.initOnce = true
-	    $$('bids-title').text(self.title)
-	    $$('bids-inner').fadeIn(function() {
-		if (!model.bids.length) {
-		    $$('bids-none').text('Nothing recent.').slideDown()
-		} else {
-		    self.putMany(model.bids, model.profile)
-		}
-	    })
-	}
+	var self = this
+	$$('bids-title').text(self.title)
+	$$('bids-pod').fadeIn(function() {
+	    if (!model.bids.length) {
+		$$('bids-none').text('Nothing recent.').slideDown()
+	    } else {
+		self.putMany(model.bids, model.profile)
+	    }
+	})
     },
 
     putMany: function(bids, profile) {
@@ -314,18 +361,15 @@ var BackpackModel = SchemaModel.extend({
 
 
 var BackpackView = SchemaView.extend({
-    initOnce: false,
-    slug: slug,
     title: 'Backpack',
 
     authSuccess: function(profile) {
-	if (MainModel.id64() == profile.id64) {
+	if (MainModel.isOwner(profile)) {
 	    this.title = 'My ' + this.title
 	}
     },
 
     join: function(model) {
-	if (!this.initOnce) {
 	    var self = this,
 	        bpTool = new BackpackItemsTool({
 		    items: model.backpack.result.items.item,
@@ -339,12 +383,10 @@ var BackpackView = SchemaView.extend({
 		    rowGroups: BackpackPages.full(model.backpack.result.num_backpack_slots)
 		})
 	    bpTool.init(model.profile ? model.profile.settings : null)
-	    self.initOnce = true
 	    $$('backpack-title').text(self.title)
 	    $$('backpack-title-pod').fadeIn(function() {
 		$$('backpack-inner').fadeIn()
 	    })
-	}
     }
 })
 
@@ -522,12 +564,28 @@ var SettingsControllerDefn = {
 // main model, view and controller
 //
 var MainModel = Model.extend({
+/*
+    NB:  the MainModel has two profile attributes:
+
+    1.  MainModel.results is the profile for the player page, this
+        is present even when the user is not logged in.
+
+    2.  MainModel.profile is the profile for the user, this is present
+        only when the user is authenticated.  This object will be the
+        same as .results when the user is viewing their own profile
+        page.
+*/
     loader: makeLoader({prefix: '/api/v1/public/profile/', name: 'MainLoader'}),
     loaderSuffix: pathTail(),
 
     init: function(view, config) {
 	var self = this
 	Model.init.apply(self, [view, config])
+    },
+
+    ready: function(profile) {
+	Model.ready.apply(this, arguments)
+	MainController.modelProfileReady(this)
     },
 
     id64: function() {
@@ -538,8 +596,21 @@ var MainModel = Model.extend({
 	return this.results.personaname
     },
 
+    loadFeedback: function() {
+	MainController.setSub('feedback', {view: FeedbackView, model: FeedbackModel})
+    },
+
+
     loadMessages: function() {
 	MainController.setSub('messages', {view: MessagesView, model: MessagesModel})
+    },
+
+    loadRating: function() {
+	// fill it in
+    },
+
+    isOwner: function(p) {
+	return (p && p.id64 == this.results.id64)
     },
 
     submitMsg: function(output) {
@@ -558,20 +629,28 @@ var MainModel = Model.extend({
 
 
 var MainView = View.extend({
-    slug: slug,
-
     join: function(model) {
-	if (model.profile && model.id64() == model.profile.id64) {
+
+	// auth and owner
+	if (model.isOwner(model.profile)) {
 	    model.loadMessages()
+	    $$('is-you').text('This is you!').slideDown()
 	    $$('settings-tab').fadeIn()
 	}
-	if (model.profile && model.id64() != model.profile.id64) {
+
+	// auth but not owner
+	if (model.profile && !model.isOwner(model.profile)) {
 	    $$('leave-msg-title')
 		.text('Leave a message for {0}:'.fs(model.personaname()))
 	    $$('leave-msg-txt').width('90%').height(150)
 	    $$('leave-msg-submit').parent().width('90%')
 	    $$('leave-msg-pod').slideDown()
 	}
+
+	// 
+	model.loadRating()
+	model.loadFeedback()
+
 	var profile = model.results,
 	    ownerid = profile.steamid
 	this.docTitle(profile.personaname)
@@ -579,15 +658,20 @@ var MainView = View.extend({
 	if (profile.avatarmedium) {
 	    $$('avatar').attr('src', profile.avatarmedium)
 	}
-	new StatusLoader({
-	    suffix: profile.id64,
-	    success: function(status) {
-		$$('avatar').addClass(status.online_state)
-		$$('status').html(status.message_state).addClass(status.online_state).slideDown()
+
+	var setStatus = function(status) {
+	    var m = status.message_state
+	    $$('avatar').addClass(status.online_state)
+	    if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
+		$$('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
+		m = m.replace(/ - .*/, '')
 	    }
-	})
+	    $$('status').html(m).addClass(status.online_state).slideDown()
+	}
+	new StatusLoader({suffix: profile.id64, success: setStatus})
 	$$('badge').slideDown()
 	$('.init-seed').fadeIn()
+	$$('owner-view-steam-profile').attr('href', profile.profileurl)
 	$$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
 	$$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
     },
@@ -662,6 +746,14 @@ var MainController = Controller.extend({
 	}
     },
 
+    modelProfileReady: function() {
+	// callback after the page profile is ready; we need this
+	// because we can't select a tab reliably until we know the
+	// id64 of the profile.
+	var hash = this.hash()
+	if (hash && hash != '0') { this.tabCallbacks[parseInt(hash)].apply(this) }
+    },
+
     '#profile-leave-msg-submit click': function(e) {
 	var ctrl = e.controller,
             txt = ctrl.view.leaveMsgText()
@@ -673,24 +765,21 @@ var MainController = Controller.extend({
     },
 
     'ready' : function (e) {
+	this.tabCallbacks = {
+            0: this.detailsShow,
+	    1: this.listingsShow,
+	    2: this.bidsShow,
+	    3: this.backpackShow,
+	    4: this.settingsShow
+	}
 	var self = this,
-	    tabCallbacks = {
-	        0: this.detailsShow,
-		1: this.listingsShow,
-		2: this.bidsShow,
-		3: this.backpackShow,
-		4: this.settingsShow
-	    }
-	$('#tabs').tabs({
-	    fx: {opacity: 'toggle', duration: 'slow'},
-	    show: function(event, ui) {
-		if (ui.index in tabCallbacks) {
-		    // munge the hash (to prevent the browser from jumping
-		    // to the div automatically) and then set it:
-		    window.location.hash = ui.tab.hash.replace('tabs-', '')
-		    tabCallbacks[ui.index].apply(self)
-		}
-	    }
+	    tabs = $('#tabs').tabs({ fx: {opacity: 'toggle', duration: 'fast'} })
+	tabs.bind('tabsselect', function(event, ui) {
+	    window.location.href = ui.tab
+	    self.tabCallbacks[ui.index].apply(self)
 	})
     }
 })
+
+
+//})()

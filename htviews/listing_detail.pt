@@ -98,6 +98,14 @@
 
 		    <div class="owner-links m1-top null" id="${slug}-owner-links">
 			<ul>
+			    <li class="null">
+				<img src="/media/img/iconGo.png" width="16" height="16" />
+				<a href="#" id="${slug}-join-game">Join Game</a>
+			    </li>
+			    <li>
+				<img src="/media/img/iconSteam.png" />
+				<a href="#" target="_new" id="${slug}-view-steam-profile">View Steam Profile</a>
+			    </li>
 			    <li>
 				<img src="/media/img/iconAddFriend.png" />
 				<a href="#" id="${slug}-add-owner-friend" onclick="return false">Add Steam Friend</a>
@@ -178,13 +186,15 @@
 			</span>
 		    </span>
 		</div>
+
 		<div id="${slug}-auth-bid-feedback-pod" class="null">
-		    <h1 class=""><span class="hilite">&nbsp;</span>Your Feedback</h1>
-		    <div class="m1">
-			<metal:macro tal:define="slug 'bidder'"
-				     use-macro="context.view_parts.macros.leave_feedback2" />
-		    </div>
+	          <h1 class="mt2 mb05"><span class="hilite">&nbsp;</span>Your Feedback</h1>
+		  <div class="ov w50">
+		    <metal:macro tal:define="slug 'bidder'"
+				 use-macro="context.view_parts.macros.leave_feedback2" />
+		  </div>
 		</div>
+
 	    </div>
 
 

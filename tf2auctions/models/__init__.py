@@ -510,6 +510,11 @@ class Feedback(db.Model):
 	return q.get()
 
     @classmethod
+    def get_by_target(cls, target):
+        q = add_filters(cls.all(), ('target', ), (target, ))
+        return q
+
+    @classmethod
     def build(cls, bid, listing, source, target, rating, comment):
 	obj = cls(bid=bid, listing=listing, source=source, target=target, rating=rating, comment=comment)
 	obj.put()

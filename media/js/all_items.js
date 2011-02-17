@@ -17,15 +17,16 @@ var PageModel = SchemaModel.extend({
 
 var PageView = SchemaView.extend({
     cloneClass: 'group-proto-seed',
-    slug: '#all-items-',
+
     join: function(model) {
+	var self = this
 	$.each(model.groups(), function(idx, group) {
 	    var clone = PageView.proto()
-	    PageView.putItems($('.group-items-seed', clone), group[1]())
+	    self.putItems($('.group-items-seed', clone), group[1]())
 	    $('.group-title-seed', clone).text(group[0])
-	    PageView.$$('group-target-pod').append(clone)
+	    $('#all-items-group-target-pod').append(clone)
 	})
-        this.putImages()
+        self.putImages()
     },
 })
 

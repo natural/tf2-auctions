@@ -13,11 +13,9 @@ if (typeof Object.create !== 'function') {
 
 
 String.prototype.fs = function() {
-    var formatted = this
-    for (var i=0; i<arguments.length; i++) {
-	formatted = formatted.replace('{' + i + '}', arguments[i])
-    }
-    return formatted
+    var fs = this
+    for (i in arguments) { fs = fs.replace('{' + i + '}', arguments[i]) }
+    return fs
 }
 
 
@@ -224,6 +222,8 @@ var makeImg = function(options) {
 }
 
 
+var gsc = {}, gec = {}
+
 // makes an async. data loader, which is a preconfigured ajax call.
 var makeLoader = function(config) {
     var cache = this.cache = {}
@@ -233,6 +233,12 @@ var makeLoader = function(config) {
     return function(options) {
 	options = options || {}
 	var url = prefix + (options.suffix || '')
+	var successCallbacks = gsc[url]
+	if (!successCallbacks) { gsc[url] = successCallbacks = [] }
+
+	var errorCallbacks = gec[url]
+	if (!errorCallbacks) { gec[url] = errorCallbacks = [] }
+
 	successCallbacks.push(options.success ? options.success : ident)
 	errorCallbacks.push(options.error ? options.error : ident)
 
@@ -318,6 +324,12 @@ var StatusLoader = makeLoader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
     dataType: 'jsonp',
     name: 'StatusLoader'
+})
+
+
+var ListingLoader = makeLoader({
+    prefix: '/api/v1/public/listing/',
+    name: 'ListingLoader'
 })
 
 
@@ -519,6 +531,8 @@ var SchemaTool = function(schema) {
     }
 }
 
+var  pathTail = function() { return window.location.pathname.split('/').pop() }
+
 
 // this should also move to the default View object
 var siteMessage = function(text) {
@@ -693,10 +707,12 @@ var Model = MVC.extend({
         })
 
 	// request the model data
-	self.requests.push(function() {
-            var success = function(v) { self.ready.apply(self, [v]) }
-            new self.loader({success: success, suffix: self.loaderSuffix || ''})
-        })
+	if (self.loader) {
+	    self.requests.push(function() {
+		var success = function(v) { self.ready.apply(self, [v]) }
+		new self.loader({success: success, suffix: self.loaderSuffix || ''})
+            })
+	}
         var binder = $('<foo />')
 	binder.bind('ajaxStop.{0}'.fs(self.name), function() {
             view.join.apply(view, [self])
@@ -752,8 +768,6 @@ var SchemaModel = Model.extend({
 //
 var View = MVC.extend({
     clones: [],
-    slug: '',
-    $$: function(suffix, next) { return $('{0}{1}'.fs(this.slug, suffix), next) },
     authError: function() {},
     authSuccess: function() {},
     init: function(model) { this.model = model },

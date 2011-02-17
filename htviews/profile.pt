@@ -15,16 +15,16 @@
     <div id="${slug}-main-pod">
 	<div id="tabs" class="tabs">
 	    <ul>
-		<li><h4><a href="#tabs-0">Details</a></h4></li>
-		<li><h4><a href="#tabs-1">Listings</a></h4></li>
-		<li><h4><a href="#tabs-2">Bids</a></h4></li>
-		<li><h4><a href="#tabs-3">Backpack</a></h4></li>
+		<li><h4><a href="#0">Details</a></h4></li>
+		<li><h4><a href="#1">Listings</a></h4></li>
+		<li><h4><a href="#2">Bids</a></h4></li>
+		<li><h4><a href="#3">Backpack</a></h4></li>
 		<li id="${slug}-settings-tab" class="null">
-		    <h4><a href="#tabs-4">Settings</a></h4>
+		    <h4><a href="#4">Settings</a></h4>
 		</li>
 	    </ul>
 
-	    <div id="tabs-0">
+	    <div id="0">
 		<!-- player profile badge on the right -->
 		<div id="${slug}-badge-pod">
 		    <div id="${slug}-badge" class="null owner">
@@ -33,8 +33,18 @@
 			    <img id="${slug}-avatar" class="m1 profile-status" />
 			    <div id="${slug}-status" class=""></div>
 			    <h2 class="null m05" id="${slug}-is-you"></h2>
+			</div>
+			<div class="center ml1">
 			    <div class="owner-links m1-top" id="${slug}-owner-links">
 				<ul>
+				    <li class="null">
+					<img src="/media/img/iconGo.png" width="16" height="16" />
+					<a href="#" id="${slug}-join-game">Join Game</a>
+				    </li>
+				    <li>
+					<img src="/media/img/iconSteam.png" />
+					<a href="#" target="_new" id="${slug}-owner-view-steam-profile">View Steam Profile</a>
+				    </li>
 				    <li>
 					<img src="/media/img/iconAddFriend.png" />
 					<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
@@ -49,9 +59,17 @@
 		    </div>
 		</div>
 
+		<div id="${slug}-feedback-pod">
+		    <div id="${slug}-feedback-existing-pod" class="null">
+		        <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-existing-title">Feedback</span></h1>
+			<h2 id="${slug}-feedback-none" class="null"></h2>
+		    </div>
+		    <div id="${slug}-leave-feedback-pod" class="null">
+		      <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-new-title">Leave Feedback</span></h1>
+		    </div>
+		</div>
 		<!-- messages -->
-		<div class="" id="${slug}-msg-pod">
-
+		<div id="${slug}-msg-pod">
 		    <!-- inner wrapper for msg drop  -->
 		    <div id="${slug}-leave-msg-pod" class="null">
 			<h1>
@@ -86,21 +104,12 @@
 			    </div>
 			</div>
 		    </div>
-
-		    <div id="${slug}-existing-feedback-pod" class="null">
-		      <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-existing-title">Feedback</span></h1>
-		    </div>
-
-		    <div id="${slug}-leave-feedback-pod" class="null">
-		      <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-new-title">Leave Feedback</span></h1>
-		    </div>
-
 		</div>
 	    </div>
 
 
 		<!-- listings tab -->
-		<div id="tabs-1">
+		<div id="1">
 		    <div id="${slug}-listings-pod">
 		        <h1 class="null mb05">
 		            <span class="hilite">&nbsp;</span><span id="${slug}-listings-title">Listings</span>
@@ -118,14 +127,10 @@
 		</div>
 
 		<!-- bids tab -->
-		<div id="tabs-2">
-		    <div id="${slug}-bids-pod" class="">
-			<div class="init-seed null">
-			    <h1><span class="hilite">&nbsp;</span><span id="${slug}-bids-title"></span></h1>
-			</div>
-			<h2 class="null" id="${slug}-bids-loading"></h2>
-
-
+		<div id="2">
+		    <div id="${slug}-bids-pod" class="null">
+		        <h1><span class="hilite">&nbsp;</span><span id="${slug}-bids-title"></span></h1>
+			<h2 id="${slug}-bids-none" class="null"></h2>
 			<div class="null" id="${slug}-bids-inner">
 			    <h2 class="null" id="${slug}-bids-none"></h2>
 			    <metal:include
@@ -136,7 +141,7 @@
 		</div>
 
 		<!-- backpack tab -->
-		<div id="tabs-3">
+		<div id="3">
 		    <div id="${slug}-backpack-pod" class="">
 		        <h1 id="${slug}-backpack-title-pod" class="null">
 			    <span class="hilite">&nbsp;</span><span id="${slug}-backpack-title"></span>
@@ -154,7 +159,7 @@
 		</div>
 
 
-		<div id="tabs-4">
+		<div id="4">
 		    <h1>
 			<span class="hilite">&nbsp;</span><span id="${slug}-settings-title">My Settings</span>
 		    </h1>

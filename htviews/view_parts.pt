@@ -404,26 +404,32 @@ leave feedback form (new):
 
     <div class="w100" id="${slug}-feedback-comment-pod">
 	<div id="${slug}-feedback-comment-value" class="null">text</div>
-	<div id="${slug}-feedback-controls" class="feedback-controls w50">
-	    <div id="${slug}-feedback-comment-help">Enter your feedback:</div>
+	<div id="${slug}-feedback-controls" class="feedback-controls">
+	    <div id="${slug}-feedback-comment-help">Message:</div>
 	    <div>
 		<textarea id="${slug}-feedback-comment-text">${default_feedback}</textarea>
 	    </div>
-	    <table class="mt1 mb1">
-		<tr>
+	    <table class="mt1 mb1 w100">
+	        <tr>
 		    <td class="w25">
 			<div id="${slug}-feedback-rating-value-label">Rating:</div>
+		    </td>
+		    <td class="w75">&nbsp;</td>
+		</tr>
+		<tr>
+		    <td class="text-center valign-middle">
 			<div id="${slug}-feedback-rating-value"></div>
 		    </td>
-		    <td class="w75">
-			<div id="${slug}-feedback-rating-slider" class="w100 mt05 mr1" name=""></div>
-		    </td>
-		    <td>
-			<a href="#" onclick="return false" class="button save-button">Save Feedback</a>
-			<a href="#" onclick="return false" class="null button cancel-button">Cancel</a>
+		    <td class="valign-middle">
+			<div id="${slug}-feedback-rating-slider" class="w100 center text-center" name=""></div>
 		    </td>
 		</tr>
 	    </table>
+
+	    <div class="nowrap text-right w100">
+			<a id="${slug}-feedback-save" href="#" onclick="return false" class="button save-button">Save Feedback</a>
+			<a id="${slug}-feedback-cancel" href="#" onclick="return false" class="button cancel-button">Cancel</a>
+	    </div>
 	</div>
     </div>
 </metal:macro>

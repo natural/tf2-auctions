@@ -12,6 +12,7 @@
                 padding:0.35em 1.5em 0.35em 0.25em;
                 vertical-align:middle;
 	    }
+	    #${slug}-search-value { width: 30em }
 	</style>
 
 	<div id="${slug}-content-pod">

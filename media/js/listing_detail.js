@@ -1,36 +1,28 @@
-// yellow: #FEFB00
-// green:  #00F800
-var $$ = function(suffix, next) { return $('#listing-detail-' + suffix, next) }
-var pid = function () { return window.location.pathname.split('/').pop() }
-
-
-var ListingLoader = makeLoader({
-    prefix: '/api/v1/public/listing/',
-    name: 'ListingLoader'
-})
+var slug = '#listing-detail-', $$ = make$$(slug)
 
 
 var NewBidModel = Model.extend({
     loader: BackpackLoader,
-    loaderSuffix: null, // updated in init
 
     init: function(view, config) {
-	var self = this
+	var self = this, suffix = config.profile.id64
 	self.listing = config.listing
 	self.profile = config.profile
-	self.requests.push(function() {
-            new ListingsLoader({
-                suffix: config.profile.id64,
-                success: function(listings) { self.listings = listings }
-            })
-        })
-	self.requests.push(function() {
-            new BidsLoader({
-                suffix: config.profile.id64,
-                success: function(bids) { self.bids = bids }
-	   })
-        })
-        self.loaderSuffix = config.profile.id64
+        self.loaderSuffix = suffix
+	self.requests.push(
+	    function() {
+		new ListingsLoader({
+                    suffix: suffix,
+                    success: function(listings) { self.listings = listings }
+		})
+            },
+	    function() {
+		new BidsLoader({
+		    suffix: suffix,
+                    success: function(bids) { self.bids = bids }
+		})
+            }
+	)
         Model.init.apply(self, [view, config])
     },
 
@@ -207,37 +199,26 @@ var NewBidView = View.extend({
 	$$('add-bid-working').text('Something went wrong.  Check the error below.').fadeIn()
 	$$('add-bid-error').text(req.statusText).parent().fadeIn()
     }
-
-
 })
 
 
 var BidderFeedbackModel = Model.extend({
-    init: function(view, config) {
-	var self = this
-	self.view = view
-        view.init.apply(view, [self])
-    },
-
-    init___: function(view, config) {
-	var self = this
-	self.requests.push(function() {
-            new ListingLoader({
-                suffix: pid(),
-                success: function(listing) { self.listing = listing }
-            })
+    saveFeedback: function(data, success, error) {
+	$.ajax({
+	    url: '/api/v1/auth/add-feedback',
+	    type: 'POST',
+	    data: $.toJSON(data),
+	    dataType: 'json',
+	    success: success,
+	    error: error
         })
-        SchemaModel.init.apply(self, arguments)
-    },
-
+    }
 })
 
 
 var BidderFeedbackView = View.extend({
     init: function() {
-	console.log('BidderFeedbackView.init()', this)
-	// the slider bits belong in the controller...
-	var slider = $('#bidder-feedback-rating-slider').slider({
+	this.slider = $('#bidder-feedback-rating-slider').slider({
 	        animate: true,
 	        max: 100,
 	        min:-100,
@@ -253,20 +234,56 @@ var BidderFeedbackView = View.extend({
 	var v = ui.value, e = $('#bidder-feedback-rating-value')
 	e.text('{0}{1}'.fs(v>0 ? '+' : '', v)).removeClass('rate-pos rate-neg rate-zero')
 	e.addClass(v > 0 ? 'rate-pos' : (v<0 ? 'rate-neg' : 'rate-zero'))
+    },
+
+    hideFeedback: function(feedback, prefix) {
+	$(prefix+'-rating').text('{0}{1}'.fs( feedback.rating > 0 ? '+' : '', feedback.rating))
+	$(prefix+'-rating-text').text(feedback.comment)
+	//$(prefix+'-rating-label').text(title)
+	$(prefix+'-feedback-rating-pod').slideDown()
+    },
+
+    cancelFeedback: function() {
+    },
+
+    saveSuccess: function() {
+    },
+
+    saveError: function() {
     }
 })
 
 
-
-
-
-// just the definition; instantiated later
 var BidderFeedbackController = {
     view: BidderFeedbackView,
     model: BidderFeedbackModel,
+
     reinit: function() {
 	console.log('BidderFeedbackController.reinit()')
+    },
+
+    '#bidder-feedback-save click' : function(e) {
+	var self = this
+	    bid = profileBid(),
+	    listing = pageListing(),
+            data = {
+	        bid: bid.key,
+	        listing: listing.key,
+	        rating: this.view.slider.slider('value'),
+	        source: 'bidder',
+	        text: $('#bidder-feedback-comment-text').val().slice(0, 400)
+	    },
+	    success = function () { self.view.saveSuccess.apply(self.view) },
+	    error = function () { self.view.saveError.apply(self.view) }
+	e.controller.model.saveFeedback(data, success, error)
+	e.controller.view.hideFeedback(data.text, '#bidder')
+    },
+
+    '#bidder-feedback-cancel click' : function(e) {
+	console.log('clicked cancel')
+	e.controller.view.cancelFeedback()
     }
+
 }
 
 // just the definition; instantiated later
@@ -399,14 +416,11 @@ var DetailView = SchemaView.extend({
 	    self.putAuthTools()
 	}
         model.tool.putImages(profile ? profile.settings : null)
-        $$('content').fadeIn(function() {
-            self.putListingOwnerStatus()
-        })
+        $$('content').fadeIn(function() { self.putListingOwnerStatus() })
     },
 
     putListing: function() {
-	var self = this,
-            listing = self.listing
+	var self = this, listing = self.listing
 	$$('status').text(listing.status)
 	$$('title').text('Listing {0}'.fs(listing.id)).parent().fadeIn()
         self.putItems($$('items table').first(), listing.items, 5)
@@ -447,9 +461,10 @@ var DetailView = SchemaView.extend({
 	$$('owner-link').attr('href')
 	$$('owner-profile-link').attr('href', profileUtil.defaultUrl(owner))
 	if (owner.avatar) { $$('owner-avatar').attr('src', owner.avatarmedium) }
+	$$('view-steam-profile').attr('href', owner.profileurl)
 	$$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(owner.steamid))
 	$$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(owner.steamid))
-	$$('owner-listings').attr('href', '/profile/' + owner.id64 + '#tabs-1')
+	$$('owner-listings').attr('href', '/profile/' + owner.id64 + '#1')
 	$$('owner-links').show()
         var possum = owner.rating[0],
             poscnt = owner.rating[1],
@@ -492,7 +507,6 @@ var DetailView = SchemaView.extend({
 	        $('.bid-status', clone).text('Winner!')
 		clone.addClass('winner')
 	    }
-            clone.data('bid', bid)
             if (bid.message_public) {
 	        $('.bid-message', clone).text(bid.message_public)
 	    } else {
@@ -512,9 +526,14 @@ var DetailView = SchemaView.extend({
 	new StatusLoader({
             suffix: this.listing.owner.id64,
 	    success: function(status) {
+		var m = status.message_state
 	        $$('owner-avatar').addClass('profile-status ' + status.online_state)
-		$$('owner-status').html(status.message_state).addClass(status.online_state)
+		if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
+		    $$('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
+		    m = m.replace(/ - .*/, '')
 		}
+		$$('owner-status').html(m).addClass(status.online_state)
+	    }
 	})
     },
 
@@ -657,7 +676,7 @@ var DetailModel = SchemaModel.extend({
 	var self = this
 	self.requests.push(function() {
             new ListingLoader({
-                suffix: pid(),
+                suffix: pathTail(),
                 success: function(listing) { self.listing = listing }
             })
         })
@@ -690,7 +709,6 @@ var DetailModel = SchemaModel.extend({
 	return null
     },
 
-//MARK
     selectWinner: function(bid, success, error) {
 	$.ajax({
 	    url: '/api/v1/auth/choose-winner',
@@ -704,10 +722,20 @@ var DetailModel = SchemaModel.extend({
 })
 
 
+var profileBid = function() {
+    return DetailController.profileBid(DetailController.model.profile)
+}
+
+
+var pageListing = function() {
+    return DetailController.model.listing
+}
+
+
 var DetailController = Controller.extend({
     config: {auth: {settings: true}},
-    model:DetailModel,
-    view:DetailView,
+    model: DetailModel,
+    view: DetailView,
 
     profileBid: function(profile) {
         var bd = $$('bids div.ov').map(function(i, e) { return $(e).data('bid') }),
@@ -764,5 +792,4 @@ var DetailController = Controller.extend({
     '.select-winner-cancel live:click' : function(e) {
 	e.controller.view.hideSelectWinner($(e.target).parents('div.ov'))
     }
-
 })

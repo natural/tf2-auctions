@@ -13,8 +13,8 @@ handlers:
     url: /media/ttf/(.*\.(ttf|eot))
 -   expiration: 1d 1h
     static_files: media/\1
-    upload: media/(.*\.(css|js|png|gif))
-    url: /media/(.*\.(css|js|png|gif))
+    upload: media/(.*\.(css|js|png|gif|ico))
+    url: /media/(.*\.(css|js|png|gif|ico))
 -   static_files: media/img/favicon.ico
     upload: media/img/favicon.ico
     url: /favicon.ico
