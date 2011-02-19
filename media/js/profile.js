@@ -9,16 +9,14 @@
 
 // fix up listings
 // fix up bids
-
-// BUG: when navigating to backpack and then bids tab, bids are not
-// show.  misbehavior probably in other cases, too.
+// fix settings (checkboxes have break after)
 
 // done:  backpack
 // done:  settings
 
 
+$$.config('#profile-')
 
-var slug = '#profile-', $$ = make$$(slug)
 
 // this needed?
 var makeStatusLoader = function(id) {
@@ -31,9 +29,9 @@ var makeStatusLoader = function(id) {
 
 
 var NotifyListingTool = function(model) {
-    this.schemaTool = new SchemaTool()
+    this.schemaTool = oo.schema.tool()
     var items = this.schemaTool.tradableBackpack(),
-        bpTool = new BackpackItemsTool({
+        bpTool = oo.backpack.itemTool({
 	    items: items,
 	    slug: 'nl',
 	    navigator: true,
@@ -42,9 +40,9 @@ var NotifyListingTool = function(model) {
 	    outlineHover: true,
 	    filters: true,
 	    cols: 5,
-	    rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01),
+	    rowGroups: oo.backpack.pageGroup.slim(Math.round(items.length*0.01) / 0.01),
 	}),
-        chTool = this.chooser = new BackpackChooserTool({
+        chTool = this.chooser = oo.backpack.chooserTool({
 	    backpackSlug: 'nl',
 	    chooserSlug: 'notify-listing',
 	    selectDeleteHover: true,
@@ -112,7 +110,7 @@ var MessagesView = View.extend({
 		    msgCount -= 1
 		    putCount(msgCount)
 		    model.profile.message_count -= 1
-		    profileUtil.put(MessagesView.model.profile, true) 
+		    oo.util.profile.put(MessagesView.model.profile, true) 
 		}
 		clone.slideUp(function() {
 		    $.ajax({
@@ -158,15 +156,24 @@ var FeedbackModel = Model.extend({
 var FeedbackView = View.extend({
     authSuccess: function(profile) {
 	if (MainModel.isOwner(profile)) {
-	    $$('feedback-existing-title').text('My Feedback')
-	    $$('feedback-existing-pod').slideDown()
+	    this.showReadOnly('My Feedback')
 	} else {
 	    // show leave feedback
+	    this.showReadWrite('Feedback (Maybe From You)')
 	}
     },
 
     authError: function() {
-	$$('feedback-existing-title').text('Feedback for {0}'.fs(MainModel.results.personaname))
+	this.showReadOnly('Feedback for {0}'.fs(MainModel.results.personaname))
+    },
+
+    showReadOnly: function(txt) {
+	$$('feedback-existing-title').text(txt)
+	$$('feedback-existing-pod').slideDown()
+    },
+
+    showReadWrite: function(txt) {
+	$$('feedback-existing-title').text(txt)
 	$$('feedback-existing-pod').slideDown()
     },
 
@@ -179,8 +186,26 @@ var FeedbackView = View.extend({
     },
 
     putFeedback: function(fbs) {
+	var proto = $('.profile-feedback-seed')
 	$.each(fbs, function(idx, fb) {
-	    console.log('put fb', fb)
+	    var clone = proto.clone().removeClass('null')
+	    View.setRating($('.fb-rating', clone), fb.rating)
+	    $('.fb-message', clone).text(fb.comment)
+	    var loader = makeStatusLoader(fb.source)
+	    new loader({
+		suffix: fb.source,
+		success: function(status) {
+		    console.log('status of feedback source:', status)
+		    var link = '<a href="/profile/{0}">{1}</a>'
+		    if (status.avatar_icon) {
+			var img = '<img src="{0}" class="msg-avatar" />&nbsp;'.fs(status.avatar_icon)
+			$('.source-name', clone).append(link.fs(fb.source, img))
+			$('.source-name img', clone).addClass('profile-status ' + status.online_state)
+		    }
+		    $('.source-name', clone).append(link.fs(fb.source, status.name))
+		}
+	    })
+	    proto.after(clone)
 	})
     }
 })
@@ -231,7 +256,7 @@ var ListingsView = SchemaView.extend({
 	$.each(listings, function(idx, listing) {
 	    self.putOne(listing, proto.clone().addClass('listing-seed'))
 	})
-	new SchemaTool().putImages(profile ? profile.settings : null)
+	oo.schema.tool().putImages(profile ? profile.settings : null)
 	$('div.listing-seed td.item-view div:empty').parent().remove()
 	$$('listings-pod div.init-seed').slideDown('slow')
     },
@@ -264,6 +289,7 @@ var ListingsView = SchemaView.extend({
 //
 var BidsModel = SchemaModel.extend({
     init: function(view, config) {
+	console.log('BidsModel.init()', view, config)
 	var self = this
 	self.requests.push(
 	    function() {
@@ -288,6 +314,7 @@ var BidsView = SchemaView.extend({
     },
 
     join: function(model) {
+	console.log('BidsView.join()', model)
 	var self = this
 	$$('bids-title').text(self.title)
 	$$('bids-pod').fadeIn(function() {
@@ -305,7 +332,7 @@ var BidsView = SchemaView.extend({
 	    self.putOne(bid, proto.clone().addClass('bid-marker'))
 	})
 	$('div.bid-marker td.item-view div:empty').parent().remove()
-	new SchemaTool().putImages(profile ? profile.settings : null)
+	oo.schema.tool().putImages(profile ? profile.settings : null)
 	$$('bids-pod div.init-seed').slideDown('slow')
     },
 
@@ -334,16 +361,20 @@ var BidsView = SchemaView.extend({
 //
 var BackpackModel = SchemaModel.extend({
     init: function(view, config) {
-	var id64 = MainModel.id64(), self = this
+	var id64 = MainModel.id64(),
+            self = this,
+	    lloader = makeLoader({prefix: '/api/v1/public/listings/'}),
+	    bloader = makeLoader({prefix: '/api/v1/public/bids/'})
+
 	self.requests.push(
 	    function() {
-		new ListingsLoader({
+		new lloader({
 		    suffix: id64,
 		    success: function(listings) { self.listings = listings }
 		})
 	    },
 	    function() {
-		new BidsLoader({
+		new bloader({
 		    suffix: id64,
 		    success: function(bids) { self.bids = bids }
 		})
@@ -355,7 +386,7 @@ var BackpackModel = SchemaModel.extend({
 		})
 	    }
 	)
-	SchemaModel.init.apply(self, [view, config])
+	SchemaModel.init.apply(self, arguments)
     }
 })
 
@@ -371,16 +402,16 @@ var BackpackView = SchemaView.extend({
 
     join: function(model) {
 	    var self = this,
-	        bpTool = new BackpackItemsTool({
+	        bpTool = oo.backpack.itemTool({
 		    items: model.backpack.result.items.item,
-		    listingUids: listingItemsUids(model.listings),
-		    bidUids: bidItemsUids(model.bids),
+		    listingUids: oo.util.itemUids(model.listings),
+		    bidUids: oo.util.itemUids(model.bids),
 		    navigator: true,
 		    slug: 'profile',
 		    toolTips: true,
 		    outlineHover: true,
 		    showAll: true,
-		    rowGroups: BackpackPages.full(model.backpack.result.num_backpack_slots)
+		    rowGroups: oo.backpack.pageGroup.full(model.backpack.result.num_backpack_slots)
 		})
 	    bpTool.init(model.profile ? model.profile.settings : null)
 	    $$('backpack-title').text(self.title)
@@ -418,7 +449,7 @@ var SettingsView = View.extend({
     join: function(model) {
 	var profile = model.profile, settings = profile.settings
 
-	$.each(keys(settings), function(index, key) {
+	$.each(settings.keys(), function(index, key) {
 	    var value = settings[key]
 	    var pkey = 'profile-{0}'.fs(key)
 	    if (typeof(value) == 'boolean') {
@@ -576,7 +607,7 @@ var MainModel = Model.extend({
         page.
 */
     loader: makeLoader({prefix: '/api/v1/public/profile/', name: 'MainLoader'}),
-    loaderSuffix: pathTail(),
+    loaderSuffix: $$.pathTail(),
 
     init: function(view, config) {
 	var self = this
@@ -741,7 +772,9 @@ var MainController = Controller.extend({
 	    this.view.message('Loading {0}...'.fs(name))
 	    defn.config = this.config
 	    var sub = this.subs[name] = Controller.extend(defn)
+	    // if jQuery.active
 	    sub.init()
+	    console.log('sub init:', name, sub)
 	    window.setTimeout(function() {MainView.message().fadeOut()}, 1000)
 	}
     },

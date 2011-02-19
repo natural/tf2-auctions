@@ -418,7 +418,7 @@ leave feedback form (new):
 		</tr>
 		<tr>
 		    <td class="text-center valign-middle">
-			<div id="${slug}-feedback-rating-value"></div>
+			<div id="${slug}-feedback-rating-value" class="rating-value"></div>
 		    </td>
 		    <td class="valign-middle">
 			<div id="${slug}-feedback-rating-slider" class="w100 center text-center" name=""></div>

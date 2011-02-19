@@ -3,7 +3,7 @@
 //
 var initBackpack = function(schema, bpSlug, chSlug, afterDrop) {
     var items = schema.tradableBackpack(),
-        bpTool = new BackpackItemsTool({
+        bpTool = oo.backpack.itemTool({
 	    items: items,
             slug: bpSlug,
             navigator: true,
@@ -11,10 +11,10 @@ var initBackpack = function(schema, bpSlug, chSlug, afterDrop) {
 	    select: true,
 	    outlineHover: true,
 	    filters: true,
-	    rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01, 4),
+	    rowGroups: oo.backpack.pageGroup.slim(Math.round(items.length*0.01) / 0.01, 4),
 	    altOrdering: true
         }),
-        chTool = new BackpackChooserTool({
+        chTool = oo.backpack.chooserTool({
 	    backpackSlug: bpSlug,
 	    chooserSlug: chSlug,
 	    copy: true,
@@ -220,8 +220,8 @@ var SearchView = SearchBaseView.extend({
             success: function(schema) {
 	        new AuthProfileLoader({
                     suffix: '?settings=1',
-	            success: function(profile) { schemaUtil(schema).putImages(profile.settings) },
-	            error: function() { schemaUtil(schema).putImages() }
+	            success: function(profile) { oo.schema.tool(schema).putImages(profile.settings) },
+	            error: function() { oo.schema.tool(schema).putImages() }
                 })
 	    }
         })
@@ -239,11 +239,11 @@ var SearchView = SearchBaseView.extend({
 	}
 	$('.listing-owner', clone).text(listing.owner.personaname)
 	$('.listing-owner', clone).parent()
-	    .attr('href', profileUtil.defaultUrl(listing.owner))
+	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
 	$('.listing-avatar', clone)
 	    .attr('src', listing.owner.avatar)
 	$('.listing-avatar', clone).parent()
-	    .attr('href', profileUtil.defaultUrl(listing.owner))
+	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
 	new StatusLoader({
 	    suffix: listing.owner.id64,
 	    success: function(status) {

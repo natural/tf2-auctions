@@ -59,19 +59,39 @@
 		    </div>
 		</div>
 
+		<!-- feedback -->
 		<div id="${slug}-feedback-pod">
 		    <div id="${slug}-feedback-existing-pod" class="null">
 		        <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-existing-title">Feedback</span></h1>
 			<h2 id="${slug}-feedback-none" class="null"></h2>
+
+			<div class="${slug}-feedback-seed null w88 detail-view mt1">
+			    <table class="w100">
+			        <tr>
+				    <td class="valign-middle">
+				        <div class="source-seed">
+					    <span class="source-name"></span> writes:
+					</div>
+				    </td>
+				    <td class="valign-middle"><span>Rating:</span></td>
+				</tr>
+				<tr>
+				    <td class="fb-message"></td>
+				    <td class="fb-rating rating-badge rating-value"></td>
+                                </tr>
+			    </table>
+			</div>
 		    </div>
 		    <div id="${slug}-leave-feedback-pod" class="null">
 		      <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-new-title">Leave Feedback</span></h1>
 		    </div>
 		</div>
+
+
 		<!-- messages -->
 		<div id="${slug}-msg-pod">
 		    <!-- inner wrapper for msg drop  -->
-		    <div id="${slug}-leave-msg-pod" class="null">
+		    <div id="${slug}-leave-msg-pod" class="null mt1">
 			<h1>
 			    <span class="hilite">&nbsp;</span><span id="${slug}-leave-msg-title"></span>
 			</h1>

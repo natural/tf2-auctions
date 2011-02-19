@@ -391,6 +391,7 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .w75  { width:75%; }
 .w83  { width:83%; }
 .w88  { width:88%; }
+.w90  { width:90%; }
 .w100 { width:100%; }
 .mono { font-family: Andale Mono, monospace; font-size:0.75em; }
 .float-left { float:left; }
@@ -463,12 +464,12 @@ height:24px !important;
 width:24px !important;
 }
 
-.listing-owner-seed {
+.listing-owner-seed, .source-seed {
 vertical-align:middle;
 margin-top:0.25em;
 }
 
-.listing-owner-seed img {
+.listing-owner-seed img, .source-seed img {
 vertical-align:middle;
 }
 
@@ -657,6 +658,7 @@ border-radius:0.25em; -moz-border-radius:0.25em; -webkit-border-radius:0.25em;
 
 #content-avatar-pod img.profile-status,
 .bid-owner-seed img.profile-status,
+#profile-feedback-pod img.profile-status,
 .listing-owner-seed img.profile-status {
 border:2px solid;
 border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
@@ -832,3 +834,26 @@ border-color:#766b5e;
 border-color:#393431;
 background-color:#2e2b2a;
 }
+
+
+
+.rating-badge {
+color:#fff;
+font-family:"TF2Build";
+font-size:2em;
+padding:0.5em 0.25em 0.25em 0.25em;
+text-align:center;
+vertical-align:middle;
+width:3em;
+}
+
+.rate-pos {
+color:#00F800;
+}
+.rate-neg {
+color:#F80000;
+}
+.rate-zero {
+color:#827868;
+}
+

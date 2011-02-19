@@ -91,20 +91,10 @@ margin:0.5em 0 1em 0;
 width:90%;
 }
 
-#bidder-feedback-rating-value {
+#bidder-feedback-rating-value, .rating-value {
 font-size:300%;
 font-family:"TF2Build";
 text-shadow: 0.05em 0.05em #000;
-}
-
-.rate-pos {
-color:#00F800;
-}
-.rate-neg {
-color:#F80000;
-}
-.rate-zero {
-color:#827868;
 }
 
 #listing-detail-owner-neg-bar {
@@ -120,15 +110,6 @@ background-color:#385c78;
 padding:0.25em;
 }
 
-.rating-badge {
-color:#fff;
-font-family:"TF2Build";
-font-size:2em;
-padding:0.5em 0.25em 0.25em 0.25em;
-text-align:center;
-vertical-align:middle;
-width:3em;
-}
 
 
 .rating-view {

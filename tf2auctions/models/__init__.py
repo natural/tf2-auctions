@@ -242,11 +242,10 @@ class Listing(db.Model):
 	""" Encode this instance using only built-in types.
 
 	"""
-	key, bfb = self.key(), None
+	key = self.key()
 	bids = self.bids() if bids else ()
 	wins = [b for b in bids if b.status == 'awarded']
-	if wins:
-	    bfb = Feedback.get_by_source(wins[0], self, wins[0].owner)
+        bfb = Feedback.get_by_listing(self)
 	user = users.get_current_user()
 	private = False
 	if bids and user and user_steam_id(user) == self.owner:
@@ -264,7 +263,7 @@ class Listing(db.Model):
 	    'status' : self.status,
 	    'status_reason' : self.status_reason,
 	    'bids' : [b.encode_builtin(listing=False, private=private) for b in bids],
-	    'feedback' : bfb.encode_builtin() if bfb else None,
+	    'feedback' : [fb.encode_builtin() for fb in bfb],
 	    'featured' : self.featured,
 	    'min_bid_currency_use' : self.min_bid_currency_use,
 	    'min_bid_currency_amount' : self.min_bid_currency_amount,
@@ -508,6 +507,11 @@ class Feedback(db.Model):
     def get_by_source(cls, bid, listing, source):
 	q = add_filters(cls.all(), ('bid', 'listing', 'source'), (bid, listing, source))
 	return q.get()
+
+    @classmethod
+    def get_by_listing(cls, listing):
+	q = add_filters(cls.all(), ('listing', ), (listing, ))
+	return q
 
     @classmethod
     def get_by_target(cls, target):

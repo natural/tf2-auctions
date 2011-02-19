@@ -3,7 +3,7 @@ float:right;
 width:25%;
 }
 
-#profile-msg-pod {
+#profile-msg-pod, #profile-feedback-pod {
 float:left;
 width:73%;
 }

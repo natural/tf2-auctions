@@ -1,5 +1,4 @@
-var $$ = function(suffix, next) { return $('#contact-'+suffix, next) }
-
+var slug = '#contact-', $$ = make$$(slug)
 
 var submitFeedback = function() {
     var feedback = {

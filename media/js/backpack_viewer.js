@@ -47,11 +47,14 @@ var BackpackView = SchemaView.extend({
     },
 
     searchText: function(v) {
-        return $('#backpack-viewer-search-value').val(v)
+	if (v) {
+            return $('#backpack-viewer-search-value').val(v)
+	} else {
+	    return $('#backpack-viewer-search-value').val()
+	}
     },
 
     showError: function(request, status, error) {
-	console.log('show error', request, status, error)
 	var self = this
 	self.reset()
         self.message('Error.  Lame').delay(3000).fadeOut()
@@ -127,10 +130,10 @@ var BackpackView = SchemaView.extend({
 
     put: function(backpack, listings, bids) {
 	var self = this,
-            bpTool = new BackpackItemsTool({
+            bpTool = oo.backpack.itemTool({
 	                 items: backpack.result.items.item,
-	                 listingUids: listingItemsUids(listings),
-                  	 bidUids: bidItemsUids(bids),
+	                 listingUids: oo.util.itemUids(listings),
+                  	 bidUids: oo.util.itemUids(bids),
                          slug: 'bv',
 	                 navigator: true,
 	                 toolTips: true,
@@ -138,7 +141,7 @@ var BackpackView = SchemaView.extend({
 	                 selectMulti: true,
 	                 outlineHover: true,
 		         showAll: true,
-		         rowGroups: BackpackPages.full(backpack.result.num_backpack_slots)
+		         rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
             })
         new AuthProfileLoader({
 	    suffix: '?settings=1&complete=1',

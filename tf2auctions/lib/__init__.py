@@ -130,7 +130,7 @@ class View(LocalHandler):
 
     ## javascripts for every template; names are not modified
     base_js = (
-	'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',
+	'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js',
 	'%s/%s' % (media_js_path, 'jquery.json-2.2.js'),
 	# '%s/%s' % (media_js_path, 'jquery.ba-hashchange.min.js'),
 	# '%s/%s' % (media_js_path, 'jquery.ba-bbq.min.js'),
@@ -139,8 +139,7 @@ class View(LocalHandler):
     ## javascripts for every template; values are modified to include
     ## script media prefix and app version number
     default_js = (
-	'backpack.js',
-	'tools.js',
+	'base.js',
     )
 
     ## javascripts specific to a view subclass; values are modified in the

@@ -1,15 +1,13 @@
-var pid = '#listing-add'
-var $$ = function(suffix, next) { return $('{0}-{1}'.fs(pid, suffix), next) }
-
+var pid = '#listing-add-', $$ = make$$(pid)
 
 //
 // encapsulates the minimum bid items tool and the corresponding
 // chooser.
 //
 var MinBidTool = function() {
-    var schemaTool = new SchemaTool(),
+    var schemaTool = oo.schema.tool(),
         items = schemaTool.tradableBackpack()
-    var bpTool = new BackpackItemsTool({
+    var bpTool = oo.backpack.itemTool({
 	items: items,
 	slug: 'mb',
 	navigator: true,
@@ -18,10 +16,10 @@ var MinBidTool = function() {
 	outlineHover: true,
 	filters: true,
 	help: 'Select the minimum items you will consider for a trade. You can select up to 10 items.',
-	rowGroups: BackpackPages.slim(Math.round(items.length*0.01) / 0.01),
+	rowGroups: oo.backpack.pageGroup.slim(Math.round(items.length*0.01) / 0.01),
 	altOrdering: true,
     })
-    var chTool = this.chooser = new BackpackChooserTool({
+    var chTool = this.chooser = oo.backpack.chooserTool({
 	backpackSlug: 'mb',
 	chooserSlug: 'listing-add-min-bid',
 	selectDeleteHover: true,
@@ -39,7 +37,7 @@ var MinBidTool = function() {
 var BackpackListingTool = function(params) {
     var self = this,
         defDesc  = 'Enter a description.',
-        bpTool = new BackpackItemsTool({
+        bpTool = oo.backpack.itemTool({
 	    items: params.backpack.result.items.item,
 	    listingUids: params.listingUids,
 	    bidUids: params.bidUids,
@@ -51,10 +49,9 @@ var BackpackListingTool = function(params) {
 	    cols: 5,
             title: 'Your Backpack',
 	    help: 'Drag items from your backpack into the area below.  Double click works, too.',
-	    rowGroups: BackpackPages.slim(params.backpack.result.num_backpack_slots)
+	    rowGroups: oo.backpack.pageGroup.slim(params.backpack.result.num_backpack_slots)
 	})
-
-    var chTool = self.chooser = new BackpackChooserTool({
+    var chTool = self.chooser = oo.backpack.chooserTool({
 	backpackSlug: 'a',
 	chooserSlug: 'listing-add-item',
         title: 'Your Listing',
@@ -277,8 +274,8 @@ var showMinBid = function() {
 var backpackReady = function(backpack, listings, bids, profile) {
     var addTool = new BackpackListingTool({
 	backpack: backpack,
-	listingUids: listingItemsUids(listings),
-	bidUids: bidItemsUids(bids)
+	listingUids: oo.util.itemUids(listings),
+	bidUids: oo.util.itemUids(bids)
     })
     $('#bp-placed-a td div img')
 	.live('dblclick', addTool.chooser.moveToChooser)
@@ -286,7 +283,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
 	.live('dblclick', addTool.chooser.moveToChooser)
     $('#bp-chooser-listing-add-item td div img')
 	.live('dblclick', addTool.chooser.moveToOriginal)
-    siteMessage().fadeAway()
+    View.message().fadeAway()
     // lame, quick hack until this module gets a rewrite for the MVC
     // framework:
     window.setTimeout(addTool.show, 1000)
@@ -294,7 +291,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
 
 
 var listingsReady = function(listings, bids, profile) {
-    siteMessage('Loading your backpack...')
+    View.message('Loading your backpack...')
     new BackpackLoader({
         suffix: profile.id64,
 	success: function (backpack) {
@@ -305,7 +302,7 @@ var listingsReady = function(listings, bids, profile) {
 
 
 var profileReady = function(profile) {
-    siteMessage('Profile loaded.')
+    View.message('Profile loaded.')
     var listingsLoaded = function(listings) {
 	new BidsLoader({
 	    suffix: profile.steamid,
@@ -319,7 +316,7 @@ var profileReady = function(profile) {
 
 
 var schemaReady = function(schema) {
-    siteMessage('Loading your profile...')
+    View.message('Loading your profile...')
     new AuthProfileLoader({
 	suffix: '?settings=1&complete=1',
 	success: profileReady
@@ -336,8 +333,8 @@ $(document).ready(function() {
 	    $$('min-bid-wrapper-pod').slideDown()
 	}
     })
-    siteMessage('Loading item schema...')
+    View.message('Loading item schema...')
     new SchemaLoader({success: schemaReady})
     $$('min-bid-show a').click(showMinBid)
-    $$('show-terms').click(showTermsDialog)
+    $$('show-terms').click(View.showTermsDialog)
 })

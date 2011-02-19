@@ -1,4 +1,4 @@
-var $$ = function(suffix, next) { return $('#faq-'+suffix, next) }
+var slug = '#faq-', $$ = make$$(slug)
 
 
 var faqsLoaded = function(category_entries) {

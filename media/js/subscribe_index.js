@@ -1,4 +1,5 @@
-var $$ = function(suffix, next) { return $('#subscribe-'+suffix, next) }
+var slug = '#subscribe-', $$ = make$$(slug)
+
 
 
 var authOkay = function(profile) {

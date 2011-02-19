@@ -1,4 +1,5 @@
-var $$ = make$$('#front-')
+(function() {
+$$.config('#front-')
 
 
 var NewsModel = Model.make({name: 'NewsModel'}, {
@@ -43,7 +44,7 @@ var StatsModel = Model.make({name: 'StatsModel'}, {
 var StatsView = View.extend({
     join: function(model) {
 	var stats = model.results
-	$.each(keys(stats), function(idx, key) {
+	$.each(stats.keys(), function(idx, key) {
 	    $$(key.replace('_', '-')).text(stats[key])
 	})
 	$$('stats').slideDown()
@@ -88,7 +89,7 @@ var SearchModel = Model.make({
 	// request the schema
 	this.requests.push(function() {
             new SchemaLoader({
-                success: function(s) { self.tool = new SchemaTool(s) }
+                success: function(s) { self.tool = oo.schema.tool(s) }
             })
         })
 	Model.init.apply(this, [view, config])
@@ -141,11 +142,11 @@ var SearchView = SearchBaseView.extend({
 	}
 	$('.listing-owner', clone).text(listing.owner.personaname)
 	$('.listing-owner', clone).parent()
-	    .attr('href', profileUtil.defaultUrl(listing.owner))
+	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
 	$('.listing-avatar', clone)
 	    .attr('src', listing.owner.avatar)
 	$('.listing-avatar', clone).parent()
-	    .attr('href', profileUtil.defaultUrl(listing.owner))
+	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
 	new StatusLoader({
 	    suffix: listing.owner.id64,
 	    success: function(status) {
@@ -200,3 +201,6 @@ var SearchController = Controller.extend({
 var BlogController = Controller.extend({model: BlogModel, view: BlogView})
 var StatsController = Controller.extend({model: StatsModel, view: StatsView})
 var NewsController = Controller.extend({model: NewsModel, view: NewsView})
+
+
+})()

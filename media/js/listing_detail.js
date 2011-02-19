@@ -1,3 +1,6 @@
+// bug: profileBid() returns undefined (perhaps when auth user has named profile)
+
+
 var slug = '#listing-detail-', $$ = make$$(slug)
 
 
@@ -56,10 +59,10 @@ var NewBidModel = Model.extend({
 
 
 var makeBpTool = function(model) {
-    return new BackpackItemsTool({
+    return oo.backpack.itemTool({
         items: model.backpack.result.items.item,
-        listingUids: listingItemsUids(model.listings),
-        bidUids: bidItemsUids(model.bids),
+        listingUids: oo.util.itemUids(model.listings),
+        bidUids: oo.util.itemUids(model.bids),
         slug: 'listing-detail-bid',
         navigator: true,
         toolTips: true,
@@ -68,12 +71,12 @@ var makeBpTool = function(model) {
         cols: 5,
         title: 'Your Backpack',
         help: 'Drag items from your backpack to the bid area below.  You can also double click an item to move it.',
-        rowGroups: BackpackPages.slim(model.backpack.result.num_backpack_slots)
+        rowGroups: oo.backpack.pageGroup.slim(model.backpack.result.num_backpack_slots)
     })
 }
 
 var makeChTool = function(afterDropMove) {
-    return new BackpackChooserTool({
+    return oo.backpack.chooserTool({
         backpackSlug: 'listing-detail-bid',
         chooserSlug: 'listing-detail-add-bid-item',
         afterDropMove: afterDropMove,
@@ -203,6 +206,11 @@ var NewBidView = View.extend({
 
 
 var BidderFeedbackModel = Model.extend({
+    init: function(view, config) {
+	var self = this
+	Model.init.apply(this, arguments)
+    },
+
     saveFeedback: function(data, success, error) {
 	$.ajax({
 	    url: '/api/v1/auth/add-feedback',
@@ -217,7 +225,8 @@ var BidderFeedbackModel = Model.extend({
 
 
 var BidderFeedbackView = View.extend({
-    init: function() {
+    init: function(model) {
+	View.init.apply(this, arguments)
 	this.slider = $('#bidder-feedback-rating-slider').slider({
 	        animate: true,
 	        max: 100,
@@ -232,14 +241,15 @@ var BidderFeedbackView = View.extend({
 
     sliderChange: function(event, ui) {
 	var v = ui.value, e = $('#bidder-feedback-rating-value')
-	e.text('{0}{1}'.fs(v>0 ? '+' : '', v)).removeClass('rate-pos rate-neg rate-zero')
-	e.addClass(v > 0 ? 'rate-pos' : (v<0 ? 'rate-neg' : 'rate-zero'))
+	View.setRating(e, v)
     },
 
     hideFeedback: function(feedback, prefix) {
-	$(prefix+'-rating').text('{0}{1}'.fs( feedback.rating > 0 ? '+' : '', feedback.rating))
-	$(prefix+'-rating-text').text(feedback.comment)
+	$(prefix+'-rating').text(this.formatRating(feedback.rating))
+	//  '{0}{1}'.fs( feedback.rating > 0 ? '+' : '', feedback.rating))
+	$(prefix+'-rating-text').text(feedback.text)
 	//$(prefix+'-rating-label').text(title)
+	$(prefix+'-feedback-controls').slideUp()
 	$(prefix+'-feedback-rating-pod').slideDown()
     },
 
@@ -276,7 +286,7 @@ var BidderFeedbackController = {
 	    success = function () { self.view.saveSuccess.apply(self.view) },
 	    error = function () { self.view.saveError.apply(self.view) }
 	e.controller.model.saveFeedback(data, success, error)
-	e.controller.view.hideFeedback(data.text, '#bidder')
+	e.controller.view.hideFeedback(data, '#bidder')
     },
 
     '#bidder-feedback-cancel click' : function(e) {
@@ -438,7 +448,7 @@ var DetailView = SchemaView.extend({
 	}
 	if (listing.status == 'active') {
 	    self.timeLeftId = setInterval(
-		updateTimeLeft(
+		self.updateTimeLeft(
 		    listing.expires,
 	            function (v) { $$('timeleft').text(v) },
 		    function () {
@@ -459,7 +469,7 @@ var DetailView = SchemaView.extend({
     putListingOwner: function() {
 	var self = this, listing = self.listing, owner = listing.owner
 	$$('owner-link').attr('href')
-	$$('owner-profile-link').attr('href', profileUtil.defaultUrl(owner))
+	$$('owner-profile-link').attr('href', oo.util.profile.defaultUrl(owner))
 	if (owner.avatar) { $$('owner-avatar').attr('src', owner.avatarmedium) }
 	$$('view-steam-profile').attr('href', owner.profileurl)
 	$$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(owner.steamid))
@@ -507,6 +517,7 @@ var DetailView = SchemaView.extend({
 	        $('.bid-status', clone).text('Winner!')
 		clone.addClass('winner')
 	    }
+	    clone.data('bid', bid)
             if (bid.message_public) {
 	        $('.bid-message', clone).text(bid.message_public)
 	    } else {
@@ -580,7 +591,7 @@ var DetailView = SchemaView.extend({
 
     putAnonTools: function() {
 	if (this.listing.status == 'active') {
-	    $$('login-link').attr('href', profileUtil.loginUrl())
+	    $$('login-link').attr('href', oo.util.profile.loginUrl())
 	    $$('login-pod').removeClass('null')
         }
     },
@@ -676,7 +687,7 @@ var DetailModel = SchemaModel.extend({
 	var self = this
 	self.requests.push(function() {
             new ListingLoader({
-                suffix: pathTail(),
+                suffix: $$.pathTail(),
                 success: function(listing) { self.listing = listing }
             })
         })
