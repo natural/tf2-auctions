@@ -44,7 +44,7 @@
     StatsView = oo.view.extend({
 	join: function(model) {
 	    var stats = model.results
-	    $.each(stats.keys(), function(idx, key) {
+	    $.each(oo.keys(stats), function(idx, key) {
 		oo(key.replace('_', '-')).text(stats[key])
 	    })
 		oo('stats').slideDown()

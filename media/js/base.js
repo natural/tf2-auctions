@@ -1,5 +1,5 @@
 //
-// Begin local extensions and top-level functions
+// Begin local extensions and top-level functions.
 //
 if (typeof console == 'undefined') {
     var console = {log: $.noop, error: $.noop}
@@ -23,17 +23,29 @@ String.prototype.fs = function() {
 
 
 //
-// Begin the 'oo' namespace
+// Create the 'oo' namespace.
 //
 var oo = (function() {
     var ns = function(suffix, next) { return $('{0}{1}'.fs(ns.prefix, suffix), next) }
     ns.prefix = ''
     ns.config = function(p) { ns.prefix = p; return ns }
+    ns.keys = function(o) {
+	var ks = []
+	for (var k in o) { ks.push(k) }
+	return ks
+    }
+    ns.values = function(o) {
+	var vs = []
+	for (var k in o) { vs.push(o[k]) }
+	return vs
+    }
     return ns
 })();
 
 
-// create the tf2 namespace
+//
+// Add the tf2 namespace.
+//
 (function(ns) {
     // haven't found these definitions anywhere in the source files:
     ns.itemEffects = {
@@ -83,36 +95,27 @@ var oo = (function() {
 })(oo.tf2 = {});
 
 
-// Begin the backpack namespace
+//
+// Add the backpack namespace.
+//
 (function(ns) {
     // functions to convert schema values into tooltip display values
-    var formatCalcMap = {
+    var calcs = {
 	value_is_additive: function(a) { return a },
 	value_is_particle_index: function(a) { return a },
 	value_is_or: function(a) { return a },
-	value_is_percentage: function (v) {
-	    return Math.round(v*100 - 100)
-	},
-	value_is_inverted_percentage: function (v) {
-	    return Math.round(100 - (v*100))
-	},
-	value_is_additive_percentage: function (v) {
-	    return Math.round(100*v)
-	},
-	value_is_date: function (v) {
-	    return new Date(v * 1000)
-	},
-	value_is_account_id: function (v) {
-	    return '7656' + (v + 1197960265728)
-	}
+	value_is_percentage: function (v) { return Math.round(v*100 - 100) },
+	value_is_inverted_percentage: function (v) { return Math.round(100 - (v*100)) },
+	value_is_additive_percentage: function (v) { return Math.round(100*v) },
+	value_is_date: function (v) { return new Date(v * 1000)	},
+	value_is_account_id: function (v) { return '7656' + (v + 1197960265728)	}
     }
 
     //
     // tool for formatting and showing a nice tooltip.
     //
     var ItemHoverTool = function(schema) {
-	var self = this,
-        quals = schema.qualityMap()
+	var self = this, quals = schema.qualityMap()
 
 	var formatSchemaAttr = function(def, val) {
 	    var line = ''
@@ -121,8 +124,7 @@ var oo = (function() {
 	    } catch (e) { }
 	    // we only sub one '%s1'; that's the most there is (as of oct 2010)
 	    if (line.indexOf('%s1') > -1) {
-		var fCalc = formatCalcMap[def['description_format']]
-		line = line.replace('%s1', fCalc(val))
+		line = line.replace('%s1', calcs[def['description_format']](val))
 	    }
 	    return line.indexOf('Attrib_') > -1 ? '' : line
 	}
@@ -302,20 +304,20 @@ var oo = (function() {
     // tool for managing the navigation thru a view of backpack items.
     //
     var BackpackNavTool = function(options) {
-	var self = this, slug = options.slug,
-        itemTool = options.itemTool,
-        outerContext = $('#bp-{0}'.fs(slug)),
-        pagesContext = $('div.bp-pages', outerContext),
-        pageCount = $('table.bp-page-{0}'.fs(slug), pagesContext).length,
-        pageCurrent = 1,
-        nonPrev = $('#bp-nav-{0} .non:first'.fs(slug)),
-        navPrev = $('#bp-nav-{0} .nav:first'.fs(slug)),
-        nonNext = $('#bp-nav-{0} .non:last'.fs(slug)),
-        navNext = $('#bp-nav-{0} .nav:last'.fs(slug)),
-        initWidth = 0
+	var self = this,
+	    slug = options.slug,
+            itemTool = options.itemTool,
+            outerContext = $('#bp-{0}'.fs(slug)),
+            pagesContext = $('div.bp-pages', outerContext),
+            pageCount = $('table.bp-page-{0}'.fs(slug), pagesContext).length,
+            pageCurrent = 1,
+            nonPrev = $('#bp-nav-{0} .non:first'.fs(slug)),
+            navPrev = $('#bp-nav-{0} .nav:first'.fs(slug)),
+            nonNext = $('#bp-nav-{0} .non:last'.fs(slug)),
+            navNext = $('#bp-nav-{0} .nav:last'.fs(slug)),
+            initWidth = 0
 
 	self.init = function() {
-	    console.log('BackpackNavTool.init()')
 	    initWidth = $('body').width() // sucks, but it's better than 0
             $('table.bp-page-{0}:gt(0)'.fs(slug), pagesContext).css('margin-left', initWidth)
 	    $('a', navPrev).unbind().click(function (event) { self.navigate(-1); return false })
@@ -371,7 +373,7 @@ var oo = (function() {
 	self.putFilterItems = function(items) {
 	    if (items) {
 		// this map is duplicated from the schematool.tradeableBackpack; fixme.
-		items = $.map(items.values(), function(item, index) {
+		items = $.map(oo.values(items), function(item, index) {
 		    return {defindex:item.defindex, pos:index+1}
 		})
 		options.itemTool.putItems(items)
@@ -386,7 +388,6 @@ var oo = (function() {
 	}
 
 	self.navigate = function(offset) {
-	    console.log('BackpackNavTool.navigate(offset=', offset, ', pageCurrent=', pageCurrent, ', pageCount=', pageCount, ')')
 	    if ((pageCurrent + offset) > 0 && (pageCurrent + offset <= pageCount)) {
 		var prev = pageCurrent
 		var newMargin = $('div.bp-pages', outerContext).width() * (offset>0 ? -1 : 1)
@@ -435,7 +436,6 @@ var oo = (function() {
         cols = options.cols || 10
 
 	self.init = function(settings) {
-	    console.log('BackpackItemsTool.init()')
 	    if (options.rowGroups) {
 		// support for the alternate (wipe and recreate) backpack
 		// page construction.
@@ -466,9 +466,6 @@ var oo = (function() {
 
 	    self.putItems(options.items, settings)
 	    self.initOptional()
-	    // TODO: restate this such that it works for both unplaced and
-	    // placed cells.  (removing the 'td' works but affects other
-	    // elements).
 	    $('div.bp td').mousedown(function() { return false })
 	}
 
@@ -530,11 +527,8 @@ var oo = (function() {
 	    }
 
 	    if (options.toolTips) {
-		var schema = oo.schema.tool()
-		var tipTool = oo.backpack.itemHoverTool(schema)
-		// this is a very general selector that picks up just
-		// about everything on the page that's backpack-ish,
-		// including choosers:
+		var schema = oo.schema.tool(),
+		    tipTool = oo.backpack.itemHoverTool(schema)
 		$('div.bp td').hover(tipTool.show, tipTool.hide)
 	    }
 
@@ -545,7 +539,6 @@ var oo = (function() {
 		    itemTool: self,
 		    showAll: options.showAll
 		})
-		// we're in our own init, so init the navigator, too
 		self.navigator.init()
 	    }
 
@@ -567,12 +560,10 @@ var oo = (function() {
 		    }
 		)
 	    }
-            var help = options.help || ''
+            var help = options.help || '', title = options.title || ''
 	    if (help) {
 		$('#bp-{0} span.help:first'.fs(slug)).text(help)
 	    }
-
-	    var title = options.title || ''
 	    if (title) {
 		$('#bp-{0} > div > div > h3:first'.fs(slug)).text(title)
             }
@@ -664,10 +655,10 @@ var oo = (function() {
     //
     var BackpackChooserTool = function(options) {
 	var self = this,
-        title = options.title,
-        backpackHelp = options.backpackHelp,
-        backpackSlug = options.backpackSlug,
-        chooserSlug = options.chooserSlug
+            title = options.title,
+            backpackHelp = options.backpackHelp,
+            backpackSlug = options.backpackSlug,
+            chooserSlug = options.chooserSlug
 
 	self.init = function(settings) {
 	    self.initDrag()
@@ -793,16 +784,16 @@ var oo = (function() {
 
 	self.updateCount = function() {
 	    window.setTimeout(function() {
-		var len = $('#bp-chooser-{0} img'.fs(chooserSlug)).length
-		var txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
+		var len = $('#bp-chooser-{0} img'.fs(chooserSlug)).length,
+		    txt = '(' + len + ' ' + (len == 1 ? 'item' : 'items') + ')'
 		$('#' + chooserSlug + '-title-extra').text(txt)
 	    }, 150)
 	}
 
 	self.moveToChooser = function(event) {
 	    var source = $(event.target),
-	    target = $('#bp-chooser-{0} td div:empty'.fs(chooserSlug)).first(),
-	    cell = source.parent().parent()
+	        target = $('#bp-chooser-{0} td div:empty'.fs(chooserSlug)).first(),
+	        cell = source.parent().parent()
 	    if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	    cell.removeClass('selected')
 	    source.data('original-cell', cell)
@@ -816,7 +807,7 @@ var oo = (function() {
 
 	self.moveToOriginal = function(event) {
 	    var source = $(event.target),
-	    target = $('div', source.data('original-cell'))
+	        target = $('div', source.data('original-cell'))
 	    if (target.length==1) {
     		var others = $('span.equipped, span.quantity, span.jewel', source.parent())
 		moveSalad(source.parent().parent(), target.parent())
@@ -888,10 +879,10 @@ var oo = (function() {
 	    // replace any items on the page that have the "schema
 	    // definition index replace" class with the url of the item
 	    // specified in the content.
-	    var itemImg = function(url) { return oo.util.img({src:url, width:64, height:64}) }
-	    var toolDefs = self.tools(),
-	    actionDefs = self.actions(),
-	    settingV = oo.util.settings(settings)
+	    var itemImg = function(url) { return oo.util.img({src:url, width:64, height:64}) },
+	        toolDefs = self.tools(),
+	        actionDefs = self.actions(),
+	        settingV = oo.util.settings(settings)
 	    $('.defindex-lazy').each(function(index, tag) {
 		try {
 		    var data = $.parseJSON($(tag).text())
@@ -1012,7 +1003,7 @@ var oo = (function() {
 	}
 
 	self.tradableBackpack = function() {
-	    return $.map(self.tradable().values(), function(item, index) {
+	    return $.map(oo.values(self.tradable()), function(item, index) {
 		return {defindex:item.defindex, pos:index+1}
 	    })
 	}
@@ -1028,6 +1019,9 @@ var oo = (function() {
 })(oo.schema = {});
 
 
+//
+// Begin the 'util' namespace.
+//
 (function(ns) {
     ns.item = function(item, schema) {
 	return {
@@ -1138,7 +1132,6 @@ var oo = (function() {
 	}
     })
 
-
     ns.profile = Object.create({
 	loginUrl: function() {
 	    return '/login?next=' + encodeURIComponent(window.location.href)
@@ -1183,9 +1176,8 @@ var oo = (function() {
 	}
     })
 
-    // closure over a settings object
     ns.settings = function(settings) {
-	var valid = settings && settings.keys().length
+	var valid = settings && oo.keys(settings).length
 	return {
 	    showEquipped: (valid ? settings['badge-equipped'] : true),
 	    showPainted: (valid ? settings['badge-painted'] : true),
@@ -1203,10 +1195,9 @@ var oo = (function() {
 	})
 	return uids
     }
-    // more utilities
+
     ns.pathTail = function() { return window.location.pathname.split('/').pop() }
 
-    // makes a nice img tag with all the trimmings.
     ns.img = function(options) {
 	var src = options['src'] ? options['src'] : '/media/img/missing.png'
 	var width = '' + (options['width'] || 32)
@@ -1220,10 +1211,13 @@ var oo = (function() {
 })(oo.util = {});
 
 
+//
+// Begin the 'data' namespace.
+//
 (function(ns) {
     // common cache for all loaders
     var cache = {loading:{}, successCb:{}, errorCb:{}, results:{}},
-    ident = function(a) { return a },
+        ident = function(a) { return a },
 
     loader = ns.loader = function(config) {
 	var prefix = config.prefix, name = config.name
@@ -1346,10 +1340,11 @@ var oo = (function() {
 })(oo.data = {});
 
 
+//
+// Begin the MVC namespace.  Note that these objects are added to 'oo'
+// and not a nested namespace of their own.
+//
 (function(ns) {
-    //
-    // This begins our small Model View Controller hierarchy.
-    //
     // MVC is the root object that defines the 'extend' function for
     // creating new objects and a default 'init' funciton that does
     // nothing.
@@ -1372,9 +1367,9 @@ var oo = (function() {
 	clones: [],
 
 	init: function() {
-            var self = this
-	    eventNames = $.merge([], $.attrFn.keys())
-	    $.merge(eventNames, $.event.special.keys())
+            var self = this,
+	        eventNames = $.merge([], oo.keys($.attrFn))
+	    $.merge(eventNames, oo.keys($.event.special))
 
 	    // initalize the model associated with this controller.  the
 	    // model will initalize the view when it's ready.
@@ -1382,7 +1377,7 @@ var oo = (function() {
 
 	    // initialize anything in the namespace that looks like an
 	    // event listener.
-            $.each(self.keys(), function(idx, key) {
+            $.each(oo.keys(self), function(idx, key) {
 		var value = self[key]
 		if (typeof key == 'string' && (typeof value == 'function' || typeof value == 'object')) {
 		    var names = key.split(' '),
@@ -1532,21 +1527,18 @@ var oo = (function() {
 	},
 
 	showTermsDialog: function(e) {
-	    var okay = function(text) {
-		$('#content-terms-dialog').html(text).dialog({
-		    dialogClass: 'terms-dialog',
-		    modal: true,
-		    resizable: false,
-		    show: 'fade',
-		    height: 400,
-		    title: 'TF2Auctions.com Rules,Terms and Conditions, and Privacy Policy',
-		    width: $(window).width() * 0.9, position: 'top' });
-	    },
-	    error = function(request, status, error) {}
 	    $.ajax({url: '/terms-dialog',
 		    cache: true,
-		    success: okay,
-		    error: error
+		    success: function(text) {
+			$('#content-terms-dialog').html(text).dialog({
+			    dialogClass: 'terms-dialog',
+			    modal: true,
+			    resizable: false,
+			    show: 'fade',
+			    height: 400,
+			    title: 'TF2Auctions.com Rules,Terms and Conditions, and Privacy Policy',
+			    width: $(window).width() * 0.9, position: 'top' });
+		    }
 		   })
 	    return false
 	},
@@ -1606,10 +1598,10 @@ var oo = (function() {
 
 	putItems: function(target, items, cols) {
 	    var col = 0,
-	    cols = cols || 10,
-	    makeCell = function(v) {
-                return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v)
-            }
+	        cols = cols || 10,
+	        makeCell = function(v) {
+                    return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v)
+		}
 	    $.each(items, function(idx, item) {
 		if (!(col % cols)) { target.append('<tr></tr>') }
 		col += 1
@@ -1637,21 +1629,21 @@ var oo = (function() {
     ns.view.searchbase = ns.view.schema.extend({
 	initFeatured: function(featured) {
 	    var target = $('#featured-listings'),
-	    self = this
+	        self = this
 	    $.each(featured, function(index, fitem) {
 		var proto = $('#featured-listings div.prototype').clone()
 		    .addClass('listing-seed')
 	            .removeClass('prototype')
 		self.putListing(fitem, proto, target)
 	    })
-		if (featured.length) {
-		    $('#featured-listings div.listing-seed.null:first').removeClass('null')
-		    if (featured.length > 1) {
-			$('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
-			$('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
-		    }
-		    $('#featured-listings-pod').slideDown()
+	    if (featured.length) {
+		$('#featured-listings div.listing-seed.null:first').removeClass('null')
+		if (featured.length > 1) {
+		    $('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
+		    $('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
 		}
+		$('#featured-listings-pod').slideDown()
+	    }
 	},
 
 	navFeatured: function(offset) {
@@ -1687,6 +1679,8 @@ var oo = (function() {
 })(oo);
 
 
+
+
 //
 // document and library initialization
 //
@@ -1715,41 +1709,18 @@ $(document)
     // and a ItemHoverTool.
     .bind('schemaLoaded', function(event, schema) {
 	var st = oo.schema.tool(schema),
-        tt = oo.backpack.itemHoverTool(st)
+            tt = oo.backpack.itemHoverTool(st)
 	$('div.ov td.item-view, #backpack-ac td, .backpack td')
 	    .live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
-	    .live('mouseout',  function(e) {  tt.hide(e);  $(this).removeClass('outline') })
+	    .live('mouseout',  function(e) { tt.hide(e);  $(this).removeClass('outline') })
 	$('.listing-view')
 	    .live('mouseover', function() { $(this).addClass('listing-hover') })
-	    .live('mouseout', function() { $(this).removeClass('listing-hover') })
+	    .live('mouseout',  function() { $(this).removeClass('listing-hover') })
     })
 
     .bind('ready', function() {
-	// jquery screws around with Object.prototype, so
-	// we add ours here instead of at the top level.
-	Object.prototype.keys = function() {
-	    var ks = []
-	    for (var k in this) { ks.push(k) }
-	    return ks
-	}
-	Object.prototype.values = function() {
-	    var vs = []
-	    for (var k in this) { vs.push(this[k]) }
-	    return vs
-	}
-	// part of the work around.
-	Object.prototype.keys.replace = Object.prototype.values.replace = function() {}
-	Object.prototype.keys.exec = Object.prototype.values.exec = function() {}
-
-	// initialize each direct clone of the Controller object:
+	// initialize each direct clone of the oo.controller object:
 	$.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
     })
 
 
-/* unused, but may be nice later:
-
-var partial = function(fn) {
-    var slice = Array.prototype.slice, args = slice.call(arguments, 1)
-    return function() { return fn.apply(this, args.concat(slice.call(arguments))) }
-}
-*/

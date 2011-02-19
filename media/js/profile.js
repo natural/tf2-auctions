@@ -436,7 +436,7 @@ var SettingsView = oo.view.extend({
     join: function(model) {
 	var profile = model.profile, settings = profile.settings
 
-	$.each(settings.keys(), function(index, key) {
+	$.each(oo.keys(settings), function(index, key) {
 	    var value = settings[key]
 	    var pkey = 'profile-{0}'.fs(key)
 	    if (typeof(value) == 'boolean') {
@@ -759,9 +759,7 @@ var MainController = oo.controller.extend({
 	    this.view.message('Loading {0}...'.fs(name))
 	    defn.config = this.config
 	    var sub = this.subs[name] = oo.controller.extend(defn)
-	    // if jQuery.active
 	    sub.init()
-	    console.log('sub init:', name, sub)
 	    window.setTimeout(function() {MainView.message().fadeOut()}, 1000)
 	}
     },
