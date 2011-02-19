@@ -1,12 +1,11 @@
-var slug = '#subscribe-', $$ = make$$(slug)
-
+oo.config('#subscribe-')
 
 
 var authOkay = function(profile) {
     if (profile.subscription && profile.subscription.status == 'Verified') {
-	$$('thanks-pod').slideDown()
+	oo('thanks-pod').slideDown()
     } else {
-	var pod = $$('form-pod')
+	var pod = oo('form-pod')
 	$('input[name="os1"]').attr('value', profile.id64)
 	pod.slideDown()
     }
@@ -14,13 +13,13 @@ var authOkay = function(profile) {
 
 
 var authFail = function(request, status, error) {
-    var pod = $$('login-pod')
+    var pod = oo('login-pod')
     pod.slideDown()
 }
 
 
 $(function() {
-    new AuthProfileLoader({
+    oo.data.auth({
 	success: authOkay,
 	error: authFail,
 	suffix: '?settings=1&complete=1'

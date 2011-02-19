@@ -1,11 +1,10 @@
-// bug: profileBid() returns undefined (perhaps when auth user has named profile)
+// bug:  terms dialog doesn't pop
+// bug:  double check cancel bid; trap reference error in listing.encode( bids encode)
 
-
-var slug = '#listing-detail-', $$ = make$$(slug)
-
+oo.config('#listing-detail-')
 
 var NewBidModel = Model.extend({
-    loader: BackpackLoader,
+    loaderNg: oo.data.backpack,
 
     init: function(view, config) {
 	var self = this, suffix = config.profile.id64
@@ -14,13 +13,13 @@ var NewBidModel = Model.extend({
         self.loaderSuffix = suffix
 	self.requests.push(
 	    function() {
-		new ListingsLoader({
+		oo.data.listings({
                     suffix: suffix,
                     success: function(listings) { self.listings = listings }
 		})
             },
 	    function() {
-		new BidsLoader({
+		oo.data.bids({
 		    suffix: suffix,
                     success: function(bids) { self.bids = bids }
 		})
@@ -96,20 +95,20 @@ var NewBidView = View.extend({
     },
 
     isUpdate: function(v) {
-	return $$('place-start').data('update', v)
+	return oo('place-start').data('update', v)
     },
 
     hide: function (after) {
-	$$('place-bid-pod').slideUp('slow', after)
+	oo('place-bid-pod').slideUp('slow', after)
     },
 
     show: function() {
 	var self = this
 	self.message('').fadeOut()
-	$$('auth-bid-pod').slideUp(function() {
-            $$('own-backpack').slideDown(self.putFields)
+	oo('auth-bid-pod').slideUp(function() {
+            oo('own-backpack').slideDown(self.putFields)
         })
-	$$('place-bid-pod').fadeIn(function() {
+	oo('place-bid-pod').fadeIn(function() {
             // the controller should do this, but it's easier to do it here:
        	    $('#listing-detail-existing-bids-pod').scrollTopAni()
         })
@@ -165,11 +164,11 @@ var NewBidView = View.extend({
 
     putFields: function() {
         var width = $('#bp-chooser-listing-detail-add-bid-item tbody').width()
-	$$('add-bid-fields').width(width)
-	$$('add-bid-fields textarea').width(width).height(width/4).text()
-	$$('add-bid-terms-desc').parent().width(width)
-	$$('bid-bp-intro-pod').addClass('center').animate({width:width})
-	$$('add-bid-item-ch-intro-pod').addClass('center').animate({width:width})
+	oo('add-bid-fields').width(width)
+	oo('add-bid-fields textarea').width(width).height(width/4).text()
+	oo('add-bid-terms-desc').parent().width(width)
+	oo('bid-bp-intro-pod').addClass('center').animate({width:width})
+	oo('add-bid-item-ch-intro-pod').addClass('center').animate({width:width})
     },
 
     showMetMinBid: function(item) {
@@ -194,13 +193,13 @@ var NewBidView = View.extend({
     },
 
     showBidSuccess: function() {
-	$$('add-bid-working').text('Complete.  Click the link to view your bid.')
-	$$('add-bid-success').fadeIn()
+	oo('add-bid-working').text('Complete.  Click the link to view your bid.')
+	oo('add-bid-success').fadeIn()
     },
 
     showBidError: function() {
-	$$('add-bid-working').text('Something went wrong.  Check the error below.').fadeIn()
-	$$('add-bid-error').text(req.statusText).parent().fadeIn()
+	oo('add-bid-working').text('Something went wrong.  Check the error below.').fadeIn()
+	oo('add-bid-error').text(req.statusText).parent().fadeIn()
     }
 })
 
@@ -236,7 +235,7 @@ var BidderFeedbackView = View.extend({
 	        slide: this.sliderChange
 	    })
 	$('#bidder-feedback-rating-value').text('+100').addClass('rate-pos')
-	$$('auth-bid-feedback-pod').show()
+	oo('auth-bid-feedback-pod').show()
     },
 
     sliderChange: function(event, ui) {
@@ -314,7 +313,7 @@ var NewBidController = {
     cancelNewBid: function() {
 	this.view.hide(function() {
             $('body').scrollTopAni()
-            $$('auth-bid-pod').slideDown()
+            oo('auth-bid-pod').slideDown()
         })
     },
 
@@ -322,42 +321,42 @@ var NewBidController = {
 	var self = this,
 	    errs = [],
 	    items = $('#bp-chooser-listing-detail-add-bid-item img'),
-	    private_msg = $$('bid-private-msg').val(),
-            public_msg = $$('bid-public-msg').val()
+	    private_msg = oo('bid-private-msg').val(),
+            public_msg = oo('bid-public-msg').val()
 	// 1.  bid items
 	if (items.length < 1 || items.length > 10) {
 	    errs.push({id:'#bp-chooser-listing-detail-add-bid-item',
 		       msg:'Select 1-10 items from your backpack.'})
 	}
 	// 2. private msg
-	private_msg = (private_msg ==  $$('bid-private-msg-default').text() ? '' : private_msg)
+	private_msg = (private_msg ==  oo('bid-private-msg-default').text() ? '' : private_msg)
 	if (private_msg.length > 400) {
-	    $$('bid-private-msg').keyup(function (a) {
+	    oo('bid-private-msg').keyup(function (a) {
 		if ( $(this).val().length <= 400) {
-		    $$('bid-private-msg-error:visible').slideUp()
+		    oo('bid-private-msg-error:visible').slideUp()
 		}
 	    })
 	    errs.push({id:'#listing-detail-bid-private-msg',
 		       msg:'Too much text.  Make your message shorter.'})
 	}
 	// 3. private msg
-	public_msg = (public_msg ==  $$('bid-public-msg-default').text() ? '' : public_msg)
+	public_msg = (public_msg ==  oo('bid-public-msg-default').text() ? '' : public_msg)
 	if (public_msg.length > 400) {
-	    $$('bid-public-msg').keyup(function (a) {
+	    oo('bid-public-msg').keyup(function (a) {
 		if ( $(this).val().length <= 400) {
-		    $$('bid-public-msg-error:visible').slideUp()
+		    oo('bid-public-msg-error:visible').slideUp()
 		}
 	    })
 	    errs.push({id:'#listing-detail-bid-public-msg',
 		       msg:'Too much text.  Make your message shorter.'})
 	}
 	// 5. agree w/ site terms
-	if (! $$('add-bid-terms').attr('checked')) {
-	    $$('add-bid-terms').click(function (e) {
+	if (! oo('add-bid-terms').attr('checked')) {
+	    oo('add-bid-terms').click(function (e) {
 		if (e.target.checked) {
-		    $$('add-bid-terms-error').slideUp()
+		    oo('add-bid-terms-error').slideUp()
 		} else {
-		    $$('add-bid-terms-error').slideDown()
+		    oo('add-bid-terms-error').slideDown()
 		}
 	    })
 	    errs.push({id: '#listing-detail-add-bid-terms',
@@ -366,8 +365,8 @@ var NewBidController = {
 	if (errs.length) {
 	    self.view.showErrors(errs)
 	} else {
-	    $$('bid-buttons').slideUp('slow')
-	    $$('add-bid-working').removeClass('null').text('Working...').fadeIn('fast')
+	    oo('bid-buttons').slideUp('slow')
+	    oo('add-bid-working').removeClass('null').text('Working...').fadeIn('fast')
 	    self.model.submit({
                 items: items,
                 public_msg: public_msg,
@@ -426,68 +425,68 @@ var DetailView = SchemaView.extend({
 	    self.putAuthTools()
 	}
         model.tool.putImages(profile ? profile.settings : null)
-        $$('content').fadeIn(function() { self.putListingOwnerStatus() })
+        oo('content').fadeIn(function() { self.putListingOwnerStatus() })
     },
 
     putListing: function() {
 	var self = this, listing = self.listing
-	$$('status').text(listing.status)
-	$$('title').text('Listing {0}'.fs(listing.id)).parent().fadeIn()
-        self.putItems($$('items table').first(), listing.items, 5)
+	oo('status').text(listing.status)
+	oo('title').text('Listing {0}'.fs(listing.id)).parent().fadeIn()
+        self.putItems(oo('items table').first(), listing.items, 5)
 	if (listing.description) {
-	    $$('description').text(listing.description).parent().removeClass('null')
+	    oo('description').text(listing.description).parent().removeClass('null')
 	}
 	if (listing.min_bid_currency_use) {
-            $$('min-bid-currency-use span.mono')
+            oo('min-bid-currency-use span.mono')
 		.text(listing.min_bid_currency_amount)
 	        .parent().removeClass('null')
 	} else if (listing.min_bid.length > 0) {
-	    self.putItems($$('min-bid table').first(), listing.min_bid, 5)
+	    self.putItems(oo('min-bid table').first(), listing.min_bid, 5)
 	} else {
-	    $$('min-bid').empty().text('No Minimum').removeClass('null')
+	    oo('min-bid').empty().text('No Minimum').removeClass('null')
 	}
 	if (listing.status == 'active') {
 	    self.timeLeftId = setInterval(
 		self.updateTimeLeft(
 		    listing.expires,
-	            function (v) { $$('timeleft').text(v) },
+	            function (v) { oo('timeleft').text(v) },
 		    function () {
-			$$('timeleft').text('Expired')
-			$$('status').text('Expired')
-			$$('auth-bid-pod').slideUp()
+			oo('timeleft').text('Expired')
+			oo('status').text('Expired')
+			oo('auth-bid-pod').slideUp()
 		    }), 1000)
         } else {
-	    $$('timeleft').parent().hide()
-	    $('label', $$('expires').parent()).text('Expired:')
+	    oo('timeleft').parent().hide()
+	    $('label', oo('expires').parent()).text('Expired:')
 	}
 	$.each(['created', 'expires'], function(idx, name) {
-	    $$(name).text(new Date(listing[name] + ' GMT').format())
+	    oo(name).text(new Date(listing[name] + ' GMT').format())
         })
 	self.putListingBids()
     },
 
     putListingOwner: function() {
 	var self = this, listing = self.listing, owner = listing.owner
-	$$('owner-link').attr('href')
-	$$('owner-profile-link').attr('href', oo.util.profile.defaultUrl(owner))
-	if (owner.avatar) { $$('owner-avatar').attr('src', owner.avatarmedium) }
-	$$('view-steam-profile').attr('href', owner.profileurl)
-	$$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(owner.steamid))
-	$$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(owner.steamid))
-	$$('owner-listings').attr('href', '/profile/' + owner.id64 + '#1')
-	$$('owner-links').show()
+	oo('owner-link').attr('href')
+	oo('owner-profile-link').attr('href', oo.util.profile.defaultUrl(owner))
+	if (owner.avatar) { oo('owner-avatar').attr('src', owner.avatarmedium) }
+	oo('view-steam-profile').attr('href', owner.profileurl)
+	oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(owner.steamid))
+	oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(owner.steamid))
+	oo('owner-listings').attr('href', '/profile/' + owner.id64 + '#1')
+	oo('owner-links').show()
         var possum = owner.rating[0],
             poscnt = owner.rating[1],
             negsum = owner.rating[2],
             negcnt = owner.rating[3],
             pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
             neg = Math.round(negcnt > 0 ? negsum / negcnt : 0)
-        $$('owner-pos-label').text('{0}% Positive'.fs( pos ))
-        $$('owner-pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
-        $('div.padding', $$('owner-pos-bar').parent()).width('{0}%'.fs(100-pos) )
-        $$('owner-neg-label').text('{0}% Negative'.fs( neg ))
-        $$('owner-neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
-        $('div.padding', $$('owner-neg-bar').parent()).width('{0}%'.fs(100-neg) )
+        oo('owner-pos-label').text('{0}% Positive'.fs( pos ))
+        oo('owner-pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
+        $('div.padding', oo('owner-pos-bar').parent()).width('{0}%'.fs(100-pos) )
+        oo('owner-neg-label').text('{0}% Negative'.fs( neg ))
+        oo('owner-neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
+        $('div.padding', oo('owner-neg-bar').parent()).width('{0}%'.fs(100-neg) )
     },
 
     putListingBids: function() {
@@ -496,14 +495,14 @@ var DetailView = SchemaView.extend({
 	    bids = listing.bids
         self.putBidCount(bids.length)
 	$.each(bids, function(idx, bid) {
-	    var clone = $$('bids .prototype').clone().removeClass('null prototype')
+	    var clone = oo('bids .prototype').clone().removeClass('null prototype')
             self.putItems( $('table.chooser', clone), bid.items)
 	    $('.bid-status', clone).text(bid.status)
 	    $('.bid-created', clone).text('' + new Date(bid.created))
 	    if (bid.owner && bid.owner.avatar) {
 	        $('.bid-avatar', clone).attr('src', bid.owner.avatar)
 	    }
-            new StatusLoader({
+            oo.data.status({
 	        suffix: bid.owner.id64,
                 success: function(status) {
 		    $('.bid-avatar', clone).addClass('profile-status ' + status.online_state)
@@ -528,35 +527,35 @@ var DetailView = SchemaView.extend({
 	    } else {
 		$('.bid-message-private', clone).parent().remove()
 	    }
-	    $$('bids').prepend(clone)
+	    oo('bids').prepend(clone)
 	})
-	$$('existing-bid-pod').show()
+	oo('existing-bid-pod').show()
     },
 
     putListingOwnerStatus: function() {
-	new StatusLoader({
+	oo.data.status({
             suffix: this.listing.owner.id64,
 	    success: function(status) {
 		var m = status.message_state
-	        $$('owner-avatar').addClass('profile-status ' + status.online_state)
+	        oo('owner-avatar').addClass('profile-status ' + status.online_state)
 		if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
-		    $$('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
+		    oo('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
 		    m = m.replace(/ - .*/, '')
 		}
-		$$('owner-status').html(m).addClass(status.online_state)
+		oo('owner-status').html(m).addClass(status.online_state)
 	    }
 	})
     },
 
     putBidCount: function(count) {
-	$$('bidcount').text(count ? ('Bids (' + count + ')') : 'No Bids')
+	oo('bidcount').text(count ? ('Bids (' + count + ')') : 'No Bids')
     },
 
     putOwnerTools: function() {
 	var status = this.listing.status
-	$$('owner-links').hide()
+	oo('owner-links').hide()
 	if (status == 'active') {
-	    $$('owner-controls').removeClass('null')
+	    oo('owner-controls').removeClass('null')
 	}
         if (status == 'active' || status == 'ended') {
             $('.select-winner-seed').show()
@@ -567,11 +566,11 @@ var DetailView = SchemaView.extend({
     putAuthTools: function() {
         $('.bid-message-private').parent().show()
 	if (this.listing.status == 'active') {
-	    $$('auth-bid-pod').show()
+	    oo('auth-bid-pod').show()
 	    // bleh
 	    if ($.inArray(this.profile.steamid, $(this.listing.bids).map(function(i, x) { return x.owner.steamid })) > -1) {
-	        $$('place-start').text('Update It').data('update', true)
-		$$('existing-bid-cancel').text('Cancel It').data('cancel', true).parent().show()
+	        oo('place-start').text('Update It').data('update', true)
+		oo('existing-bid-cancel').text('Cancel It').data('cancel', true).parent().show()
 
 		if (!this.bidFeedbackController) {
 		    var bfcondef = $.extend({}, BidderFeedbackController)
@@ -591,32 +590,32 @@ var DetailView = SchemaView.extend({
 
     putAnonTools: function() {
 	if (this.listing.status == 'active') {
-	    $$('login-link').attr('href', oo.util.profile.loginUrl())
-	    $$('login-pod').removeClass('null')
+	    oo('login-link').attr('href', oo.util.profile.loginUrl())
+	    oo('login-pod').removeClass('null')
         }
     },
 
     hideCancelListing: function() {
-	$$('cancel-confirm').fadeOut(function() {
-	    $$('cancel-prompt').fadeIn()
+	oo('cancel-confirm').fadeOut(function() {
+	    oo('cancel-prompt').fadeIn()
         })
     },
 
     showCancelListing: function() {
-	$$('cancel-prompt').fadeOut(function() {
-	    $$('cancel-confirm').fadeIn()
+	oo('cancel-prompt').fadeOut(function() {
+	    oo('cancel-confirm').fadeIn()
         })
     },
 
     beforeListingCancel: function() {
-	$$('cancel-confirm').fadeOut()
+	oo('cancel-confirm').fadeOut()
     },
 
     afterListingCancel: function() {
 	window.clearTimeout(this.timeLeftId)
-	$$('status').text('cancelled')
-	$$('timeleft').text('cancelled')
-	$$('owner-controls').slideUp()
+	oo('status').text('cancelled')
+	oo('timeleft').text('cancelled')
+	oo('owner-controls').slideUp()
     },
 
     showPlaceCurrencyBid: function(existing) {
@@ -624,14 +623,14 @@ var DetailView = SchemaView.extend({
     },
 
     afterCancelBid: function(bid) {
-	$$('place-start').data('update', false).text('Refresh for New Bid').unbind().click(function() {
+	oo('place-start').data('update', false).text('Refresh for New Bid').unbind().click(function() {
             window.location.reload()
         })
-        $$('auth-bid-pod').slideDown()
-	$$('auth-bid-feedback-pod').slideUp()
-	$$('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
+        oo('auth-bid-pod').slideDown()
+	oo('auth-bid-feedback-pod').slideUp()
+	oo('auth-bid-cancelled').text('Your bid was cancelled.').fadeIn()
 	this.putBidCount(this.listing.bid_count-1)
-	$.each($$('bids div.ov'), function(idx, ele) {
+	$.each(oo('bids div.ov'), function(idx, ele) {
 	    ele = $(ele)
 	    if (ele.data('bid') && ele.data('bid').key == bid.key) {
 	        ele.slideUp()
@@ -640,18 +639,18 @@ var DetailView = SchemaView.extend({
     },
 
     beforeCancelBid: function() {
-	$$('existing-bid-confirm').fadeOut()
+	oo('existing-bid-confirm').fadeOut()
     },
 
     hideCancelBid: function() {
-	$$('existing-bid-confirm').fadeOut(function() {
-	    $$('existing-bid-cancel').fadeIn()
+	oo('existing-bid-confirm').fadeOut(function() {
+	    oo('existing-bid-cancel').fadeIn()
         })
     },
 
     showCancelBid: function() {
-        $$('existing-bid-cancel').fadeOut(function() {
-            $$('existing-bid-confirm').fadeIn()
+        oo('existing-bid-cancel').fadeOut(function() {
+            oo('existing-bid-confirm').fadeIn()
         })
     },
 
@@ -686,8 +685,8 @@ var DetailModel = SchemaModel.extend({
     init: function(view, config) {
 	var self = this
 	self.requests.push(function() {
-            new ListingLoader({
-                suffix: $$.pathTail(),
+            oo.data.listing({
+                suffix: oo.util.pathTail(),
                 success: function(listing) { self.listing = listing }
             })
         })
@@ -749,7 +748,7 @@ var DetailController = Controller.extend({
     view: DetailView,
 
     profileBid: function(profile) {
-        var bd = $$('bids div.ov').map(function(i, e) { return $(e).data('bid') }),
+        var bd = oo('bids div.ov').map(function(i, e) { return $(e).data('bid') }),
 	    pd = $.grep(bd, function(b, i) { return (b.owner.steamid==profile.steamid) })
         return pd ? pd[0] : undefined
     },

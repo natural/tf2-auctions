@@ -1,5 +1,5 @@
 (function() {
-$$.config('#front-')
+oo.config('#front-')
 
 
 var NewsModel = Model.make({name: 'NewsModel'}, {
@@ -28,9 +28,9 @@ var NewsView = View.extend({
                 $('.news-contents-seed a', clone).attr('href', newsentry.url).text('more...')
 	    }
 	    $('.news-contents-seed', clone).prepend(newsentry.contents)
-	    $$('news').append(clone)
+	    oo('news').append(clone)
        })
-       $$('news').slideDown()
+       oo('news').slideDown()
     }
 })
 
@@ -45,9 +45,9 @@ var StatsView = View.extend({
     join: function(model) {
 	var stats = model.results
 	$.each(stats.keys(), function(idx, key) {
-	    $$(key.replace('_', '-')).text(stats[key])
+	    oo(key.replace('_', '-')).text(stats[key])
 	})
-	$$('stats').slideDown()
+	oo('stats').slideDown()
     }
 })
 
@@ -72,57 +72,56 @@ var BlogView = View.extend({
 		$('.blog-intro-seed', clone).remove()
 	    }
 	    $('.blog-encoded-seed', clone).html(blogpost.entry)
-	    $$('blog').append(clone)
+	    oo('blog').append(clone)
 	})
-        if (entries.length) { $$('blog').slideDown() }
+        if (entries.length) { oo('blog').slideDown() }
     }
 })
 
 
 var SearchModel = Model.make({
     name: 'SearchModel',
-    loader: SearchLoader,
+    loaderNg: oo.data.search,
     loaderSuffix: '?limit=5',
 
     init: function(view, config) {
 	var self = this
-	// request the schema
-	this.requests.push(function() {
-            new SchemaLoader({
+	self.requests.push(function() {
+            oo.data.schema({
                 success: function(s) { self.tool = oo.schema.tool(s) }
             })
         })
-	Model.init.apply(this, [view, config])
+	Model.init.apply(self, [view, config])
     }
 })
 
 
 var SearchView = SearchBaseView.extend({
     authSuccess: function(profile) {
-	$$('auth').slideDown()
-	$$('auth > h1').text('Welcome, {0}!'.fs(profile.personaname))
+	oo('auth').slideDown()
+	oo('auth > h1').text('Welcome, {0}!'.fs(profile.personaname))
 	this.profile = profile
     },
 
     authError: function() {
-	$$('no-auth').slideDown()
+	oo('no-auth').slideDown()
 	this.profile = {}
     },
 
     join: function(model) {
 	var results = model.results
 	if (!results.listings.length) {
-	    $$('no-listings').text('Nothing found.').show()
-	    $$('some-listings').hide()
+	    oo('no-listings').text('Nothing found.').show()
+	    oo('some-listings').hide()
 	    return
 	} else {
-	    $$('no-listings').hide()
-	    $$('some-listings').text('Latest Listings:').show()
+	    oo('no-listings').hide()
+	    oo('some-listings').text('Latest Listings:').show()
 	}
 	this.joinListings({
 	    listings: results.listings,
-	    prototype: $$('new-listings-pod .prototype'),
-	    target: $$('results-pod'),
+	    prototype: oo('new-listings-pod .prototype'),
+	    target: oo('results-pod'),
 	    prefix: '.new-listings'
 	})
 	if (results.featured && results.featured.length) {
@@ -130,7 +129,7 @@ var SearchView = SearchBaseView.extend({
 	}
 	this.model.tool.putImages(this.profile.settings)
 	$('div.listing-seed td.item-view div:empty').parent().remove()
-	$$('new-listings-pod').slideDown()
+	oo('new-listings-pod').slideDown()
     },
 
     putListing: function(listing, clone, target) {
@@ -147,7 +146,7 @@ var SearchView = SearchBaseView.extend({
 	    .attr('src', listing.owner.avatar)
 	$('.listing-avatar', clone).parent()
 	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
-	new StatusLoader({
+	oo.data.status({
 	    suffix: listing.owner.id64,
 	    success: function(status) {
 	        $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)

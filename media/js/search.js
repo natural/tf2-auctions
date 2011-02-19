@@ -54,7 +54,7 @@ var SearchModel = SchemaModel.extend({
 	    chooserChanged: function(selector, qprefix) {
 	        changed()
 	        var q = chooserQuery(selector, qprefix)
-	        new SearchLoader({
+	        oo.data.search({
 		    suffix: '?' + q,
 		    success: function(rs) { self.view.joinSearch(rs, q) }
 	        })
@@ -62,7 +62,7 @@ var SearchModel = SchemaModel.extend({
 	    optionChanged: function() {
 	        changed()
 	        var q = optionsQuery()
-	        new SearchLoader({
+	        oo.data.search({
 		    suffix: '?' + q,
 		    success: function(rs) { self.view.joinSearch(rs, q) }
 	        })
@@ -74,7 +74,7 @@ var SearchModel = SchemaModel.extend({
 	var self = this
         self.searchStack = self.makeStack()
 	var q = self.hash()
-        new SearchLoader({
+        oo.data.search({
             suffix: '?' + q,
             success: function(rs) {
 		self.searchResults = rs
@@ -110,7 +110,7 @@ var SearchView = SearchBaseView.extend({
 		        window.location.hash = results.next_qs
 		        self.putListings(rs)
 		    }
-		    new SearchLoader({success: innerNext, suffix: '?'+results.next_qs})
+		    oo.data.search({success: innerNext, suffix: '?'+results.next_qs})
 	        })
 	    })
 	    return false
@@ -216,9 +216,9 @@ var SearchView = SearchBaseView.extend({
 	if (init && results.featured && results.featured.length) {
 	    self.initFeatured(results.featured)
 	}
-	new SchemaLoader({
+	oo.data.schema({
             success: function(schema) {
-	        new AuthProfileLoader({
+	        oo.data.auth({
                     suffix: '?settings=1',
 	            success: function(profile) { oo.schema.tool(schema).putImages(profile.settings) },
 	            error: function() { oo.schema.tool(schema).putImages() }
@@ -244,7 +244,7 @@ var SearchView = SearchBaseView.extend({
 	    .attr('src', listing.owner.avatar)
 	$('.listing-avatar', clone).parent()
 	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
-	new StatusLoader({
+	oo.data.status({
 	    suffix: listing.owner.id64,
 	    success: function(status) {
 	        $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)

@@ -1,15 +1,15 @@
-var slug = '#contact-', $$ = make$$(slug)
+oo.config('#contact-')
 
 var submitFeedback = function() {
     var feedback = {
-	email: $$('email').val(),
-	id64: $$('id64').val(),
-	name: $$('name').val(),
-	msg: $$('message').val().slice(0, 2048)
+	email: oo('email').val(),
+	id64: oo('id64').val(),
+	name: oo('name').val(),
+	msg: oo('message').val().slice(0, 2048)
     }
     var done = function() {
-	$$('form').slideUp()
-	$$('complete').slideDown()
+	oo('form').slideUp()
+	oo('complete').slideDown()
     }
     $.ajax({
 	url: '/api/v1/public/send-feedback',
@@ -23,20 +23,20 @@ var submitFeedback = function() {
 
 
 var userAuthOkay = function(profile) {
-    $$('id64').val(profile.steamid)
-    $$('name').val(profile.personaname)
-    $$('content-pod').slideDown()
+    oo('id64').val(profile.steamid)
+    oo('name').val(profile.personaname)
+    oo('content-pod').slideDown()
 }
 
 
 var userAuthError = function(request, status, error) {
-    $$('content-pod').slideDown()
+    oo('content-pod').slideDown()
 }
 
 
 
 
 $(document).ready(function() {
-    $$('form-submit').click(submitFeedback)
-    new AuthProfileLoader({success: userAuthOkay, error: userAuthError})
+    oo('form-submit').click(submitFeedback)
+    oo.data.auth({success: userAuthOkay, error: userAuthError})
 })

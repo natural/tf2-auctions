@@ -23,9 +23,15 @@ String.prototype.fs = function() {
 
 
 //
-// Begin new 'oo' namespace
+// Begin the 'oo' namespace
 //
-var oo = {tf2:{}, backpack:{}, schema:{}, util:{}, data:{} };
+var oo = (function() {
+    var ns = function(suffix, next) { return $('{0}{1}'.fs(ns.prefix, suffix), next) }
+    ns.prefix = ''
+    ns.config = function(p) { ns.prefix = p; return ns }
+    return ns
+})();
+
 
 // create the tf2 namespace
 (function(ns) {
@@ -74,9 +80,7 @@ var oo = {tf2:{}, backpack:{}, schema:{}, util:{}, data:{} };
 	8: 'dev',
 	9: 'self'
     }
-
-})(oo.tf2);
-// End the tf2 namespace
+})(oo.tf2 = {});
 
 
 // Begin the backpack namespace
@@ -271,8 +275,6 @@ var oo = {tf2:{}, backpack:{}, schema:{}, util:{}, data:{} };
 	    return rows
 	}
     }
-
-
     var itemFilterLabels = [
 	['tradable', 'All Items'],
 	['', ''],
@@ -470,45 +472,49 @@ var oo = {tf2:{}, backpack:{}, schema:{}, util:{}, data:{} };
 	}
 
 	self.putItems = function(items, settings) {
-            var schema = oo.schema.tool(),
-	    newIdx = -1, settings = oo.util.settings(settings),
-	    toolDefs = schema.tools(), actionDefs = schema.actions()
+	    oo.data.schema({success:function(schema) {
+		schema = oo.schema.tool(schema)
+		var newIdx = -1,
+		    settings = oo.util.settings(settings),
+		    toolDefs = schema.tools(),
+		    actionDefs = schema.actions()
 
-	    $.each(items, function(index, item) {
-		item.flag_active_listing = (item.id in listingUids)
-		item.flag_active_bid = (item.id in bidUids)
-		var iutil = oo.util.item(item, schema), defindex = item['defindex']
-		if (iutil.pos() > 0) {
-		    // alternate ordering selects the first available div
-		    // for the image, which is more natural looking for
-		    // some backpacks (e.g., min bid)
-		    if (options.altOrdering) {
-			var ele = $('#bp-placed-{0} td div:empty'.fs(slug)).first()
+		$.each(items, function(index, item) {
+		    item.flag_active_listing = (item.id in listingUids)
+		    item.flag_active_bid = (item.id in bidUids)
+		    var iutil = oo.util.item(item, schema), defindex = item['defindex']
+		    if (iutil.pos() > 0) {
+			// alternate ordering selects the first available div
+			// for the image, which is more natural looking for
+			// some backpacks (e.g., min bid)
+			if (options.altOrdering) {
+			    var ele = $('#bp-placed-{0} td div:empty'.fs(slug)).first()
+			} else {
+			    var ele = $('#{0}{1} div'.fs(slug, iutil.pos()))
+			}
+			ele.append(iutil.img())
+			var img = $('img', ele).data('node', item)
+			self.setEquipped(iutil, img, defindex, settings)
+			self.setTradable(iutil, ele, item, settings)
+			self.setPaintJewel(iutil, img, settings)
+			self.setUseCount(img, item, settings, toolDefs, actionDefs)
 		    } else {
-			var ele = $('#{0}{1} div'.fs(slug, iutil.pos()))
+			newIdx += 1
+			var target = $('#bp-unplaced-{0} table.bp-unplaced'.fs(slug))
+			if (!$('td:not(:has(img))', target).length) {
+			    var cells = new Array(cols+1).join('<td><div></div></td>')
+			    target.append('<tbody><tr>' + cells + '</tr></tbody>')
+			}
+			$('td:eq({1}) div'.fs(slug, newIdx), target).append(iutil.img())
+			var img = $('td img:last'.fs(slug), target).data('node', item)
+			self.setTradableUnplaced(iutil, img, item, settings)
+			self.setUseCount(img, item, settings, toolDefs, actionDefs)
 		    }
-	            ele.append(iutil.img())
-		    var img = $('img', ele).data('node', item)
-		    self.setEquipped(iutil, img, defindex, settings)
-		    self.setTradable(iutil, ele, item, settings)
-		    self.setPaintJewel(iutil, img, settings)
-		    self.setUseCount(img, item, settings, toolDefs, actionDefs)
-		} else {
-		    newIdx += 1
-		    var target = $('#bp-unplaced-{0} table.bp-unplaced'.fs(slug))
-		    if (!$('td:not(:has(img))', target).length) {
-			var cells = new Array(cols+1).join('<td><div></div></td>')
-			target.append('<tbody><tr>' + cells + '</tr></tbody>')
-		    }
-		    $('td:eq({1}) div'.fs(slug, newIdx), target).append(iutil.img())
-		    var img = $('td img:last'.fs(slug), target).data('node', item)
-		    self.setTradableUnplaced(iutil, img, item, settings)
-		    self.setUseCount(img, item, settings, toolDefs, actionDefs)
-		}
-	    })
-		$('#bp-placed-{0} label, #bp-unplaced-{1}'.fs(slug, slug))
-		.toggle(newIdx > -1)
-	    $('#bp-{0} img'.fs(slug)).fadeIn()
+		})
+		    $('#bp-placed-{0} label, #bp-unplaced-{1}'.fs(slug, slug))
+		    .toggle(newIdx > -1)
+		$('#bp-{0} img'.fs(slug)).fadeIn()
+	    }})
 	}
 
 	self.initOptional = function() {
@@ -825,11 +831,12 @@ var oo = {tf2:{}, backpack:{}, schema:{}, util:{}, data:{} };
     ns.itemHoverTool = function(v) { return new ItemHoverTool(v) }
     ns.itemTool = function(v) { return new BackpackItemsTool(v) }
     ns.navTool = function(v) { return new BackpackNavTool(v) }
-})(oo.backpack);
-// End of the backpack namespace
+})(oo.backpack = {});
 
 
+//
 // Begin the schema namespace
+//
 (function(ns) {
     var lazy = function(def) {
 	var cache = []
@@ -880,7 +887,7 @@ var oo = {tf2:{}, backpack:{}, schema:{}, util:{}, data:{} };
 	    // replace any items on the page that have the "schema
 	    // definition index replace" class with the url of the item
 	    // specified in the content.
-	    var itemImg = function(url) { return $$.makeImg({src:url, width:64, height:64}) }
+	    var itemImg = function(url) { return oo.util.img({src:url, width:64, height:64}) }
 	    var toolDefs = self.tools(),
 	    actionDefs = self.actions(),
 	    settingV = oo.util.settings(settings)
@@ -934,8 +941,8 @@ var oo = {tf2:{}, backpack:{}, schema:{}, util:{}, data:{} };
 	}
 
 	self.select = function(key, match) {
-	    var res = {}
-	    var matchf = (typeof(match) == typeof('')) ? function(v) { return v == match } : match
+	    var res = {},
+	        matchf = (typeof(match) == typeof('')) ? function(v) { return v == match } : match
 	    $.each(self.itemDefs(), function(idx, def) {
 		if (matchf(def[key])) {res[def.defindex] = def }})
 		return res
@@ -1010,53 +1017,15 @@ var oo = {tf2:{}, backpack:{}, schema:{}, util:{}, data:{} };
 	}
 
 	if (typeof(schema) == 'undefined') {
-	    new SchemaLoader({success: self.load})
+	    oo.data.schema({success: self.load})
 	} else {
 	    self.load(schema)
 	}
     }
 
     ns.tool = function(s) { return new SchemaTool(s) }
-})(oo.schema);
+})(oo.schema = {});
 
-
-// MARK - move as much of the remaining code as possible into namespaces
-
-
-// Begin the old '$$' namespace
-var $$ = (function() {
-    var mp = function(suffix, next) { return $('{0}{1}'.fs(mp.prefix, suffix), next) }
-    mp.config = function(p) { mp.prefix = p }
-
-    // makes a nice img tag with all the trimmings.
-    mp.makeImg = function(options) {
-	var src = options['src'] ? options['src'] : '/media/img/missing.png'
-	var width = '' + (options['width'] || 32)
-	var height = '' + (options['height'] || 32)
-	var alt = options['alt'] || ''
-	var style = options['style'] || ''
-	var cls = options['class'] || ''
-	return '<img src="{0}" width="{1}" height="{2}" alt="{3}" style="{4}" class="{5}" />'.fs(
-	    src, width, height, alt, style, cls)
-    }
-
-
-    // global success cache and error cache
-    var gsc = mp.gsc = {}
-    var gec = mp.gec = {}
-
-
-    // more utilities
-    var pathTail = mp.pathTail = function() { return window.location.pathname.split('/').pop() }
-
-    // configure and return the prefixed selector:
-    mp.config('')
-    return mp
-})()
-var make$$ = function(prefix) {
-    $$.prefix = prefix
-    return $$
-};
 
 (function(ns) {
     ns.item = function(item, schema) {
@@ -1074,7 +1043,10 @@ var make$$ = function(prefix) {
 		return '<span class="jewel jewel-{0}">&nbsp;</span>'.fs(c)
 	    },
 	    img: function() {
-		return $$.makeImg({src: schema.itemDefs()[item['defindex']]['image_url'],
+		if (!item.defindex) {
+		    return oo.util.img({src:'/media/img/missing.png', width:64, height:64})
+		}
+		return oo.util.img({src: schema.itemDefs()[item['defindex']]['image_url'],
 				   style:'display:none', width:64, height:64})
 	    },
 	    isEquipped: function() {
@@ -1114,7 +1086,7 @@ var make$$ = function(prefix) {
 		},
 
 	putStatus: function(listing, target) {
-	    new StatusLoader({
+	    oo.data.status({
 		suffix: listing.owner.id64,
 		success: function(status) {
 		    $('.listing-avatar', target)
@@ -1198,9 +1170,9 @@ var make$$ = function(prefix) {
 		}
 	    }
 	    $('#content-avatar-pod')
-		.html($$.makeImg({src: p.avatar, width: 24, height: 24}))
+		.html(oo.util.img({src: p.avatar, width: 24, height: 24}))
 		.show()
-	    new StatusLoader({
+	    oo.data.status({
 		suffix: p.id64,
 		success: function(status) {
 	            $('#content-avatar-pod img').addClass(status.online_state)
@@ -1230,147 +1202,152 @@ var make$$ = function(prefix) {
 	})
 	return uids
     }
+    // more utilities
+    ns.pathTail = function() { return window.location.pathname.split('/').pop() }
+
+    // makes a nice img tag with all the trimmings.
+    ns.img = function(options) {
+	var src = options['src'] ? options['src'] : '/media/img/missing.png'
+	var width = '' + (options['width'] || 32)
+	var height = '' + (options['height'] || 32)
+	var alt = options['alt'] || ''
+	var style = options['style'] || ''
+	var cls = options['class'] || ''
+	return '<img src="{0}" width="{1}" height="{2}" alt="{3}" style="{4}" class="{5}" />'.fs(
+	    src, width, height, alt, style, cls)
+    }
 
 
-})(oo.util);
+
+
+})(oo.util = {});
 
 (function(ns) {
-})(oo.data);
+    // global success cache and error cache
+    var gsc = {}, gec = {}
 
-// makes an async. data loader, which is a preconfigured ajax call.
-var makeLoader = function(config) {
-    var cache = this.cache = {},
+    var loader = ns.loader = function(config) {
+	var cache = this.cache = {},
         prefix = config.prefix, 
         name = config.name,
         successCallbacks = [],
         errorCallbacks = [],
         loading = false,
         ident = function(a) { return a }
+	
+	return function(options) {
+	    options = options || {}
+	    var url = prefix + (options.suffix || ''),
+	    successCallbacks = gsc[url],
+	    errorCallbacks = gec[url]
 
-    return function(options) {
-	options = options || {}
-	var url = prefix + (options.suffix || ''),
-	    successCallbacks = $$.gsc[url],
-	    errorCallbacks = $$.gec[url]
+	    if (!successCallbacks) { gsc[url] = successCallbacks = [] }
+	    if (!errorCallbacks) { gec[url] = errorCallbacks = [] }
 
-	if (!successCallbacks) { $$.gsc[url] = successCallbacks = [] }
-	if (!errorCallbacks) { $$.gec[url] = errorCallbacks = [] }
+	    successCallbacks.push(options.success ? options.success : ident)
+	    errorCallbacks.push(options.error ? options.error : ident)
 
-	successCallbacks.push(options.success ? options.success : ident)
-	errorCallbacks.push(options.error ? options.error : ident)
-
-	var loadSuccess = function(data) {
-	    cache[url] = {data:data}
-	    if (config.debug || options.debug) {
-		console.log(name, 'success: ', data, 'callbacks: ', successCallbacks.length)
-	    }
-	    if (config.successEvent) {
-		$(document).trigger(config.successEvent, data)
-	    }
-	    while (successCallbacks.length) { successCallbacks.pop()(data) }
-	    loading = false
-	}
-
-	var loadError = function(req, status, err) {
-	    cache[url] = {request:req, status:status, error:err}
-	    console.error(name, 'error', req, status, err, url)
-	    if (config.errorEvent) {
-		$(document).trigger(config.errorEvent, [req, status, err])
-	    }
-	    while (errorCallbacks.length) { errorCallbacks.pop()(req, status, err) }
-	    loading = false
-	}
-
-	var res = cache[url]
-	if (!res) {
-	    if (!loading) {
-		loading = true
+	    var loadSuccess = function(data) {
+		cache[url] = {data:data}
 		if (config.debug || options.debug) {
-		    console.log('{0}(url="{1}")'.fs(name, url))
+		    console.log(name, 'success: ', data, 'callbacks: ', successCallbacks.length)
 		}
-		$.ajax({
-		    url: url,
-		    async: typeof(config.async) == 'undefined' ? true : config.async,
-		    dataType: (config.dataType || 'json'),
-		    jsonpCallback: (config.jsonpCallback || null),
-		    cache: true,
-		    success: loadSuccess,
-		    error: loadError
-		})
+		if (config.successEvent) {
+		    $(document).trigger(config.successEvent, data)
+		}
+		while (successCallbacks.length) { successCallbacks.pop()(data) }
+		loading = false
 	    }
-	} else {
-	    if (config.debug || options.debug) {
-		console.log(name, 'cache hit', cache[url])
+
+	    var loadError = function(req, status, err) {
+		cache[url] = {request:req, status:status, error:err}
+		if (config.errorEvent) {
+		    $(document).trigger(config.errorEvent, [req, status, err])
+		}
+		while (errorCallbacks.length) { errorCallbacks.pop()(req, status, err) }
+		loading = false
 	    }
-	    if (res.data) {
-		loadSuccess(res.data)
+
+	    var res = cache[url]
+	    if (!res) {
+		if (!loading) {
+		    loading = true
+		    if (config.debug || options.debug) {
+			console.log('{0}(url="{1}")'.fs(name, url))
+		    }
+		    $.ajax({
+			url: url,
+			async: typeof(config.async) == 'undefined' ? true : config.async,
+			dataType: (config.dataType || 'json'),
+			jsonpCallback: (config.jsonpCallback || null),
+			cache: true,
+			success: loadSuccess,
+			error: loadError
+		    })
+		}
 	    } else {
-		loadError(res.request, res.status, res.error)
+		if (config.debug || options.debug) {
+		    console.log(name, 'cache hit', cache[url])
+		}
+		if (res.data) {
+		    loadSuccess(res.data)
+		} else {
+		    loadError(res.request, res.status, res.error)
+		}
 	    }
 	}
     }
-}
+    ns.search = function(o) {
+	return new loader({prefix: '/api/v1/public/search', name: 'SearchLoader'})(o)
+    }
 
+    ns.bids = function(o) {
+	return new loader({prefix: '/api/v1/public/bids/', name: 'BidsLoader'})(o)
+    }
 
-var AuthProfileLoader = makeLoader({
-    prefix: '/api/v1/auth/profile',
-    name: 'AuthProfileLoader',
-    successEvent: 'authProfileLoaded',
-    errorEvent: 'authProfileError',
-})
+    ns.listings = function(o) {
+	return new loader({prefix: '/api/v1/public/listings/', name: 'ListingsLoader'})(o)
+    }
 
+    ns.listing = function(o) {
+	return new loader({prefix: '/api/v1/public/listing/', name: 'ListingLoader'})(o)
+    }
 
-var BackpackLoader = makeLoader({
-    prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/items/',
-    dataType: 'jsonp',
-    jsonpCallback: 'tf2auctionsBackpackLoader',
-    name: 'BackpackLoader'
-})
+    ns.auth = function(o) {
+	return new loader({
+	    prefix: '/api/v1/auth/profile',
+	    name: 'AuthProfileLoader',
+	    successEvent: 'authProfileLoaded',
+	    errorEvent: 'authProfileError',
+	})(o)
+    }
 
+    // the jsonp loaders are defined a little differently; we reuse
+    // the loader to get caching (and it also saves us from some nasty
+    // errors).
+    var schemaLoader = loader({
+	prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
+	dataType: 'jsonp',
+	jsonpCallback: 'tf2auctionsSchemaLoader',
+	name: 'SchemaLoader',
+	successEvent: 'schemaLoaded'
+    }),
+    backpackLoader = loader({
+	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/items/',
+	dataType: 'jsonp',
+	jsonpCallback: 'tf2auctionsBackpackLoader',
+	name: 'BackpackLoader'
+    }),
+    statusLoader = loader({
+	prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
+	dataType: 'jsonp',
+	name: 'StatusLoader'
+    })
+    ns.status = function(o) { return new statusLoader(o) }
+    ns.schema = function(o) { return new schemaLoader(o) }
+    ns.backpack = function(o) { return new backpackLoader(o) }
 
-var SchemaLoader = makeLoader({
-    prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
-    dataType: 'jsonp',
-    jsonpCallback: 'tf2auctionsSchemaLoader',
-    name: 'SchemaLoader',
-    successEvent: 'schemaLoaded'
-})
-
-
-var StatusLoader = makeLoader({
-    prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
-    dataType: 'jsonp',
-    name: 'StatusLoader'
-})
-
-
-var ListingLoader = makeLoader({
-    prefix: '/api/v1/public/listing/',
-    name: 'ListingLoader'
-})
-
-
-var ListingsLoader = makeLoader({
-    prefix: '/api/v1/public/listings/',
-    name: 'ListingsLoader'
-})
-
-
-var SearchLoader = makeLoader({
-    prefix: '/api/v1/public/search',
-    name: 'SearchLoader'
-})
-
-
-var BidsLoader = makeLoader({
-    prefix: '/api/v1/public/bids/', // move to /api/v1/public/player-bids/
-    name: 'BidsLoader'
-})
-
-
-
-
-
+})(oo.data = {});
 
 
 //
@@ -1469,7 +1446,7 @@ var Model = MVC.extend({
             s = s ? ('?' + s) : ''
 	    var c = (config && config.auth && config.auth.complete ? 'complete=1' : '')
 	    s = s + (c ? '&'+c : '')
-	    new AuthProfileLoader({suffix: s, success: success, error: error})
+	    oo.data.auth({suffix: s, success: success, error: error})
         })
 
 	// request the model data
@@ -1477,6 +1454,12 @@ var Model = MVC.extend({
 	    self.requests.push(function() {
 		var success = function(v) { self.ready.apply(self, [v]) }
 		new self.loader({success: success, suffix: self.loaderSuffix || ''})
+            })
+	}
+	if (self.loaderNg) {
+	    self.requests.push(function() {
+		var success = function(v) { self.ready.apply(self, [v]) }
+		self.loaderNg({success: success, suffix: self.loaderSuffix || ''})
             })
 	}
         var binder = $('<foo />')
@@ -1496,7 +1479,7 @@ var Model = MVC.extend({
     // convenience function for cloning the Model object with
     // parameters for a new loader
     make: function(mc, lc) {
-	if (lc) { mc.loader = makeLoader(lc) }
+	if (lc) { mc.loader = oo.data.loader(lc) }
 	return Model.extend(mc)
     }
 })
@@ -1509,7 +1492,7 @@ var Model = MVC.extend({
 // SchemaTool, setting that instance as the 'tool' attribute.
 //
 var SchemaModel = Model.extend({
-    loader: SchemaLoader,
+    loaderNg: oo.data.schema,
 
     ready: function(results) {
         this.results = results
@@ -1523,8 +1506,6 @@ var SchemaModel = Model.extend({
 //
 // The View object and its clones provide several interesting behaviors:
 //
-// 2. the '$$' function provides prefixed jquery selectors via the
-// 'slug' attribute.
 //
 // 3. the 'proto' method creates DOM element clones based on the
 // 'cloneClass' attribute.
@@ -1749,7 +1730,6 @@ $(document)
     })
 
     .bind('ready', function() {
-
 	// jquery screws around with Object.prototype, so
 	// we add ours here instead of at the top level.
 	Object.prototype.keys = function() {
@@ -1762,8 +1742,9 @@ $(document)
 	    for (var k in this) { vs.push(this[k]) }
 	    return vs
 	}
+	// part of the work around.
 	Object.prototype.keys.replace = Object.prototype.values.replace = function() {}
-	// not implemented: 'items()'
+	Object.prototype.keys.exec = Object.prototype.values.exec = function() {}
 
 	// initialize each direct clone of the Controller object:
 	$.each(Controller.clones, function(i, c) { c.init.apply(c) })
@@ -1777,5 +1758,3 @@ var partial = function(fn) {
     return function() { return fn.apply(this, args.concat(slice.call(arguments))) }
 }
 */
-
-

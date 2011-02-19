@@ -1,4 +1,6 @@
-var pid = '#listing-add-', $$ = make$$(pid)
+var pid = '#listing-add-'
+oo.config(pid)
+
 
 //
 // encapsulates the minimum bid items tool and the corresponding
@@ -59,44 +61,44 @@ var BackpackListingTool = function(params) {
 	afterDropMove: function(item) { $('#bp-chooser-listing-add-item-error').parent().slideUp() }
     })
 
-    new AuthProfileLoader({
+    oo.data.auth({
 	suffix: '?settings=1',
 	success: function(profile) {
 	    var settings = profile.settings
 	    bpTool.init(profile.settings)
 	    chTool.init(profile.settings)
 	    if (profile.subscription && profile.subscription.status == 'Verified') {
-		$$('subscriber-pod').show()
-		$$('min-bid-currency-amount').keyup(function () {
+		oo('subscriber-pod').show()
+		oo('min-bid-currency-amount').keyup(function () {
 		    this.value = this.value.replace(/[^0-9\.]/g,'');
 		})
-		$$('min-bid-currency-use').click(function() {
-		    $$('min-bid-currency-amount').attr('disabled', !$$('min-bid-currency-use').attr('checked'))
+		oo('min-bid-currency-use').click(function() {
+		    oo('min-bid-currency-amount').attr('disabled', !oo('min-bid-currency-use').attr('checked'))
 		})
 	    } else {
-		$$('subscriber-pod').remove()
+		oo('subscriber-pod').remove()
 	    }
 	}
     })
 
     self.show = function() {
-	$$('own-backpack').fadeBack()
+	oo('own-backpack').fadeBack()
 	var width = $('table.bp-placed').width()
-	$$('fields textarea').width(width).height(width/4).text(defDesc)
+	oo('fields textarea').width(width).height(width/4).text(defDesc)
 	$('#a-bp-intro-pod, #listing-add-item-ch-intro-pod')
 	    .addClass('center').animate({width:width})
-	$$('cancel').click(self.cancel)
-	$$('submit').click(self.submit)
-	$$('description').focusin(function() {
+	oo('cancel').click(self.cancel)
+	oo('submit').click(self.submit)
+	oo('description').focusin(function() {
 	    if ($(this).text() == defDesc) { $(this).text('') }
 	})
 
 	var sliderChange = function(event, ui) {
 	    var v = ui.value
-	    $$('duration').text(v + ' day' + (v==1 ? '' : 's'))
+	    oo('duration').text(v + ' day' + (v==1 ? '' : 's'))
 	}
 
-	var slider = $$('duration-slider').slider({
+	var slider = oo('duration-slider').slider({
 	    animate: true,
 	    max: 30,
 	    min:1,
@@ -108,21 +110,21 @@ var BackpackListingTool = function(params) {
 
     self.cancel = function() {
 	// TODO: reveal nav away/start again
-	$$('own-backpack').fadeAway()
-	$$('intro').fadeBack().slideDown(750)
+	oo('own-backpack').fadeAway()
+	oo('intro').fadeBack().slideDown(750)
 	$('html body').animate({scrollTop: 0})
 	return false
     }
 
     self.postOkay = function(data, status, req) {
-	$$('working').text('Complete.  Click the link to view your listing.')
-	$$('success a').attr('href', '/listing/{0}'.fs(data.key))
-	$$('success').fadeIn()
+	oo('working').text('Complete.  Click the link to view your listing.')
+	oo('success a').attr('href', '/listing/{0}'.fs(data.key))
+	oo('success').fadeIn()
     }
 
     self.postError = function(req, status, err) {
-	$$('working').text('Something went wrong.  Check the error below.').fadeIn()
-	$$('error').text(req.statusText).parent().fadeIn()
+	oo('working').text('Something went wrong.  Check the error below.').fadeIn()
+	oo('error').text(req.statusText).parent().fadeIn()
     }
 
     self.addListing = function(input) {
@@ -172,19 +174,19 @@ var BackpackListingTool = function(params) {
 		       msg:'Select 1-10 items from your backpack.'})
 	}
 	// 2.  description
-	var desc = $$('description').val()
+	var desc = oo('description').val()
 	desc = (desc == defDesc ? '' : desc)
 	if (desc.length > 400) {
 	    $("#listing-add-description").keyup(function (a) {
 		if ( $(this).val().length <= 400) {
-		    $$('description-error:visible').slideUp()
+		    oo('description-error:visible').slideUp()
 		}
 	    })
 	    errs.push({id:'#listing-add-description',
 		       msg:'Too much text.  Make your description shorter.'})
 	}
         // 3.  duration
-	var days = $$('duration-slider').slider('value')
+	var days = oo('duration-slider').slider('value')
 	if (days < 1 || days > 30) {
 	    // this can only happen if the user is twiddling data
 	    // outside of the form.
@@ -198,22 +200,22 @@ var BackpackListingTool = function(params) {
 		       msg:'Too many items. Select 0-10 items as a minimum bid.'})
 	}
 	// 5.  premium subscriber min bid currency: checkbox + amount
-	var min_bid_currency_use = $$('min-bid-currency-use').attr('checked')
+	var min_bid_currency_use = oo('min-bid-currency-use').attr('checked')
 	var min_bid_currency_amount = 0.0
 	if (min_bid_currency_use) {
-	    min_bid_currency_amount = $$('min-bid-currency-amount').val()
+	    min_bid_currency_amount = oo('min-bid-currency-amount').val()
 	    min_bid = []
 	}
 	// 6.  premium subscriber featured listing
-	var feature_listing = $$('feature-listing').attr('checked')
+	var feature_listing = oo('feature-listing').attr('checked')
 
 	// 7. agree w/ site terms
-	if (! $$('terms').attr('checked')) {
-	    $$('terms').click(function (e) {
+	if (! oo('terms').attr('checked')) {
+	    oo('terms').click(function (e) {
 		if (e.target.checked) {
-		    $$('terms-error').slideUp()
+		    oo('terms-error').slideUp()
 		} else {
-		    $$('terms-error').slideDown()
+		    oo('terms-error').slideDown()
 		}
 	    })
 	    errs.push({id: '#listing-add-terms',
@@ -223,8 +225,8 @@ var BackpackListingTool = function(params) {
 	if (errs.length) {
 	    self.showErrors(errs)
 	} else {
-	    $$('buttons').slideUp('slow')
-	    $$('working').removeClass('null').text('Working...').fadeIn('fast')
+	    oo('buttons').slideUp('slow')
+	    oo('working').removeClass('null').text('Working...').fadeIn('fast')
 	    self.addListing({
 		items: items, desc: desc, days: days, min_bid: min_bid,
 		min_bid_currency_use: min_bid_currency_use,
@@ -262,8 +264,8 @@ var showMinBid = function() {
 
     $('#bp-mb td div img').live('dblclick', copyToMinbidChooser)
     $('#bp-chooser-listing-add-min-bid td').live('dblclick', removeMinBidChoice)
-    $$('min-bid-show').slideUp(750)
-    $$('min-bid-pod').fadeIn('slow')
+    oo('min-bid-show').slideUp(750)
+    oo('min-bid-pod').fadeIn('slow')
     return false
 }
 
@@ -292,7 +294,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
 
 var listingsReady = function(listings, bids, profile) {
     View.message('Loading your backpack...')
-    new BackpackLoader({
+    oo.data.backpack({
         suffix: profile.id64,
 	success: function (backpack) {
 	    backpackReady(backpack, listings, bids, profile)
@@ -304,20 +306,20 @@ var listingsReady = function(listings, bids, profile) {
 var profileReady = function(profile) {
     View.message('Profile loaded.')
     var listingsLoaded = function(listings) {
-	new BidsLoader({
+	oo.data.bids({
 	    suffix: profile.steamid,
 	    success: function(bids) {
 		listingsReady(listings, bids, profile)
 	    }
 	})
     }
-    new ListingsLoader({suffix: profile.steamid, success: listingsLoaded})
+    oo.data.listings({suffix: profile.steamid, success: listingsLoaded})
 }
 
 
 var schemaReady = function(schema) {
     View.message('Loading your profile...')
-    new AuthProfileLoader({
+    oo.data.auth({
 	suffix: '?settings=1&complete=1',
 	success: profileReady
     })
@@ -326,15 +328,15 @@ var schemaReady = function(schema) {
 
 
 $(document).ready(function() {
-    $$('min-bid-currency-use').click(function() {
+    oo('min-bid-currency-use').click(function() {
         if ($(this).attr('checked')) {
-	    $$('min-bid-wrapper-pod').slideUp()
+	    oo('min-bid-wrapper-pod').slideUp()
 	} else {
-	    $$('min-bid-wrapper-pod').slideDown()
+	    oo('min-bid-wrapper-pod').slideDown()
 	}
     })
     View.message('Loading item schema...')
-    new SchemaLoader({success: schemaReady})
-    $$('min-bid-show a').click(showMinBid)
-    $$('show-terms').click(View.showTermsDialog)
+    oo.data.schema({success: schemaReady})
+    oo('min-bid-show a').click(showMinBid)
+    oo('show-terms').click(View.showTermsDialog)
 })

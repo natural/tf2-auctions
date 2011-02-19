@@ -1,4 +1,4 @@
-var PlayerSearchLoader = makeLoader({
+var PlayerSearchLoader = oo.data.loader({
     prefix: 'http://tf2apiproxy.appspot.com/api/v1/search/',
     dataType: 'jsonp',
     name: 'PlayerSearchLoader'
@@ -9,7 +9,7 @@ var BackpackModel = SchemaModel.extend({
     name: 'BackpackModel',
 
     findId: function(options) {
-        new StatusLoader({
+        oo.data.status({
             error: options.error,
             success: function(status) {
 	        options.success([{id: options.id, persona: status.name}])
@@ -40,7 +40,7 @@ var BackpackView = SchemaView.extend({
 	    return
 	}
 	self.message('Loading backpack...')
-	new BackpackLoader({
+	oo.data.backpack({
 	    success: function(bp) { self.ready(data.id, data.persona, bp) },
 	    suffix: data.id
         })
@@ -70,7 +70,7 @@ var BackpackView = SchemaView.extend({
 		    .text('Your search did not match any players.')
             } else if (results.length == 1) {
 		var result = results[0]
-		new BackpackLoader({
+		oo.data.backpack({
 		    suffix: result.id,
 		    success: function(bp) { self.ready(result.id, result.persona, bp) }
 		})
@@ -87,7 +87,7 @@ var BackpackView = SchemaView.extend({
                 $('#backpack-viewer-result-many').fadeIn()
 	    }
 	}
-	new SchemaLoader({success: ready})
+	oo.data.schema({success: ready})
     },
 
     ready: function(id64, name, backpack) {
@@ -103,7 +103,7 @@ var BackpackView = SchemaView.extend({
         }
         var ready = function (listings) {
             self.clear()
-	    new BidsLoader({
+	    oo.data.bids({
 	        suffix: id64,
 	        success: function(bids) {
 		    $('#backpack-viewer-backpack-title')
@@ -113,7 +113,7 @@ var BackpackView = SchemaView.extend({
 	    })
         }
         self.message('Loading backpack...')
-        new ListingsLoader({suffix: id64, success: ready})
+        oo.data.listings({suffix: id64, success: ready})
     },
 
     clear: function() {
@@ -143,10 +143,10 @@ var BackpackView = SchemaView.extend({
 		         showAll: true,
 		         rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
             })
-        new AuthProfileLoader({
+        oo.data.auth({
 	    suffix: '?settings=1&complete=1',
 	    success: function(profile) { bpTool.init(profile.settings) },
-	    error: function(request, status, error) { bpTool.init(null) }
+	    error: function() { bpTool.init(null) }
         })
         self.message().fadeOut()
         if (!self.put.initOnce) {

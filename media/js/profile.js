@@ -15,12 +15,12 @@
 // done:  settings
 
 
-$$.config('#profile-')
+oo.config('#profile-')
 
 
 // this needed?
 var makeStatusLoader = function(id) {
-    return makeLoader({
+    return oo.data.loader({
         prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
 	dataType: 'jsonp',
 	name: 'StatusLoader' + id
@@ -57,7 +57,7 @@ var NotifyListingTool = function(model) {
 // messages model and view for the details tab
 //
 var MessagesModel = Model.extend({
-    loader: makeLoader({
+    loader: oo.data.loader({
 	prefix: '/api/v1/auth/list-messages',
 	name: 'MessagesLoader'
     }),
@@ -74,18 +74,18 @@ var MessagesView = View.extend({
 	    msgCount = msgs.messages.length,
 	    putCount = function(c) {
 		if (c) {
-		    $$('view-msg-count').text('({0})'.fs(c) )
+		    oo('view-msg-count').text('({0})'.fs(c) )
 		} else {
-		    $$('msg-none').text('No messages.  Too bad.').fadeIn()
-		    $$('view-msg-count').text('')
+		    oo('msg-none').text('No messages.  Too bad.').fadeIn()
+		    oo('view-msg-count').text('')
 		}
 	    }
-	$$('view-msg-title').text('My Messages')
-	$$('view-msg-pod').slideDown()
+	oo('view-msg-title').text('My Messages')
+	oo('view-msg-pod').slideDown()
 	putCount(msgCount)
 	if (!msgCount) { return }
 	$.each(msgs.messages, function(idx, msg) {
-	    var clone = $$('view-msg-pod div.prototype').clone()
+	    var clone = oo('view-msg-pod div.prototype').clone()
 	    $('.profile-msg-text-seed', clone).text(msg.message)
 	    var loader = makeStatusLoader(msg.source)
 	    new loader({
@@ -122,9 +122,9 @@ var MessagesView = View.extend({
 		    })
 		})
 	    })
-	    $$('view-msg-pod').append(clone)
+	    oo('view-msg-pod').append(clone)
 	})
-	    $$('view-msg-pod').slideDown()
+	    oo('view-msg-pod').slideDown()
     }
 
 })
@@ -134,7 +134,7 @@ var MessagesView = View.extend({
 // feedback loader, model, and view for the details tab
 //
 
-var FeedbackLoader = makeLoader({
+var FeedbackLoader = oo.data.loader({
     prefix: '/api/v1/public/profile-feedback/',
     name: 'FeedbackLoader'
 })
@@ -168,18 +168,18 @@ var FeedbackView = View.extend({
     },
 
     showReadOnly: function(txt) {
-	$$('feedback-existing-title').text(txt)
-	$$('feedback-existing-pod').slideDown()
+	oo('feedback-existing-title').text(txt)
+	oo('feedback-existing-pod').slideDown()
     },
 
     showReadWrite: function(txt) {
-	$$('feedback-existing-title').text(txt)
-	$$('feedback-existing-pod').slideDown()
+	oo('feedback-existing-title').text(txt)
+	oo('feedback-existing-pod').slideDown()
     },
 
     join: function(model) {
 	if (!model.feedback) {
-	    $$('feedback-none').text('No feedback.').fadeIn()
+	    oo('feedback-none').text('No feedback.').fadeIn()
 	} else {
 	    this.putFeedback(model.feedback)
 	}
@@ -218,7 +218,7 @@ var ListingsModel = SchemaModel.extend({
     init: function(view, config) {
 	var self = this
 	self.requests.push(function() {
-	    new ListingsLoader({
+	    oo.data.listings({
 		suffix: MainModel.id64(),
 		success: function(listings) { self.listings = listings }
 	    })
@@ -239,11 +239,11 @@ var ListingsView = SchemaView.extend({
 
     join: function(model) {
 	var self = this
-	$$('listings-title').text(self.title).parent().fadeIn()
+	oo('listings-title').text(self.title).parent().fadeIn()
 	self.message('Listings loaded.').fadeOut()
-	$$('listings-inner').fadeIn(function() {
+	oo('listings-inner').fadeIn(function() {
 	    if (!model.listings.length) {
-		$$('listings-none').text('Nothing recent.').slideDown()
+		oo('listings-none').text('Nothing recent.').slideDown()
 	    } else {
 		self.putMany(model.listings, model.profile)
 	    }
@@ -252,13 +252,13 @@ var ListingsView = SchemaView.extend({
 
     putMany: function(listings, profile) {
 	var self = this,
-            proto = $$('listings-inner div.prototype')
+            proto = oo('listings-inner div.prototype')
 	$.each(listings, function(idx, listing) {
 	    self.putOne(listing, proto.clone().addClass('listing-seed'))
 	})
 	oo.schema.tool().putImages(profile ? profile.settings : null)
 	$('div.listing-seed td.item-view div:empty').parent().remove()
-	$$('listings-pod div.init-seed').slideDown('slow')
+	oo('listings-pod div.init-seed').slideDown('slow')
     },
 
     putOne: function(listing, clone) {
@@ -279,7 +279,7 @@ var ListingsView = SchemaView.extend({
         $('.listing-view-link a', clone).attr('href', '/listing/'+listing.id)
 	$('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
 	// TODO:  add min bid
-	$$('listings').append(clone)
+	oo('listings').append(clone)
     }
 })
 
@@ -293,7 +293,7 @@ var BidsModel = SchemaModel.extend({
 	var self = this
 	self.requests.push(
 	    function() {
-	        new BidsLoader({
+	        oo.data.bids({
 		    suffix: MainModel.id64(),
 		    success: function(bids) { self.bids = bids }
 	        })
@@ -316,10 +316,10 @@ var BidsView = SchemaView.extend({
     join: function(model) {
 	console.log('BidsView.join()', model)
 	var self = this
-	$$('bids-title').text(self.title)
-	$$('bids-pod').fadeIn(function() {
+	oo('bids-title').text(self.title)
+	oo('bids-pod').fadeIn(function() {
 	    if (!model.bids.length) {
-		$$('bids-none').text('Nothing recent.').slideDown()
+		oo('bids-none').text('Nothing recent.').slideDown()
 	    } else {
 		self.putMany(model.bids, model.profile)
 	    }
@@ -327,13 +327,13 @@ var BidsView = SchemaView.extend({
     },
 
     putMany: function(bids, profile) {
-	var self = this, proto = $$('bids div.prototype')
+	var self = this, proto = oo('bids div.prototype')
 	$.each(bids, function(idx, bid) {
 	    self.putOne(bid, proto.clone().addClass('bid-marker'))
 	})
 	$('div.bid-marker td.item-view div:empty').parent().remove()
 	oo.schema.tool().putImages(profile ? profile.settings : null)
-	$$('bids-pod div.init-seed').slideDown('slow')
+	oo('bids-pod div.init-seed').slideDown('slow')
     },
 
     putOne: function(bid, clone) {
@@ -351,7 +351,7 @@ var BidsView = SchemaView.extend({
 	}
 	$('.bid-status', clone).text(bid.status)
 	$('.bid-created', clone).text('' + new Date(bid.created))
-	$$('bids').append(clone)
+	oo('bids').append(clone)
     }
 })
 
@@ -363,8 +363,8 @@ var BackpackModel = SchemaModel.extend({
     init: function(view, config) {
 	var id64 = MainModel.id64(),
             self = this,
-	    lloader = makeLoader({prefix: '/api/v1/public/listings/'}),
-	    bloader = makeLoader({prefix: '/api/v1/public/bids/'})
+	    lloader = oo.data.loader({prefix: '/api/v1/public/listings/'}),
+	    bloader = oo.data.loader({prefix: '/api/v1/public/bids/'})
 
 	self.requests.push(
 	    function() {
@@ -380,7 +380,7 @@ var BackpackModel = SchemaModel.extend({
 		})
 	    },
 	    function() {
-		new BackpackLoader({
+		oo.data.backpack({
 		    suffix: id64,
 		    success: function(backpack) { self.backpack = backpack }
 		})
@@ -414,9 +414,9 @@ var BackpackView = SchemaView.extend({
 		    rowGroups: oo.backpack.pageGroup.full(model.backpack.result.num_backpack_slots)
 		})
 	    bpTool.init(model.profile ? model.profile.settings : null)
-	    $$('backpack-title').text(self.title)
-	    $$('backpack-title-pod').fadeIn(function() {
-		$$('backpack-inner').fadeIn()
+	    oo('backpack-title').text(self.title)
+	    oo('backpack-title-pod').fadeIn(function() {
+		oo('backpack-inner').fadeIn()
 	    })
     }
 })
@@ -489,16 +489,16 @@ var SettingsView = View.extend({
 	    }
 	    $('#bp-nl td div img').live('dblclick', copyToChooser)
 	    $('#bp-chooser-notify-listing td').live('dblclick', removeFromChooser)
-	    $$('notify-listing-reset').click(resetChooser)
+	    oo('notify-listing-reset').click(resetChooser)
 
-	    $$('premium-settings-pod').fadeIn()
+	    oo('premium-settings-pod').fadeIn()
 	} else {
-	    $$('premium-signup-pod').fadeIn()
+	    oo('premium-signup-pod').fadeIn()
 	}
     },
 
     saveSuccess: function() {
-	$$('settings-save-message div.information')
+	oo('settings-save-message div.information')
 	    .text('Saved!')
 	    .fadeIn()
 	    .delay(3000)
@@ -506,7 +506,7 @@ var SettingsView = View.extend({
     },
 
     saveError: function(msg) {
-	$$('settings-save-message div.error')
+	oo('settings-save-message div.error')
             .text('Error: {0}'.fs(msg))
 	    .fadeIn()
 	    .delay(5000)
@@ -515,9 +515,9 @@ var SettingsView = View.extend({
 
     emailError: function(v) {
 	if (v) {
-	    $$('email-error').text(v).parent().slideDown()
+	    oo('email-error').text(v).parent().slideDown()
 	} else {
-	    $$('email-error').text('').parent().slideUp()
+	    oo('email-error').text('').parent().slideUp()
 	}
     }
 
@@ -534,7 +534,7 @@ var SettingsControllerDefn = {
     },
 
     validateNotifyBids: function() {
-	if ($$('notify-bids').attr('checked') && !$$('email').val().trim()) {
+	if (oo('notify-bids').attr('checked') && !oo('email').val().trim()) {
 	    this.view.emailError("Error: we can't send you notifications without an email address.")
 	} else {
 	    this.view.emailError()
@@ -579,8 +579,8 @@ var SettingsControllerDefn = {
 	} catch (e) {
 	    output['notify-listing-defs'] = []
 	}
-	$$('settings-save-message div.error').fadeOut()
-	$$('settings-save-message div.information').fadeOut()
+	oo('settings-save-message div.error').fadeOut()
+	oo('settings-save-message div.information').fadeOut()
 	var self = this
 	self.model.save(
 	    output,
@@ -606,8 +606,8 @@ var MainModel = Model.extend({
         same as .results when the user is viewing their own profile
         page.
 */
-    loader: makeLoader({prefix: '/api/v1/public/profile/', name: 'MainLoader'}),
-    loaderSuffix: $$.pathTail(),
+    loader: oo.data.loader({prefix: '/api/v1/public/profile/', name: 'MainLoader'}),
+    loaderSuffix: oo.util.pathTail(),
 
     init: function(view, config) {
 	var self = this
@@ -665,17 +665,17 @@ var MainView = View.extend({
 	// auth and owner
 	if (model.isOwner(model.profile)) {
 	    model.loadMessages()
-	    $$('is-you').text('This is you!').slideDown()
-	    $$('settings-tab').fadeIn()
+	    oo('is-you').text('This is you!').slideDown()
+	    oo('settings-tab').fadeIn()
 	}
 
 	// auth but not owner
 	if (model.profile && !model.isOwner(model.profile)) {
-	    $$('leave-msg-title')
+	    oo('leave-msg-title')
 		.text('Leave a message for {0}:'.fs(model.personaname()))
-	    $$('leave-msg-txt').width('90%').height(150)
-	    $$('leave-msg-submit').parent().width('90%')
-	    $$('leave-msg-pod').slideDown()
+	    oo('leave-msg-txt').width('90%').height(150)
+	    oo('leave-msg-submit').parent().width('90%')
+	    oo('leave-msg-pod').slideDown()
 	}
 
 	// 
@@ -685,41 +685,41 @@ var MainView = View.extend({
 	var profile = model.results,
 	    ownerid = profile.steamid
 	this.docTitle(profile.personaname)
-	$$('title').text(profile.personaname)
+	oo('title').text(profile.personaname)
 	if (profile.avatarmedium) {
-	    $$('avatar').attr('src', profile.avatarmedium)
+	    oo('avatar').attr('src', profile.avatarmedium)
 	}
 
 	var setStatus = function(status) {
 	    var m = status.message_state
-	    $$('avatar').addClass(status.online_state)
+	    oo('avatar').addClass(status.online_state)
 	    if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
-		$$('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
+		oo('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
 		m = m.replace(/ - .*/, '')
 	    }
-	    $$('status').html(m).addClass(status.online_state).slideDown()
+	    oo('status').html(m).addClass(status.online_state).slideDown()
 	}
-	new StatusLoader({suffix: profile.id64, success: setStatus})
-	$$('badge').slideDown()
+	oo.data.status({suffix: profile.id64, success: setStatus})
+	oo('badge').slideDown()
 	$('.init-seed').fadeIn()
-	$$('owner-view-steam-profile').attr('href', profile.profileurl)
-	$$('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
-	$$('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
+	oo('owner-view-steam-profile').attr('href', profile.profileurl)
+	oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
+	oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
     },
 
     leaveMsgText: function() {
-	return $$('leave-msg-txt').val().slice(0,400)
+	return oo('leave-msg-txt').val().slice(0,400)
     },
 
     leaveMsgEmpty: function() {
-	$$('leave-msg-form').slideUp(function() {
-	    $$('leave-msg-title').text('Empty message?  Really?  Nothing sent!')
+	oo('leave-msg-form').slideUp(function() {
+	    oo('leave-msg-title').text('Empty message?  Really?  Nothing sent!')
 	})
     },
 
     leaveMsgSuccess: function() {
-	$$('leave-msg-form').slideUp(function() {
-	    $$('leave-msg-title').text('Message sent!')
+	oo('leave-msg-form').slideUp(function() {
+	    oo('leave-msg-title').text('Message sent!')
 	})
     },
 
@@ -728,8 +728,8 @@ var MainView = View.extend({
 	    try {
 		var err = $.parseJSON( request.responseText )
 		if (err.exception == 'Mailbox full') {
-		    $$('leave-msg-form').slideUp(function() {
-			$$('leave-msg-title').text('Your message was not sent!  Target mailbox is full.')
+		    oo('leave-msg-form').slideUp(function() {
+			oo('leave-msg-title').text('Your message was not sent!  Target mailbox is full.')
 		    })
 		}
 	    } catch (e) {}
