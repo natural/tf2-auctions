@@ -275,6 +275,7 @@ var oo = (function() {
 	    return rows
 	}
     }
+
     var itemFilterLabels = [
 	['tradable', 'All Items'],
 	['', ''],
@@ -648,8 +649,8 @@ var oo = (function() {
 	$.each(source.attr('class').split(' '), function(idx, name) {
 	    if (name.match(expr)) { target.addClass(name); source.removeClass(name) }
 	})
-	    }
-    var moveSalad = function(source, target) {
+    }, 
+    moveSalad = function(source, target) {
 	return moveClasses(source, target, /(border|background)-quality/)
     }
 
@@ -1216,70 +1217,62 @@ var oo = (function() {
 	return '<img src="{0}" width="{1}" height="{2}" alt="{3}" style="{4}" class="{5}" />'.fs(
 	    src, width, height, alt, style, cls)
     }
-
-
-
-
 })(oo.util = {});
 
+
 (function(ns) {
-    // global success cache and error cache
-    var gsc = {}, gec = {}
+    // common cache for all loaders
+    var cache = {loading:{}, successCb:{}, errorCb:{}, results:{}},
+    ident = function(a) { return a },
 
-    var loader = ns.loader = function(config) {
-	var cache = this.cache = {},
-        prefix = config.prefix, 
-        name = config.name,
-        successCallbacks = [],
-        errorCallbacks = [],
-        loading = false,
-        ident = function(a) { return a }
-	
+    loader = ns.loader = function(config) {
+	var prefix = config.prefix, name = config.name
+
 	return function(options) {
-	    options = options || {}
 	    var url = prefix + (options.suffix || ''),
-	    successCallbacks = gsc[url],
-	    errorCallbacks = gec[url]
+            key = (options.cacheKey || url),
+	    successCb = cache.successCb[key],
+	    errorCb = cache.errorCb[key],
+	    res = cache.results[key],
 
-	    if (!successCallbacks) { gsc[url] = successCallbacks = [] }
-	    if (!errorCallbacks) { gec[url] = errorCallbacks = [] }
-
-	    successCallbacks.push(options.success ? options.success : ident)
-	    errorCallbacks.push(options.error ? options.error : ident)
-
-	    var loadSuccess = function(data) {
-		cache[url] = {data:data}
+	    loadSuccess = function(data) {
+		cache.results[key] = {data:data}
 		if (config.debug || options.debug) {
-		    console.log(name, 'success: ', data, 'callbacks: ', successCallbacks.length)
+		    console.log(name, 'success: ', data, 'callbacks: ', successCb.length, 'key: ', key)
 		}
 		if (config.successEvent) {
 		    $(document).trigger(config.successEvent, data)
 		}
-		while (successCallbacks.length) { successCallbacks.pop()(data) }
-		loading = false
-	    }
+		while (successCb.length) { successCb.pop()(data) }
+		cache.loading[key] = false
+	    },
 
-	    var loadError = function(req, status, err) {
-		cache[url] = {request:req, status:status, error:err}
+	    loadError = function(req, status, err) {
+		cache.results[key] = {request:req, status:status, error:err}
 		if (config.errorEvent) {
 		    $(document).trigger(config.errorEvent, [req, status, err])
 		}
-		while (errorCallbacks.length) { errorCallbacks.pop()(req, status, err) }
-		loading = false
+		while (errorCb.length) { errorCb.pop()(req, status, err) }
+		cache.loading[key] = false
 	    }
 
-	    var res = cache[url]
+	    if (!successCb) { cache.successCb[key] = successCb = [] }
+	    if (!errorCb) { cache.errorCb[key] = errorCb = [] }
+
+	    successCb.push(options.success ? options.success : ident)
+	    errorCb.push(options.error ? options.error : ident)
+
 	    if (!res) {
-		if (!loading) {
-		    loading = true
+		if (!cache.loading[key]) {
+		    cache.loading[key] = true
 		    if (config.debug || options.debug) {
-			console.log('{0}(url="{1}")'.fs(name, url))
+			console.log('{0}(url="{1}", key="{2}")'.fs(name, url, key))
 		    }
 		    $.ajax({
 			url: url,
 			async: typeof(config.async) == 'undefined' ? true : config.async,
 			dataType: (config.dataType || 'json'),
-			jsonpCallback: (config.jsonpCallback || null),
+			jsonpCallback: (config.jsonpCallback || options.jsonpCallback || null),
 			cache: true,
 			success: loadSuccess,
 			error: loadError
@@ -1287,7 +1280,7 @@ var oo = (function() {
 		}
 	    } else {
 		if (config.debug || options.debug) {
-		    console.log(name, 'cache hit', cache[url])
+		    console.log(name, 'cache hit', cache.results[key])
 		}
 		if (res.data) {
 		    loadSuccess(res.data)
@@ -1297,40 +1290,14 @@ var oo = (function() {
 	    }
 	}
     }
-    ns.search = function(o) {
-	return new loader({prefix: '/api/v1/public/search', name: 'SearchLoader'})(o)
-    }
-
-    ns.bids = function(o) {
-	return new loader({prefix: '/api/v1/public/bids/', name: 'BidsLoader'})(o)
-    }
-
-    ns.listings = function(o) {
-	return new loader({prefix: '/api/v1/public/listings/', name: 'ListingsLoader'})(o)
-    }
-
-    ns.listing = function(o) {
-	return new loader({prefix: '/api/v1/public/listing/', name: 'ListingLoader'})(o)
-    }
-
-    ns.auth = function(o) {
-	return new loader({
-	    prefix: '/api/v1/auth/profile',
-	    name: 'AuthProfileLoader',
-	    successEvent: 'authProfileLoaded',
-	    errorEvent: 'authProfileError',
-	})(o)
-    }
-
-    // the jsonp loaders are defined a little differently; we reuse
-    // the loader to get caching (and it also saves us from some nasty
-    // errors).
-    var schemaLoader = loader({
-	prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
-	dataType: 'jsonp',
-	jsonpCallback: 'tf2auctionsSchemaLoader',
-	name: 'SchemaLoader',
-	successEvent: 'schemaLoaded'
+   
+    // predefine common loaders.  these aren't visible outside of the
+    // namespace, and they cache correctly by url.
+    var authLoader = loader({
+	prefix: '/api/v1/auth/profile',
+	name: 'AuthProfileLoader',
+	successEvent: 'authProfileLoaded',
+	errorEvent: 'authProfileError'
     }),
     backpackLoader = loader({
 	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/items/',
@@ -1338,358 +1305,386 @@ var oo = (function() {
 	jsonpCallback: 'tf2auctionsBackpackLoader',
 	name: 'BackpackLoader'
     }),
+    bidsLoader = loader({
+	prefix: '/api/v1/public/bids/',
+	name: 'BidsLoader'
+    }),
+    listingLoader = loader({
+	prefix: '/api/v1/public/listing/',
+	name: 'ListingLoader'
+    }),
+    listingsLoader = loader({
+	prefix: '/api/v1/public/listings/',
+	name: 'ListingsLoader'
+    }),
+    schemaLoader = loader({
+	prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
+	dataType: 'jsonp',
+	jsonpCallback: 'tf2auctionsSchemaLoader',
+	name: 'SchemaLoader',
+	successEvent: 'schemaLoaded'
+    }),
+    searchLoader = loader({
+	prefix: '/api/v1/public/search',
+	name: 'SearchLoader'
+    }),
     statusLoader = loader({
 	prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
 	dataType: 'jsonp',
 	name: 'StatusLoader'
     })
-    ns.status = function(o) { return new statusLoader(o) }
-    ns.schema = function(o) { return new schemaLoader(o) }
+
+    ns.auth = function(o) { return new authLoader(o) } 
     ns.backpack = function(o) { return new backpackLoader(o) }
+    ns.bids = function(o) { return new bidsLoader(o) }
+    ns.listing = function(o) { return new listingLoader(o) }
+    ns.listings = function(o) { return new listingsLoader(o) }
+    ns.schema = function(o) { return new schemaLoader(o) }
+    ns.search = function(o) { return new searchLoader(o) }
+    ns.status = function(o) { return new statusLoader(o) }
 
 })(oo.data = {});
 
 
-//
-// This begins our small Model View Controller hierarchy.
-//
-// MVC is the root object that defines the 'extend' function for
-// creating new objects and a default 'init' funciton that does
-// nothing.
-//
-var MVC = {
-    clones: [],
-    init: function() { return this },
-    extend: function(ext) {
-	var obj = Object.create(this)
-	if (ext) { $.extend(obj, ext) }
-	this.clones.push(obj)
-	return obj
+(function(ns) {
+    //
+    // This begins our small Model View Controller hierarchy.
+    //
+    // MVC is the root object that defines the 'extend' function for
+    // creating new objects and a default 'init' funciton that does
+    // nothing.
+    //
+    ns.mvc = {
+	clones: [],
+	init: function() { return this },
+	extend: function(ext) {
+	    var obj = Object.create(this)
+	    if (ext) { $.extend(obj, ext) }
+	    this.clones.push(obj)
+	    return obj
+	}
     }
-}
 
+    //
+    // This is the root Controller object.
+    //
+    ns.controller = ns.mvc.extend({
+	clones: [],
 
-//
-// This is the root Controller object.
-//
-var Controller = MVC.extend({
-    clones: [],
+	init: function() {
+            var self = this
+	    eventNames = $.merge([], $.attrFn.keys())
+	    $.merge(eventNames, $.event.special.keys())
 
+	    // initalize the model associated with this controller.  the
+	    // model will initalize the view when it's ready.
+	    self.model.init.apply(self.model, [self.view, self.config])
 
-    init: function() {
-        var self = this,
-	    eventNames = $.merge($.attrFn.keys(), $.event.special.keys())
-
-	// initalize the model associated with this controller.  the
-	// model will initalize the view when it's ready.
-	self.model.init.apply(self.model, [self.view, self.config])
-
-	// initialize anything in the namespace that looks like an
-	// event listener.
-        $.each(self.keys(), function(idx, key) {
-            var value = self[key]
-            if (typeof key == 'string' && (typeof value == 'function' || typeof value == 'object')) {
-		var names = key.split(' '),
+	    // initialize anything in the namespace that looks like an
+	    // event listener.
+            $.each(self.keys(), function(idx, key) {
+		var value = self[key]
+		if (typeof key == 'string' && (typeof value == 'function' || typeof value == 'object')) {
+		    var names = key.split(' '),
 	            name = names.pop()
-		if (name == 'ready') {
-		    $(function() { value.apply(self, arguments) })
-		} else if (name.indexOf('live:') == 0) {
-		    var inner = name.split(':')
-		    $(names.join(' ')).live(inner[1], function(e) { e.controller = self; value.apply(self, [e]) })
-	        } else if (name && eventNames.indexOf(name) > -1) {
-	            $(names.join(' ')).bind(name, function(e) { e.controller = self; value.apply(self, [e]) })
-                }
-	    }
-        })
-    },
+		    if (name == 'ready') {
+			$(function() { value.apply(self, arguments) })
+		    } else if (name.indexOf('live:') == 0) {
+			var inner = name.split(':')
+			$(names.join(' ')).live(inner[1], function(e) { e.controller = self; value.apply(self, [e]) })
 
-    hash: function() { return location.hash.slice(1) }
-})
-
-
-//
-// This is the root Model object.  Model objects are
-// initialized automatically by their associated Controller.
-//
-// During initialization, Model objects make one or more network
-// reqeusts to load data.  After all requests are completed, the model
-// object calls the 'join' method of the associated view.
-//
-// At initialization, Model and its clones invoke a AuthProfileLoader
-// with its success and error callbacks set to the functions
-// 'authSuccess' and 'authError', respectively.
-//
-var Model = MVC.extend({
-    clones: [],
-    requests: [],
-    name: 'Model',
-
-    authSuccess: function(profile) {
-	this.profile = profile
-	this.view.authSuccess.apply(this.view, [profile])
-    },
-
-    authError: function(req, status, err) {
-        this.view.authError.apply(this.view, [req, status, err])
-    },
-
-    init: function(view, config) {
-	var self = this
-	self.view = view
-        view.init.apply(view, [self])
-
-	// request the authorized user profile
-        self.requests.push(function() {
-            var success = function(p) { self.authSuccess.apply(self, [p]) }
-            var error = function(r, s, e) { self.authError.apply(self, [r,s,e]) }
-            var s = (config && config.auth && config.auth.settings ? 'settings=1' : '')
-            s = s ? ('?' + s) : ''
-	    var c = (config && config.auth && config.auth.complete ? 'complete=1' : '')
-	    s = s + (c ? '&'+c : '')
-	    oo.data.auth({suffix: s, success: success, error: error})
-        })
-
-	// request the model data
-	if (self.loader) {
-	    self.requests.push(function() {
-		var success = function(v) { self.ready.apply(self, [v]) }
-		new self.loader({success: success, suffix: self.loaderSuffix || ''})
+			// bug:  IE claims eventNames doesn't have an 'indexOf' method.  le sigh.
+	            } else if (name && eventNames.indexOf(name) > -1) {
+			$(names.join(' ')).bind(name, function(e) { e.controller = self; value.apply(self, [e]) })
+                    }
+		}
             })
-	}
-	if (self.loaderNg) {
-	    self.requests.push(function() {
-		var success = function(v) { self.ready.apply(self, [v]) }
-		self.loaderNg({success: success, suffix: self.loaderSuffix || ''})
-            })
-	}
-        var binder = $('<foo />')
-	binder.bind('ajaxStop.{0}'.fs(self.name), function() {
-            view.join.apply(view, [self])
-            binder.unbind('ajaxStop.{0}'.fs(self.name))
-        })
-        $.each(self.requests, function(i, r) {  r.apply(self)  })
-    },
-
-    // default implementation that sets the results as an attribute on
-    // the model
-    ready: function(results) {
-	this.results = results
-    },
-
-    // convenience function for cloning the Model object with
-    // parameters for a new loader
-    make: function(mc, lc) {
-	if (lc) { mc.loader = oo.data.loader(lc) }
-	return Model.extend(mc)
-    }
-})
-
-
-//
-// This is a model object that is pre-configured for using the TF2
-// item schema as its data.  When initialized, this object (and any of
-// its clones) fetches the item schema and creates an instance of
-// SchemaTool, setting that instance as the 'tool' attribute.
-//
-var SchemaModel = Model.extend({
-    loaderNg: oo.data.schema,
-
-    ready: function(results) {
-        this.results = results
-        this.tool = oo.schema.tool(results)
-    },
-})
-
-
-//
-// This is the root View object.
-//
-// The View object and its clones provide several interesting behaviors:
-//
-//
-// 3. the 'proto' method creates DOM element clones based on the
-// 'cloneClass' attribute.
-//
-// 4. if the 'model' attribute is supplied, it will be initalized
-// after the view is initalized.
-//
-var View = MVC.extend({
-    clones: [],
-    authError: function() {},
-    authSuccess: function() {},
-    init: function(model) { this.model = model },
-    join: function(model) {},
-
-    proto: function() {
-	var cc = this.cloneClass
-	return $('.' + cc).clone().removeClass('prototype null ' + cc)
-    },
-
-    message: function(v) {
-	if (v) {
-	    return $('#content-site-message').removeClass('null').fadeIn().text(v)
-	} else {
-	    return $('#content-site-message')
-	}
-    },
-
-    showTermsDialog: function(e) {
-	var okay = function(text) {
-	    $('#content-terms-dialog').html(text).dialog({
-		dialogClass: 'terms-dialog',
-		modal: true,
-		resizable: false,
-		show: 'fade',
-		height: 400,
-		title: 'TF2Auctions.com Rules,Terms and Conditions, and Privacy Policy',
-		width: $(window).width() * 0.9, position: 'top' });
 	},
-	error = function(request, status, error) {}
-	$.ajax({url: '/terms-dialog',
-		cache: true,
-		success: okay,
-		error: error
-	       })
-	return false
-    },
 
-    hiliteSpan: function(after) {
-	return '<span class="hilite">&nbsp;</span><span>{0}</span>'.fs(after)
-    },
+	hash: function() { return location.hash.slice(1) }
+    })
 
-    docTitle: function(v) {
-	if (v) {
-	    document.title = document.title + ' - ' + v
-	} else {
-	    return document.title
+
+    //
+    // This is the root Model object.  Model objects are
+    // initialized automatically by their associated Controller.
+    //
+    // During initialization, Model objects make one or more network
+    // reqeusts to load data.  After all requests are completed, the model
+    // object calls the 'join' method of the associated view.
+    //
+    // At initialization, Model and its clones invoke a AuthProfileLoader
+    // with its success and error callbacks set to the functions
+    // 'authSuccess' and 'authError', respectively.
+    //
+    ns.model = ns.mvc.extend({
+	clones: [],
+	requests: [],
+	name: 'Model',
+
+	authSuccess: function(profile) {
+	    this.profile = profile
+	    this.view.authSuccess.apply(this.view, [profile])
+	},
+
+	authError: function(req, status, err) {
+            this.view.authError.apply(this.view, [req, status, err])
+	},
+
+	init: function(view, config) {
+	    var self = this
+	    self.view = view
+            view.init.apply(view, [self])
+
+	    // request the authorized user profile
+            self.requests.push(function() {
+		var success = function(p) { self.authSuccess.apply(self, [p]) }
+		var error = function(r, s, e) { self.authError.apply(self, [r,s,e]) }
+		var s = (config && config.auth && config.auth.settings ? 'settings=1' : '')
+		s = s ? ('?' + s) : ''
+		var c = (config && config.auth && config.auth.complete ? 'complete=1' : '')
+		s = s + (c ? '&'+c : '')
+		oo.data.auth({suffix: s, success: success, error: error})
+            })
+
+	    // request the model data
+	    if (self.loader) {
+		self.requests.push(function() {
+		    var success = function(v) { self.ready.apply(self, [v]) }
+		    new self.loader({success: success, suffix: self.loaderSuffix || ''})
+		})
+	    }
+	    if (self.loaderNg) {
+		self.requests.push(function() {
+		    var success = function(v) { self.ready.apply(self, [v]) }
+		    self.loaderNg({success: success, suffix: self.loaderSuffix || ''})
+		})
+	    }
+            var binder = $('<foo />')
+	    binder.bind('ajaxStop.{0}'.fs(self.name), function() {
+		view.join.apply(view, [self])
+		binder.unbind('ajaxStop.{0}'.fs(self.name))
+            })
+            $.each(self.requests, function(i, r) {  r.apply(self)  })
+		},
+
+	// default implementation that sets the results as an attribute on
+	// the model
+	ready: function(results) {
+	    this.results = results
+	},
+
+	// convenience function for cloning the Model object with
+	// parameters for a new loader
+	make: function(mc, lc) {
+	    if (lc) { mc.loader = oo.data.loader(lc) }
+	    return oo.model.extend(mc)
 	}
-    },
+    })
 
-    formatRating: function(v) {
-        return '{0}{1}'.fs(v > 0 ? '+' : '', v)
-    },
 
-    setRating: function(e, v) {
-	e.text(View.formatRating(v)).removeClass('rate-pos rate-neg rate-zero')
-	//'{0}{1}'.fs(v>0 ? '+' : '', v)).
-	e.addClass(v > 0 ? 'rate-pos' : (v<0 ? 'rate-neg' : 'rate-zero'))
-    },
+    //
+    // This is a model object that is pre-configured for using the TF2
+    // item schema as its data.  When initialized, this object (and any of
+    // its clones) fetches the item schema and creates an instance of
+    // SchemaTool, setting that instance as the 'tool' attribute.
+    //
+    ns.model.schema = ns.model.extend({
+	loaderNg: oo.data.schema,
 
-    updateTimeLeft: function (expires, onChange, onExpires) {
-	expires = new Date(expires)
-	return function() {
-	    var now = new Date(), delta = expires.getTime() - now.getTime()
-	    if (delta < 0) {
-		onExpires()
+	ready: function(results) {
+            this.results = results
+            this.tool = oo.schema.tool(results)
+	},
+    })
+
+
+    //
+    // This is the root View object.
+    //
+    // The View object and its clones provide several interesting behaviors:
+    //
+    //
+    // 3. the 'proto' method creates DOM element clones based on the
+    // 'cloneClass' attribute.
+    //
+    // 4. if the 'model' attribute is supplied, it will be initalized
+    // after the view is initalized.
+    //
+    ns.view = ns.mvc.extend({
+	clones: [],
+	authError: function() {},
+	authSuccess: function() {},
+	init: function(model) { this.model = model },
+	join: function(model) {},
+
+	proto: function() {
+	    var cc = this.cloneClass
+	    return $('.' + cc).clone().removeClass('prototype null ' + cc)
+	},
+
+	message: function(v) {
+	    if (v) {
+		return $('#content-site-message').removeClass('null').fadeIn().text(v)
 	    } else {
-		var days=0, hours=0, mins=0, secs=0, text=''
-		delta = Math.floor(delta/1000)
-		days = Math.floor(delta/86400)
-		delta = delta % 86400
-		hours = Math.floor(delta/3600)
-		delta = delta % 3600
-		mins = Math.floor(delta/60)
-		delta = delta % 60
-		secs = Math.floor(delta)
-		if (days != 0) { text += days +'d ' }
-		if (days != 0 || hours != 0) { text += hours + 'h ' }
-		if (days != 0 || hours != 0 || mins != 0) { text += mins +'m ' }
-		text += secs +'s'
-		onChange(text)
+		return $('#content-site-message')
+	    }
+	},
+
+	showTermsDialog: function(e) {
+	    var okay = function(text) {
+		$('#content-terms-dialog').html(text).dialog({
+		    dialogClass: 'terms-dialog',
+		    modal: true,
+		    resizable: false,
+		    show: 'fade',
+		    height: 400,
+		    title: 'TF2Auctions.com Rules,Terms and Conditions, and Privacy Policy',
+		    width: $(window).width() * 0.9, position: 'top' });
+	    },
+	    error = function(request, status, error) {}
+	    $.ajax({url: '/terms-dialog',
+		    cache: true,
+		    success: okay,
+		    error: error
+		   })
+	    return false
+	},
+
+	hiliteSpan: function(after) {
+	    return '<span class="hilite">&nbsp;</span><span>{0}</span>'.fs(after)
+	},
+
+	docTitle: function(v) {
+	    if (v) {
+		document.title = document.title + ' - ' + v
+	    } else {
+		return document.title
+	    }
+	},
+
+	formatRating: function(v) {
+            return '{0}{1}'.fs(v > 0 ? '+' : '', v)
+	},
+
+	setRating: function(e, v) {
+	    e.text(oo.view.formatRating(v)).removeClass('rate-pos rate-neg rate-zero')
+	    //'{0}{1}'.fs(v>0 ? '+' : '', v)).
+	    e.addClass(v > 0 ? 'rate-pos' : (v<0 ? 'rate-neg' : 'rate-zero'))
+	},
+
+	updateTimeLeft: function (expires, onChange, onExpires) {
+	    expires = new Date(expires)
+	    return function() {
+		var now = new Date(), delta = expires.getTime() - now.getTime()
+		if (delta < 0) {
+		    onExpires()
+		} else {
+		    var days=0, hours=0, mins=0, secs=0, text=''
+		    delta = Math.floor(delta/1000)
+		    days = Math.floor(delta/86400)
+		    delta = delta % 86400
+		    hours = Math.floor(delta/3600)
+		    delta = delta % 3600
+		    mins = Math.floor(delta/60)
+		    delta = delta % 60
+		    secs = Math.floor(delta)
+		    if (days != 0) { text += days +'d ' }
+		    if (days != 0 || hours != 0) { text += hours + 'h ' }
+		    if (days != 0 || hours != 0 || mins != 0) { text += mins +'m ' }
+		    text += secs +'s'
+		    onChange(text)
+		}
 	    }
 	}
-    }
+    })
 
+    ns.view.schema = ns.view.extend({
+	putImages: function(p) {
+	    this.model.tool.putImages(p)
+	},
 
-})
-
-
-var SchemaView = View.extend({
-    putImages: function(p) {
-	this.model.tool.putImages(p)
-    },
-
-    putItems: function(target, items, cols) {
-	var col = 0,
+	putItems: function(target, items, cols) {
+	    var col = 0,
 	    cols = cols || 10,
 	    makeCell = function(v) {
                 return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v)
             }
-	$.each(items, function(idx, item) {
-	    if (!(col % cols)) { target.append('<tr></tr>') }
-	    col += 1
-            if (typeof(item)=='number') {
-		item = {defindex:item, quality:6}
-	    } else if (typeof(item.quality)=='undefined'){
-		item = {defindex:item.defindex, quality:6}
-	    }
-	    var cell = makeCell($.toJSON(item))
-            if (item.data) { $('div', cell).data('node', item) }
-	    $('tr:last', target).append(cell)
-	})
-        if (col % cols) {
-	    var pad = new Array( 1 + (cols - col % cols)   ).join('<td><div></div></td>')
-	    $('tr:last', target).append(pad)
+	    $.each(items, function(idx, item) {
+		if (!(col % cols)) { target.append('<tr></tr>') }
+		col += 1
+		if (typeof(item)=='number') {
+		    item = {defindex:item, quality:6}
+		} else if (typeof(item.quality)=='undefined'){
+		    item = {defindex:item.defindex, quality:6}
+		}
+		var cell = makeCell($.toJSON(item))
+		if (item.data) { $('div', cell).data('node', item) }
+		$('tr:last', target).append(cell)
+	    })
+		if (col % cols) {
+		    var pad = new Array( 1 + (cols - col % cols)   ).join('<td><div></div></td>')
+		    $('tr:last', target).append(pad)
+		}
+	    $('td div:empty', target).parent().remove()
+	},
+
+	joinListings: function(options) {
+	    oo.util.listing.putMany(options)
 	}
-	$('td div:empty', target).parent().remove()
-    },
+    })
 
-    joinListings: function(options) {
-	oo.util.listing.putMany(options)
-    }
-})
-
-
-var SearchBaseView = SchemaView.extend({
-    initFeatured: function(featured) {
-	var target = $('#featured-listings'),
+    ns.view.searchbase = ns.view.schema.extend({
+	initFeatured: function(featured) {
+	    var target = $('#featured-listings'),
 	    self = this
-	$.each(featured, function(index, fitem) {
-            var proto = $('#featured-listings div.prototype').clone()
-		.addClass('listing-seed')
-	        .removeClass('prototype')
-	    self.putListing(fitem, proto, target)
-	})
-	if (featured.length) {
-	    $('#featured-listings div.listing-seed.null:first').removeClass('null')
-	    if (featured.length > 1) {
-		$('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
-		$('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
-	    }
-	    $('#featured-listings-pod').slideDown()
-	}
-    },
+	    $.each(featured, function(index, fitem) {
+		var proto = $('#featured-listings div.prototype').clone()
+		    .addClass('listing-seed')
+	            .removeClass('prototype')
+		self.putListing(fitem, proto, target)
+	    })
+		if (featured.length) {
+		    $('#featured-listings div.listing-seed.null:first').removeClass('null')
+		    if (featured.length > 1) {
+			$('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
+			$('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
+		    }
+		    $('#featured-listings-pod').slideDown()
+		}
+	},
 
-    navFeatured: function(offset) {
-	var prefix = '#featured-listings div.listing-seed'
+	navFeatured: function(offset) {
+	    var prefix = '#featured-listings div.listing-seed'
 	    current = $('{0}.listing-seed:visible'.fs(prefix)),
 	    others = $('{0}.listing-seed:hidden'.fs(prefix)),
 	    all = $('{0}.listing-seed'.fs(prefix)),
 	    index = all.index(current),
             count = all.length
-	if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
-	    current.fadeOut(function () { $(all[index+offset]).fadeIn() })
-	    var nonPrev = $('{0} div.navs span.nonav.prev'.fs(prefix)),
+	    if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
+		current.fadeOut(function () { $(all[index+offset]).fadeIn() })
+		var nonPrev = $('{0} div.navs span.nonav.prev'.fs(prefix)),
                 navPrev = $('{0} div.navs span.nav.prev'.fs(prefix)),
                 nonNext = $('{0} div.navs span.nonav.next'.fs(prefix)),
                 navNext = $('{0} div.navs span.nav.next'.fs(prefix))
-	    if (index+offset == 0) {
-		nonPrev.show()
-		navPrev.hide()
-	    } else {
-		nonPrev.hide()
-		navPrev.show()
-	    }
-	    if (index+offset == count-1) {
-		nonNext.show()
-		navNext.hide()
-	    } else {
-		nonNext.hide()
-		navNext.show()
+		if (index+offset == 0) {
+		    nonPrev.show()
+		    navPrev.hide()
+		} else {
+		    nonPrev.hide()
+		    navPrev.show()
+		}
+		if (index+offset == count-1) {
+		    nonNext.show()
+		    navNext.hide()
+		} else {
+		    nonNext.hide()
+		    navNext.show()
+		}
 	    }
 	}
-    }
-});
+    })
+})(oo);
 
 
 //
@@ -1747,7 +1742,7 @@ $(document)
 	Object.prototype.keys.exec = Object.prototype.values.exec = function() {}
 
 	// initialize each direct clone of the Controller object:
-	$.each(Controller.clones, function(i, c) { c.init.apply(c) })
+	$.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
     })
 
 

@@ -3,7 +3,7 @@
 
 oo.config('#listing-detail-')
 
-var NewBidModel = Model.extend({
+var NewBidModel = oo.model.extend({
     loaderNg: oo.data.backpack,
 
     init: function(view, config) {
@@ -25,7 +25,7 @@ var NewBidModel = Model.extend({
 		})
             }
 	)
-        Model.init.apply(self, [view, config])
+        oo.model.init.apply(self, [view, config])
     },
 
     ready: function(backpack) {
@@ -86,7 +86,7 @@ var makeChTool = function(afterDropMove) {
 }
 
 
-var NewBidView = View.extend({
+var NewBidView = oo.view.extend({
     join: function(model) {
 	var self = this
 	self.putBackpack()
@@ -204,10 +204,10 @@ var NewBidView = View.extend({
 })
 
 
-var BidderFeedbackModel = Model.extend({
+var BidderFeedbackModel = oo.model.extend({
     init: function(view, config) {
 	var self = this
-	Model.init.apply(this, arguments)
+	oo.model.init.apply(this, arguments)
     },
 
     saveFeedback: function(data, success, error) {
@@ -223,9 +223,9 @@ var BidderFeedbackModel = Model.extend({
 })
 
 
-var BidderFeedbackView = View.extend({
+var BidderFeedbackView = oo.view.extend({
     init: function(model) {
-	View.init.apply(this, arguments)
+	oo.view.init.apply(this, arguments)
 	this.slider = $('#bidder-feedback-rating-slider').slider({
 	        animate: true,
 	        max: 100,
@@ -240,7 +240,7 @@ var BidderFeedbackView = View.extend({
 
     sliderChange: function(event, ui) {
 	var v = ui.value, e = $('#bidder-feedback-rating-value')
-	View.setRating(e, v)
+	oo.view.setRating(e, v)
     },
 
     hideFeedback: function(feedback, prefix) {
@@ -408,7 +408,7 @@ var NewBidController = {
 }
 
 
-var DetailView = SchemaView.extend({
+var DetailView = oo.view.schema.extend({
     join: function(model) {
 	var self = this,
 	    listing = self.listing = model.listing,
@@ -574,7 +574,7 @@ var DetailView = SchemaView.extend({
 
 		if (!this.bidFeedbackController) {
 		    var bfcondef = $.extend({}, BidderFeedbackController)
-		    this.bidFeedbackController = Controller.extend(bfcondef)
+		    this.bidFeedbackController = oo.controller.extend(bfcondef)
 		    this.bidFeedbackController.init()
 		} else {
 //		    this.bidFeedbackController.reinit()
@@ -659,7 +659,7 @@ var DetailView = SchemaView.extend({
 	    this.message('Loading your backpack...')
 	    var listing = this.listing, profile = this.profile,
                 condef = $.extend({config: {listing: listing, profile:profile}}, NewBidController)
-            this.bidController = Controller.extend(condef)
+            this.bidController = oo.controller.extend(condef)
             this.bidController.init()
          } else {
 	     this.bidController.reinit()
@@ -681,7 +681,7 @@ var DetailView = SchemaView.extend({
 })
 
 
-var DetailModel = SchemaModel.extend({
+var DetailModel = oo.model.schema.extend({
     init: function(view, config) {
 	var self = this
 	self.requests.push(function() {
@@ -690,7 +690,7 @@ var DetailModel = SchemaModel.extend({
                 success: function(listing) { self.listing = listing }
             })
         })
-        SchemaModel.init.apply(self, arguments)
+        oo.model.schema.init.apply(self, arguments)
     },
 
     cancelBid: function(bid, success, error) {
@@ -742,7 +742,7 @@ var pageListing = function() {
 }
 
 
-var DetailController = Controller.extend({
+var DetailController = oo.controller.extend({
     config: {auth: {settings: true}},
     model: DetailModel,
     view: DetailView,

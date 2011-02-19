@@ -29,7 +29,7 @@ var initBackpack = function(schema, bpSlug, chSlug, afterDrop) {
 //
 // Model for searches.
 //
-var SearchModel = SchemaModel.extend({
+var SearchModel = oo.model.schema.extend({
     makeStack: function() {
 	var stack = [],
 	    self = this,
@@ -81,7 +81,7 @@ var SearchModel = SchemaModel.extend({
 		self.view.joinSearch(rs, q, true)
 	    }
         })
-	SchemaModel.init.apply(this, arguments)
+	oo.model.schema.init.apply(this, arguments)
     },
 
     hash: function() { return location.hash.slice(1) },
@@ -91,12 +91,12 @@ var SearchModel = SchemaModel.extend({
 //
 // View for searches.
 //
-var SearchView = SearchBaseView.extend({
+var SearchView = oo.view.searchbase.extend({
     contentWidths: {controls:null, results:null},
 
     init: function(model, config) {
         $('#content-site-categories').hide()
-	SchemaView.init(model, config)
+	oo.view.schema.init(model, config)
     },
 
     configNext: function(results) {
@@ -245,6 +245,8 @@ var SearchView = SearchBaseView.extend({
 	$('.listing-avatar', clone).parent()
 	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
 	oo.data.status({
+	    debug: true,
+	    cacheKey: listing.owner.id64,
 	    suffix: listing.owner.id64,
 	    success: function(status) {
 	        $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
@@ -393,7 +395,7 @@ var SearchView = SearchBaseView.extend({
 })
 
 
-var SearchController = Controller.extend({
+var SearchController = oo.controller.extend({
     config: {auth: {required: false, settings: true}},
     model: SearchModel,
     view: SearchView,

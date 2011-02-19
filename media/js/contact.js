@@ -1,4 +1,4 @@
-oo.config('#contact-')
+(function() {
 
 var submitFeedback = function() {
     var feedback = {
@@ -37,6 +37,9 @@ var userAuthError = function(request, status, error) {
 
 
 $(document).ready(function() {
+    oo.config('#contact-')
     oo('form-submit').click(submitFeedback)
     oo.data.auth({success: userAuthOkay, error: userAuthError})
 })
+
+})()

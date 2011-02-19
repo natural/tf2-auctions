@@ -1,3 +1,4 @@
+(function() {
 oo.config('#subscribe-')
 
 
@@ -25,3 +26,6 @@ $(function() {
 	suffix: '?settings=1&complete=1'
     })
 })
+
+
+})()

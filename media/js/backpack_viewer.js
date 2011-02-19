@@ -1,11 +1,12 @@
-var PlayerSearchLoader = oo.data.loader({
-    prefix: 'http://tf2apiproxy.appspot.com/api/v1/search/',
-    dataType: 'jsonp',
-    name: 'PlayerSearchLoader'
-})
+var playerSearch = function(o) {
+    return new oo.data.loader({
+	prefix: 'http://tf2apiproxy.appspot.com/api/v1/search/',
+	dataType: 'jsonp',
+    })(o)
+}
 
 
-var BackpackModel = SchemaModel.extend({
+var BackpackModel = oo.model.schema.extend({
     name: 'BackpackModel',
 
     findId: function(options) {
@@ -19,7 +20,7 @@ var BackpackModel = SchemaModel.extend({
     },
 
     findNames: function(options) {
-	new PlayerSearchLoader({
+	playerSearch({
 	    error: options.error,
 	    success: options.success,
             suffix: options.name
@@ -28,7 +29,7 @@ var BackpackModel = SchemaModel.extend({
 })
 
 
-var BackpackView = SchemaView.extend({
+var BackpackView = oo.view.schema.extend({
     showSelection: function(event) {
 	var self = this
 	try {
@@ -157,9 +158,10 @@ var BackpackView = SchemaView.extend({
 })
 
 
-var BackpackController = Controller.extend({
+var BackpackController = oo.controller.extend({
     model: BackpackModel,
     view: BackpackView,
+    config: {auth: {required: false, settings: true, complete: true}},
     defaultSearchText: 'Enter Steam ID, Player Name, or Steam Community URL',
 
     '#backpack-viewer-search click' : function(e) {
@@ -208,14 +210,12 @@ var BackpackController = Controller.extend({
 	if (m) {
 	    return m[0]
 	}
-
 	// http://steamcommunity.com/id/propeller_headz
 	// http://steamcommunity.com/id/propeller_headz/home
 	var m = v.match(/steamcommunity.com\/id\/(.+)/)
 	if (m) {
 	    return m[1].split('/')[0]
 	}
-
         // steam://friends/add/76561198031408075
 	var m = v.match(/steam:\/\/friends\/add\/(\d{17})/)
 	if (m) {
@@ -223,7 +223,6 @@ var BackpackController = Controller.extend({
 	}
 	return v
     }
-
 })
 
 

@@ -9,23 +9,12 @@
 
 // fix up listings
 // fix up bids
-// fix settings (checkboxes have break after)
 
 // done:  backpack
 // done:  settings
 
 
 oo.config('#profile-')
-
-
-// this needed?
-var makeStatusLoader = function(id) {
-    return oo.data.loader({
-        prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
-	dataType: 'jsonp',
-	name: 'StatusLoader' + id
-    })
-}
 
 
 var NotifyListingTool = function(model) {
@@ -56,7 +45,7 @@ var NotifyListingTool = function(model) {
 //
 // messages model and view for the details tab
 //
-var MessagesModel = Model.extend({
+var MessagesModel = oo.model.extend({
     loader: oo.data.loader({
 	prefix: '/api/v1/auth/list-messages',
 	name: 'MessagesLoader'
@@ -68,7 +57,7 @@ var MessagesModel = Model.extend({
 })
 
 
-var MessagesView = View.extend({
+var MessagesView = oo.view.extend({
     join: function(model) {
 	var msgs = model.results,
 	    msgCount = msgs.messages.length,
@@ -87,8 +76,7 @@ var MessagesView = View.extend({
 	$.each(msgs.messages, function(idx, msg) {
 	    var clone = oo('view-msg-pod div.prototype').clone()
 	    $('.profile-msg-text-seed', clone).text(msg.message)
-	    var loader = makeStatusLoader(msg.source)
-	    new loader({
+	    oo.data.status({
 		suffix: msg.source,
 		success: function(status) {
 		    var link = '<a href="/profile/{0}">{1}</a>'
@@ -139,7 +127,7 @@ var FeedbackLoader = oo.data.loader({
     name: 'FeedbackLoader'
 })
 
-var FeedbackModel = Model.extend({
+var FeedbackModel = oo.model.extend({
     init: function(view, config) {
 	var self = this
 	self.requests.push(function() {
@@ -148,12 +136,12 @@ var FeedbackModel = Model.extend({
 		success: function(feedback) { self.feedback = feedback }
 	    })
 	})
-	Model.init.apply(self, arguments)
+	oo.model.init.apply(self, arguments)
     }
 })
 
 
-var FeedbackView = View.extend({
+var FeedbackView = oo.view.extend({
     authSuccess: function(profile) {
 	if (MainModel.isOwner(profile)) {
 	    this.showReadOnly('My Feedback')
@@ -189,10 +177,9 @@ var FeedbackView = View.extend({
 	var proto = $('.profile-feedback-seed')
 	$.each(fbs, function(idx, fb) {
 	    var clone = proto.clone().removeClass('null')
-	    View.setRating($('.fb-rating', clone), fb.rating)
+	    oo.view.setRating($('.fb-rating', clone), fb.rating)
 	    $('.fb-message', clone).text(fb.comment)
-	    var loader = makeStatusLoader(fb.source)
-	    new loader({
+	    oo.data.status({
 		suffix: fb.source,
 		success: function(status) {
 		    console.log('status of feedback source:', status)
@@ -214,7 +201,7 @@ var FeedbackView = View.extend({
 //
 // listings model and view for listings tab.
 //
-var ListingsModel = SchemaModel.extend({
+var ListingsModel = oo.model.schema.extend({
     init: function(view, config) {
 	var self = this
 	self.requests.push(function() {
@@ -223,12 +210,12 @@ var ListingsModel = SchemaModel.extend({
 		success: function(listings) { self.listings = listings }
 	    })
 	})
-	SchemaModel.init.apply(self, arguments)
+	oo.model.schema.init.apply(self, arguments)
     }
 })
 
 
-var ListingsView = SchemaView.extend({
+var ListingsView = oo.view.schema.extend({
     title: 'Recent Listings',
 
     authSuccess: function(profile) {
@@ -287,7 +274,7 @@ var ListingsView = SchemaView.extend({
 //
 // bids model and view for the bids tab
 //
-var BidsModel = SchemaModel.extend({
+var BidsModel = oo.model.schema.extend({
     init: function(view, config) {
 	console.log('BidsModel.init()', view, config)
 	var self = this
@@ -299,12 +286,12 @@ var BidsModel = SchemaModel.extend({
 	        })
 	    }
         )
-	SchemaModel.init.apply(self, arguments)
+	oo.model.schema.init.apply(self, arguments)
     }
 })
 
 
-var BidsView = SchemaView.extend({
+var BidsView = oo.view.schema.extend({
     title: 'Recent Bids',
 
     authSuccess: function(profile) {
@@ -339,7 +326,7 @@ var BidsView = SchemaView.extend({
     putOne: function(bid, clone) {
 	clone.removeClass('null prototype')
 	var target = $('.items-view table.chooser', clone)
-	SchemaView.putItems(target, bid.items)
+	oo.view.schema.putItems(target, bid.items)
 	$('.profile-bid-view-link a', clone).attr('href', '/listing/'+ bid.listing.id)
 	if (bid.message_public) {
 	    $('.bid-message', clone).text(bid.message_public)
@@ -359,7 +346,7 @@ var BidsView = SchemaView.extend({
 //
 // backpack model and view for backpack tab
 //
-var BackpackModel = SchemaModel.extend({
+var BackpackModel = oo.model.schema.extend({
     init: function(view, config) {
 	var id64 = MainModel.id64(),
             self = this,
@@ -386,12 +373,12 @@ var BackpackModel = SchemaModel.extend({
 		})
 	    }
 	)
-	SchemaModel.init.apply(self, arguments)
+	oo.model.schema.init.apply(self, arguments)
     }
 })
 
 
-var BackpackView = SchemaView.extend({
+var BackpackView = oo.view.schema.extend({
     title: 'Backpack',
 
     authSuccess: function(profile) {
@@ -426,7 +413,7 @@ var BackpackView = SchemaView.extend({
 // settings controller definition, model and view for the settings tab
 //
 
-var SettingsModel = SchemaModel.extend({
+var SettingsModel = oo.model.schema.extend({
     authSuccess: function(profile) {
 	this.profile = profile
     },
@@ -445,7 +432,7 @@ var SettingsModel = SchemaModel.extend({
 })
 
 
-var SettingsView = View.extend({
+var SettingsView = oo.view.extend({
     join: function(model) {
 	var profile = model.profile, settings = profile.settings
 
@@ -530,7 +517,7 @@ var SettingsControllerDefn = {
 
     init: function() {
         this.validateNotifyBids()
-	Controller.init.apply(this)
+	oo.controller.init.apply(this)
     },
 
     validateNotifyBids: function() {
@@ -594,7 +581,7 @@ var SettingsControllerDefn = {
 //
 // main model, view and controller
 //
-var MainModel = Model.extend({
+var MainModel = oo.model.extend({
 /*
     NB:  the MainModel has two profile attributes:
 
@@ -611,11 +598,11 @@ var MainModel = Model.extend({
 
     init: function(view, config) {
 	var self = this
-	Model.init.apply(self, [view, config])
+	oo.model.init.apply(self, [view, config])
     },
 
     ready: function(profile) {
-	Model.ready.apply(this, arguments)
+	oo.model.ready.apply(this, arguments)
 	MainController.modelProfileReady(this)
     },
 
@@ -659,7 +646,7 @@ var MainModel = Model.extend({
 })
 
 
-var MainView = View.extend({
+var MainView = oo.view.extend({
     join: function(model) {
 
 	// auth and owner
@@ -738,7 +725,7 @@ var MainView = View.extend({
 })
 
 
-var MainController = Controller.extend({
+var MainController = oo.controller.extend({
     config: {auth: {required: false, settings: true, complete: true}},
     model: MainModel,
     subs: {},
@@ -771,7 +758,7 @@ var MainController = Controller.extend({
 	} else {
 	    this.view.message('Loading {0}...'.fs(name))
 	    defn.config = this.config
-	    var sub = this.subs[name] = Controller.extend(defn)
+	    var sub = this.subs[name] = oo.controller.extend(defn)
 	    // if jQuery.active
 	    sub.init()
 	    console.log('sub init:', name, sub)

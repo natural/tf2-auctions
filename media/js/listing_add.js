@@ -285,7 +285,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
 	.live('dblclick', addTool.chooser.moveToChooser)
     $('#bp-chooser-listing-add-item td div img')
 	.live('dblclick', addTool.chooser.moveToOriginal)
-    View.message().fadeAway()
+    oo.view.message().fadeAway()
     // lame, quick hack until this module gets a rewrite for the MVC
     // framework:
     window.setTimeout(addTool.show, 1000)
@@ -293,7 +293,7 @@ var backpackReady = function(backpack, listings, bids, profile) {
 
 
 var listingsReady = function(listings, bids, profile) {
-    View.message('Loading your backpack...')
+    oo.view.message('Loading your backpack...')
     oo.data.backpack({
         suffix: profile.id64,
 	success: function (backpack) {
@@ -304,7 +304,7 @@ var listingsReady = function(listings, bids, profile) {
 
 
 var profileReady = function(profile) {
-    View.message('Profile loaded.')
+    oo.view.message('Profile loaded.')
     var listingsLoaded = function(listings) {
 	oo.data.bids({
 	    suffix: profile.steamid,
@@ -318,7 +318,7 @@ var profileReady = function(profile) {
 
 
 var schemaReady = function(schema) {
-    View.message('Loading your profile...')
+    oo.view.message('Loading your profile...')
     oo.data.auth({
 	suffix: '?settings=1&complete=1',
 	success: profileReady
@@ -335,8 +335,8 @@ $(document).ready(function() {
 	    oo('min-bid-wrapper-pod').slideDown()
 	}
     })
-    View.message('Loading item schema...')
+    oo.view.message('Loading item schema...')
     oo.data.schema({success: schemaReady})
     oo('min-bid-show a').click(showMinBid)
-    oo('show-terms').click(View.showTermsDialog)
+    oo('show-terms').click(oo.view.showTermsDialog)
 })
