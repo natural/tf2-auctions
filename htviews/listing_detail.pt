@@ -70,6 +70,7 @@
 			<div class="mt05" id="${slug}-owner-status"></div>
                     </div>
 
+		    <!-- make macro and reuse in profile.pt -->
 		    <label>Rating:</label>
 		    <div class="center text-center">
 			<table class="w100" id="${slug}-owner-rating">

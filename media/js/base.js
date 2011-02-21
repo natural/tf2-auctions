@@ -1399,7 +1399,6 @@ var oo = (function() {
 	hash: function() { return location.hash.slice(1) }
     })
 
-
     //
     // This is the root Model object.  Model objects are
     // initialized automatically by their associated Controller.

@@ -147,3 +147,18 @@ margin-bottom:0.25em;
 #profile-settings-pod {
 width:50%;
 }
+
+
+
+#profile-neg-bar {
+background-color:#9d302f;
+}
+
+#profile-pos-bar {
+background-color:#385c78;
+}
+
+
+#profile-rating td {
+padding:0.25em;
+}
