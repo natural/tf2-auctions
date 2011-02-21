@@ -1078,7 +1078,7 @@ var oo = (function() {
 		if (options.withStatus) { self.putStatus(listing, clone) }
 		options.target.append(clone)
 	    })
-		},
+	},
 
 	putStatus: function(listing, target) {
 	    oo.data.status({
@@ -1108,24 +1108,24 @@ var oo = (function() {
 		$( $('.item-view div', target)[next]).append( $.toJSON(item) )
 		next += 1
 	    })
-		if (listing.min_bid_currency_use) {
-		    $(prefix+'-listing-view-min-bid-currency-use', target).removeClass('null')
-		    $(prefix+'-listing-view-min-bid-currency-use .currency', target)
-			.text('${0}'.fs(listing.min_bid_currency_amount))
+	    if (listing.min_bid_currency_use) {
+		$(prefix+'-listing-view-min-bid-currency-use', target).removeClass('null')
+		$(prefix+'-listing-view-min-bid-currency-use .currency', target)
+		    .text('${0}'.fs(listing.min_bid_currency_amount))
+		$(prefix+'-listing-view-min-bid', target).removeClass('null')
+	    } else {
+		if (listing.min_bid.length) {
+		    var next = 0
+		    $.each(listing.min_bid, function(index, defindex) {
+			$($(prefix+'-listing-view-min-bid .item-view div', target)[next])
+			    .append($.toJSON({defindex:defindex, quality:6}))
+			next += 1
+		    })
 		    $(prefix+'-listing-view-min-bid', target).removeClass('null')
 		} else {
-		    if (listing.min_bid.length) {
-			var next = 0
-			$.each(listing.min_bid, function(index, defindex) {
-			    $($(prefix+'-listing-view-min-bid .item-view div', target)[next])
-				.append($.toJSON({defindex:defindex, quality:6}))
-			    next += 1
-			})
-			    $(prefix+'-listing-view-min-bid', target).removeClass('null')
-		    } else {
-			$(prefix+'-listing-view-min-bid', target).hide()
-		    }
+		    $(prefix+'-listing-view-min-bid', target).hide()
 		}
+	    }
 	    $('.listing-view-link a', target).attr('href', '/listing/'+listing.id)
 	    $('.listing-view-link > span.expires', target)
 		.append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
@@ -1176,13 +1176,13 @@ var oo = (function() {
 	}
     })
 
-    ns.settings = function(settings) {
-	var valid = settings && oo.keys(settings).length
+    ns.settings = function(s) {
+	var valid = s && oo.keys(s).length
 	return {
-	    showEquipped: (valid ? settings['badge-equipped'] : true),
-	    showPainted: (valid ? settings['badge-painted'] : true),
-	    showUseCount: (valid ? settings['badge-usecount'] : true),
-	    showAngrySalad: (valid ? settings['angry-fruit-salad'] : false)
+	    showEquipped: (valid ? s['badge-equipped'] : true),
+	    showPainted: (valid ? s['badge-painted'] : true),
+	    showUseCount: (valid ? s['badge-usecount'] : true),
+	    showAngrySalad: (valid ? s['angry-fruit-salad'] : false)
 	}
     }
 
@@ -1224,10 +1224,10 @@ var oo = (function() {
 
 	return function(options) {
 	    var url = prefix + (options.suffix || ''),
-            key = (options.cacheKey || url),
-	    successCb = cache.successCb[key],
-	    errorCb = cache.errorCb[key],
-	    res = cache.results[key],
+                key = (options.cacheKey || url),
+	        successCb = cache.successCb[key],
+	        errorCb = cache.errorCb[key],
+	        res = cache.results[key],
 
 	    loadSuccess = function(data) {
 		cache.results[key] = {data:data}
@@ -1290,8 +1290,8 @@ var oo = (function() {
     var authLoader = loader({
 	prefix: '/api/v1/auth/profile',
 	name: 'AuthProfileLoader',
-	successEvent: 'authProfileLoaded',
-	errorEvent: 'authProfileError'
+	successEvent: 'authOkay',
+	errorEvent: 'authError'
     }),
     backpackLoader = loader({
 	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/items/',
@@ -1416,6 +1416,7 @@ var oo = (function() {
 	clones: [],
 	requests: [],
 	name: 'Model',
+	profile: null,
 
 	authSuccess: function(profile) {
 	    this.profile = profile
@@ -1433,26 +1434,19 @@ var oo = (function() {
 
 	    // request the authorized user profile
             self.requests.push(function() {
-		var success = function(p) { self.authSuccess.apply(self, [p]) }
-		var error = function(r, s, e) { self.authError.apply(self, [r,s,e]) }
-		var s = (config && config.auth && config.auth.settings ? 'settings=1' : '')
-		s = s ? ('?' + s) : ''
-		var c = (config && config.auth && config.auth.complete ? 'complete=1' : '')
-		s = s + (c ? '&'+c : '')
-		oo.data.auth({suffix: s, success: success, error: error})
+		var s = (config && config.auth && config.auth.settings ? 'settings=1' : ''),
+		    c = (config && config.auth && config.auth.complete ? 'complete=1' : '')
+		s = (s ? ('?' + s) : '')
+		oo.data.auth({
+		    suffix: s + (c ? '&'+c : ''),
+		    success: function(p) { self.authSuccess.apply(self, [p]) },
+		    error: function(r, s, e) { self.authError.apply(self, [r,s,e]) }
+		})
             })
-
-	    // request the model data
 	    if (self.loader) {
 		self.requests.push(function() {
 		    var success = function(v) { self.ready.apply(self, [v]) }
 		    new self.loader({success: success, suffix: self.loaderSuffix || ''})
-		})
-	    }
-	    if (self.loaderNg) {
-		self.requests.push(function() {
-		    var success = function(v) { self.ready.apply(self, [v]) }
-		    self.loaderNg({success: success, suffix: self.loaderSuffix || ''})
 		})
 	    }
             var binder = $('<foo />')
@@ -1461,7 +1455,7 @@ var oo = (function() {
 		binder.unbind('ajaxStop.{0}'.fs(self.name))
             })
             $.each(self.requests, function(i, r) {  r.apply(self)  })
-		},
+	},
 
 	// default implementation that sets the results as an attribute on
 	// the model
@@ -1485,7 +1479,7 @@ var oo = (function() {
     // SchemaTool, setting that instance as the 'tool' attribute.
     //
     ns.model.schema = ns.model.extend({
-	loaderNg: oo.data.schema,
+	loader: oo.data.schema,
 
 	ready: function(results) {
             this.results = results
@@ -1508,6 +1502,7 @@ var oo = (function() {
     //
     ns.view = ns.mvc.extend({
 	clones: [],
+	profile: null,
 	authError: function() {},
 	authSuccess: function() {},
 	init: function(model) { this.model = model },
@@ -1527,19 +1522,20 @@ var oo = (function() {
 	},
 
 	showTermsDialog: function(e) {
-	    $.ajax({url: '/terms-dialog',
-		    cache: true,
-		    success: function(text) {
-			$('#content-terms-dialog').html(text).dialog({
-			    dialogClass: 'terms-dialog',
-			    modal: true,
-			    resizable: false,
-			    show: 'fade',
-			    height: 400,
-			    title: 'TF2Auctions.com Rules,Terms and Conditions, and Privacy Policy',
-			    width: $(window).width() * 0.9, position: 'top' });
-		    }
-		   })
+	    $.ajax({
+		url: '/terms-dialog',
+		cache: true,
+		success: function(text) {
+		    $('#content-terms-dialog').html(text).dialog({
+			dialogClass: 'terms-dialog',
+			modal: true,
+			resizable: false,
+			show: 'fade',
+			height: 400,
+			title: 'TF2Auctions.com Rules,Terms and Conditions, and Privacy Policy',
+			width: $(window).width() * 0.9, position: 'top' });
+		}
+	    })
 	    return false
 	},
 
@@ -1627,7 +1623,12 @@ var oo = (function() {
     })
 
     ns.view.searchbase = ns.view.schema.extend({
-	initFeatured: function(featured) {
+	joinFeatured: function(results) {
+	    if (results.featured && results.featured.length) {
+		var featured = results.featured
+	    } else {
+		return
+	    }
 	    var target = $('#featured-listings'),
 	        self = this
 	    $.each(featured, function(index, fitem) {
@@ -1684,24 +1685,17 @@ var oo = (function() {
 //
 // document and library initialization
 //
-(function(jq) {
-    jq.fn.fadeAway = function() { this.each(function() { jq(this).fadeTo(750, 0) }); return this }
-    jq.fn.fadeBack = function() { this.each(function() { jq(this).fadeTo(750, 100) }); return this }
-    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
-})(jQuery);
-
-
 $(document)
     // if and when the profile is loaded for an authorized user, perform
     // the default actions for that kind of user.
-    .bind('authProfileLoaded', function(event, profile) {
+    .bind('authOkay', function(event, profile) {
         oo.util.profile.defaultUserAuthOkay(profile)
     })
 
     // if and when a profile cannot be loaded (because the user isn't
     // authorized, i.e., anon), perform the default actions for that kind
     // of user.
-    .bind('authProfileError', function(event, req, status, err) {
+    .bind('authError', function(event, req, status, err) {
         oo.util.profile.defaultUserAuthError(req, status, err)
     })
 
@@ -1719,8 +1713,11 @@ $(document)
     })
 
     .bind('ready', function() {
+	(function(jq) {
+	    jq.fn.fadeAway = function() { this.each(function() { jq(this).fadeTo(750, 0) }); return this }
+	    jq.fn.fadeBack = function() { this.each(function() { jq(this).fadeTo(750, 100) }); return this }
+	    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
+	})(jQuery);
 	// initialize each direct clone of the oo.controller object:
 	$.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
     })
-
-

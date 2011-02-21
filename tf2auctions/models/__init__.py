@@ -79,7 +79,7 @@ class Listing(db.Model):
 	    raise ValueError('Invalid number of days until expiration.')
 
 	## regulation 46a:
-	delta = timedelta(minutes=days) if features.devel else timedelta(days=days)
+	delta = timedelta(minutes=days*4) if features.devel else timedelta(days=days)
 	expires = datetime.now() + delta
 
 	## 3.  extract and create categories for the ListingItem
@@ -493,8 +493,8 @@ class Feedback(db.Model):
     """ Feedback -> a record of one users rating of another.
 
     """
-    bid = db.ReferenceProperty(Bid, indexed=True, required=True)
-    listing = db.ReferenceProperty(Listing, indexed=True, required=True)
+    bid = db.ReferenceProperty(Bid, indexed=True, required=False)
+    listing = db.ReferenceProperty(Listing, indexed=True, required=False)
     rating = db.IntegerProperty(required=True)
     comment = db.StringProperty(multiline=True)
 
@@ -526,11 +526,20 @@ class Feedback(db.Model):
 	return obj
 
     def encode_builtin(self):
+        bid = listing = None
+        try:
+            bid = str(self.bid.key())
+        except:
+            pass
+        try:
+            listing = str(self.listing.key())
+        except:
+            pass
 	return {
-	    'bid' : str(self.bid.key()),
+	    'bid' : bid,
 	    'comment' : self.comment,
 	    'created' : js_datetime(self.created),
-	    'listing' : str(self.listing.key()),
+	    'listing' : listing,
 	    'rating' : self.rating,
 	    'source' : self.source,
 	    'target' : self.target,

@@ -1,240 +1,139 @@
 //(function() {
 
-// fix up details
-//      anon: show feedback
-//      auth: show leave msg
-//      auth: show leave feedback
-//      owner: show msgs
-//      owner: remove msgs
-
-// fix up listings
-// fix up bids
-
-// done:  backpack
-// done:  settings
-
 
 oo.config('#profile-')
 
 
-var NotifyListingTool = function(model) {
-    this.schemaTool = oo.schema.tool()
-    var items = this.schemaTool.tradableBackpack(),
-        bpTool = oo.backpack.itemTool({
-	    items: items,
-	    slug: 'nl',
-	    navigator: true,
-	    toolTips: true,
-	    select: true,
-	    outlineHover: true,
-	    filters: true,
-	    cols: 5,
-	    rowGroups: oo.backpack.pageGroup.slim(Math.round(items.length*0.01) / 0.01),
-	}),
-        chTool = this.chooser = oo.backpack.chooserTool({
-	    backpackSlug: 'nl',
-	    chooserSlug: 'notify-listing',
-	    selectDeleteHover: true,
-	    copy: true,
-        })
-    bpTool.init()
-    chTool.init()
-}
-
-
-//
-// messages model and view for the details tab
-//
-var MessagesModel = oo.model.extend({
-    loader: oo.data.loader({
-	prefix: '/api/v1/auth/list-messages',
-	name: 'MessagesLoader'
-    }),
-
-    authSuccess: function(profile) {
-	this.profile = profile
-    }
-})
-
-
-var MessagesView = oo.view.extend({
-    join: function(model) {
-	var msgs = model.results,
-	    msgCount = msgs.messages.length,
-	    putCount = function(c) {
-		if (c) {
-		    oo('view-msg-count').text('({0})'.fs(c) )
-		} else {
-		    oo('msg-none').text('No messages.  Too bad.').fadeIn()
-		    oo('view-msg-count').text('')
-		}
-	    }
-	oo('view-msg-title').text('My Messages')
-	oo('view-msg-pod').slideDown()
-	putCount(msgCount)
-	if (!msgCount) { return }
-	$.each(msgs.messages, function(idx, msg) {
-	    var clone = oo('view-msg-pod div.prototype').clone()
-	    $('.profile-msg-text-seed', clone).text(msg.message)
-	    oo.data.status({
-		suffix: msg.source,
-		success: function(status) {
-		    var link = '<a href="/profile/{0}">{1}</a>'
-		    if (status.avatar_icon) {
-			var img = '<img src="{0}" class="msg-avatar" />'.fs(status.avatar_icon)
-			$('.profile-msg-sender-name', clone)
-			    .append(link.fs(msg.source, img))
-			$('.profile-msg-sender-name img', clone)
-			    .addClass('profile-status ' + status.online_state)
-		    }
-		    $('.profile-msg-sender-name', clone)
-			.append('{0} wrote:'.fs( link.fs(msg.source, status.name)) )
-		}
-	    })
-	    $('.profile-msg-created-seed', clone).text('Left: {0}'.fs(msg.created))
-	    clone.removeClass('null prototype')
-	    $('.profile-msg-remove', clone).click(function (e) {
-		var removeMessageOkay = function(results) {
-		    msgCount -= 1
-		    putCount(msgCount)
-		    model.profile.message_count -= 1
-		    oo.util.profile.put(MessagesView.model.profile, true) 
-		}
-		clone.slideUp(function() {
-		    $.ajax({
-			url: '/api/v1/auth/remove-message',
-			type: 'POST',
-			dataType:'json',
-			data: $.toJSON({key: msg.key}),
-			success: removeMessageOkay,
-		    })
-		})
-	    })
-	    oo('view-msg-pod').append(clone)
-	})
-	    oo('view-msg-pod').slideDown()
+var path = oo.util.pathTail(),
+    noop = function() {},
+    owner = function(m) {
+	return (m.results && m.profile && m.results.id64 == m.profile.id64)
     }
 
-})
 
-
-//
-// feedback loader, model, and view for the details tab
-//
-
-var FeedbackLoader = oo.data.loader({
-    prefix: '/api/v1/public/profile-feedback/',
-    name: 'FeedbackLoader'
-})
-
-var FeedbackModel = oo.model.extend({
+var DetailsModel = oo.model.extend({
     init: function(view, config) {
-	var self = this
-	self.requests.push(function() {
-	    new FeedbackLoader({
-		suffix: MainModel.id64(),
-		success: function(feedback) { self.feedback = feedback }
-	    })
-	})
-	oo.model.init.apply(self, arguments)
-    }
-})
-
-
-var FeedbackView = oo.view.extend({
-    authSuccess: function(profile) {
-	if (MainModel.isOwner(profile)) {
-	    this.showReadOnly('My Feedback')
-	} else {
-	    // show leave feedback
-	    this.showReadWrite('Feedback (Maybe From You)')
-	}
-    },
-
-    authError: function() {
-	this.showReadOnly('Feedback for {0}'.fs(MainModel.results.personaname))
-    },
-
-    showReadOnly: function(txt) {
-	oo('feedback-existing-title').text(txt)
-	oo('feedback-existing-pod').slideDown()
-    },
-
-    showReadWrite: function(txt) {
-	oo('feedback-existing-title').text(txt)
-	oo('feedback-existing-pod').slideDown()
-    },
-
-    join: function(model) {
-	if (!model.feedback) {
-	    oo('feedback-none').text('No feedback.').fadeIn()
-	} else {
-	    this.putFeedback(model.feedback)
-	}
-    },
-
-    putFeedback: function(fbs) {
-	var proto = $('.profile-feedback-seed')
-	$.each(fbs, function(idx, fb) {
-	    var clone = proto.clone().removeClass('null')
-	    oo.view.setRating($('.fb-rating', clone), fb.rating)
-	    $('.fb-message', clone).text(fb.comment)
-	    oo.data.status({
-		suffix: fb.source,
-		success: function(status) {
-		    console.log('status of feedback source:', status)
-		    var link = '<a href="/profile/{0}">{1}</a>'
-		    if (status.avatar_icon) {
-			var img = '<img src="{0}" class="msg-avatar" />&nbsp;'.fs(status.avatar_icon)
-			$('.source-name', clone).append(link.fs(fb.source, img))
-			$('.source-name img', clone).addClass('profile-status ' + status.online_state)
-		    }
-		    $('.source-name', clone).append(link.fs(fb.source, status.name))
+	var self = this,
+	    args = arguments,
+            tail = path,
+            preloader = oo.data.loader({prefix: '/api/v1/public/profile/'}),
+	    msgloader = oo.data.loader({prefix: '/api/v1/auth/list-messages'}),
+            fbkloader = oo.data.loader({prefix: '/api/v1/public/profile-feedback/'}),
+	    msgapply = function(m) {
+		self.messages = m
+		view.joinMessages.apply(view, [self])
+	    },
+	   fbkapply = function(f) {
+	       self.feedback = f
+	       view.joinFeedback.apply(view, [self])
+	   },
+	   authapply = function(a) {
+		self.profile = a
+		view.joinProfile.apply(view, [self])
+		if (owner(self)) {
+		    self.requests.push(function() {msgloader({success: msgapply })})
 		}
-	    })
-	    proto.after(clone)
+		self.requests.push(function() {
+		    fbkloader({suffix: self.results.id64, success: fbkapply})
+		})
+	   }
+	preloader({
+	    suffix: tail,
+	    success: function(p) {
+		self.results = p
+		oo.data.auth({
+		    suffix: '?settings=1&complete=1',
+		    success: authapply, error: authapply
+		})
+		oo.model.init.apply(self, args)
+	    }
 	})
     }
 })
 
 
-//
-// listings model and view for listings tab.
-//
+var DetailsView = oo.view.extend({
+    joinFeedback: function(model) { 
+	console.log('feedback', model.feedback)
+	this.joinFeedback = noop
+    },
+
+    joinMessages: function(model) {
+	console.log('messages', model.messages)
+	this.joinMessages = noop
+    },
+
+    joinProfile: function(model) {
+	var profile = model.results,
+	    ownerid = profile.steamid,
+            setStatus = function(status) {
+	        var m = status.message_state
+		oo('avatar').addClass(status.online_state)
+		if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
+		    oo('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
+		    m = m.replace(/ - .*/, '')
+		}
+		oo('status').html(m).addClass(status.online_state).slideDown()
+	    }
+	this.docTitle(profile.personaname)
+	oo('title').text(profile.personaname)
+	if (profile.avatarmedium) {
+	    oo('avatar').attr('src', profile.avatarmedium)
+	}
+	oo.data.status({suffix: profile.id64, success: setStatus})
+	oo('badge').slideDown()
+	$('.init-seed').fadeIn()
+	oo('owner-view-steam-profile').attr('href', profile.profileurl)
+	oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
+	oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
+	this.joinProfile = noop
+    }
+})
+
+
 var ListingsModel = oo.model.schema.extend({
     init: function(view, config) {
-	var self = this
-	self.requests.push(function() {
-	    oo.data.listings({
-		suffix: MainModel.id64(),
-		success: function(listings) { self.listings = listings }
-	    })
+	var self = this,
+	    args = arguments,
+            tail = path,
+            preloader = new oo.data.loader({prefix: '/api/v1/public/profile/'})
+	preloader({
+	    suffix: tail,
+	    success: function(p) {
+		var id64 = p.id64
+		self.requests.push(
+		    function() {
+			oo.data.listings({
+			    suffix: id64,
+		            success: function(listings) {
+				self.listings = listings
+				if (BackpackModel.listings) {
+				    self.view.join.apply(self.view, [self])
+				}
+			    }
+			})
+		    }
+		)
+		oo.model.schema.init.apply(self, args)
+	    }
 	})
-	oo.model.schema.init.apply(self, arguments)
     }
 })
 
 
 var ListingsView = oo.view.schema.extend({
-    title: 'Recent Listings',
-
-    authSuccess: function(profile) {
-	if (MainModel.isOwner(profile)) {
-	    this.title = 'My ' + this.title
-	}
-    },
-
     join: function(model) {
 	var self = this
-	oo('listings-title').text(self.title).parent().fadeIn()
-	self.message('Listings loaded.').fadeOut()
-	oo('listings-inner').fadeIn(function() {
-	    if (!model.listings.length) {
-		oo('listings-none').text('Nothing recent.').slideDown()
-	    } else {
-		self.putMany(model.listings, model.profile)
+	oo('listings-inner').slideDown(
+	    function() {
+		if (model.listings && model.listings.length) {
+		    self.putMany(model.listings, model.profile)
+		} else {
+		    oo('bids-pod h2.empty').fadeIn()
+		}
 	    }
-	})
+	)
+	self.join = noop
     },
 
     putMany: function(listings, profile) {
@@ -271,46 +170,48 @@ var ListingsView = oo.view.schema.extend({
 })
 
 
-//
-// bids model and view for the bids tab
-//
 var BidsModel = oo.model.schema.extend({
     init: function(view, config) {
-	console.log('BidsModel.init()', view, config)
-	var self = this
-	self.requests.push(
-	    function() {
-	        oo.data.bids({
-		    suffix: MainModel.id64(),
-		    success: function(bids) { self.bids = bids }
-	        })
+	var self = this,
+	    args = arguments,
+            tail = path,
+            preloader = new oo.data.loader({prefix: '/api/v1/public/profile/'})
+	preloader({
+	    suffix: tail,
+	    success: function(p) {
+		var id64 = p.id64
+		self.requests.push(
+		    function() {
+			oo.data.bids({
+			    suffix: id64,
+		            success: function(bids) {
+				self.bids = bids
+				if (BackpackModel.bids) {
+				    self.view.join.apply(self.view, [self])
+				}
+			    }
+			})
+		    }
+		)
+		oo.model.schema.init.apply(self, args)
 	    }
-        )
-	oo.model.schema.init.apply(self, arguments)
+	})
     }
 })
 
 
 var BidsView = oo.view.schema.extend({
-    title: 'Recent Bids',
-
-    authSuccess: function(profile) {
-	if (MainModel.isOwner(profile)) {
-	    this.title = 'My ' + this.title
-	}
-    },
-
     join: function(model) {
 	console.log('BidsView.join()', model)
 	var self = this
-	oo('bids-title').text(self.title)
-	oo('bids-pod').fadeIn(function() {
-	    if (!model.bids.length) {
-		oo('bids-none').text('Nothing recent.').slideDown()
-	    } else {
+	oo('bids-inner').slideDown(function() {
+	    if (model.bids && model.bids.length) {
 		self.putMany(model.bids, model.profile)
+	    } else {
+		oo('bids-pod h2.empty').fadeIn()
 	    }
 	})
+	self.join = noop
     },
 
     putMany: function(bids, profile) {
@@ -320,7 +221,7 @@ var BidsView = oo.view.schema.extend({
 	})
 	$('div.bid-marker td.item-view div:empty').parent().remove()
 	oo.schema.tool().putImages(profile ? profile.settings : null)
-	oo('bids-pod div.init-seed').slideDown('slow')
+	oo('bids-pod div.init-seed').show()
     },
 
     putOne: function(bid, clone) {
@@ -343,79 +244,67 @@ var BidsView = oo.view.schema.extend({
 })
 
 
-//
-// backpack model and view for backpack tab
-//
 var BackpackModel = oo.model.schema.extend({
     init: function(view, config) {
-	var id64 = MainModel.id64(),
-            self = this,
-	    lloader = oo.data.loader({prefix: '/api/v1/public/listings/'}),
-	    bloader = oo.data.loader({prefix: '/api/v1/public/bids/'})
-
-	self.requests.push(
-	    function() {
-		new lloader({
-		    suffix: id64,
-		    success: function(listings) { self.listings = listings }
-		})
-	    },
-	    function() {
-		new bloader({
-		    suffix: id64,
-		    success: function(bids) { self.bids = bids }
-		})
-	    },
-	    function() {
-		oo.data.backpack({
-		    suffix: id64,
-		    success: function(backpack) { self.backpack = backpack }
-		})
+	var self = this,
+	    args = arguments,
+            tail = path,
+            preloader = oo.data.loader({prefix: '/api/v1/public/profile/'})
+	preloader({
+	    suffix: tail,
+	    success: function(p) {
+		var id64 = p.id64
+		self.requests.push(
+		    function() {
+			oo.data.listings({
+			    suffix: id64,
+			    success: function(listings) { self.listings = listings }
+			})
+		    },
+		    function() {
+			oo.data.bids({
+			    suffix: id64,
+		            success: function(bids) { self.bids = bids }
+			})
+		    },
+		    function() {
+			oo.data.backpack({
+			    suffix: id64,
+			    success: function(backpack) { self.backpack = backpack }
+			})
+		    }
+		)
+		oo.model.schema.init.apply(self, args)
 	    }
-	)
-	oo.model.schema.init.apply(self, arguments)
+	})
     }
 })
 
 
 var BackpackView = oo.view.schema.extend({
-    title: 'Backpack',
-
-    authSuccess: function(profile) {
-	if (MainModel.isOwner(profile)) {
-	    this.title = 'My ' + this.title
-	}
-    },
-
     join: function(model) {
-	    var self = this,
-	        bpTool = oo.backpack.itemTool({
-		    items: model.backpack.result.items.item,
-		    listingUids: oo.util.itemUids(model.listings),
-		    bidUids: oo.util.itemUids(model.bids),
-		    navigator: true,
-		    slug: 'profile',
-		    toolTips: true,
-		    outlineHover: true,
-		    showAll: true,
-		    rowGroups: oo.backpack.pageGroup.full(model.backpack.result.num_backpack_slots)
-		})
-	    bpTool.init(model.profile ? model.profile.settings : null)
-	    oo('backpack-title').text(self.title)
-	    oo('backpack-title-pod').fadeIn(function() {
-		oo('backpack-inner').fadeIn()
+	var self = this,
+            bpTool = oo.backpack.itemTool({
+		items: model.backpack.result.items.item,
+		listingUids: oo.util.itemUids(model.listings),
+		bidUids: oo.util.itemUids(model.bids),
+		navigator: true,
+		slug: 'profile',
+		toolTips: true,
+		outlineHover: true,
+		showAll: true,
+		rowGroups: oo.backpack.pageGroup.full(model.backpack.result.num_backpack_slots)
 	    })
+	bpTool.init(model.profile ? model.profile.settings : null)
+	oo('backpack-inner').fadeIn()
     }
 })
 
 
-//
-// settings controller definition, model and view for the settings tab
-//
-
 var SettingsModel = oo.model.schema.extend({
-    authSuccess: function(profile) {
-	this.profile = profile
+    ready: function(results) {
+	this.results = results
+	this.view.join.apply(this.view, [this])
     },
 
     save: function(values, success, error) {
@@ -433,40 +322,66 @@ var SettingsModel = oo.model.schema.extend({
 
 
 var SettingsView = oo.view.extend({
+    notifyTool: function() {
+	return new function() {
+	    this.schemaTool = oo.schema.tool()
+	    var items = this.schemaTool.tradableBackpack(),
+            bpTool = oo.backpack.itemTool({
+		items: items,
+		slug: 'nl',
+		navigator: true,
+		toolTips: true,
+		select: true,
+		outlineHover: true,
+		filters: true,
+		cols: 5,
+		rowGroups: oo.backpack.pageGroup.slim(Math.round(items.length*0.01) / 0.01),
+	    }),
+            chTool = this.chooser = oo.backpack.chooserTool({
+		backpackSlug: 'nl',
+		chooserSlug: 'notify-listing',
+		selectDeleteHover: true,
+		copy: true,
+            })
+	    bpTool.init()
+	    chTool.init()
+	}
+    },
+
     join: function(model) {
 	var profile = model.profile, settings = profile.settings
-
 	$.each(oo.keys(settings), function(index, key) {
-	    var value = settings[key]
-	    var pkey = 'profile-{0}'.fs(key)
+	    var value = settings[key], pkey = 'profile-{0}'.fs(key)
 	    if (typeof(value) == 'boolean') {
 		$('#'+pkey).attr('checked', value)
 	    }
 	    if (typeof(value) == 'string') {
 		$('#'+pkey).val(value)
 	    }
+	    oo('settings-pod').slideDown()
 	})
 
 	if (profile.subscription && profile.subscription.status == 'Verified') {
-	    var nlt = new NotifyListingTool(model)
-	    var removeFromChooser = function(e) {
-		$('img', this).fadeOut().remove()
-		$(this).removeClass('selected selected-delete')
-	    }
-	    var copyToChooser = function(e) {
-		var source = $(e.target)
-		var target = $("#bp-chooser-notify-listing td div:empty").first()
-		if (!target.length) { return }
-		var clone = source.clone()
-		clone.data('node', source.data('node'))
-		target.prepend(clone)
-	    }
-	    var resetChooser = function() {
-		$.each( $('#bp-chooser-notify-listing td'), function(idx, cell) {
-		    $('img', cell).fadeOut().remove()
-		    $(cell).removeClass('selected selected-delete')
-		})
-	    }
+	    var nlt = this.notifyTool(),
+	        removeFromChooser = function(e) {
+		    $('img', this).fadeOut().remove()
+		    $(this).removeClass('selected selected-delete')
+		},
+	        copyToChooser = function(e) {
+		    var source = $(e.target),
+		        target = $("#bp-chooser-notify-listing td div:empty").first()
+		    if (target.length) {
+			var clone = source.clone()
+			clone.data('node', source.data('node'))
+			target.prepend(clone)
+		    }
+		},
+	        resetChooser = function() {
+		    $.each( $('#bp-chooser-notify-listing td'), function(idx, cell) {
+		        $('img', cell).fadeOut().remove()
+			$(cell).removeClass('selected selected-delete')
+		    })
+		}
             if (profile.settings['notify-listing-defs']) {
 		$.each(profile.settings['notify-listing-defs'], function(idx, defindex) {
 		    var target = $("#bp-chooser-notify-listing td div:empty").first()
@@ -510,10 +425,9 @@ var SettingsView = oo.view.extend({
 
 })
 
-
 var SettingsControllerDefn = {
-    view: SettingsView,
     model: SettingsModel,
+    view: SettingsView,
 
     init: function() {
         this.validateNotifyBids()
@@ -578,225 +492,69 @@ var SettingsControllerDefn = {
 }
 
 
-//
-// main model, view and controller
-//
-var MainModel = oo.model.extend({
-/*
-    NB:  the MainModel has two profile attributes:
-
-    1.  MainModel.results is the profile for the player page, this
-        is present even when the user is not logged in.
-
-    2.  MainModel.profile is the profile for the user, this is present
-        only when the user is authenticated.  This object will be the
-        same as .results when the user is viewing their own profile
-        page.
-*/
-    loader: oo.data.loader({prefix: '/api/v1/public/profile/', name: 'MainLoader'}),
-    loaderSuffix: oo.util.pathTail(),
-
-    init: function(view, config) {
-	var self = this
-	oo.model.init.apply(self, [view, config])
-    },
-
-    ready: function(profile) {
-	oo.model.ready.apply(this, arguments)
-	MainController.modelProfileReady(this)
-    },
-
-    id64: function() {
-	return this.results.id64
-    },
-
-    personaname: function() {
-	return this.results.personaname
-    },
-
-    loadFeedback: function() {
-	MainController.setSub('feedback', {view: FeedbackView, model: FeedbackModel})
-    },
-
-
-    loadMessages: function() {
-	MainController.setSub('messages', {view: MessagesView, model: MessagesModel})
-    },
-
-    loadRating: function() {
-	// fill it in
-    },
-
-    isOwner: function(p) {
-	return (p && p.id64 == this.results.id64)
-    },
-
-    submitMsg: function(output) {
-	var self = this
-	$.ajax({
-	    url: '/api/v1/auth/leave-message',
-	    type: 'POST',
-	    dataType:'json',
-	    data: $.toJSON(output),
-	    success: self.view.leaveMsgSuccess,
-	    error: self.view.leaveMsgError
-	})
-    }
-
-})
+var SubControllers = {
+    details: {model: DetailsModel, view: DetailsView},
+    listings: {model: ListingsModel, view: ListingsView},
+    bids: { model: BidsModel, view: BidsView},
+    backpack: {model: BackpackModel, view: BackpackView},
+    settings: SettingsControllerDefn
+}
 
 
 var MainView = oo.view.extend({
     join: function(model) {
-
-	// auth and owner
-	if (model.isOwner(model.profile)) {
-	    model.loadMessages()
-	    oo('is-you').text('This is you!').slideDown()
+	if (owner(model)) {
+	    $('h1 span.title').before('My ')
 	    oo('settings-tab').fadeIn()
-	}
-
-	// auth but not owner
-	if (model.profile && !model.isOwner(model.profile)) {
-	    oo('leave-msg-title')
-		.text('Leave a message for {0}:'.fs(model.personaname()))
-	    oo('leave-msg-txt').width('90%').height(150)
-	    oo('leave-msg-submit').parent().width('90%')
-	    oo('leave-msg-pod').slideDown()
-	}
-
-	// 
-	model.loadRating()
-	model.loadFeedback()
-
-	var profile = model.results,
-	    ownerid = profile.steamid
-	this.docTitle(profile.personaname)
-	oo('title').text(profile.personaname)
-	if (profile.avatarmedium) {
-	    oo('avatar').attr('src', profile.avatarmedium)
-	}
-
-	var setStatus = function(status) {
-	    var m = status.message_state
-	    oo('avatar').addClass(status.online_state)
-	    if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
-		oo('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
-		m = m.replace(/ - .*/, '')
-	    }
-	    oo('status').html(m).addClass(status.online_state).slideDown()
-	}
-	oo.data.status({suffix: profile.id64, success: setStatus})
-	oo('badge').slideDown()
-	$('.init-seed').fadeIn()
-	oo('owner-view-steam-profile').attr('href', profile.profileurl)
-	oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
-	oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
-    },
-
-    leaveMsgText: function() {
-	return oo('leave-msg-txt').val().slice(0,400)
-    },
-
-    leaveMsgEmpty: function() {
-	oo('leave-msg-form').slideUp(function() {
-	    oo('leave-msg-title').text('Empty message?  Really?  Nothing sent!')
-	})
-    },
-
-    leaveMsgSuccess: function() {
-	oo('leave-msg-form').slideUp(function() {
-	    oo('leave-msg-title').text('Message sent!')
-	})
-    },
-
-    leaveMsgError: function(request, status, error) {
-	if (request.status==500) {
-	    try {
-		var err = $.parseJSON( request.responseText )
-		if (err.exception == 'Mailbox full') {
-		    oo('leave-msg-form').slideUp(function() {
-			oo('leave-msg-title').text('Your message was not sent!  Target mailbox is full.')
-		    })
-		}
-	    } catch (e) {}
+	    oo('is-you').text('This is you!').slideDown()
+	} else {
+	    oo('owner-links').slideDown()
 	}
     }
+})
+
+
+var MainModel = oo.model.extend({
+    loader: oo.data.loader({prefix: '/api/v1/public/profile/'}),
+    loaderSuffix: path
 })
 
 
 var MainController = oo.controller.extend({
     config: {auth: {required: false, settings: true, complete: true}},
     model: MainModel,
-    subs: {},
     view: MainView,
 
-    detailsShow: function() {
-	//this.setSub('messages', {view: MessagesView, model: MessagesModel})
-	//this.setSub('feedback', {view: FeedbackView, model: FeedbackModel})
-    },
-
-    listingsShow: function() {
-	this.setSub('listings', {view: ListingsView, model: ListingsModel})
-    },
-
-    bidsShow: function() {
-	this.setSub('bids', {view: BidsView, model: BidsModel})
-    },
-
-    backpackShow: function() {
-	this.setSub('backpack', {view: BackpackView, model: BackpackModel})
-    },
-
-    settingsShow: function() {
-	this.setSub('settings', SettingsControllerDefn)
-    },
-
-    setSub: function(name, defn) {
-	if (name in this.subs) {
-	    var sub = this.subs[name]
-	} else {
-	    this.view.message('Loading {0}...'.fs(name))
-	    defn.config = this.config
-	    var sub = this.subs[name] = oo.controller.extend(defn)
-	    sub.init()
-	    window.setTimeout(function() {MainView.message().fadeOut()}, 1000)
+    show: function(event, ui) {
+	var name = ui.tab.text.toLowerCase(),
+	    after = function() {
+		$('#{0} h2.loading'.fs(ui.index)).slideUp(
+		    function() { $('#{0} div:first'.fs(ui.index)).fadeIn() }
+		)
+	    }
+	if (name in SubControllers) {
+	    var c = SubControllers[name]
+	    if (!c.config) {
+		c.config = this.config
+		oo.controller.extend(c).init()
+		$('h1 span.title', ui.panel).parent().fadeIn(after)
+	    }
 	}
     },
 
-    modelProfileReady: function() {
-	// callback after the page profile is ready; we need this
-	// because we can't select a tab reliably until we know the
-	// id64 of the profile.
-	var hash = this.hash()
-	if (hash && hash != '0') { this.tabCallbacks[parseInt(hash)].apply(this) }
-    },
-
-    '#profile-leave-msg-submit click': function(e) {
-	var ctrl = e.controller,
-            txt = ctrl.view.leaveMsgText()
-	if (txt) {
-	    ctrl.model.submitMsg({message: txt, target: ctrl.model.id64()})
-	} else {
-	    ctrl.view.leaveMsgEmpty()
-	}
-    },
-
-    'ready' : function (e) {
-	this.tabCallbacks = {
-            0: this.detailsShow,
-	    1: this.listingsShow,
-	    2: this.bidsShow,
-	    3: this.backpackShow,
-	    4: this.settingsShow
-	}
-	var self = this,
-	    tabs = $('#tabs').tabs({ fx: {opacity: 'toggle', duration: 'fast'} })
-	tabs.bind('tabsselect', function(event, ui) {
-	    window.location.href = ui.tab
-	    self.tabCallbacks[ui.index].apply(self)
+    'ready': function(e) {
+	var self = this
+	$('#tabs').tabs({
+	    fx: {opacity: 'toggle', duration: 'fast'},
+	    // apply the hash in 'select', not 'show', to prevent
+	    // scrolling to the div
+	    select: function(e, ui) { window.location.hash = ui.tab.hash },
+	    show: function() {self.show.apply(self, arguments) },
 	})
+	// force scroll on document load in case there is a hash
+	document.body.scrollTop = 0
     }
+
 })
 
 

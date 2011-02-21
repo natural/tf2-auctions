@@ -1,8 +1,7 @@
 (function() {
     oo.config('#front-')
-
-
     var cauth = {auth: {required: false, settings: true}},
+
 
     NewsModel = oo.model.make({name: 'NewsModel'}, {
 	prefix: 'http://tf2apiproxy.appspot.com/api/v1/news',
@@ -47,7 +46,7 @@
 	    $.each(oo.keys(stats), function(idx, key) {
 		oo(key.replace('_', '-')).text(stats[key])
 	    })
-		oo('stats').slideDown()
+	    oo('stats').slideDown()
 	}
     }),
 
@@ -74,14 +73,14 @@
 		$('.blog-encoded-seed', clone).html(blogpost.entry)
 		oo('blog').append(clone)
 	    })
-		if (entries.length) { oo('blog').slideDown() }
+	    if (entries.length) { oo('blog').slideDown() }
 	}
     }),
 
 
     SearchModel = oo.model.make({
 	name: 'SearchModel',
-	loaderNg: oo.data.search,
+	loader: oo.data.search,
 	loaderSuffix: '?limit=5',
 
 	init: function(view, config) {
@@ -105,7 +104,6 @@
 
 	authError: function() {
 	    oo('no-auth').slideDown()
-	    this.profile = {}
 	},
 
 	join: function(model) {
@@ -124,10 +122,8 @@
 		target: oo('results-pod'),
 		prefix: '.new-listings'
 	    })
-	    if (results.featured && results.featured.length) {
-		this.initFeatured(results.featured)
-	    }
-	    this.model.tool.putImages(this.profile.settings)
+	    this.joinFeatured(results)
+	    this.model.tool.putImages(this.profile ? this.profile.settings : null)
 	    $('div.listing-seed td.item-view div:empty').parent().remove()
 	    oo('new-listings-pod').slideDown()
 	},

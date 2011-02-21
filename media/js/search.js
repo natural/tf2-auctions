@@ -213,9 +213,7 @@ var SearchView = oo.view.searchbase.extend({
 	    $('#search-prev-link, #search-bottom-prev-link').hide()
 	    $('#search-prev-none, #search-bottom-prev-none').show()
 	}
-	if (init && results.featured && results.featured.length) {
-	    self.initFeatured(results.featured)
-	}
+	if (init) { self.joinFeatured(results) }
 	oo.data.schema({
             success: function(schema) {
 	        oo.data.auth({

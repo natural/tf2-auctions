@@ -462,6 +462,8 @@ vertical-align:top;
 .listing-view img.listing-avatar, .bid-owner-seed img.bid-avatar, img.msg-avatar {
 height:24px !important;
 width:24px !important;
+border:2px solid transparent;
+border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
 }
 
 .listing-owner-seed, .source-seed {
@@ -665,17 +667,17 @@ border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
 }
 
 .in-game { /* green */
-border-color: #B1FB50;
+border-color: #B1FB50 !important;
 color: #B1FB50;
 }
 
 .online { /* blue */
-border-color:#6FBDFF;
+border-color:#6FBDFF !important;
 color:#6FBDFF;
 }
 
 .offline { /* gray */
-border-color:#898989;
+border-color:#898989 !important;
 color:#898989;
 }
 

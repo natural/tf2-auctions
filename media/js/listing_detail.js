@@ -1,10 +1,9 @@
-// bug:  terms dialog doesn't pop
-// bug:  double check cancel bid; trap reference error in listing.encode( bids encode)
+// hide leave feedback when auth user has given feedback already.
 
 oo.config('#listing-detail-')
 
 var NewBidModel = oo.model.extend({
-    loaderNg: oo.data.backpack,
+    loader: oo.data.backpack,
 
     init: function(view, config) {
 	var self = this, suffix = config.profile.id64
@@ -463,6 +462,7 @@ var DetailView = oo.view.schema.extend({
 	    oo(name).text(new Date(listing[name] + ' GMT').format())
         })
 	self.putListingBids()
+	self.putListingFeedback()
     },
 
     putListingOwner: function() {
@@ -530,6 +530,26 @@ var DetailView = oo.view.schema.extend({
 	    oo('bids').prepend(clone)
 	})
 	oo('existing-bid-pod').show()
+    },
+
+    putListingFeedback: function() {
+	var self = this,
+	    listing = self.listing,
+	    feedback = listing.feedback
+	if (feedback.length) {
+	    console.log('put feedback')
+	    $.each(feedback, function(idx, fb) {
+		BidderFeedbackView.hideFeedback({
+		    bid: fb.bid,
+		    listing: fb.listing,
+		    rating: fb.rating,
+		    text: fb.comment,
+		    source:'bidder'
+		}, '#bidder')
+	    })
+	} else {
+	    console.log('no feedback')
+	}
     },
 
     putListingOwnerStatus: function() {

@@ -26,6 +26,8 @@ padding:0.25em;
 display: none;
 }
 
+
+
 div.tabs > ul li.ui-tabs-selected {
 background: -webkit-gradient(
     linear,
