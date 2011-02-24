@@ -1,29 +1,39 @@
 $(document).ready(function() {
     oo.config('#faq-')
-    oo.data.auth()
+    oo.model.auth.init()
 
-    var faqLoader = function(o) {
-	return new oo.data.loader({prefix: '/api/v1/public/faq'})(o)
+    var cat = $('.prototype.category-seed'),
+        ent = $('.prototype.entry-seed'),
+
+    mktitle = function(t) {
+	var c = cat.clone().removeClass('null prototype')
+	$('h2', c).text(t)
+	return c
     },
-    faqsLoaded = function(category_entries) {
-	$.each(category_entries, function(idx, ces) {
-	    var cat = ces[0].name
-	    var entries =  ces[1]
-	    if (entries.length) {
-		var title = $('.prototype.category-seed').clone().removeClass('null prototype')
-		$('h2', title).text(cat)
-		oo('content-pod').append(title)
-		$.each(entries, function(idx, pair) {
-		    var entry = $('.prototype.entry-seed').clone().removeClass('null prototype')
-		    $('.title', entry).text(pair.title)
-		    $('.entry', entry).html(pair.entry)
-		    oo('content-pod').append(entry)
+
+    mkentry = function(t, h) {
+	var e = ent.clone().removeClass('null prototype')
+	$('.title', e).text(t)
+	$('.entry', e).html(h)
+	return e
+    },
+
+    model = oo.model.extend({
+	loader: oo.data.loader({prefix: '/api/v1/public/faq'})
+    })
+
+
+
+    model.init().success(function(groups) {
+	var target = oo('content-pod')
+	$.each(groups, function(_, grp) {
+	    if (grp[1].length) {
+		target.append(mktitle(grp[0].name))
+		$.each(grp[1], function(_, qa) {
+		    target.append(mkentry(qa.title, qa.entry)) 
 		})
-		    }
+	    }
 	})
-	    oo('content-pod').fadeIn()
-    }
-    faqLoader({success: faqsLoaded})
+	target.fadeIn()
+    })
 })
-
-

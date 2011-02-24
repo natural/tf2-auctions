@@ -1,3 +1,11 @@
 $(document).ready(function(){
-    $('a[href^="/login"]').fadeAway(oo.util.profile.defaultUserAuthError)
+    oo.config('#content-')
+    oo('login-link').fadeAway(function() {
+	oo('site-categories').fadeOut(function() {
+	    oo('site-buttons').fadeIn(function() {
+		oo('main-logo').addClass('text-center').animate({width:'100%'})
+	    })
+	})
+    })
 })
+

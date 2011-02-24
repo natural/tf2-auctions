@@ -39,7 +39,9 @@ var userAuthError = function(request, status, error) {
 $(document).ready(function() {
     oo.config('#contact-')
     oo('form-submit').click(submitFeedback)
-    oo.data.auth({success: userAuthOkay, error: userAuthError})
+    oo.model.auth.init()
+        .success(function(p) {userAuthOkay(p)})
+        .error(function() {userAuthError() })
 })
 
 })()

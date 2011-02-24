@@ -1,4 +1,7 @@
+(function() {
+
 // hide leave feedback when auth user has given feedback already.
+
 
 oo.config('#listing-detail-')
 
@@ -10,25 +13,19 @@ var NewBidModel = oo.model.extend({
 	self.listing = config.listing
 	self.profile = config.profile
         self.loaderSuffix = suffix
-	self.requests.push(
-	    function() {
-		oo.data.listings({
-                    suffix: suffix,
-                    success: function(listings) { self.listings = listings }
-		})
-            },
-	    function() {
-		oo.data.bids({
-		    suffix: suffix,
-                    success: function(bids) { self.bids = bids }
-		})
-            }
-	)
-        oo.model.init.apply(self, [view, config])
-    },
-
-    ready: function(backpack) {
-	this.backpack = backpack
+	return oo.model.init.apply(self, arguments)
+            .success(function(bp) {
+		self.backpack = backpack
+		oo.data.listings({id: suffix})
+		    .success(function(listings) {
+			self.listings = listings
+			oo.data.bids({id: suffix})
+			    .success(function(bids) {
+				self.bids = bids
+				view.join(self)
+			    })
+		    })
+	    })
     },
 
     submit: function(params) {
@@ -204,11 +201,6 @@ var NewBidView = oo.view.extend({
 
 
 var BidderFeedbackModel = oo.model.extend({
-    init: function(view, config) {
-	var self = this
-	oo.model.init.apply(this, arguments)
-    },
-
     saveFeedback: function(data, success, error) {
 	$.ajax({
 	    url: '/api/v1/auth/add-feedback',
@@ -411,7 +403,7 @@ var DetailView = oo.view.schema.extend({
     join: function(model) {
 	var self = this,
 	    listing = self.listing = model.listing,
-	    profile = self.profile = self.model.profile
+	    profile = self.profile = model.profile
 	self.putListing()
 	self.putListingOwner()
 	if (!profile) {
@@ -502,12 +494,10 @@ var DetailView = oo.view.schema.extend({
 	    if (bid.owner && bid.owner.avatar) {
 	        $('.bid-avatar', clone).attr('src', bid.owner.avatar)
 	    }
-            oo.data.status({
-	        suffix: bid.owner.id64,
-                success: function(status) {
+            oo.data.status({suffix: bid.owner.id64})
+                .success(function(status) {
 		    $('.bid-avatar', clone).addClass('profile-status ' + status.online_state)
-	        }
-	    })
+	        })
 	    $('.bid-avatar', clone).parent().attr('href', '/profile/'+bid.owner.id64)
 	    $('.bid-owner', clone).text(bid.owner.personaname)
 	    $('.bid-owner', clone).parent().attr('href', '/profile/'+bid.owner.id64)
@@ -553,9 +543,8 @@ var DetailView = oo.view.schema.extend({
     },
 
     putListingOwnerStatus: function() {
-	oo.data.status({
-            suffix: this.listing.owner.id64,
-	    success: function(status) {
+	oo.data.status({suffix: this.listing.owner.id64})
+	    .success(function(status) {
 		var m = status.message_state
 	        oo('owner-avatar').addClass('profile-status ' + status.online_state)
 		if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
@@ -563,8 +552,7 @@ var DetailView = oo.view.schema.extend({
 		    m = m.replace(/ - .*/, '')
 		}
 		oo('owner-status').html(m).addClass(status.online_state)
-	    }
-	})
+	    })
     },
 
     putBidCount: function(count) {
@@ -704,13 +692,26 @@ var DetailView = oo.view.schema.extend({
 var DetailModel = oo.model.schema.extend({
     init: function(view, config) {
 	var self = this
-	self.requests.push(function() {
-            oo.data.listing({
-                suffix: oo.util.pathTail(),
-                success: function(listing) { self.listing = listing }
-            })
-        })
-        oo.model.schema.init.apply(self, arguments)
+	return oo.model.schema.init(self, arguments)
+	    .success(function(schema) {
+		oo.data.auth({suffix: '?settings=1'})
+		    .success(function(profile) {
+			self.profile = profile
+			oo.data.listing({id: oo.util.pathTail()})
+			    .success(function(listing) {
+				self.listing = listing
+				view.join(self)
+			    })
+		    })
+		    .error(function() {
+			self.profile = null
+			oo.data.listing({id: oo.util.pathTail()})
+			    .success(function(listing) {
+				self.listing = listing
+				view.join(self)
+			    })
+		    })
+	    })
     },
 
     cancelBid: function(bid, success, error) {
@@ -821,5 +822,13 @@ var DetailController = oo.controller.extend({
 
     '.select-winner-cancel live:click' : function(e) {
 	e.controller.view.hideSelectWinner($(e.target).parents('div.ov'))
+    },
+
+    'ready': function() {
+	oo.model.auth.extend({suffix: '?settings=1'}).init()
     }
 })
+
+
+})()
+

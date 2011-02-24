@@ -3,21 +3,30 @@
     var cauth = {auth: {required: false, settings: true}},
 
 
-    NewsModel = oo.model.make({name: 'NewsModel'}, {
-	prefix: 'http://tf2apiproxy.appspot.com/api/v1/news',
-	dataType: 'jsonp',
-	jsonpCallback: 'tf2auctionsNewsLoader',
-	name: 'NewsLoader'
+    newsModel = oo.model.extend({
+	loader: oo.data.loader({
+	    prefix: 'http://tf2apiproxy.appspot.com/api/v1/news',
+	    dataType: 'jsonp',
+	    jsonpCallback: 'tf2auctionsNewsLoader',
+	}),
+
+	// this function is repeated too many times; provide
+	// an implementation
+	init: function(view, config) {
+	    var self = this
+	    return oo.model.init.apply(self, arguments)
+	        .success(function() { view.join.apply(view, [self]) })
+	}
     }),
 
 
-    NewsView = oo.view.extend({
+    newsView = oo.view.extend({
 	cloneClass: 'news-seed',
 	join: function(model) {
-	    var news = model.results
+	    var news = model.data, self = this
 	    if (!news || !news[0]) { return }
 	    $.each(news, function(idx, newsentry) {
-		var clone = NewsView.proto()
+		var clone = self.proto()
 		if (newsentry.author) {
 		    $('.news-author-seed', clone).html('({0})'.fs(newsentry.author))
 		}
@@ -34,15 +43,23 @@
     }),
 
 
-    StatsModel = oo.model.make({name: 'StatsModel'}, {
-	prefix: '/api/v1/public/stats',
-	name: 'StatsLoader'
+    statsModel = oo.model.extend({
+        loader: oo.data.loader({
+	    prefix: '/api/v1/public/stats',
+	    name: 'StatsLoader'
+	}),
+
+	init: function(view, config) {
+	    var self = this
+	    return oo.model.init.apply(self, arguments)
+	        .success(function() { view.join.apply(view, [self]) })
+	}
     }),
 
 
-    StatsView = oo.view.extend({
+    statsView = oo.view.extend({
 	join: function(model) {
-	    var stats = model.results
+	    var stats = model.data
 	    $.each(oo.keys(stats), function(idx, key) {
 		oo(key.replace('_', '-')).text(stats[key])
 	    })
@@ -51,19 +68,25 @@
     }),
 
 
-    BlogModel = oo.model.make({name: 'BlogModel'}, {
-	prefix: '/api/v1/public/blog-entries',
-	name: 'BlogLoader'
+    blogModel = oo.model.extend({
+	loader: oo.data.loader({
+	    prefix: '/api/v1/public/blog-entries',
+	}),
+
+	init: function(view, config) {
+	    var self = this
+	    return oo.model.init.apply(self, arguments)
+	        .success(function() { view.join.apply(view, [self]) })
+	}
     }),
 
 
-    BlogView = oo.view.extend({
+    blogView = oo.view.extend({
 	cloneClass: 'blog-seed',
-
 	join: function(model) {
-	    var entries = model.results
+	    var entries = model.data, self = this
 	    $.each(entries, function(idx, blogpost) {
-		var clone = BlogView.proto()
+		var clone = self.proto()
 		$('.blog-title-seed', clone).text(blogpost.title)
 		if (blogpost.intro != '<p></p>') {
 		    $('.blog-intro-seed', clone).html(blogpost.intro)
@@ -78,24 +101,27 @@
     }),
 
 
-    SearchModel = oo.model.make({
-	name: 'SearchModel',
-	loader: oo.data.search,
+    searchModel = oo.model.extend({
+	loader: oo.data.searchLoader,
 	loaderSuffix: '?limit=5',
 
 	init: function(view, config) {
 	    var self = this
-	    self.requests.push(function() {
-		oo.data.schema({
-                    success: function(s) { self.tool = oo.schema.tool(s) }
-		})
-            })
-	    oo.model.init.apply(self, [view, config])
+            oo.model.auth.init()
+		.success(view.authSuccess)
+		.error(view.authError)
+	    return $.when(
+		oo.model.init.apply(this, arguments),
+		oo.model.schema.init()
+	    ).done(function(searchDone, schemaDone) {
+		self.tool = oo.model.schema.tool
+		view.join(self)
+	    })
 	}
     }),
 
 
-    SearchView = oo.view.searchbase.extend({
+    searchView = oo.view.searchbase.extend({
 	authSuccess: function(profile) {
 	    oo('auth').slideDown()
 	    oo('auth > h1').text('Welcome, {0}!'.fs(profile.personaname))
@@ -107,7 +133,9 @@
 	},
 
 	join: function(model) {
-	    var results = model.results
+	    var results = model.data
+	    if (!results.listings) { return }
+
 	    if (!results.listings.length) {
 		oo('no-listings').text('Nothing found.').show()
 		oo('some-listings').hide()
@@ -123,7 +151,7 @@
 		prefix: '.new-listings'
 	    })
 	    this.joinFeatured(results)
-	    this.model.tool.putImages(this.profile ? this.profile.settings : null)
+	    model.tool.putImages(this.profile ? this.profile.settings : null)
 	    $('div.listing-seed td.item-view div:empty').parent().remove()
 	    oo('new-listings-pod').slideDown()
 	},
@@ -142,12 +170,10 @@
 		.attr('src', listing.owner.avatar)
 	    $('.listing-avatar', clone).parent()
 		.attr('href', oo.util.profile.defaultUrl(listing.owner))
-	    oo.data.status({
-		suffix: listing.owner.id64,
-		success: function(status) {
+	    oo.data.status({id: listing.owner.id64})
+		.success(function(status) {
 	            $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
-		}
-            })
+		})
 	    $('.bid-count-seed', clone).text(listing.bid_count || '0')
             var next = 0
 	    $.each(listing.items, function(index, item) {
@@ -171,13 +197,13 @@
 	    if (listing.featured) {clone.addClass('featured')}
 	    target.append(clone)
 	}
-    }),
+    })
 
 
-    SearchController = oo.controller.extend({
+    oo.controller.extend({
 	config: cauth,
-	model: SearchModel,
-	view: SearchView,
+	model: searchModel,
+	view: searchView,
 
 	'#featured-listings div.listing-seed div.navs span.nav.next live:click' : function(e) {
 	    e.controller.view.navFeatured(1)
@@ -186,17 +212,12 @@
 	'#featured-listings div.listing-seed div.navs span.nav.prev live:click' : function(e) {
 	    e.controller.view.navFeatured(-1)
 	}
-    }),
-
-    BlogController = oo.controller.extend({
-	model: BlogModel, view: BlogView, config: cauth
-    }),
-
-    StatsController = oo.controller.extend({
-	model: StatsModel, view: StatsView, config: cauth
-    }),
-
-    NewsController = oo.controller.extend({
-	model: NewsModel, view: NewsView, config: cauth
     })
+
+
+    oo.controller.extend({model: blogModel, view: blogView, config: cauth})
+    oo.controller.extend({model: statsModel, view: statsView, config: cauth})
+    oo.controller.extend({model: newsModel, view: newsView, config: cauth})
+
+
 })()

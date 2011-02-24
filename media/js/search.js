@@ -1,3 +1,5 @@
+//(function() {
+
 //
 // creates and initializes a backpack and chooser tool.
 //
@@ -23,13 +25,13 @@ var initBackpack = function(schema, bpSlug, chSlug, afterDrop) {
         })
     bpTool.init()
     chTool.init()
-}
+},
 
 
 //
 // Model for searches.
 //
-var SearchModel = oo.model.schema.extend({
+searchModel = oo.model.schema.extend({
     makeStack: function() {
 	var stack = [],
 	    self = this,
@@ -54,44 +56,41 @@ var SearchModel = oo.model.schema.extend({
 	    chooserChanged: function(selector, qprefix) {
 	        changed()
 	        var q = chooserQuery(selector, qprefix)
-	        oo.data.search({
-		    suffix: '?' + q,
-		    success: function(rs) { self.view.joinSearch(rs, q) }
-	        })
+	        oo.data.search({suffix: '?' + q})
+		    .success(function(rs) { self.view.joinSearch(rs, q) })
 	    },
 	    optionChanged: function() {
 	        changed()
 	        var q = optionsQuery()
-	        oo.data.search({
-		    suffix: '?' + q,
-		    success: function(rs) { self.view.joinSearch(rs, q) }
-	        })
+	        oo.data.search({suffix: '?' + q})
+		    .success(function(rs) { self.view.joinSearch(rs, q) })
 	    }
         }
     },
 
     init: function(view, config) {
-	var self = this
+	var self = this, q = self.hash()
+	self.view = view
+	view.model = self
         self.searchStack = self.makeStack()
-	var q = self.hash()
-        oo.data.search({
-            suffix: '?' + q,
-            success: function(rs) {
-		self.searchResults = rs
-		self.view.joinSearch(rs, q, true)
-	    }
-        })
-	oo.model.schema.init.apply(this, arguments)
+	return oo.model.schema.init.apply(self, arguments)
+	    .success(function(s) {
+		oo.data.search({suffix: '?' + q})
+		    .success(function(rs) {
+			self.searchResults = rs
+			self.view.joinSearch(rs, q, true)
+		    })
+	    })
     },
 
     hash: function() { return location.hash.slice(1) },
-})
+}),
 
 
 //
 // View for searches.
 //
-var SearchView = oo.view.searchbase.extend({
+searchView = oo.view.searchbase.extend({
     contentWidths: {controls:null, results:null},
 
     init: function(model, config) {
@@ -110,7 +109,8 @@ var SearchView = oo.view.searchbase.extend({
 		        window.location.hash = results.next_qs
 		        self.putListings(rs)
 		    }
-		    oo.data.search({success: innerNext, suffix: '?'+results.next_qs})
+		    oo.data.search({suffix: '?'+results.next_qs})
+			.success(innerNext)
 	        })
 	    })
 	    return false
@@ -214,15 +214,12 @@ var SearchView = oo.view.searchbase.extend({
 	    $('#search-prev-none, #search-bottom-prev-none').show()
 	}
 	if (init) { self.joinFeatured(results) }
-	oo.data.schema({
-            success: function(schema) {
-	        oo.data.auth({
-                    suffix: '?settings=1',
-	            success: function(profile) { oo.schema.tool(schema).putImages(profile.settings) },
-	            error: function() { oo.schema.tool(schema).putImages() }
-                })
-	    }
-        })
+	oo.data.schema({})
+            .success(function(schema) {
+	        oo.model.auth.extend({suffix: '?settings=1'}).init()
+	            .success(function(profile) { oo.schema.tool(schema).putImages(profile.settings) })
+	            .error(function() { oo.schema.tool(schema).putImages() })
+            })
 	$('div.listing-seed td.item-view div:empty').parent().remove()
 	$('#search-listings').slideDown()
 	$('#search-nav-extra').fadeIn()
@@ -242,14 +239,11 @@ var SearchView = oo.view.searchbase.extend({
 	    .attr('src', listing.owner.avatar)
 	$('.listing-avatar', clone).parent()
 	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
-	oo.data.status({
-	    debug: true,
-	    cacheKey: listing.owner.id64,
-	    suffix: listing.owner.id64,
-	    success: function(status) {
+	oo.data.status({id: listing.owner.id64})
+            .success(function(status) {
 	        $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
-	    }
-        })
+	    })
+
 	$('.bid-count-seed', clone).text(listing.bid_count || '0')
         var next = 0
 	$.each(listing.items, function(index, item) {
@@ -298,7 +292,7 @@ var SearchView = oo.view.searchbase.extend({
     },
 
     showAdvanced: function() {
-	var self = SearchView
+	var self = searchView
 	if (!self.showAdvanced.initOnce) {
 	    self.showAdvanced.initOnce = true
 	    var chooserChanged = function () {
@@ -345,7 +339,7 @@ var SearchView = oo.view.searchbase.extend({
     },
 
     showReverse: function() {
-        var self = SearchView
+        var self = searchView
 	if (!self.showReverse.initOnce) {
 	    self.showReverse.initOnce = true
 	    var chooserChanged = function () {
@@ -390,13 +384,13 @@ var SearchView = oo.view.searchbase.extend({
 	    })
 	})
     }
-})
+}),
 
 
-var SearchController = oo.controller.extend({
+searchController = oo.controller.extend({
     config: {auth: {required: false, settings: true}},
-    model: SearchModel,
-    view: SearchView,
+    model: searchModel,
+    view: searchView,
 
     hash: function() {
 	return location.hash.slice(1)
@@ -445,3 +439,6 @@ var SearchController = oo.controller.extend({
         }
     }
 })
+
+
+//})()

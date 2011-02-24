@@ -61,9 +61,8 @@ var BackpackListingTool = function(params) {
 	afterDropMove: function(item) { $('#bp-chooser-listing-add-item-error').parent().slideUp() }
     })
 
-    oo.data.auth({
-	suffix: '?settings=1',
-	success: function(profile) {
+    oo.data.auth({suffix: '?settings=1'})
+	.success(function(profile) {
 	    var settings = profile.settings
 	    bpTool.init(profile.settings)
 	    chTool.init(profile.settings)
@@ -78,8 +77,7 @@ var BackpackListingTool = function(params) {
 	    } else {
 		oo('subscriber-pod').remove()
 	    }
-	}
-    })
+	})
 
     self.show = function() {
 	oo('own-backpack').fadeBack()
@@ -294,35 +292,28 @@ var backpackReady = function(backpack, listings, bids, profile) {
 
 var listingsReady = function(listings, bids, profile) {
     oo.view.message('Loading your backpack...')
-    oo.data.backpack({
-        suffix: profile.id64,
-	success: function (backpack) {
+    oo.data.backpack({suffix: profile.id64})
+	.success(function (backpack) {
 	    backpackReady(backpack, listings, bids, profile)
-	}
-    })
+	})
 }
 
 
 var profileReady = function(profile) {
     oo.view.message('Profile loaded.')
     var listingsLoaded = function(listings) {
-	oo.data.bids({
-	    suffix: profile.steamid,
-	    success: function(bids) {
+	oo.data.bids({suffix: profile.steamid})
+	    .success(function(bids) {
 		listingsReady(listings, bids, profile)
-	    }
-	})
+	    })
     }
-    oo.data.listings({suffix: profile.steamid, success: listingsLoaded})
+    oo.data.listings({suffix: profile.steamid}).success(listingsLoaded)
 }
 
 
 var schemaReady = function(schema) {
     oo.view.message('Loading your profile...')
-    oo.data.auth({
-	suffix: '?settings=1&complete=1',
-	success: profileReady
-    })
+    oo.data.auth({suffix: '?settings=1&complete=1'}).success(profileReady)
 }
 
 
@@ -336,7 +327,7 @@ $(document).ready(function() {
 	}
     })
     oo.view.message('Loading item schema...')
-    oo.data.schema({success: schemaReady})
+    oo.data.schema().success(schemaReady)
     oo('min-bid-show a').click(showMinBid)
     oo('show-terms').click(oo.view.showTermsDialog)
 })

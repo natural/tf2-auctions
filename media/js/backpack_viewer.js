@@ -1,35 +1,33 @@
+(function() {
+
+
 var playerSearch = function(o) {
     return new oo.data.loader({
 	prefix: 'http://tf2apiproxy.appspot.com/api/v1/search/',
 	dataType: 'jsonp',
+	jsonpCallback: 'tf2auctionsPlayerSearch'
     })(o)
-}
+},
 
 
-var BackpackModel = oo.model.schema.extend({
-    name: 'BackpackModel',
-
+backpackModel = oo.model.schema.extend({
     findId: function(options) {
-        oo.data.status({
-            error: options.error,
-            success: function(status) {
-	        options.success([{id: options.id, persona: status.name}])
-	    },
-            suffix: options.id
-        })
+        oo.data.status({id: options.id})
+            .success(function(status) {
+		options.success([{id: options.id, persona: status.name}]) }
+	    )
+            .error(options.error)
     },
 
     findNames: function(options) {
-	playerSearch({
-	    error: options.error,
-	    success: options.success,
-            suffix: options.name
-        })
+	playerSearch({suffix: options.name})
+	    .success(options.success)
+	    .error(options.error)
     }
-})
+}),
 
 
-var BackpackView = oo.view.schema.extend({
+backpackView = oo.view.schema.extend({
     showSelection: function(event) {
 	var self = this
 	try {
@@ -41,10 +39,8 @@ var BackpackView = oo.view.schema.extend({
 	    return
 	}
 	self.message('Loading backpack...')
-	oo.data.backpack({
-	    success: function(bp) { self.ready(data.id, data.persona, bp) },
-	    suffix: data.id
-        })
+	oo.data.backpack({id: data.id})
+	    .success(function(bp) { oo.info('bp success', bp); self.ready(data.id, data.persona, bp) })
     },
 
     searchText: function(v) {
@@ -64,17 +60,16 @@ var BackpackView = oo.view.schema.extend({
     showSearch: function(results) {
 	var self = this
 	self.reset()
-        var ready = function() {
+        oo.data.schema().success(function() {
             self.message().hide()
             if (results.length == 0) {
 		$('#backpack-viewer-result-none')
 		    .text('Your search did not match any players.')
             } else if (results.length == 1) {
 		var result = results[0]
-		oo.data.backpack({
-		    suffix: result.id,
-		    success: function(bp) { self.ready(result.id, result.persona, bp) }
-		})
+		oo.data.backpack({id: result.id})
+		    .success(function(bp) { self.ready(result.id, result.persona, bp)})
+
 	    } else if (results.length > 1) {
 		$('#backpack-viewer-result-many-label')
 		    .text('Matched {0} players: '.fs(results.length))
@@ -87,11 +82,11 @@ var BackpackView = oo.view.schema.extend({
 		})
                 $('#backpack-viewer-result-many').fadeIn()
 	    }
-	}
-	oo.data.schema({success: ready})
+	})
     },
 
     ready: function(id64, name, backpack) {
+	oo.info('backpack.ready(', id64, name, backpack, ')')
 	var self = this, items = backpack.result.items.item
         window.location.hash = id64
         if (!items.length || items[0]==null) {
@@ -102,19 +97,16 @@ var BackpackView = oo.view.schema.extend({
 	    self.message().fadeOut()
 	    return
         }
-        var ready = function (listings) {
-            self.clear()
-	    oo.data.bids({
-	        suffix: id64,
-	        success: function(bids) {
-		    $('#backpack-viewer-backpack-title')
-			.html(self.hiliteSpan('Backpack - {0}'.fs(name)))
-		    self.put(backpack, listings, bids)
-	        }
+	self.message('Loading backpack...')
+	oo.data.bids({id: id64})
+	    .success(function(bids) {
+		oo.data.listings({id: id64})
+		    .success(function(listings) {
+			$('#backpack-viewer-backpack-title')
+			    .html(self.hiliteSpan('Backpack - {0}'.fs(name)))
+			self.put(backpack, listings, bids)
+		    })
 	    })
-        }
-        self.message('Loading backpack...')
-        oo.data.listings({suffix: id64, success: ready})
     },
 
     clear: function() {
@@ -144,23 +136,22 @@ var BackpackView = oo.view.schema.extend({
 		         showAll: true,
 		         rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
             })
-        oo.data.auth({
-	    suffix: '?settings=1&complete=1',
-	    success: function(profile) { bpTool.init(profile.settings) },
-	    error: function() { bpTool.init(null) }
-        })
+        oo.data.auth({suffix: '?settings=1&complete=1'})
+	    .success(function(profile) { bpTool.init(profile.settings) })
+	    .error(function() { bpTool.init(null) })
         self.message().fadeOut()
         if (!self.put.initOnce) {
 	    $('#backpack-viewer-backpack-inner').fadeIn()
 	    self.put.initOnce = true
         }
     }
-})
+
+}),
 
 
-var BackpackController = oo.controller.extend({
-    model: BackpackModel,
-    view: BackpackView,
+backpackController = oo.controller.extend({
+    model: backpackModel,
+    view: backpackView,
     config: {auth: {required: false, settings: true, complete: true}},
     defaultSearchText: 'Enter Steam ID, Player Name, or Steam Community URL',
 
@@ -226,3 +217,6 @@ var BackpackController = oo.controller.extend({
 })
 
 
+
+
+})()

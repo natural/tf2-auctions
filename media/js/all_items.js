@@ -1,5 +1,13 @@
 (function() {
     var model = oo.model.schema.extend({
+	init: function(view, config) {
+	    var self = this
+	    return oo.model.schema.init.apply(self, arguments)
+	        .success(function() {
+		    view.join.apply(view, [self]) 
+		})
+	},
+
 	groups: function() {
 	    return [
 		['Weapons', this.tool.weapons],
@@ -15,11 +23,13 @@
 	}
     }),
 
+
     view = oo.view.schema.extend({
 	cloneClass: 'group-proto-seed',
 
 	join: function(model) {
 	    var self = this
+	    self.model = model
 	    $.each(model.groups(), function(idx, group) {
 		var clone = self.proto()
 		self.putItems($('.group-items-seed', clone), group[1]())
@@ -29,12 +39,16 @@
 	    self.putImages()
 	    self.message().fadeOut()
 	}
-    }),
+    })
 
-    controller = oo.controller.extend({
+    oo.controller.extend({
 	model: model,
 	view: view,
-	'ready' : function() { oo.view.message('Loading...') }
+	'ready' : function() {
+	    oo.view.message('Loading...')
+	    oo.model.auth.init()
+	}
     })
+
 
 })()

@@ -39,6 +39,11 @@ var oo = (function() {
 	for (var k in o) { vs.push(o[k]) }
 	return vs
     }
+    ns.ident = ident = function(a) { return a }
+    ns.noop = function() {}
+    ns.info = function() { console.debug.apply(console, arguments) }
+    ns.warn = function() { console.warn.apply(console, arguments) }
+    ns.error = function() { console.error.apply(console, arguments) }
     return ns
 })();
 
@@ -357,14 +362,17 @@ var oo = (function() {
 		var value = $('option:selected', event.target).attr('value')
 	    } catch (e) { return }
 	    if (!value) { return }
-	    var schema = oo.schema.tool(),
-	    itemCall = schema[value]
-	    if (itemCall) {
-		self.clear()
-		self.putFilterItems(schema.tradable(itemCall()))
-		self.reinit()
-	    }
+	    oo.data.schema().success(function(s) {
+		var schema = oo.schema.tool(s),
+		itemCall = schema[value]
+		if (itemCall) {
+		    self.clear()
+		    self.putFilterItems(schema.tradable(itemCall()))
+		    self.reinit()
+		}
+	    })
 	}
+
 
 	self.clear = function() {
 	    $('td > div > img', outerContext).remove()
@@ -470,13 +478,13 @@ var oo = (function() {
 	}
 
 	self.putItems = function(items, settings) {
-	    oo.data.schema({success:function(schema) {
-		schema = oo.schema.tool(schema)
+	    oo.data.schema()
+		.success(function(schema) {
+		    schema = oo.schema.tool(schema)
 		var newIdx = -1,
 		    settings = oo.util.settings(settings),
 		    toolDefs = schema.tools(),
 		    actionDefs = schema.actions()
-
 		$.each(items, function(index, item) {
 		    item.flag_active_listing = (item.id in listingUids)
 		    item.flag_active_bid = (item.id in bidUids)
@@ -512,7 +520,7 @@ var oo = (function() {
 		    $('#bp-placed-{0} label, #bp-unplaced-{1}'.fs(slug, slug))
 		    .toggle(newIdx > -1)
 		$('#bp-{0} img'.fs(slug)).fadeIn()
-	    }})
+		})
 	}
 
 	self.initOptional = function() {
@@ -527,10 +535,13 @@ var oo = (function() {
 	    }
 
 	    if (options.toolTips) {
-		var schema = oo.schema.tool(),
+		oo.data.schema().success(function(s) {
+		var schema = oo.schema.tool(s),
 		    tipTool = oo.backpack.itemHoverTool(schema)
 		$('div.bp td').hover(tipTool.show, tipTool.hide)
+		})
 	    }
+
 
 	    if (options.navigator) {
 		self.navigator = oo.backpack.navTool({
@@ -841,7 +852,7 @@ var oo = (function() {
 	var self = this
 
 	self.load = function(schema) {
-	    self.schema = schema['result']
+	    self.schema = schema.result
 	    self._definitions = {}, self._attrByName = {}, self._attrById = {}
 	    self.itemDefs = lazy(function() {
 		$.each(self.schema['items']['item'], function(index, definition) {
@@ -1009,8 +1020,9 @@ var oo = (function() {
 	}
 
 	if (typeof(schema) == 'undefined') {
-	    oo.data.schema({success: self.load})
-	} else {
+	    //oo.data.schema({success: self.load})
+	    oo.data.schema().success(self.load)
+	} else { 
 	    self.load(schema)
 	}
     }
@@ -1081,13 +1093,11 @@ var oo = (function() {
 	},
 
 	putStatus: function(listing, target) {
-	    oo.data.status({
-		suffix: listing.owner.id64,
-		success: function(status) {
+	    oo.model.status({suffix: listing.owner.id64})
+	        .success(function(status) {
 		    $('.listing-avatar', target)
 			.addClass('profile-status ' + status.online_state)
-		}
-            })
+		})
 	},
 
 	putOne: function(listing, target, prefix) {
@@ -1166,13 +1176,11 @@ var oo = (function() {
 	    $('#content-avatar-pod')
 		.html(oo.util.img({src: p.avatar, width: 24, height: 24}))
 		.show()
-	    oo.data.status({
-		suffix: p.id64,
-		success: function(status) {
+	    oo.model.status.clone({suffix: p.id64}).init()
+		.success(function(status) {
 	            $('#content-avatar-pod img').addClass(status.online_state)
 	            $('#content-avatar-pod img').addClass('profile-status')
-		}
-            })
+		})
 	}
     })
 
@@ -1214,128 +1222,109 @@ var oo = (function() {
 //
 // Begin the 'data' namespace.
 //
-(function(ns) {
-    // common cache for all loaders
-    var cache = {loading:{}, successCb:{}, errorCb:{}, results:{}},
-        ident = function(a) { return a },
 
-    loader = ns.loader = function(config) {
-	var prefix = config.prefix, name = config.name
+
+(function(ns) {
+    ns.loader = function(config) {
+	var prefix = config.prefix, cache = {}, pending = {}
 
 	return function(options) {
-	    var url = prefix + (options.suffix || ''),
-                key = (options.cacheKey || url),
-	        successCb = cache.successCb[key],
-	        errorCb = cache.errorCb[key],
-	        res = cache.results[key],
-
-	    loadSuccess = function(data) {
-		cache.results[key] = {data:data}
-		if (config.debug || options.debug) {
-		    console.log(name, 'success: ', data, 'callbacks: ', successCb.length, 'key: ', key)
-		}
-		if (config.successEvent) {
-		    $(document).trigger(config.successEvent, data)
-		}
-		while (successCb.length) { successCb.pop()(data) }
-		cache.loading[key] = false
-	    },
-
-	    loadError = function(req, status, err) {
-		cache.results[key] = {request:req, status:status, error:err}
-		if (config.errorEvent) {
-		    $(document).trigger(config.errorEvent, [req, status, err])
-		}
-		while (errorCb.length) { errorCb.pop()(req, status, err) }
-		cache.loading[key] = false
+	    var options = options || {},
+	        url = prefix + (options.suffix || ''),
+                success = options.success || oo.ident,
+                error = options.error || oo.ident,
+                debug = config.debug || options.debug
+	    if (cache[url]) {
+		if (debug) { console.log('cache hit:', url) }
+		return cache[url]
 	    }
-
-	    if (!successCb) { cache.successCb[key] = successCb = [] }
-	    if (!errorCb) { cache.errorCb[key] = errorCb = [] }
-
-	    successCb.push(options.success ? options.success : ident)
-	    errorCb.push(options.error ? options.error : ident)
-
-	    if (!res) {
-		if (!cache.loading[key]) {
-		    cache.loading[key] = true
-		    if (config.debug || options.debug) {
-			console.log('{0}(url="{1}", key="{2}")'.fs(name, url, key))
-		    }
-		    $.ajax({
-			url: url,
-			async: typeof(config.async) == 'undefined' ? true : config.async,
-			dataType: (config.dataType || 'json'),
-			jsonpCallback: (config.jsonpCallback || options.jsonpCallback || null),
-			cache: true,
-			success: loadSuccess,
-			error: loadError
-		    })
-		}
-	    } else {
-		if (config.debug || options.debug) {
-		    console.log(name, 'cache hit', cache.results[key])
-		}
-		if (res.data) {
-		    loadSuccess(res.data)
-		} else {
-		    loadError(res.request, res.status, res.error)
-		}
+	    if (pending[url]) {
+		if (debug) { console.log('pending request hit:', url) }
+		return pending[url]
 	    }
+	    if (debug) {
+		console.log('cache miss:', url)
+	    }
+            return pending[url] = $.ajax({
+		url: url,
+		async: true,
+		cache: true,
+		dataType: (options.dataType || config.dataType || 'json'),
+		jsonpCallback: (options.jsonpCallback || config.jsonpCallback || null),
+		complete: function(v) { cache[url] = v; delete(pending[url]) }
+	    })
 	}
     }
-   
-    // predefine common loaders.  these aren't visible outside of the
-    // namespace, and they cache correctly by url.
-    var authLoader = loader({
-	prefix: '/api/v1/auth/profile',
-	name: 'AuthProfileLoader',
-	successEvent: 'authOkay',
-	errorEvent: 'authError'
-    }),
-    backpackLoader = loader({
+    var debug = true
+
+    ns.authLoader = ns.loader({prefix: '/api/v1/auth/profile', debug: debug})
+    ns.backpackLoader = ns.loader({
 	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/items/',
 	dataType: 'jsonp',
 	jsonpCallback: 'tf2auctionsBackpackLoader',
-	name: 'BackpackLoader'
-    }),
-    bidsLoader = loader({
-	prefix: '/api/v1/public/bids/',
-	name: 'BidsLoader'
-    }),
-    listingLoader = loader({
-	prefix: '/api/v1/public/listing/',
-	name: 'ListingLoader'
-    }),
-    listingsLoader = loader({
-	prefix: '/api/v1/public/listings/',
-	name: 'ListingsLoader'
-    }),
-    schemaLoader = loader({
+	debug: debug
+    })
+    ns.bidsLoader = ns.loader({prefix: '/api/v1/public/bids/', debug: debug})
+    ns.feedbackLoader = ns.loader({prefix: '/api/v1/public/profile-feedback/', debug: debug})
+    ns.listingLoader = ns.loader({prefix: '/api/v1/public/listing/', debug: debug})
+    ns.listingsLoader = ns.loader({prefix: '/api/v1/public/listings/', debug: debug})
+    ns.messagesLoader = ns.loader({prefix: '/api/v1/auth/list-messages', debug: debug})
+    ns.profileLoader = ns.loader({prefix: '/api/v1/public/profile/', debug: debug})
+    ns.schemaLoader = ns.loader({
 	prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
 	dataType: 'jsonp',
 	jsonpCallback: 'tf2auctionsSchemaLoader',
-	name: 'SchemaLoader',
-	successEvent: 'schemaLoaded'
-    }),
-    searchLoader = loader({
-	prefix: '/api/v1/public/search',
-	name: 'SearchLoader'
-    }),
-    statusLoader = loader({
+	debug: debug
+    })
+    ns.searchLoader = ns.loader({prefix: '/api/v1/public/search', debug: debug})
+    ns.statusLoader = ns.loader({
 	prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
 	dataType: 'jsonp',
-	name: 'StatusLoader'
+	jsonpCallback: 'tf2auctionsStatusLoader',
+	debug: debug
     })
 
-    ns.auth = function(o) { return new authLoader(o) } 
-    ns.backpack = function(o) { return new backpackLoader(o) }
-    ns.bids = function(o) { return new bidsLoader(o) }
-    ns.listing = function(o) { return new listingLoader(o) }
-    ns.listings = function(o) { return new listingsLoader(o) }
-    ns.schema = function(o) { return new schemaLoader(o) }
-    ns.search = function(o) { return new searchLoader(o) }
-    ns.status = function(o) { return new statusLoader(o) }
+
+    // FIXME: using the id is crap, just go back and use the suffix.
+    ns.auth = function(o) { return new ns.authLoader(o) }
+    ns.backpack = function(o) { 
+	if (o.id) {
+	    o.suffix = o.id
+	    o.jsonpCallback = 'backpack'+o.id
+	}
+	oo.info('backpack options', o)
+	return new ns.backpackLoader(o) 
+    }
+    ns.bids = function(o) { 
+	if (o.id) { o.suffix = o.id }
+	return new ns.bidsLoader(o) 
+    }
+    ns.feedback = function(o) { return new ns.feedbackLoader(o) }
+    ns.listing = function(o) { 
+	if (o.id) { o.suffix = o.id }
+	return new ns.listingLoader(o)
+    }
+    ns.listings = function(o) { 
+	if (o.id) { o.suffix = o.id }
+	return new ns.listingsLoader(o) 
+    }
+    ns.messages = function(o) {
+	return new ns.messagesLoader(o)
+    }
+    ns.profile = function(o) { 
+	o.suffix = o.id
+	return new ns.profileLoader(o)
+    }
+    ns.schema = function(o) { return new ns.schemaLoader(o) }
+    ns.search = function(o) { return new ns.searchLoader(o) }
+    ns.status = function(o) {
+	if (o.id) {
+	    o.suffix = o.id
+	    o.jsonpCallback = 'status'+o.id
+	}
+	return new ns.statusLoader(o)
+    }
+
 
 })(oo.data = {});
 
@@ -1403,89 +1392,64 @@ var oo = (function() {
     // This is the root Model object.  Model objects are
     // initialized automatically by their associated Controller.
     //
-    // During initialization, Model objects make one or more network
-    // reqeusts to load data.  After all requests are completed, the model
-    // object calls the 'join' method of the associated view.
-    //
-    // At initialization, Model and its clones invoke a AuthProfileLoader
-    // with its success and error callbacks set to the functions
-    // 'authSuccess' and 'authError', respectively.
-    //
     ns.model = ns.mvc.extend({
 	clones: [],
-	requests: [],
-	name: 'Model',
-	profile: null,
-
-	authSuccess: function(profile) {
-	    this.profile = profile
-	    this.view.authSuccess.apply(this.view, [profile])
-	},
-
-	authError: function(req, status, err) {
-            this.view.authError.apply(this.view, [req, status, err])
-	},
 
 	init: function(view, config) {
-	    var self = this
-	    self.view = view
-            view.init.apply(view, [self])
-
-	    // request the authorized user profile
-            self.requests.push(function() {
-		var s = (config && config.auth && config.auth.settings ? 'settings=1' : ''),
-		    c = (config && config.auth && config.auth.complete ? 'complete=1' : '')
-		s = (s ? ('?' + s) : '')
-		oo.data.auth({
-		    suffix: s + (c ? '&'+c : ''),
-		    success: function(p) { self.authSuccess.apply(self, [p]) },
-		    error: function(r, s, e) { self.authError.apply(self, [r,s,e]) }
-		})
-            })
+	    var self = this,
+                args = arguments,
+                suffix = self.suffix || '',
+	    suffix = (typeof suffix === 'function' ? suffix() : suffix)
 	    if (self.loader) {
-		self.requests.push(function() {
-		    var success = function(v) { self.ready.apply(self, [v]) }
-		    new self.loader({success: success, suffix: self.loaderSuffix || ''})
-		})
+	    return self.req = self.loader({suffix: suffix})
+	        .success(function(d) { self.data = d })
 	    }
-            var binder = $('<foo />')
-	    binder.bind('ajaxStop.{0}'.fs(self.name), function() {
-		view.join.apply(view, [self])
-		binder.unbind('ajaxStop.{0}'.fs(self.name))
-            })
-            $.each(self.requests, function(i, r) {  r.apply(self)  })
 	},
 
-	// default implementation that sets the results as an attribute on
-	// the model
-	ready: function(results) {
-	    this.results = results
-	},
-
-	// convenience function for cloning the Model object with
-	// parameters for a new loader
-	make: function(mc, lc) {
-	    if (lc) { mc.loader = oo.data.loader(lc) }
-	    return oo.model.extend(mc)
+	clone: function(attrs) {
+	    return $.extend($.extend({}, this), attrs)
 	}
     })
 
-
-    //
-    // This is a model object that is pre-configured for using the TF2
-    // item schema as its data.  When initialized, this object (and any of
-    // its clones) fetches the item schema and creates an instance of
-    // SchemaTool, setting that instance as the 'tool' attribute.
-    //
     ns.model.schema = ns.model.extend({
-	loader: oo.data.schema,
-
-	ready: function(results) {
-            this.results = results
-            this.tool = oo.schema.tool(results)
+	loader: oo.data.schemaLoader,
+	init: function(view, config) {
+	    var self = this
+	    return ns.model.init.apply(this, arguments)
+	        .success(function(data) {
+		    var st = self.tool = oo.schema.tool(data), tt = oo.backpack.itemHoverTool(st)
+		    $('div.ov td.item-view, #backpack-ac td, .backpack td')
+			.live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
+			.live('mouseout',  function(e) { tt.hide(e);  $(this).removeClass('outline') })
+		    $('.listing-view')
+			.live('mouseover', function() { $(this).addClass('listing-hover') })
+			.live('mouseout',  function() { $(this).removeClass('listing-hover') })
+		})
 	},
+
+	// this is never called!  move the init success to a single function:
+	success: function(data, status, jqxhr) {
+	    this.tool = oo.schema.tool(data)
+	    oo.model.success.apply(this, arguments)
+	}
     })
 
+    ns.model.status = ns.model.extend({
+	loader: oo.data.statusLoader
+    })
+
+    ns.model.auth = ns.model.extend({
+	loader: oo.data.authLoader,
+	init: function(view, config) {
+	    return ns.model.init.apply(this, arguments)
+	        .success(function(p) {
+		    oo.util.profile.defaultUserAuthOkay(p)
+		})
+	        .error(function() {
+		    oo.util.profile.defaultUserAuthError()
+		})
+	}
+    })
 
     //
     // This is the root View object.
@@ -1684,39 +1648,15 @@ var oo = (function() {
 //
 // document and library initialization
 //
+(function(jq) {
+    jq.fn.fadeAway = function(cb) { return this.each(function() { jq(this).fadeTo(750, 0, 'linear', cb) })  }
+    jq.fn.fadeBack = function(cb) { return this.each(function() { jq(this).fadeTo(750, 100, 'linear', cb) }) }
+    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
+})(jQuery);
+
 $(document)
-    // if and when the profile is loaded for an authorized user, perform
-    // the default actions for that kind of user.
-    .bind('authOkay', function(event, profile) {
-        oo.util.profile.defaultUserAuthOkay(profile)
-    })
-
-    // if and when a profile cannot be loaded (because the user isn't
-    // authorized, i.e., anon), perform the default actions for that kind
-    // of user.
-    .bind('authError', function(event, req, status, err) {
-        oo.util.profile.defaultUserAuthError(req, status, err)
-    })
-
-    // if and when the items schema is loaded, hook it up to a SchemaTool
-    // and a ItemHoverTool.
-    .bind('schemaLoaded', function(event, schema) {
-	var st = oo.schema.tool(schema),
-            tt = oo.backpack.itemHoverTool(st)
-	$('div.ov td.item-view, #backpack-ac td, .backpack td')
-	    .live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
-	    .live('mouseout',  function(e) { tt.hide(e);  $(this).removeClass('outline') })
-	$('.listing-view')
-	    .live('mouseover', function() { $(this).addClass('listing-hover') })
-	    .live('mouseout',  function() { $(this).removeClass('listing-hover') })
-    })
-
     .bind('ready', function() {
-	(function(jq) {
-	    jq.fn.fadeAway = function() { this.each(function() { jq(this).fadeTo(750, 0) }); return this }
-	    jq.fn.fadeBack = function() { this.each(function() { jq(this).fadeTo(750, 100) }); return this }
-	    jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
-	})(jQuery);
 	// initialize each direct clone of the oo.controller object:
 	$.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
+        oo.info('base.js loaded at document ready')
     })

@@ -1,50 +1,43 @@
 (function() {
+
+
 oo.config('#profile-')
 var path = oo.util.pathTail(),
-    noop = function() {},
     owner = function(m) {
-	return (m.results && m.profile && m.results.id64 == m.profile.id64)
+	return (m.pageProfile && m.userProfile && m.pageProfile.id64 == m.userProfile.id64)
     }
 
 
 var DetailsModel = oo.model.extend({
     init: function(view, config) {
-	var self = this,
-	    args = arguments,
-            tail = path,
-            preloader = oo.data.loader({prefix: '/api/v1/public/profile/'}),
-	    msgloader = oo.data.loader({prefix: '/api/v1/auth/list-messages'}),
-            fbkloader = oo.data.loader({prefix: '/api/v1/public/profile-feedback/'}),
-	    msgapply = function(m) {
-		self.messages = m
-		view.joinOwnerMsgs.apply(view, [self])
-	    },
-	    fbkapply = function(f) {
-	        self.feedback = f
-	        view.joinFeedback.apply(view, [self])
-	    },
-	    authapply = function(p) {
-		self.profile = p.settings ? p : null
+	var self = this, args = arguments
+	self.view = view
+	oo.data.profile({id: path})
+	    .success(function(pageProfile) {
+		self.pageProfile = pageProfile
+		oo.model.auth.extend({suffix: '?settings=1&complete=1'}).init()
+		    .success(function(p) {
+			self.userProfile = p
+			if (p.id64 == pageProfile.id64) {
+			    oo.data.messages(p.id64)
+				.success(function(m) {
+				    self.messages = m
+				    view.joinOwnerMsgs.apply(view, [self])
+				})
+			} else {
+			    view.joinAuthMsgs.apply(view, [self])
+			}
+		    })
+		    .error(function() {
+			view.joinAnonMsgs.apply(view, [self])
+		    })
 		view.joinProfile.apply(view, [self])
-		if (owner(self)) {
-		    self.requests.push(function() {msgloader({success: msgapply })})
-		} else if (self.profile) {
-		    view.joinAuthMsgs.apply(view, [self])
-		} else {
-		    view.joinAnonMsgs.apply(view, [self])
-		}
-		self.requests.push(function() {
-		    fbkloader({suffix: self.results.id64, success: fbkapply})
-		})
-	    }
-	preloader({
-	    suffix: tail,
-	    success: function(p) {
-		self.results = p
-		oo.data.auth({suffix: '?settings=1&complete=1', success: authapply, error: authapply})
-		oo.model.init.apply(self, args)
-	    }
-	})
+		oo.data.feedback({suffix: pageProfile.id64})
+		    .success(function(f) {
+			self.feedback = f
+			view.joinFeedback.apply(view, [self])
+		    })
+	    })
     },
 
     submitMsg: function(output) {
@@ -58,7 +51,6 @@ var DetailsModel = oo.model.extend({
 	    error: self.view.leaveMsgError
 	})
     }
-
 })
 
 
@@ -70,9 +62,8 @@ var DetailsView = oo.view.extend({
 		var clone = proto.clone(), link = '<a href="/profile/{0}">{1}</a>'
 		oo.view.setRating($('.fb-rating', clone), fb.rating)
 		$('.fb-message', clone).text(fb.comment)
-		oo.data.status({
-		    suffix: fb.source,
-		    success: function(status) {
+		oo.data.status({id: fb.source})
+		    .success(function(status) {
 			if (status.avatar_icon) {
 			    var img = '<img src="{0}" class="msg-avatar" />&nbsp;'.fs(status.avatar_icon)
 			    // TODO:  fetch fb.source profile + use oo.util.profile.defaultUrl
@@ -81,14 +72,13 @@ var DetailsView = oo.view.extend({
 			}
 			$('.source-name', clone).append(link.fs(fb.source, status.name))
 			clone.removeClass('null')
-		    }
-		})
+		    })
 		proto.after(clone)
 	    })
 	} else {
 	    oo('feedback-pod h2.empty').fadeIn()
 	}
-	this.joinFeedback = noop
+	this.joinFeedback = oo.noop
     },
 
     joinOwnerMsgs: function(model) {
@@ -109,9 +99,8 @@ var DetailsView = oo.view.extend({
 	    $.each(msgs, function(idx, msg) {
 		var clone = oo('view-msg-pod div.prototype').clone()
 		$('.profile-msg-text-seed', clone).text(msg.message)
-		oo.data.status({
-		    suffix: msg.source,
-		    success: function(status) {
+		oo.data.status({id: msg.source})
+		    .success(function(status) {
 			var link = '<a href="/profile/{0}">{1}</a>'
 			if (status.avatar_icon) {
 			    var img = '<img src="{0}" class="msg-avatar" />'.fs(status.avatar_icon)
@@ -122,16 +111,15 @@ var DetailsView = oo.view.extend({
 			}
 			$('.profile-msg-sender-name', clone)
 			    .append('{0} wrote:'.fs( link.fs(msg.source, status.name)) )
-		    }
-		})
+		    })
 		$('.profile-msg-created-seed', clone).text('Left: {0}'.fs(msg.created))
 		clone.removeClass('null prototype')
 		$('.profile-msg-remove', clone).click(function (e) {
 		    var removeMessageOkay = function(results) {
 			msgcount -= 1
 			putcount(msgcount)
-			model.profile.message_count -= 1
-			oo.util.profile.put(self.model.profile, true) 
+			model.userProfile.message_count -= 1
+			oo.util.profile.put(model.userProfile, true) 
 		    }
 		    clone.slideUp(function() {
 			$.ajax({
@@ -149,12 +137,12 @@ var DetailsView = oo.view.extend({
 	} else {
 	    oo('view-msg-pod h2.empty').fadeIn().parent().fadeIn()
 	}
-	this.joinOwnerMsgs = noop
+	this.joinOwnerMsgs = oo.noop
     },
 
     joinAuthMsgs: function(model) {
-	if (model && model.profile) {
-	    oo('msg-pod span.title').text('Leave Message for {0}'.fs(model.results.personaname))
+	if (model && model.userProfile) {
+	    oo('msg-pod span.title').text('Leave Message for {0}'.fs(model.pageProfile.personaname))
 	    oo('leave-msg-txt').width('90%').height(150)
 	    oo('leave-msg-submit').parent().width('90%')
 	    oo('leave-msg-pod').slideDown()
@@ -168,7 +156,7 @@ var DetailsView = oo.view.extend({
     },
 
     joinProfile: function(model) {
-	var profile = model.results,
+	var profile = model.pageProfile,
 	    ownerid = profile.steamid,
             setStatus = function(status) {
 	        var m = status.message_state
@@ -184,12 +172,11 @@ var DetailsView = oo.view.extend({
 	if (profile.avatarmedium) {
 	    oo('avatar').attr('src', profile.avatarmedium)
 	}
-	oo.data.status({suffix: profile.id64, success: setStatus})
+	oo.data.status({id: profile.id64}).success(setStatus)
 	oo('badge').slideDown()
 	oo('owner-view-steam-profile').attr('href', profile.profileurl)
 	oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
 	oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
-
         var possum = profile.rating[0],
             poscnt = profile.rating[1],
             negsum = profile.rating[2],
@@ -203,7 +190,7 @@ var DetailsView = oo.view.extend({
         oo('neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
         $('div.padding', oo('neg-bar').parent()).width('{0}%'.fs(100-neg) )
 
-	this.joinProfile = noop
+	this.joinProfile = oo.noop
     },
 
     leaveMsgText: function() {
@@ -248,7 +235,7 @@ var DetailsControllerDefn = {
 	if (txt) {
 	    c.model.submitMsg({
 		message: txt,
-		target: c.model.results.id64
+		target: c.model.pageProfile.id64
 	    })
 	} else {
 	    c.view.leaveMsgEmpty()
@@ -259,30 +246,18 @@ var DetailsControllerDefn = {
 
 var ListingsModel = oo.model.schema.extend({
     init: function(view, config) {
-	var self = this,
-	    args = arguments,
-            tail = path,
-            preloader = new oo.data.loader({prefix: '/api/v1/public/profile/'})
-	preloader({
-	    suffix: tail,
-	    success: function(p) {
-		var id64 = p.id64
-		self.requests.push(
-		    function() {
-			oo.data.listings({
-			    suffix: id64,
-		            success: function(listings) {
+	var self = this
+	return oo.model.schema.init.apply(self, arguments)
+	    .success(function(s) {
+		oo.data.profile({id: path})
+	            .success(function(p) {
+			oo.data.listings({id: p.id64})
+			    .success(function(listings) {
 				self.listings = listings
-				if (BackpackModel.listings) {
-				    self.view.join.apply(self.view, [self])
-				}
-			    }
-			})
-		    }
-		)
-		oo.model.schema.init.apply(self, args)
-	    }
-	})
+				view.join(self)
+			    })
+		    })
+	    })
     }
 })
 
@@ -293,13 +268,13 @@ var ListingsView = oo.view.schema.extend({
 	oo('listings-inner').slideDown(
 	    function() {
 		if (model.listings && model.listings.length) {
-		    self.putMany(model.listings, model.profile)
+		    self.putMany(model.listings, model.userProfile)
 		} else {
 		    oo('bids-pod h2.empty').fadeIn()
 		}
 	    }
 	)
-	self.join = noop
+	self.join = oo.noop
     },
 
     putMany: function(listings, profile) {
@@ -338,30 +313,18 @@ var ListingsView = oo.view.schema.extend({
 
 var BidsModel = oo.model.schema.extend({
     init: function(view, config) {
-	var self = this,
-	    args = arguments,
-            tail = path,
-            preloader = new oo.data.loader({prefix: '/api/v1/public/profile/'})
-	preloader({
-	    suffix: tail,
-	    success: function(p) {
-		var id64 = p.id64
-		self.requests.push(
-		    function() {
-			oo.data.bids({
-			    suffix: id64,
-		            success: function(bids) {
+	var self = this
+	return oo.model.schema.init.apply(self, arguments)
+	    .success(function(s) {
+		oo.data.profile({id: path})
+	            .success(function(p) {
+			oo.data.bids({id: p.id64})
+			    .success(function(bids) {
 				self.bids = bids
-				if (BackpackModel.bids) {
-				    self.view.join.apply(self.view, [self])
-				}
-			    }
-			})
-		    }
-		)
-		oo.model.schema.init.apply(self, args)
-	    }
-	})
+				view.join(self)
+			    })
+		    })
+	    })
     }
 })
 
@@ -372,12 +335,12 @@ var BidsView = oo.view.schema.extend({
 	var self = this
 	oo('bids-inner').slideDown(function() {
 	    if (model.bids && model.bids.length) {
-		self.putMany(model.bids, model.profile)
+		self.putMany(model.bids, model.userProfile)
 	    } else {
 		oo('bids-pod h2.empty').fadeIn()
 	    }
 	})
-	self.join = noop
+	self.join = oo.noop
     },
 
     putMany: function(bids, profile) {
@@ -412,37 +375,26 @@ var BidsView = oo.view.schema.extend({
 
 var BackpackModel = oo.model.schema.extend({
     init: function(view, config) {
-	var self = this,
-	    args = arguments,
-            tail = path,
-            preloader = oo.data.loader({prefix: '/api/v1/public/profile/'})
-	preloader({
-	    suffix: tail,
-	    success: function(p) {
-		var id64 = p.id64
-		self.requests.push(
-		    function() {
-			oo.data.listings({
-			    suffix: id64,
-			    success: function(listings) { self.listings = listings }
-			})
-		    },
-		    function() {
-			oo.data.bids({
-			    suffix: id64,
-		            success: function(bids) { self.bids = bids }
-			})
-		    },
-		    function() {
-			oo.data.backpack({
-			    suffix: id64,
-			    success: function(backpack) { self.backpack = backpack }
-			})
-		    }
-		)
-		oo.model.schema.init.apply(self, args)
-	    }
-	})
+	var self = this
+	return oo.model.schema.init.apply(self, arguments)
+	    .success(function(s) {
+		oo.data.profile({id: path})
+	            .success(function(p) {
+			oo.data.listings({id: p.id64})
+			    .success(function(listings) {
+				self.listings = listings
+				oo.data.bids({id: p.id64})
+				    .success(function(bids) {
+					self.bids = bids
+					oo.data.backpack({id: p.id64})
+					    .success(function(backpack) {
+						self.backpack = backpack
+						view.join(self)
+					    })
+				    })
+			    })
+		    })
+	    })
     }
 })
 
@@ -461,15 +413,27 @@ var BackpackView = oo.view.schema.extend({
 		showAll: true,
 		rowGroups: oo.backpack.pageGroup.full(model.backpack.result.num_backpack_slots)
 	    })
-	bpTool.init(model.profile ? model.profile.settings : null)
+	bpTool.init(model.userProfile ? model.userProfile.settings : null)
 	oo('backpack-inner').fadeIn()
     }
 })
 
 
 var SettingsModel = oo.model.schema.extend({
+    init: function(view, config) {
+	var self = this
+	return oo.model.schema.init.apply(self, arguments)
+	    .success(function(s) {
+		oo.model.auth.extend({suffix: '?settings=1&complete=1'}).init()
+		    .success(function(p) {
+			self.userProfile = p
+			view.join(self)
+		    })
+	    })
+    },
+
     ready: function(results) {
-	this.results = results
+	this.pageProfile = results
 	this.view.join.apply(this.view, [this])
     },
 
@@ -488,9 +452,9 @@ var SettingsModel = oo.model.schema.extend({
 
 
 var SettingsView = oo.view.extend({
-    notifyTool: function() {
+    notifyTool: function(schema) {
 	return new function() {
-	    this.schemaTool = oo.schema.tool()
+	    this.schemaTool = oo.schema.tool(schema)
 	    var items = this.schemaTool.tradableBackpack(),
             bpTool = oo.backpack.itemTool({
 		items: items,
@@ -515,7 +479,7 @@ var SettingsView = oo.view.extend({
     },
 
     join: function(model) {
-	var profile = model.profile, settings = profile.settings
+	var profile = model.userProfile, settings = profile.settings, self = this
 	$.each(oo.keys(settings), function(index, key) {
 	    var value = settings[key], pkey = 'profile-{0}'.fs(key)
 	    if (typeof(value) == 'boolean') {
@@ -526,40 +490,41 @@ var SettingsView = oo.view.extend({
 	    }
 	    oo('settings-pod').slideDown()
 	})
-
 	if (profile.subscription && profile.subscription.status == 'Verified') {
-	    var nlt = this.notifyTool(),
-	        removeFromChooser = function(e) {
-		    $('img', this).fadeOut().remove()
-		    $(this).removeClass('selected selected-delete')
-		},
-	        copyToChooser = function(e) {
-		    var source = $(e.target),
-		        target = $("#bp-chooser-notify-listing td div:empty").first()
-		    if (target.length) {
-			var clone = source.clone()
-			clone.data('node', source.data('node'))
-			target.prepend(clone)
+	    oo.data.schema()
+	        .success(function(s) {
+		    var nlt = self.notifyTool(s),
+	                removeFromChooser = function(e) {
+			    $('img', self).fadeOut().remove()
+			    $(self).removeClass('selected selected-delete')
+			},
+	            copyToChooser = function(e) {
+			var source = $(e.target),
+		            target = $("#bp-chooser-notify-listing td div:empty").first()
+			if (target.length) {
+			    var clone = source.clone()
+			    clone.data('node', source.data('node'))
+			    target.prepend(clone)
+			}
+		    },
+	            resetChooser = function() {
+			$.each( $('#bp-chooser-notify-listing td'), function(idx, cell) {
+		            $('img', cell).fadeOut().remove()
+			    $(cell).removeClass('selected selected-delete')
+			})
+			    }
+		    if (profile.settings['notify-listing-defs']) {
+			$.each(profile.settings['notify-listing-defs'], function(idx, defindex) {
+			    var target = $("#bp-chooser-notify-listing td div:empty").first()
+			    target.text( $.toJSON( {defindex:defindex}) ).addClass('defindex-lazy')
+			})
+		        nlt.schemaTool.putImages(profile.settings)
 		    }
-		},
-	        resetChooser = function() {
-		    $.each( $('#bp-chooser-notify-listing td'), function(idx, cell) {
-		        $('img', cell).fadeOut().remove()
-			$(cell).removeClass('selected selected-delete')
-		    })
-		}
-            if (profile.settings['notify-listing-defs']) {
-		$.each(profile.settings['notify-listing-defs'], function(idx, defindex) {
-		    var target = $("#bp-chooser-notify-listing td div:empty").first()
-		    target.text( $.toJSON( {defindex:defindex}) ).addClass('defindex-lazy')
+		    $('#bp-nl td div img').live('dblclick', copyToChooser)
+		    $('#bp-chooser-notify-listing td').live('dblclick', removeFromChooser)
+		    oo('notify-listing-reset').click(resetChooser)
+		    oo('premium-settings-pod').fadeIn()
 		})
-		nlt.schemaTool.putImages(profile.settings)
-	    }
-	    $('#bp-nl td div img').live('dblclick', copyToChooser)
-	    $('#bp-chooser-notify-listing td').live('dblclick', removeFromChooser)
-	    oo('notify-listing-reset').click(resetChooser)
-
-	    oo('premium-settings-pod').fadeIn()
 	} else {
 	    oo('premium-signup-pod').fadeIn()
 	}
@@ -588,8 +553,8 @@ var SettingsView = oo.view.extend({
 	    oo('email-error').text('').parent().slideUp()
 	}
     }
-
 })
+
 
 var SettingsControllerDefn = {
     model: SettingsModel,
@@ -681,8 +646,19 @@ var MainView = oo.view.extend({
 
 
 var MainModel = oo.model.extend({
-    loader: oo.data.loader({prefix: '/api/v1/public/profile/'}),
-    loaderSuffix: path
+    init: function(view, config) {
+	var self = this
+	return oo.data.profile({id: path})
+	    .success(function(p) {
+		self.pageProfile = p 
+		oo.model.auth.extend({suffix: '?settings=1&complete=1'}).init()
+		    .success(function (p) {
+			self.userProfile = p
+			view.join(self)
+		    })
+                    .error(function() { view.join(self) })
+	    })
+    }
 })
 
 

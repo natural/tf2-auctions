@@ -1,31 +1,17 @@
-(function() {
-oo.config('#subscribe-')
-
-
-var authOkay = function(profile) {
-    if (profile.subscription && profile.subscription.status == 'Verified') {
-	oo('thanks-pod').slideDown()
-    } else {
-	var pod = oo('form-pod')
-	$('input[name="os1"]').attr('value', profile.id64)
-	pod.slideDown()
-    }
-}
-
-
-var authFail = function(request, status, error) {
-    var pod = oo('login-pod')
-    pod.slideDown()
-}
-
-
 $(function() {
-    oo.data.auth({
-	success: authOkay,
-	error: authFail,
-	suffix: '?settings=1&complete=1'
-    })
+    var model = oo.model.auth.extend({loaderSuffix: '?settings=1&complete=1'})
+    oo.config('#subscribe-')
+    model.init()
+	.success(function(profile) {
+	    if (profile.subscription && profile.subscription.status == 'Verified') {
+		oo('thanks-pod').slideDown()
+	    } else {
+		$('input[name="os1"]').attr('value', profile.id64)
+		oo('form-pod').slideDown()
+	    }
+	})
+	.error(function() {
+	    oo('login-pod').slideDown()
+	})
 })
 
-
-})()
