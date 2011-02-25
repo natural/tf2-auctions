@@ -1,6 +1,5 @@
 $(document).ready(function() {
-    oo.config('#faq-')
-    oo.model.auth.init()
+    oo.config({prefix:'#faq-'})
 
     var cat = $('.prototype.category-seed'),
         ent = $('.prototype.entry-seed'),

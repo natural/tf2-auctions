@@ -26,9 +26,10 @@ String.prototype.fs = function() {
 // Create the 'oo' namespace.
 //
 var oo = (function() {
-    var ns = function(suffix, next) { return $('{0}{1}'.fs(ns.prefix, suffix), next) }
-    ns.prefix = ''
-    ns.config = function(p) { ns.prefix = p; return ns }
+    var ns = function(suffix, next) { return $('{0}{1}'.fs(ns.conf.prefix, suffix), next) }
+    ns.conf = {prefix: ''}
+    ns.config = function(c) { $.extend(ns.conf, c) }
+
     ns.keys = function(o) {
 	var ks = []
 	for (var k in o) { ks.push(k) }
@@ -363,7 +364,7 @@ var oo = (function() {
 	    } catch (e) { return }
 	    if (!value) { return }
 	    oo.data.schema().success(function(s) {
-		var schema = oo.schema.tool(s),
+		var schema = oo.util.schema(s),
 		itemCall = schema[value]
 		if (itemCall) {
 		    self.clear()
@@ -478,48 +479,48 @@ var oo = (function() {
 	}
 
 	self.putItems = function(items, settings) {
+
 	    oo.data.schema()
-		.success(function(schema) {
-		    schema = oo.schema.tool(schema)
-		var newIdx = -1,
-		    settings = oo.util.settings(settings),
-		    toolDefs = schema.tools(),
-		    actionDefs = schema.actions()
-		$.each(items, function(index, item) {
-		    item.flag_active_listing = (item.id in listingUids)
-		    item.flag_active_bid = (item.id in bidUids)
-		    var iutil = oo.util.item(item, schema), defindex = item['defindex']
-		    if (iutil.pos() > 0) {
-			// alternate ordering selects the first available div
-			// for the image, which is more natural looking for
-			// some backpacks (e.g., min bid)
-			if (options.altOrdering) {
-			    var ele = $('#bp-placed-{0} td div:empty'.fs(slug)).first()
+		.success(function(s) {
+		    var newIdx = -1,
+		        schema = oo.util.schema(s),
+		        toolDefs = schema.tools(),
+		        actionDefs = schema.actions(),
+		        uprefs = oo.util.settings(settings)
+		    $.each(items, function(index, item) {
+			item.flag_active_listing = (item.id in listingUids)
+			item.flag_active_bid = (item.id in bidUids)
+			var iutil = oo.util.item(item, schema), defindex = item['defindex']
+			if (iutil.pos() > 0) {
+			    // alternate ordering selects the first available div
+			    // for the image, which is more natural looking for
+			    // some backpacks (e.g., min bid)
+			    if (options.altOrdering) {
+				var ele = $('#bp-placed-{0} td div:empty'.fs(slug)).first()
+			    } else {
+				var ele = $('#{0}{1} div'.fs(slug, iutil.pos()))
+			    }
+			    ele.append(iutil.img())
+			    var img = $('img', ele).data('node', item)
+			    self.setEquipped(iutil, img, defindex, uprefs)
+			    self.setTradable(iutil, ele, item, uprefs)
+			    self.setPaintJewel(iutil, img, uprefs)
+			    self.setUseCount(img, item, uprefs, toolDefs, actionDefs)
 			} else {
-			    var ele = $('#{0}{1} div'.fs(slug, iutil.pos()))
+			    newIdx += 1
+			    var target = $('#bp-unplaced-{0} table.bp-unplaced'.fs(slug))
+			    if (!$('td:not(:has(img))', target).length) {
+				var cells = new Array(cols+1).join('<td><div></div></td>')
+				target.append('<tbody><tr>' + cells + '</tr></tbody>')
+			    }
+			    $('td:eq({1}) div'.fs(slug, newIdx), target).append(iutil.img())
+			    var img = $('td img:last'.fs(slug), target).data('node', item)
+			    self.setTradableUnplaced(iutil, img, item, uprefs)
+			    self.setUseCount(img, item, uprefs, toolDefs, actionDefs)
 			}
-			ele.append(iutil.img())
-			var img = $('img', ele).data('node', item)
-			self.setEquipped(iutil, img, defindex, settings)
-			self.setTradable(iutil, ele, item, settings)
-			self.setPaintJewel(iutil, img, settings)
-			self.setUseCount(img, item, settings, toolDefs, actionDefs)
-		    } else {
-			newIdx += 1
-			var target = $('#bp-unplaced-{0} table.bp-unplaced'.fs(slug))
-			if (!$('td:not(:has(img))', target).length) {
-			    var cells = new Array(cols+1).join('<td><div></div></td>')
-			    target.append('<tbody><tr>' + cells + '</tr></tbody>')
-			}
-			$('td:eq({1}) div'.fs(slug, newIdx), target).append(iutil.img())
-			var img = $('td img:last'.fs(slug), target).data('node', item)
-			self.setTradableUnplaced(iutil, img, item, settings)
-			self.setUseCount(img, item, settings, toolDefs, actionDefs)
-		    }
-		})
-		    $('#bp-placed-{0} label, #bp-unplaced-{1}'.fs(slug, slug))
-		    .toggle(newIdx > -1)
-		$('#bp-{0} img'.fs(slug)).fadeIn()
+		    })
+			$('#bp-placed-{0} label, #bp-unplaced-{1}'.fs(slug, slug)).toggle(newIdx > -1)
+		    $('#bp-{0} img'.fs(slug)).fadeIn()
 		})
 	}
 
@@ -536,7 +537,7 @@ var oo = (function() {
 
 	    if (options.toolTips) {
 		oo.data.schema().success(function(s) {
-		var schema = oo.schema.tool(s),
+		var schema = oo.util.schema(s),
 		    tipTool = oo.backpack.itemHoverTool(schema)
 		$('div.bp td').hover(tipTool.show, tipTool.hide)
 		})
@@ -838,17 +839,199 @@ var oo = (function() {
 
 
 //
-// Begin the schema namespace
+// Begin the 'util' namespace.
 //
 (function(ns) {
+    ns.item = function(item, schema) {
+	return {
+	    canTrade: function() {
+		return !(item.flag_cannot_trade) && !(item.flag_active_listing) && !(item.flag_active_bid)
+	    },
+	    equippedTag: function() {
+		return '<span class="badge equipped">Equipped</span>'
+	    },
+	    quantityTag: function(q) {
+		return '<span class="badge quantity">{0}</span>'.fs(q)
+	    },
+	    jewelTag: function(c) {
+		return '<span class="jewel jewel-{0}">&nbsp;</span>'.fs(c)
+	    },
+	    img: function() {
+		if (!item.defindex) {
+		    return oo.util.img({src:'/media/img/missing.png', width:64, height:64})
+		}
+		return oo.util.img({src: schema.itemDefs()[item['defindex']]['image_url'],
+				   style:'display:none', width:64, height:64})
+	    },
+	    isEquipped: function() {
+		return (item['inventory'] & 0xff0000) != 0
+	    },
+	    pos:  function() {
+		return (item.pos) ? item.pos : item['inventory'] & 0xFFFF
+	    },
+	    painted: function () {
+		var attrs = (item.attributes || {}).attribute || []
+		var paint = 0
+		$.each( $(attrs), function (idx, attr) {
+		    if (attr.defindex==142) { paint = attr.float_value }
+		})
+		    return paint
+	    },
+	    effect: function() {
+		var attrs = (item.attributes || {}).attribute || []
+		var effect = 0
+		$.each( $(attrs), function (idx, attr) {
+		    if (attr.defindex==134) { effect = attr.float_value }
+		})
+		    return effect
+	    }
+	}
+    }
+
+    ns.listing = Object.create({
+	putMany: function(options) {
+	    var self = this
+	    $.each(options.listings, function(idx, listing) {
+		var clone = options.prototype.clone()
+		self.putOne(listing, clone, options.prefix)
+		if (options.withStatus) { self.putStatus(listing, clone) }
+		options.target.append(clone)
+	    })
+	},
+
+	putStatus: function(listing, target) {
+	    oo.model.status({suffix: listing.owner.id64})
+	        .success(function(status) {
+		    $('.listing-avatar', target)
+			.addClass('profile-status ' + status.online_state)
+		})
+	},
+
+	putOne: function(listing, target, prefix) {
+            target.removeClass('null prototype').addClass('listing-seed')
+            if (listing.description) {
+		$('.listing-description', target).text(listing.description)
+	    } else {
+		$('.listing-description-label', target).empty()
+		$('.listing-description', target).empty()
+	    }
+	    $('.listing-owner', target).text(listing.owner.personaname)
+	    $('.listing-owner', target).parent().attr('href', '/profile/'+listing.owner.id64)
+	    $('.listing-avatar', target).attr('src', listing.owner.avatar)
+	    $('.listing-avatar', target).parent().attr('href', '/profile/'+listing.owner.id64)
+	    $('.bid-count-seed', target).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
+	    var next = 0
+	    $.each(listing.items, function(index, item) {
+		$( $('.item-view div', target)[next]).append( $.toJSON(item) )
+		next += 1
+	    })
+	    if (listing.min_bid_currency_use) {
+		$(prefix+'-listing-view-min-bid-currency-use', target).removeClass('null')
+		$(prefix+'-listing-view-min-bid-currency-use .currency', target)
+		    .text('${0}'.fs(listing.min_bid_currency_amount))
+		$(prefix+'-listing-view-min-bid', target).removeClass('null')
+	    } else {
+		if (listing.min_bid.length) {
+		    var next = 0
+		    $.each(listing.min_bid, function(index, defindex) {
+			$($(prefix+'-listing-view-min-bid .item-view div', target)[next])
+			    .append($.toJSON({defindex:defindex, quality:6}))
+			next += 1
+		    })
+		    $(prefix+'-listing-view-min-bid', target).removeClass('null')
+		} else {
+		    $(prefix+'-listing-view-min-bid', target).hide()
+		}
+	    }
+	    $('.listing-view-link a', target).attr('href', '/listing/'+listing.id)
+	    $('.listing-view-link > span.expires', target)
+		.append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
+	}
+    })
+
+    ns.profile = Object.create({
+	loginUrl: function() {
+	    return '/login?next=' + encodeURIComponent(window.location.href)
+	},
+
+	defaultUrl: function(p) {
+	    return p.custom_name ? '/id/{0}'.fs(p.custom_name) : '/profile/{0}'.fs(p.id64)
+	},
+
+	defaultUserAuthError: function(request, status, error) {
+	    $('#content-login-link').attr('href', oo.util.profile.loginUrl())
+	    $('#content-search-link, #content-quick-backpack').show()
+            $('#content-site-buttons').show()
+	},
+
+	defaultUserAuthOkay: function(p) {
+	    $('#content-player-profile-link').attr('href', oo.util.profile.defaultUrl(p))
+	    oo.util.profile.put(p)
+	    $('#content-login-link').hide()
+	    $('#content-user-buttons, #content-logout-link').show()
+            $('#content-site-buttons').show()
+	},
+
+	put: function(p, force) {
+            if (p.message_count || force) {
+		var b = $('#content-player-profile-link')
+		if (!b.data('msg-count') || force) {
+		    b.text('My Profile ({0})'.fs(p.message_count))
+		    b.data('msg-count', p.message_count)
+		}
+	    }
+	    $('#content-avatar-pod')
+		.html(oo.util.img({src: p.avatar, width: 24, height: 24}))
+		.show()
+	    oo.model.status.extend({suffix: p.id64}).init()
+		.success(function(status) {
+	            $('#content-avatar-pod img').addClass(status.online_state)
+	            $('#content-avatar-pod img').addClass('profile-status')
+		})
+	}
+    })
+
+    ns.settings = function(s) {
+	var valid = s && oo.keys(s).length
+	return {
+	    showEquipped: (valid ? s['badge-equipped'] : true),
+	    showPainted: (valid ? s['badge-painted'] : true),
+	    showUseCount: (valid ? s['badge-usecount'] : true),
+	    showAngrySalad: (valid ? s['angry-fruit-salad'] : false)
+	}
+    }
+
+    ns.itemUids = function(src) {
+	var uids = {}
+	$.each(src, function(idx, obj) {
+	    $.each(obj.items, function(i, item) {
+		uids[item.uniqueid] = item
+	    })
+	})
+	return uids
+    }
+
+    ns.pathTail = function() { return window.location.pathname.split('/').pop() }
+
+    ns.img = function(options) {
+	var src = options['src'] ? options['src'] : '/media/img/missing.png'
+	var width = '' + (options['width'] || 32)
+	var height = '' + (options['height'] || 32)
+	var alt = options['alt'] || ''
+	var style = options['style'] || ''
+	var cls = options['class'] || ''
+	return '<img src="{0}" width="{1}" height="{2}" alt="{3}" style="{4}" class="{5}" />'.fs(
+	    src, width, height, alt, style, cls)
+    }
+
     var lazy = function(def) {
 	var cache = []
 	return function(i) {
 	    return (i in cache) ? cache[i] : (cache[i] = def.call(arguments.callee, i))
 	}
-    }
+    },
 
-    var SchemaTool = function(schema) {
+    SchemaTool = function(schema) {
 	var self = this
 
 	self.load = function(schema) {
@@ -1027,303 +1210,106 @@ var oo = (function() {
 	}
     }
 
-    ns.tool = function(s) { return new SchemaTool(s) }
-})(oo.schema = {});
+    ns.schema = function(s) { return new SchemaTool(s) }
 
-
-//
-// Begin the 'util' namespace.
-//
-(function(ns) {
-    ns.item = function(item, schema) {
-	return {
-	    canTrade: function() {
-		return !(item.flag_cannot_trade) && !(item.flag_active_listing) && !(item.flag_active_bid)
-	    },
-	    equippedTag: function() {
-		return '<span class="badge equipped">Equipped</span>'
-	    },
-	    quantityTag: function(q) {
-		return '<span class="badge quantity">{0}</span>'.fs(q)
-	    },
-	    jewelTag: function(c) {
-		return '<span class="jewel jewel-{0}">&nbsp;</span>'.fs(c)
-	    },
-	    img: function() {
-		if (!item.defindex) {
-		    return oo.util.img({src:'/media/img/missing.png', width:64, height:64})
-		}
-		return oo.util.img({src: schema.itemDefs()[item['defindex']]['image_url'],
-				   style:'display:none', width:64, height:64})
-	    },
-	    isEquipped: function() {
-		return (item['inventory'] & 0xff0000) != 0
-	    },
-	    pos:  function() {
-		return (item.pos) ? item.pos : item['inventory'] & 0xFFFF
-	    },
-	    painted: function () {
-		var attrs = (item.attributes || {}).attribute || []
-		var paint = 0
-		$.each( $(attrs), function (idx, attr) {
-		    if (attr.defindex==142) { paint = attr.float_value }
-		})
-		    return paint
-	    },
-	    effect: function() {
-		var attrs = (item.attributes || {}).attribute || []
-		var effect = 0
-		$.each( $(attrs), function (idx, attr) {
-		    if (attr.defindex==134) { effect = attr.float_value }
-		})
-		    return effect
-	    }
-	}
-    }
-
-    ns.listing = Object.create({
-	putMany: function(options) {
-	    var self = this
-	    $.each(options.listings, function(idx, listing) {
-		var clone = options.prototype.clone()
-		self.putOne(listing, clone, options.prefix)
-		if (options.withStatus) { self.putStatus(listing, clone) }
-		options.target.append(clone)
-	    })
-	},
-
-	putStatus: function(listing, target) {
-	    oo.model.status({suffix: listing.owner.id64})
-	        .success(function(status) {
-		    $('.listing-avatar', target)
-			.addClass('profile-status ' + status.online_state)
-		})
-	},
-
-	putOne: function(listing, target, prefix) {
-            target.removeClass('null prototype').addClass('listing-seed')
-            if (listing.description) {
-		$('.listing-description', target).text(listing.description)
-	    } else {
-		$('.listing-description-label', target).empty()
-		$('.listing-description', target).empty()
-	    }
-	    $('.listing-owner', target).text(listing.owner.personaname)
-	    $('.listing-owner', target).parent().attr('href', '/profile/'+listing.owner.id64)
-	    $('.listing-avatar', target).attr('src', listing.owner.avatar)
-	    $('.listing-avatar', target).parent().attr('href', '/profile/'+listing.owner.id64)
-	    $('.bid-count-seed', target).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
-	    var next = 0
-	    $.each(listing.items, function(index, item) {
-		$( $('.item-view div', target)[next]).append( $.toJSON(item) )
-		next += 1
-	    })
-	    if (listing.min_bid_currency_use) {
-		$(prefix+'-listing-view-min-bid-currency-use', target).removeClass('null')
-		$(prefix+'-listing-view-min-bid-currency-use .currency', target)
-		    .text('${0}'.fs(listing.min_bid_currency_amount))
-		$(prefix+'-listing-view-min-bid', target).removeClass('null')
-	    } else {
-		if (listing.min_bid.length) {
-		    var next = 0
-		    $.each(listing.min_bid, function(index, defindex) {
-			$($(prefix+'-listing-view-min-bid .item-view div', target)[next])
-			    .append($.toJSON({defindex:defindex, quality:6}))
-			next += 1
-		    })
-		    $(prefix+'-listing-view-min-bid', target).removeClass('null')
-		} else {
-		    $(prefix+'-listing-view-min-bid', target).hide()
-		}
-	    }
-	    $('.listing-view-link a', target).attr('href', '/listing/'+listing.id)
-	    $('.listing-view-link > span.expires', target)
-		.append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
-	}
-    })
-
-    ns.profile = Object.create({
-	loginUrl: function() {
-	    return '/login?next=' + encodeURIComponent(window.location.href)
-	},
-
-	defaultUrl: function(p) {
-	    return p.custom_name ? '/id/{0}'.fs(p.custom_name) : '/profile/{0}'.fs(p.id64)
-	},
-
-	defaultUserAuthError: function(request, status, error) {
-	    $('#content-login-link').attr('href', oo.util.profile.loginUrl())
-	    $('#content-search-link, #content-quick-backpack').show()
-            $('#content-site-buttons').show()
-	},
-
-	defaultUserAuthOkay: function(p) {
-	    $('#content-player-profile-link').attr('href', oo.util.profile.defaultUrl(p))
-	    oo.util.profile.put(p)
-	    $('#content-login-link').hide()
-	    $('#content-user-buttons, #content-logout-link').show()
-            $('#content-site-buttons').show()
-	},
-
-	put: function(p, force) {
-            if (p.message_count || force) {
-		var b = $('#content-player-profile-link')
-		if (!b.data('msg-count') || force) {
-		    b.text('My Profile ({0})'.fs(p.message_count))
-		    b.data('msg-count', p.message_count)
-		}
-	    }
-	    $('#content-avatar-pod')
-		.html(oo.util.img({src: p.avatar, width: 24, height: 24}))
-		.show()
-	    oo.model.status.clone({suffix: p.id64}).init()
-		.success(function(status) {
-	            $('#content-avatar-pod img').addClass(status.online_state)
-	            $('#content-avatar-pod img').addClass('profile-status')
-		})
-	}
-    })
-
-    ns.settings = function(s) {
-	var valid = s && oo.keys(s).length
-	return {
-	    showEquipped: (valid ? s['badge-equipped'] : true),
-	    showPainted: (valid ? s['badge-painted'] : true),
-	    showUseCount: (valid ? s['badge-usecount'] : true),
-	    showAngrySalad: (valid ? s['angry-fruit-salad'] : false)
-	}
-    }
-
-    ns.itemUids = function(src) {
-	var uids = {}
-	$.each(src, function(idx, obj) {
-	    $.each(obj.items, function(i, item) {
-		uids[item.uniqueid] = item
-	    })
-	})
-	return uids
-    }
-
-    ns.pathTail = function() { return window.location.pathname.split('/').pop() }
-
-    ns.img = function(options) {
-	var src = options['src'] ? options['src'] : '/media/img/missing.png'
-	var width = '' + (options['width'] || 32)
-	var height = '' + (options['height'] || 32)
-	var alt = options['alt'] || ''
-	var style = options['style'] || ''
-	var cls = options['class'] || ''
-	return '<img src="{0}" width="{1}" height="{2}" alt="{3}" style="{4}" class="{5}" />'.fs(
-	    src, width, height, alt, style, cls)
-    }
 })(oo.util = {});
 
 
 //
 // Begin the 'data' namespace.
 //
-
-
 (function(ns) {
-    ns.loader = function(config) {
-	var prefix = config.prefix, cache = {}, pending = {}
+    var cache = {},
+        pending = {},
+        debug = true,
 
+    loader = ns.loader = function(config) {
 	return function(options) {
 	    var options = options || {},
-	        url = prefix + (options.suffix || ''),
-                success = options.success || oo.ident,
-                error = options.error || oo.ident,
-                debug = config.debug || options.debug
+	        url = config.prefix + (options.suffix || ''),
+	        dataType = (options.dataType || config.dataType || 'json'),
+                jsonpCallback = (options.jsonpCallback || config.jsonpCallback || null)
+
 	    if (cache[url]) {
-		if (debug) { console.log('cache hit:', url) }
+		if (debug) { oo.info('cache hit:', url) }
 		return cache[url]
 	    }
 	    if (pending[url]) {
-		if (debug) { console.log('pending request hit:', url) }
+		if (debug) { oo.info('pending request hit:', url) }
 		return pending[url]
 	    }
 	    if (debug) {
-		console.log('cache miss:', url)
+		oo.info('cache miss:', url)
+	    }
+	    if (dataType == 'jsonp' && options.suffix) {
+		jsonpCallback += options.suffix
 	    }
             return pending[url] = $.ajax({
 		url: url,
 		async: true,
 		cache: true,
-		dataType: (options.dataType || config.dataType || 'json'),
-		jsonpCallback: (options.jsonpCallback || config.jsonpCallback || null),
+		dataType: dataType,
+		jsonpCallback: jsonpCallback,
 		complete: function(v) { cache[url] = v; delete(pending[url]) }
 	    })
 	}
-    }
-    var debug = true
+    },
 
-    ns.authLoader = ns.loader({prefix: '/api/v1/auth/profile', debug: debug})
-    ns.backpackLoader = ns.loader({
+    authLoader = loader({prefix: '/api/v1/auth/profile'}),
+    backpackLoader = loader({
 	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/items/',
 	dataType: 'jsonp',
-	jsonpCallback: 'tf2auctionsBackpackLoader',
-	debug: debug
-    })
-    ns.bidsLoader = ns.loader({prefix: '/api/v1/public/bids/', debug: debug})
-    ns.feedbackLoader = ns.loader({prefix: '/api/v1/public/profile-feedback/', debug: debug})
-    ns.listingLoader = ns.loader({prefix: '/api/v1/public/listing/', debug: debug})
-    ns.listingsLoader = ns.loader({prefix: '/api/v1/public/listings/', debug: debug})
-    ns.messagesLoader = ns.loader({prefix: '/api/v1/auth/list-messages', debug: debug})
-    ns.profileLoader = ns.loader({prefix: '/api/v1/public/profile/', debug: debug})
-    ns.schemaLoader = ns.loader({
-	prefix: 'http://tf2apiproxy.appspot.com/api/v1/schema',
+	jsonpCallback: 'backpack'
+    }),
+    bidsLoader = loader({prefix: '/api/v1/public/bids/'}),
+    blogLoader = loader({prefix: '/api/v1/public/blog-entries'}),
+    feedbackLoader = loader({prefix: '/api/v1/public/profile-feedback/'}),
+    listingLoader = loader({prefix: '/api/v1/public/listing/'}),
+    listingsLoader = loader({prefix: '/api/v1/public/listings/'}),
+    messagesLoader = loader({prefix: '/api/v1/auth/list-messages'}),
+    newsLoader = loader({
+	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/news',
 	dataType: 'jsonp',
-	jsonpCallback: 'tf2auctionsSchemaLoader',
-	debug: debug
-    })
-    ns.searchLoader = ns.loader({prefix: '/api/v1/public/search', debug: debug})
-    ns.statusLoader = ns.loader({
-	prefix: 'http://tf2apiproxy.appspot.com/api/v1/status/',
+	jsonpCallback: 'tf2auctionsNews'
+    }),
+    profileLoader = loader({prefix: '/api/v1/public/profile/'}),
+    schemaLoader = loader({
+	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/schema',
 	dataType: 'jsonp',
-	jsonpCallback: 'tf2auctionsStatusLoader',
-	debug: debug
+	jsonpCallback: 'schema'
+    }),
+    searchLoader = loader({prefix: '/api/v1/public/search'}),
+    statsLoader = loader({prefix: '/api/v1/public/stats'}),
+    statusLoader = loader({
+	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/status/',
+	dataType: 'jsonp',
+	jsonpCallback: 'status'
     })
 
-
-    // FIXME: using the id is crap, just go back and use the suffix.
-    ns.auth = function(o) { return new ns.authLoader(o) }
-    ns.backpack = function(o) { 
-	if (o.id) {
-	    o.suffix = o.id
-	    o.jsonpCallback = 'backpack'+o.id
+    ns.auth = function(o) {
+	o = o || {}
+        if (oo.conf.auth) {
+	    var s = (oo.conf.auth.settings ? 'settings=1' : '')
+	    s = s ? ('?' + s) : ''
+            var c = (oo.conf.auth.complete ? 'complete=1' : '')
+	    s = s + (c ? '&'+c : '')
+	    o.suffix = s
 	}
-	oo.info('backpack options', o)
-	return new ns.backpackLoader(o) 
+	return authLoader(o)
     }
-    ns.bids = function(o) { 
-	if (o.id) { o.suffix = o.id }
-	return new ns.bidsLoader(o) 
-    }
-    ns.feedback = function(o) { return new ns.feedbackLoader(o) }
-    ns.listing = function(o) { 
-	if (o.id) { o.suffix = o.id }
-	return new ns.listingLoader(o)
-    }
-    ns.listings = function(o) { 
-	if (o.id) { o.suffix = o.id }
-	return new ns.listingsLoader(o) 
-    }
-    ns.messages = function(o) {
-	return new ns.messagesLoader(o)
-    }
-    ns.profile = function(o) { 
-	o.suffix = o.id
-	return new ns.profileLoader(o)
-    }
-    ns.schema = function(o) { return new ns.schemaLoader(o) }
-    ns.search = function(o) { return new ns.searchLoader(o) }
-    ns.status = function(o) {
-	if (o.id) {
-	    o.suffix = o.id
-	    o.jsonpCallback = 'status'+o.id
-	}
-	return new ns.statusLoader(o)
-    }
+    ns.backpack = function(o) { return backpackLoader(o) }
+    ns.bids = function(o) { return bidsLoader(o) }
+    ns.blog = function(o) { return blogLoader(o) }
+    ns.feedback = function(o) { return feedbackLoader(o) }
+    ns.listing = function(o) { return listingLoader(o) }
+    ns.listings = function(o) { return listingsLoader(o) }
+    ns.messages = function(o) { return messagesLoader(o) }
+    ns.news = function(o) { return newsLoader(o) }
+    ns.profile = function(o) { return profileLoader(o) }
+    ns.schema = function(o) { return schemaLoader(o) }
+    ns.search = function(o) { return searchLoader(o) }
+    ns.stats = function(o) { return statsLoader(o) }
+    ns.status = function(o) { return statusLoader(o) }
 
 
 })(oo.data = {});
@@ -1362,7 +1348,8 @@ var oo = (function() {
 
 	    // initalize the model associated with this controller.  the
 	    // model will initalize the view when it's ready.
-	    self.model.init.apply(self.model, [self.view, self.config])
+	    //self.model.init.apply(self.model, [self.view, self.config])
+	    self.model.init.apply(self.model, [self.view])
 
 	    // initialize anything in the namespace that looks like an
 	    // event listener.
@@ -1394,30 +1381,38 @@ var oo = (function() {
     //
     ns.model = ns.mvc.extend({
 	clones: [],
-
-	init: function(view, config) {
-	    var self = this,
-                args = arguments,
-                suffix = self.suffix || '',
+	init: function(view) {
+	    var self = this, args = arguments, suffix = self.suffix || ''
 	    suffix = (typeof suffix === 'function' ? suffix() : suffix)
-	    if (self.loader) {
 	    return self.req = self.loader({suffix: suffix})
-	        .success(function(d) { self.data = d })
-	    }
-	},
+		.success(function(d) { self.data = d })
+	}
 
-	clone: function(attrs) {
-	    return $.extend($.extend({}, this), attrs)
+    })
+
+    ns.model.backpack = ns.model.extend({
+	init: function(view) {
+	    var self = this, params = {suffix: self.suffix}
+	    return $.when(
+		oo.data.backpack(params),
+		oo.data.bids(params),
+		oo.data.listings(params)
+	    ).done(function() {
+		oo.info('backpack arguments', arguments)
+		self.backpack = arguments[0][0]
+		self.bids = arguments[1][0]
+		self.listings = arguments[2][0]
+	    })
 	}
     })
 
     ns.model.schema = ns.model.extend({
-	loader: oo.data.schemaLoader,
-	init: function(view, config) {
+	loader: oo.data.schema,
+	init: function(view) {
 	    var self = this
 	    return ns.model.init.apply(this, arguments)
 	        .success(function(data) {
-		    var st = self.tool = oo.schema.tool(data), tt = oo.backpack.itemHoverTool(st)
+		    var st = self.tool = oo.util.schema(data), tt = oo.backpack.itemHoverTool(st)
 		    $('div.ov td.item-view, #backpack-ac td, .backpack td')
 			.live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
 			.live('mouseout',  function(e) { tt.hide(e);  $(this).removeClass('outline') })
@@ -1429,25 +1424,21 @@ var oo = (function() {
 
 	// this is never called!  move the init success to a single function:
 	success: function(data, status, jqxhr) {
-	    this.tool = oo.schema.tool(data)
+	    this.tool = oo.util.schema(data)
 	    oo.model.success.apply(this, arguments)
 	}
     })
 
     ns.model.status = ns.model.extend({
-	loader: oo.data.statusLoader
+	loader: oo.data.status
     })
 
     ns.model.auth = ns.model.extend({
-	loader: oo.data.authLoader,
-	init: function(view, config) {
+	loader: oo.data.auth,
+	init: function(view) {
 	    return ns.model.init.apply(this, arguments)
-	        .success(function(p) {
-		    oo.util.profile.defaultUserAuthOkay(p)
-		})
-	        .error(function() {
-		    oo.util.profile.defaultUserAuthError()
-		})
+	        .success(function(p) { oo.util.profile.defaultUserAuthOkay(p) })
+	        .error(function() { oo.util.profile.defaultUserAuthError() })
 	}
     })
 
@@ -1643,8 +1634,6 @@ var oo = (function() {
 })(oo);
 
 
-
-
 //
 // document and library initialization
 //
@@ -1654,9 +1643,12 @@ var oo = (function() {
     jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
 })(jQuery);
 
+
 $(document)
     .bind('ready', function() {
+	// perform an initial auth if the module has indicated authentication
+	oo.data.auth()
+
 	// initialize each direct clone of the oo.controller object:
 	$.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
-        oo.info('base.js loaded at document ready')
     })

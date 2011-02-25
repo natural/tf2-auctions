@@ -1,29 +1,17 @@
 (function() {
-    oo.config('#front-')
-    var cauth = {auth: {required: false, settings: true}},
+    oo.config({prefix: '#front-', auth: {settings: 1, complete: 0}})
 
+    var initJoin = function(view) {
+	var self = this
+	return oo.model.init.apply(self, arguments)
+            .success(function() { view.join.apply(view, [self]) })
+    },
 
-    newsModel = oo.model.extend({
-	loader: oo.data.loader({
-	    prefix: 'http://tf2apiproxy.appspot.com/api/v1/news',
-	    dataType: 'jsonp',
-	    jsonpCallback: 'tf2auctionsNewsLoader',
-	}),
-
-	// this function is repeated too many times; provide
-	// an implementation
-	init: function(view, config) {
-	    var self = this
-	    return oo.model.init.apply(self, arguments)
-	        .success(function() { view.join.apply(view, [self]) })
-	}
-    }),
-
-
+    newsModel = oo.model.extend({loader: oo.data.news, init: initJoin}),
     newsView = oo.view.extend({
 	cloneClass: 'news-seed',
 	join: function(model) {
-	    var news = model.data, self = this
+	    var self = this, news = model.data.appnews.newsitems.newsitem
 	    if (!news || !news[0]) { return }
 	    $.each(news, function(idx, newsentry) {
 		var clone = self.proto()
@@ -43,20 +31,7 @@
     }),
 
 
-    statsModel = oo.model.extend({
-        loader: oo.data.loader({
-	    prefix: '/api/v1/public/stats',
-	    name: 'StatsLoader'
-	}),
-
-	init: function(view, config) {
-	    var self = this
-	    return oo.model.init.apply(self, arguments)
-	        .success(function() { view.join.apply(view, [self]) })
-	}
-    }),
-
-
+    statsModel = oo.model.extend({loader: oo.data.stats, init: initJoin}),
     statsView = oo.view.extend({
 	join: function(model) {
 	    var stats = model.data
@@ -68,19 +43,7 @@
     }),
 
 
-    blogModel = oo.model.extend({
-	loader: oo.data.loader({
-	    prefix: '/api/v1/public/blog-entries',
-	}),
-
-	init: function(view, config) {
-	    var self = this
-	    return oo.model.init.apply(self, arguments)
-	        .success(function() { view.join.apply(view, [self]) })
-	}
-    }),
-
-
+    blogModel = oo.model.extend({loader: oo.data.blog, init: initJoin}),
     blogView = oo.view.extend({
 	cloneClass: 'blog-seed',
 	join: function(model) {
@@ -102,14 +65,12 @@
 
 
     searchModel = oo.model.extend({
-	loader: oo.data.searchLoader,
-	loaderSuffix: '?limit=5',
+	loader: oo.data.search,
+	suffix: '?limit=5',
 
-	init: function(view, config) {
+	init: function(view) {
 	    var self = this
-            oo.model.auth.init()
-		.success(view.authSuccess)
-		.error(view.authError)
+            oo.model.auth.init().success(view.authSuccess).error(view.authError)
 	    return $.when(
 		oo.model.init.apply(this, arguments),
 		oo.model.schema.init()
@@ -151,7 +112,9 @@
 		prefix: '.new-listings'
 	    })
 	    this.joinFeatured(results)
-	    model.tool.putImages(this.profile ? this.profile.settings : null)
+	    oo.data.auth()
+		.success(function(p) {model.tool.putImages(p.settings) })
+	        .error(function() { model.tool.putImages() })
 	    $('div.listing-seed td.item-view div:empty').parent().remove()
 	    oo('new-listings-pod').slideDown()
 	},
@@ -170,7 +133,7 @@
 		.attr('src', listing.owner.avatar)
 	    $('.listing-avatar', clone).parent()
 		.attr('href', oo.util.profile.defaultUrl(listing.owner))
-	    oo.data.status({id: listing.owner.id64})
+	    oo.data.status({suffix: listing.owner.id64})
 		.success(function(status) {
 	            $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
 		})
@@ -201,7 +164,6 @@
 
 
     oo.controller.extend({
-	config: cauth,
 	model: searchModel,
 	view: searchView,
 
@@ -213,11 +175,8 @@
 	    e.controller.view.navFeatured(-1)
 	}
     })
-
-
-    oo.controller.extend({model: blogModel, view: blogView, config: cauth})
-    oo.controller.extend({model: statsModel, view: statsView, config: cauth})
-    oo.controller.extend({model: newsModel, view: newsView, config: cauth})
-
-
+    oo.controller.extend({model: blogModel, view: blogView})
+    oo.controller.extend({model: statsModel, view: statsView})
+    oo.controller.extend({model: newsModel, view: newsView})
 })()
+

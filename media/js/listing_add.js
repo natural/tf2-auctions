@@ -1,5 +1,7 @@
+// BUG:  angry salad settings not applied.
+
 var pid = '#listing-add-'
-oo.config(pid)
+oo.config({prefix: pid, auth: {settings: 1, complete: 1}})
 
 
 //
@@ -7,7 +9,7 @@ oo.config(pid)
 // chooser.
 //
 var MinBidTool = function() {
-    var schemaTool = oo.schema.tool(),
+    var schemaTool = oo.util.schema(),
         items = schemaTool.tradableBackpack()
     var bpTool = oo.backpack.itemTool({
 	items: items,
@@ -61,7 +63,7 @@ var BackpackListingTool = function(params) {
 	afterDropMove: function(item) { $('#bp-chooser-listing-add-item-error').parent().slideUp() }
     })
 
-    oo.data.auth({suffix: '?settings=1'})
+    oo.model.auth.init()
 	.success(function(profile) {
 	    var settings = profile.settings
 	    bpTool.init(profile.settings)
@@ -313,7 +315,7 @@ var profileReady = function(profile) {
 
 var schemaReady = function(schema) {
     oo.view.message('Loading your profile...')
-    oo.data.auth({suffix: '?settings=1&complete=1'}).success(profileReady)
+    oo.model.auth.init().success(profileReady)
 }
 
 

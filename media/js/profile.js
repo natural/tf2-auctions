@@ -1,7 +1,14 @@
-(function() {
+// BUG:  empty listings not showing.
+// FIXME:  some text ("Messages") should only appear after init
+// FIXME: some text ("Backpack") should only appear after ajax load;
+//        fetch times are long and need better loading/waiting dispays.
+
+//(function() {
 
 
-oo.config('#profile-')
+oo.config({prefix: '#profile-', auth: {settings: 1, complete: 1}})
+
+
 var path = oo.util.pathTail(),
     owner = function(m) {
 	return (m.pageProfile && m.userProfile && m.pageProfile.id64 == m.userProfile.id64)
@@ -9,13 +16,13 @@ var path = oo.util.pathTail(),
 
 
 var DetailsModel = oo.model.extend({
-    init: function(view, config) {
+    init: function(view) {
 	var self = this, args = arguments
 	self.view = view
-	oo.data.profile({id: path})
+	oo.data.profile({suffix: path})
 	    .success(function(pageProfile) {
 		self.pageProfile = pageProfile
-		oo.model.auth.extend({suffix: '?settings=1&complete=1'}).init()
+		oo.model.auth.init()
 		    .success(function(p) {
 			self.userProfile = p
 			if (p.id64 == pageProfile.id64) {
@@ -62,7 +69,7 @@ var DetailsView = oo.view.extend({
 		var clone = proto.clone(), link = '<a href="/profile/{0}">{1}</a>'
 		oo.view.setRating($('.fb-rating', clone), fb.rating)
 		$('.fb-message', clone).text(fb.comment)
-		oo.data.status({id: fb.source})
+		oo.data.status({suffix: fb.source})
 		    .success(function(status) {
 			if (status.avatar_icon) {
 			    var img = '<img src="{0}" class="msg-avatar" />&nbsp;'.fs(status.avatar_icon)
@@ -99,7 +106,7 @@ var DetailsView = oo.view.extend({
 	    $.each(msgs, function(idx, msg) {
 		var clone = oo('view-msg-pod div.prototype').clone()
 		$('.profile-msg-text-seed', clone).text(msg.message)
-		oo.data.status({id: msg.source})
+		oo.data.status({suffix: msg.source})
 		    .success(function(status) {
 			var link = '<a href="/profile/{0}">{1}</a>'
 			if (status.avatar_icon) {
@@ -172,7 +179,7 @@ var DetailsView = oo.view.extend({
 	if (profile.avatarmedium) {
 	    oo('avatar').attr('src', profile.avatarmedium)
 	}
-	oo.data.status({id: profile.id64}).success(setStatus)
+	oo.data.status({suffix: profile.id64}).success(setStatus)
 	oo('badge').slideDown()
 	oo('owner-view-steam-profile').attr('href', profile.profileurl)
 	oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
@@ -245,13 +252,13 @@ var DetailsControllerDefn = {
 
 
 var ListingsModel = oo.model.schema.extend({
-    init: function(view, config) {
+    init: function(view) {
 	var self = this
 	return oo.model.schema.init.apply(self, arguments)
 	    .success(function(s) {
-		oo.data.profile({id: path})
+		oo.data.profile({suffix: path})
 	            .success(function(p) {
-			oo.data.listings({id: p.id64})
+			oo.data.listings({suffix: p.id64})
 			    .success(function(listings) {
 				self.listings = listings
 				view.join(self)
@@ -283,7 +290,9 @@ var ListingsView = oo.view.schema.extend({
 	$.each(listings, function(idx, listing) {
 	    self.putOne(listing, proto.clone().addClass('listing-seed'))
 	})
-	oo.schema.tool().putImages(profile ? profile.settings : null)
+	oo.data.auth()
+	    .success(function(p) { oo.util.schema().putImages(p.settings) })
+	    .error(function() { oo.util.schema().putImages() })
 	$('div.listing-seed td.item-view div:empty').parent().remove()
 	oo('listings-pod div.init-seed').slideDown('slow')
     },
@@ -312,13 +321,13 @@ var ListingsView = oo.view.schema.extend({
 
 
 var BidsModel = oo.model.schema.extend({
-    init: function(view, config) {
+    init: function(view) {
 	var self = this
 	return oo.model.schema.init.apply(self, arguments)
 	    .success(function(s) {
-		oo.data.profile({id: path})
+		oo.data.profile({suffix: path})
 	            .success(function(p) {
-			oo.data.bids({id: p.id64})
+			oo.data.bids({suffix: p.id64})
 			    .success(function(bids) {
 				self.bids = bids
 				view.join(self)
@@ -349,7 +358,9 @@ var BidsView = oo.view.schema.extend({
 	    self.putOne(bid, proto.clone().addClass('bid-marker'))
 	})
 	$('div.bid-marker td.item-view div:empty').parent().remove()
-	oo.schema.tool().putImages(profile ? profile.settings : null)
+	oo.data.auth()
+	    .success(function(p) { oo.util.schema().putImages(p.settings) })
+	    .error(function() { oo.util.schema().putImages() })
 	oo('bids-pod div.init-seed').show()
     },
 
@@ -374,26 +385,12 @@ var BidsView = oo.view.schema.extend({
 
 
 var BackpackModel = oo.model.schema.extend({
-    init: function(view, config) {
+    init: function(view) {
 	var self = this
-	return oo.model.schema.init.apply(self, arguments)
-	    .success(function(s) {
-		oo.data.profile({id: path})
-	            .success(function(p) {
-			oo.data.listings({id: p.id64})
-			    .success(function(listings) {
-				self.listings = listings
-				oo.data.bids({id: p.id64})
-				    .success(function(bids) {
-					self.bids = bids
-					oo.data.backpack({id: p.id64})
-					    .success(function(backpack) {
-						self.backpack = backpack
-						view.join(self)
-					    })
-				    })
-			    })
-		    })
+	return oo.data.profile({suffix: path})
+	    .success(function(p) {
+		var sub = oo.model.backpack.extend({suffix: p.id64})
+		sub.init().done( function() { view.join(sub) })
 	    })
     }
 })
@@ -413,18 +410,25 @@ var BackpackView = oo.view.schema.extend({
 		showAll: true,
 		rowGroups: oo.backpack.pageGroup.full(model.backpack.result.num_backpack_slots)
 	    })
-	bpTool.init(model.userProfile ? model.userProfile.settings : null)
-	oo('backpack-inner').fadeIn()
+	oo.data.auth()
+	    .success(function(p) { 
+		bpTool.init(p.settings)
+		oo('backpack-inner').fadeIn()
+	    })
+	    .error(function() {
+		bpTool.init()
+		oo('backpack-inner').fadeIn()
+	    })
     }
 })
 
 
 var SettingsModel = oo.model.schema.extend({
-    init: function(view, config) {
+    init: function(view) {
 	var self = this
 	return oo.model.schema.init.apply(self, arguments)
 	    .success(function(s) {
-		oo.model.auth.extend({suffix: '?settings=1&complete=1'}).init()
+		oo.model.auth.init()
 		    .success(function(p) {
 			self.userProfile = p
 			view.join(self)
@@ -454,7 +458,7 @@ var SettingsModel = oo.model.schema.extend({
 var SettingsView = oo.view.extend({
     notifyTool: function(schema) {
 	return new function() {
-	    this.schemaTool = oo.schema.tool(schema)
+	    this.schemaTool = oo.util.schema(schema)
 	    var items = this.schemaTool.tradableBackpack(),
             bpTool = oo.backpack.itemTool({
 		items: items,
@@ -646,12 +650,12 @@ var MainView = oo.view.extend({
 
 
 var MainModel = oo.model.extend({
-    init: function(view, config) {
+    init: function(view) {
 	var self = this
-	return oo.data.profile({id: path})
+	return oo.data.profile({suffix: path})
 	    .success(function(p) {
 		self.pageProfile = p 
-		oo.model.auth.extend({suffix: '?settings=1&complete=1'}).init()
+		oo.model.auth.init()
 		    .success(function (p) {
 			self.userProfile = p
 			view.join(self)
@@ -700,4 +704,5 @@ var MainController = oo.controller.extend({
 })
 
 
-})()
+//})()
+

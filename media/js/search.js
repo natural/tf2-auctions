@@ -1,4 +1,8 @@
+// BUG:  find-fast links that target /search aren't working correctly
+
 //(function() {
+
+oo.config({prefix: '#search-', auth: {settings: 1, complete: 0}})
 
 //
 // creates and initializes a backpack and chooser tool.
@@ -68,7 +72,7 @@ searchModel = oo.model.schema.extend({
         }
     },
 
-    init: function(view, config) {
+    init: function(view) {
 	var self = this, q = self.hash()
 	self.view = view
 	view.model = self
@@ -217,8 +221,8 @@ searchView = oo.view.searchbase.extend({
 	oo.data.schema({})
             .success(function(schema) {
 	        oo.model.auth.extend({suffix: '?settings=1'}).init()
-	            .success(function(profile) { oo.schema.tool(schema).putImages(profile.settings) })
-	            .error(function() { oo.schema.tool(schema).putImages() })
+	            .success(function(profile) { oo.util.schema(schema).putImages(profile.settings) })
+	            .error(function() { oo.util.schema(schema).putImages() })
             })
 	$('div.listing-seed td.item-view div:empty').parent().remove()
 	$('#search-listings').slideDown()
@@ -239,7 +243,7 @@ searchView = oo.view.searchbase.extend({
 	    .attr('src', listing.owner.avatar)
 	$('.listing-avatar', clone).parent()
 	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
-	oo.data.status({id: listing.owner.id64})
+	oo.data.status({suffix: listing.owner.id64})
             .success(function(status) {
 	        $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
 	    })
@@ -388,7 +392,6 @@ searchView = oo.view.searchbase.extend({
 
 
 searchController = oo.controller.extend({
-    config: {auth: {required: false, settings: true}},
     model: searchModel,
     view: searchView,
 

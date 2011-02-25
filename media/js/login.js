@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    oo.config('#content-')
+    oo.config({prefix:'#content-'})
     oo('login-link').fadeAway(function() {
 	oo('site-categories').fadeOut(function() {
 	    oo('site-buttons').fadeIn(function() {

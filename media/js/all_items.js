@@ -1,11 +1,9 @@
 (function() {
     var model = oo.model.schema.extend({
-	init: function(view, config) {
+	init: function(view) {
 	    var self = this
 	    return oo.model.schema.init.apply(self, arguments)
-	        .success(function() {
-		    view.join.apply(view, [self]) 
-		})
+	        .success(function() { view.join(self) })
 	},
 
 	groups: function() {

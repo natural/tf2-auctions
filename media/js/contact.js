@@ -37,7 +37,7 @@ var userAuthError = function(request, status, error) {
 
 
 $(document).ready(function() {
-    oo.config('#contact-')
+    oo.config({prefix:'#contact-'})
     oo('form-submit').click(submitFeedback)
     oo.model.auth.init()
         .success(function(p) {userAuthOkay(p)})

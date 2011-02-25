@@ -1,18 +1,20 @@
 (function() {
 
+oo.config({prefix: '#backpack-viewer-', auth: {settings: 1, complete: 0}})
+
 
 var playerSearch = function(o) {
     return new oo.data.loader({
-	prefix: 'http://tf2apiproxy.appspot.com/api/v1/search/',
+	prefix: 'http://tf2apiproxy.appspot.com/api/v2/public/search/',
 	dataType: 'jsonp',
-	jsonpCallback: 'tf2auctionsPlayerSearch'
+	jsonpCallback: 'playerSearch'
     })(o)
 },
 
 
 backpackModel = oo.model.schema.extend({
     findId: function(options) {
-        oo.data.status({id: options.id})
+        oo.data.status({suffix: options.id})
             .success(function(status) {
 		options.success([{id: options.id, persona: status.name}]) }
 	    )
@@ -39,8 +41,8 @@ backpackView = oo.view.schema.extend({
 	    return
 	}
 	self.message('Loading backpack...')
-	oo.data.backpack({id: data.id})
-	    .success(function(bp) { oo.info('bp success', bp); self.ready(data.id, data.persona, bp) })
+	var model = oo.model.backpack.extend({suffix: data.id})
+	model.init().done(function() {self.ready(data.id, data.persona, model)})
     },
 
     searchText: function(v) {
@@ -66,10 +68,9 @@ backpackView = oo.view.schema.extend({
 		$('#backpack-viewer-result-none')
 		    .text('Your search did not match any players.')
             } else if (results.length == 1) {
-		var result = results[0]
-		oo.data.backpack({id: result.id})
-		    .success(function(bp) { self.ready(result.id, result.persona, bp)})
-
+		var result = results[0], model = oo.model.backpack.extend({suffix: result.id})
+		self.message('Loading backpack...')
+		model.init().done(function() {self.ready(result.id, result.persona, model)})
 	    } else if (results.length > 1) {
 		$('#backpack-viewer-result-many-label')
 		    .text('Matched {0} players: '.fs(results.length))
@@ -85,9 +86,8 @@ backpackView = oo.view.schema.extend({
 	})
     },
 
-    ready: function(id64, name, backpack) {
-	oo.info('backpack.ready(', id64, name, backpack, ')')
-	var self = this, items = backpack.result.items.item
+    ready: function(id64, name, model) {
+	var self = this, items = model.backpack.result.items.item
         window.location.hash = id64
         if (!items.length || items[0]==null) {
 	    $('#backpack-viewer-backpack-title')
@@ -97,16 +97,8 @@ backpackView = oo.view.schema.extend({
 	    self.message().fadeOut()
 	    return
         }
-	self.message('Loading backpack...')
-	oo.data.bids({id: id64})
-	    .success(function(bids) {
-		oo.data.listings({id: id64})
-		    .success(function(listings) {
-			$('#backpack-viewer-backpack-title')
-			    .html(self.hiliteSpan('Backpack - {0}'.fs(name)))
-			self.put(backpack, listings, bids)
-		    })
-	    })
+	$('#backpack-viewer-backpack-title').html(self.hiliteSpan('Backpack - {0}'.fs(name)))
+	self.put(model.backpack, model.listings, model.bids)
     },
 
     clear: function() {
@@ -124,19 +116,19 @@ backpackView = oo.view.schema.extend({
     put: function(backpack, listings, bids) {
 	var self = this,
             bpTool = oo.backpack.itemTool({
-	                 items: backpack.result.items.item,
-	                 listingUids: oo.util.itemUids(listings),
-                  	 bidUids: oo.util.itemUids(bids),
-                         slug: 'bv',
-	                 navigator: true,
-	                 toolTips: true,
-	                 select: true,
-	                 selectMulti: true,
-	                 outlineHover: true,
-		         showAll: true,
-		         rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
-            })
-        oo.data.auth({suffix: '?settings=1&complete=1'})
+                 items: backpack.result.items.item,
+                 listingUids: oo.util.itemUids(listings),
+               	 bidUids: oo.util.itemUids(bids),
+                 slug: 'bv',
+                 navigator: true,
+                 toolTips: true,
+                 select: true,
+                 selectMulti: true,
+                 outlineHover: true,
+	         showAll: true,
+	         rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
+        })
+        oo.model.auth.init()
 	    .success(function(profile) { bpTool.init(profile.settings) })
 	    .error(function() { bpTool.init(null) })
         self.message().fadeOut()
@@ -152,7 +144,6 @@ backpackView = oo.view.schema.extend({
 backpackController = oo.controller.extend({
     model: backpackModel,
     view: backpackView,
-    config: {auth: {required: false, settings: true, complete: true}},
     defaultSearchText: 'Enter Steam ID, Player Name, or Steam Community URL',
 
     '#backpack-viewer-search click' : function(e) {

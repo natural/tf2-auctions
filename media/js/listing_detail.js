@@ -1,30 +1,18 @@
-(function() {
+//(function() {
 
 // hide leave feedback when auth user has given feedback already.
 
 
-oo.config('#listing-detail-')
+oo.config({prefix: '#listing-detail-', auth: {settings: 1, complete: 0}})
 
-var NewBidModel = oo.model.extend({
-    loader: oo.data.backpack,
 
-    init: function(view, config) {
-	var self = this, suffix = config.profile.id64
-	self.listing = config.listing
-	self.profile = config.profile
-        self.loaderSuffix = suffix
-	return oo.model.init.apply(self, arguments)
-            .success(function(bp) {
-		self.backpack = backpack
-		oo.data.listings({id: suffix})
-		    .success(function(listings) {
-			self.listings = listings
-			oo.data.bids({id: suffix})
-			    .success(function(bids) {
-				self.bids = bids
-				view.join(self)
-			    })
-		    })
+var NewBidModel = oo.model.status.extend({
+    init: function(view) {
+	var self = this, suffix = self.suffix
+	return oo.model.status.init.apply(self, arguments)
+	    .success(function(s) {
+		var sub = oo.model.backpack.extend({suffix: suffix})
+		sub.init().done( function() { oo.info(sub); view.join(sub) })
 	    })
     },
 
@@ -54,6 +42,7 @@ var NewBidModel = oo.model.extend({
 
 
 var makeBpTool = function(model) {
+    oo.info('makeBpTool', model)
     return oo.backpack.itemTool({
         items: model.backpack.result.items.item,
         listingUids: oo.util.itemUids(model.listings),
@@ -85,6 +74,7 @@ var makeChTool = function(afterDropMove) {
 var NewBidView = oo.view.extend({
     join: function(model) {
 	var self = this
+	self.model = model
 	self.putBackpack()
 	self.putDefaults()
         self.show()
@@ -122,8 +112,12 @@ var NewBidView = oo.view.extend({
 	var self = this
         self.backpack = makeBpTool(self.model)
         self.chooser = makeChTool(function() { self.showMetMinBid.apply(self, [arguments]) })
-        self.backpack.init(self.model.profile.settings)
-        self.chooser.init(self.model.profile.settings)
+
+	oo.model.auth.init().success(function(p) {
+            self.backpack.init(p.settings)
+            self.chooser.init(p.settings)
+	})
+
 	if (self.isUpdate()) {
 	    try {
 		var bids = self.model.bids,
@@ -200,7 +194,8 @@ var NewBidView = oo.view.extend({
 })
 
 
-var BidderFeedbackModel = oo.model.extend({
+// extends model.schema only because we need a loader.
+var BidderFeedbackModel = oo.model.schema.extend({
     saveFeedback: function(data, success, error) {
 	$.ajax({
 	    url: '/api/v1/auth/add-feedback',
@@ -665,10 +660,15 @@ var DetailView = oo.view.schema.extend({
     showPlaceItemBid: function(existing) {
 	if (!this.bidController) {
 	    this.message('Loading your backpack...')
-	    var listing = this.listing, profile = this.profile,
-                condef = $.extend({config: {listing: listing, profile:profile}}, NewBidController)
-            this.bidController = oo.controller.extend(condef)
-            this.bidController.init()
+	    var listing = this.listing, profile = this.profile
+	    oo.model.auth.init()
+	        .success(function (p) {
+		    NewBidModel.profile = p
+		    NewBidModel.suffix = p.id64
+		    NewBidModel.listing = listing
+		    this.bidController = oo.controller.extend(NewBidController)
+		    this.bidController.init()
+		})
          } else {
 	     this.bidController.reinit()
 	 }
@@ -690,14 +690,14 @@ var DetailView = oo.view.schema.extend({
 
 
 var DetailModel = oo.model.schema.extend({
-    init: function(view, config) {
+    init: function(view) {
 	var self = this
 	return oo.model.schema.init(self, arguments)
 	    .success(function(schema) {
-		oo.data.auth({suffix: '?settings=1'})
+		oo.model.auth.init()
 		    .success(function(profile) {
 			self.profile = profile
-			oo.data.listing({id: oo.util.pathTail()})
+			oo.data.listing({suffix: oo.util.pathTail()})
 			    .success(function(listing) {
 				self.listing = listing
 				view.join(self)
@@ -705,7 +705,7 @@ var DetailModel = oo.model.schema.extend({
 		    })
 		    .error(function() {
 			self.profile = null
-			oo.data.listing({id: oo.util.pathTail()})
+			oo.data.listing({suffix: oo.util.pathTail()})
 			    .success(function(listing) {
 				self.listing = listing
 				view.join(self)
@@ -764,7 +764,6 @@ var pageListing = function() {
 
 
 var DetailController = oo.controller.extend({
-    config: {auth: {settings: true}},
     model: DetailModel,
     view: DetailView,
 
@@ -822,13 +821,9 @@ var DetailController = oo.controller.extend({
 
     '.select-winner-cancel live:click' : function(e) {
 	e.controller.view.hideSelectWinner($(e.target).parents('div.ov'))
-    },
-
-    'ready': function() {
-	oo.model.auth.extend({suffix: '?settings=1'}).init()
     }
 })
 
 
-})()
+//})()
 
