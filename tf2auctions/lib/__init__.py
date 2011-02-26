@@ -28,7 +28,6 @@ def search_id64(value):
 
 
 def user_steam_id(user):
-    ## TODO:  make user optional and default it to users.get_current_user()
     if hasattr(user, 'nickname'):
 	name = user.nickname()
     else:
@@ -121,29 +120,29 @@ class ApiHandler(LocalHandler):
 
 class View(LocalHandler):
     context_loader, template_loader = ContextLoader.build(features.template_dir)
-    media_css_path = '/media/css'
-    media_js_path = '/media/js'
 
-    base_css = ()
+    jq_ui_css = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css'
+    media_css_path = '/media/css'
     default_css = ('site.css', )
     related_css = ()
 
-    ## javascripts for every template; names are not modified
-    base_js = (
-	'http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js',
-	'%s/%s' % (media_js_path, 'jquery.json-2.2.js'),
-    )
-
-    ## javascripts for every template; values are modified to include
-    ## script media prefix and app version number
-    default_js = (
-        'df.js',
-	'base.js',
-    )
-
-    ## javascripts specific to a view subclass; values are modified in the
-    ## same manner as scripts in default_js
+    jq_min = 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js'
+    jq_ui = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/jquery-ui.min.js'
+    media_js_path = '/media/js'
+    link_js = ('head.load.min.js', )
     related_js = ()
+    if features.devel:
+        block_js = (
+            jq_min,
+            'jquery.json-2.2.js',
+            'dateformat.js',
+            'core.js',
+            )
+    else:
+        block_js = (
+            jq_min,
+            'core.min.js',
+            )
 
     ## rss feeds for the view
     related_rss = ()
@@ -174,28 +173,29 @@ class View(LocalHandler):
         tb = traceback.format_exc() if features.devel else None
 	self.render(self.template_loader.load('500.pt'), traceback=tb, stack='')
 
-
-    def iter_css(self, css_path=None):
+    def iter_head_css(self, css_path=None):
+        urls = []
 	prefix = self.media_css_path if css_path is None else css_path
-	version = features.version
-	if features.devel:
-	    import random
-	    version = '%s-%s' % (version, random.random()*100)
-	for css in self.base_css:
-	    yield css
-	for css in self.default_css + self.related_css:
-	    yield '%s/%s?v=%s' % (prefix, css, version, )
+	devel, version = features.devel, features.version
+        for css in self.default_css + self.related_css:
+            if not css.startswith('http:'):
+                css = '%s/%s?v=%s' % (prefix, css, int(time()) if devel else version)
+            yield css
 
-    def iter_js(self, js_path=None):
+    def iter_link_js(self, js_path=None):
 	prefix = self.media_js_path if js_path is None else js_path
-	version = features.version
-	if features.devel:
-	    import random
-	    version = '%s-%s' % (version, random.random()*100)
-	for js in self.base_js:
-	    yield js
-	for js in self.default_js + self.related_js:
-	    yield '%s/%s?v=%s' % (prefix, js, version, )
+	for js in self.link_js:
+	    yield js if js.startswith('http:') else '%s/%s' % (prefix, js)
+
+    def iter_tag_js(self, js_path=None):
+        urls = []
+	prefix = self.media_js_path if js_path is None else js_path
+	devel, version = features.devel, features.version
+        for js in self.block_js + self.related_js:
+            if not js.startswith('http:'):
+                js = '%s/%s?v=%s' % (prefix, js, int(time()) if devel else version)
+            urls.append('"%s"' % js)
+        yield 'head.js(%s);' % (', '.join(urls), )
 
     def iter_rss(self, prefix_path=''):
 	for rss in self.related_rss:

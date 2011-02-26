@@ -11,8 +11,8 @@ class ListingDetailView(View):
 
     """
     template_name = 'listing_detail.pt'
-    related_css = ('listing_detail.css', )
-    related_js = ('df.js', 'listing_detail.js', )
+    related_css = (View.jq_ui_css, 'listing_detail.css', )
+    related_js = (View.jq_ui, 'listing_detail.js', )
 
     def get(self):
 	try:

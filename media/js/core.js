@@ -2,7 +2,7 @@
 // Begin local extensions and top-level functions.
 //
 if (typeof console == 'undefined') {
-    var console = {log: $.noop, error: $.noop}
+    var console = {log: $.noop, error: $.noop, debug: $.noop, warn: $.noop}
 }
 
 if (typeof Object.create !== 'function') {
@@ -20,6 +20,19 @@ String.prototype.fs = function() {
     }
     return formatted
 }
+
+if(!Array.indexOf){
+  Array.prototype.indexOf = function(obj){
+   for(var i=0; i<this.length; i++){
+    if(this[i]==obj){
+     return i;
+    }
+   }
+   return -1;
+  }
+}
+
+if(typeof String.prototype.trim !== 'function') {   String.prototype.trim = function() {     return this.replace(/^\s+|\s+$/g, '');    } }
 
 
 //

@@ -628,7 +628,7 @@ var MainController = oo.controller.extend({
     view: MainView,
 
     show: function(event, ui) {
-	var name = ui.tab.text.toLowerCase(),
+	var name = (ui.tab.text || ui.tab.outerText).toLowerCase(),
 	    after = function() {
 		$('#{0} h2.loading'.fs(ui.index)).slideUp(
 		    function() { $('#{0} div:first'.fs(ui.index)).fadeIn() }

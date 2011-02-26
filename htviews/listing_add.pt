@@ -1,16 +1,6 @@
 <html metal:use-macro="context.content.macros.layout">
 <head>
     <title metal:fill-slot="title">TF2Auctions.com -- Add Listing</title>
-    <metal:css fill-slot="style">
-	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
-	      rel="stylesheet" type="text/css" />
-        <metal:slot define-slot="style" />
-    </metal:css>
-    <metal:js fill-slot="script">
-	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"
-		type="text/javascript"></script>
-        <metal:slot define-slot="script" />
-    </metal:js>
 </head>
 <body>
     <metal:main fill-slot="main" tal:define="slug 'listing-add'">
