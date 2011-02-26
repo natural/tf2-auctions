@@ -22,7 +22,7 @@ label { display:block; font-family:"TF2Build"; }
 p { color:#827868; font-size:110%; margin-bottom:1em; line-height:140%; }
 strong { font-family:"TF2Build"; }
 
-input[type=text] {
+input[type=text], select {
 line-height:1em;
 padding:0.35em 1.5em 0.35em 0.25em;
 border:3px solid #847668;
@@ -261,7 +261,7 @@ A50F79 Developer
 
 */
 .quality-0  { color:#B2B2B2; } /* normal */
-.quality-1  { color:#B2B2B2; } /* common */
+.quality-1  { color:#4D7455; } /* genuine */
 .quality-2  { color:#B2B2B2; } /* rare */
 .quality-3  { color:#476291; } /* vintage */
 .quality-5  { color:#874FAD; } /* unusual */
@@ -284,8 +284,11 @@ A50F79 Developer
 .border-quality-0 { border-color:#B2B2B2 !important; } /* normal */
 .background-quality-0 { background-color:#706E6E !important; }
 
-.border-quality-1 { border-color:#B2B2B2 !important; } /* common */
-.background-quality-1 { background-color:#706E6E !important; }
+.border-quality-1 { border-color:#4D7455 !important; } /* genuine */
+.background-quality-1 { background-color:#3A5840 !important; }
+/* inverse on hover */
+td.border-quality-1.outline  { border-color: #3A5840 !important; }
+td.background-quality-1.outline { background-color:#4D7455 !important; }
 
 .border-quality-2 { border-color:#B2B2B2 !important; } /* rare */
 .background-quality-2 { background-color:#706E6E !important; }
@@ -653,18 +656,18 @@ top:2px;
 .jewel-8289918 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8289918.png'); }
 
 
-.profile-status {
+
+img.profile-status
+{
+border:2px solid;
+border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
+}
+
+.badge img.profile-status {
 border:4px solid;
 border-radius:0.25em; -moz-border-radius:0.25em; -webkit-border-radius:0.25em;
 }
 
-#content-avatar-pod img.profile-status,
-.bid-owner-seed img.profile-status,
-#profile-feedback-pod img.profile-status,
-.listing-owner-seed img.profile-status {
-border:2px solid;
-border-radius:0.15em; -moz-border-radius:0.15em; -webkit-border-radius:0.15em;
-}
 
 .in-game { /* green */
 border-color: #B1FB50 !important;
@@ -859,3 +862,29 @@ color:#F80000;
 color:#827868;
 }
 
+
+
+
+.neg-bar {
+background-color:#9d302f;
+}
+
+.pos-bar {
+background-color:#385c78;
+}
+
+table.rating td {
+padding:0.25em;
+}
+
+
+table.cp05 td {
+padding:0.5em;
+}
+
+
+.rating-value {
+font-size:300%;
+font-family:"TF2Build";
+text-shadow: 0.1em 0.1em #000;
+}

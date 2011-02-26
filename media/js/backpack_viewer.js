@@ -14,6 +14,7 @@ var playerSearch = function(o) {
 
 backpackModel = oo.model.schema.extend({
     findId: function(options) {
+	// using status lookup to find player name from id64
         oo.data.status({suffix: options.id})
             .success(function(status) {
 		options.success([{id: options.id, persona: status.name}]) }

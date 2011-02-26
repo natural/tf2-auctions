@@ -8,7 +8,7 @@ from google.appengine.ext import db
 from google.appengine.ext.db import polymodel
 
 from tf2auctions import features
-from tf2auctions.lib import json_dumps, json_loads, js_datetime, user_steam_id
+from tf2auctions.lib import json_dumps, json_loads, js_datetime, user_steam_id, currency_types
 from tf2auctions.lib.proxyutils import fetch
 from tf2auctions.lib.schematools import item_categories, item_type_map, known_categories
 from tf2auctions.models.profile import PlayerProfile
@@ -34,8 +34,9 @@ class Listing(db.Model):
     bid_count = db.IntegerProperty('Bid Count', default=0)
 
     ## subscriber fields:
-    min_bid_currency_use = db.BooleanProperty('Minimum Bid is Currencys', default=False)
-    min_bid_currency_amount = db.FloatProperty('Minimum Bid Currencys Amount', default=0.0)
+    min_bid_currency_use = db.BooleanProperty('Minimum Bid is Currency', default=False)
+    min_bid_currency_amount = db.FloatProperty('Minimum Bid Currency Amount', default=0.0)
+    min_bid_currency_type = db.StringProperty('Minimum Bid Currency Type', default='')
     featured = db.BooleanProperty('Featured Listing', indexed=True, default=False)
 
     @classmethod
@@ -67,6 +68,7 @@ class Listing(db.Model):
 			  is_subscriber=False,
 			  min_bid_currency_use=False,
 			  min_bid_currency_amount=0,
+			  min_bid_currency_type='',
 			  feature_listing=False):
 	## 1.  check the user, get their backpack and verify the
 	## inidicated items belong to them.
@@ -110,6 +112,7 @@ class Listing(db.Model):
 	if is_subscriber:
 	    listing.min_bid_currency_use = min_bid_currency_use
 	    listing.min_bid_currency_amount = float(min_bid_currency_amount)
+	    listing.min_bid_currency_type = min_bid_currency_type
 	    listing.featured = feature_listing
 
 	key = listing.put()
@@ -238,7 +241,7 @@ class Listing(db.Model):
     def url(self):
 	return 'http://www.tf2auctions.com/listing/%s' % (self.key().id(), )
 
-    def encode_builtin(self, bids=False, items=True):
+    def encode_builtin(self, bids=False, items=True, currency_type_map=dict(currency_types())):
 	""" Encode this instance using only built-in types.
 
 	"""
@@ -250,6 +253,10 @@ class Listing(db.Model):
 	private = False
 	if bids and user and user_steam_id(user) == self.owner:
 	    private = True
+        try:
+            currency_type = currency_type_map[self.min_bid_currency_type]
+        except (KeyError, ):
+            currency_type = None
 	return {
 	    'id' : key.id(),
 	    'key': str(key),
@@ -267,6 +274,7 @@ class Listing(db.Model):
 	    'featured' : self.featured,
 	    'min_bid_currency_use' : self.min_bid_currency_use,
 	    'min_bid_currency_amount' : self.min_bid_currency_amount,
+	    'min_bid_currency_type' : currency_type,
 	}
 
 

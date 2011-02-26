@@ -175,10 +175,10 @@ large listings: um...
 				<strong>Created By:</strong>
 				<div class="listing-owner-seed mb1">
 				    <a href="#">
-					<img class="listing-avatar" />
+					<img class="listing-avatar av" />
 				    </a>
 				    <a href="#">
-					<span class="listing-owner"></span>
+					<span class="listing-owner av"></span>
 				    </a>
 				</div>
 			    </metal:if>
@@ -303,12 +303,8 @@ large bids: ...
 			    <div tal:condition="use_created">
 				<strong>Created By:</strong>
 				<div class="bid-owner-seed">
-				    <a href="#">
-					<img class="bid-avatar" />
-				    </a>
-				    <a href="#">
-					<span class="bid-owner center"></span>
-				    </a>
+				    <a href="#"><img class="bid-avatar av" /></a>
+				    <a href="#"><span class="bid-owner av"></span></a>
 				</div>
 			    </div>
 			    <div class="mt1">
@@ -432,6 +428,83 @@ leave feedback form (new):
 	    </div>
 	</div>
     </div>
+</metal:macro>
+
+
+
+<!--
+
+profile badge
+
+-->
+<metal:macro metal:define-macro="profile_badge" tal:define="slug slug | ''">
+    <div id="${slug}-badge" class="null badge">
+	<metal:def define-slot="header"></metal:def>
+	<div class="center text-center">
+	    <h1 class="mt05"><span id="${slug}-badge-title"></span></h1>
+	    <h2><span class="null" id="${slug}-is-you"></span></h2>
+	    <a href="#"><img id="${slug}-avatar" class="m1 profile-status" /></a>
+	    <div id="${slug}-badge-status" class=""></div>
+	    
+	</div>
+	<div class="center ml1">
+            <div class="owner-links null" id="${slug}-owner-links">
+		<ul>
+		    <li class="null">
+			<img src="/media/img/iconGo.png" width="16" height="16" />
+			<a href="#" id="${slug}-join-game">Join Game</a>
+		    </li>
+		    <li>
+			<img src="/media/img/iconSteam.png" />
+			<a href="#" target="_new" id="${slug}-owner-view-steam-profile">View Steam Profile</a>
+		    </li>
+		    <li>
+			<img src="/media/img/iconAddFriend.png" />
+			<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
+		    </li>
+		    <li>
+			<img src="/media/img/iconChat.png" />
+			<a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
+		    </li>
+		</ul>
+	    </div>
+	</div>
+	<div class="mt1">
+	    <label>Rating:</label>
+	</div>
+	<div class="center text-center mt05">
+	    <table class="w100 rating" id="${slug}-rating">
+		<tr>
+		    <td class="w50">
+			<div class="padding float-left"></div>
+			<div class="float-right neg-bar" id="${slug}-neg-bar"></div>
+			<div class="clear"></div>
+		    </td>
+		    <td>
+			<div class="float-left pos-bar" id="${slug}-pos-bar"></div>
+			<div class="float-right padding"></div>
+			<div class="clear"></div>
+		    </td>
+		</tr>
+		<tr>
+		    <td class="w50">
+			<div id="${slug}-neg-label" class="float-right mono">Negative</div>
+		    </td>
+		    <td>
+			<div id="${slug}-pos-label" class="mono">Positive</div>
+		    </td>
+		</tr>
+	    </table>
+	</div>
+    </div>
+</metal:macro>
+
+
+
+<metal:macro metal:define-macro="currency_options">
+    <tal:loop tal:repeat="item controller.currency_types_encoded()">
+	<option value="${item[0]}">${item[1]}</option>
+    </tal:loop>
 </metal:macro>
 
 

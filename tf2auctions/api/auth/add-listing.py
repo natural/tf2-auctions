@@ -22,6 +22,7 @@ class AddListing(ApiHandler):
 	    key = Listing.build(item_ids=item_ids, desc=desc, days=days, min_bid=min_bid,
 				min_bid_currency_use=data.get('min_bid_currency_use'),
 				min_bid_currency_amount=data.get('min_bid_currency_amount'),
+				min_bid_currency_type=data.get('min_bid_currency_type'),
 				feature_listing=data.get('feature_listing'))
 	except (Exception, ), exc:
 	    error('add listing: %s', exc)

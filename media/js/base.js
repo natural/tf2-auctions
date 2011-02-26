@@ -842,6 +842,10 @@ var oo = (function() {
 // Begin the 'util' namespace.
 //
 (function(ns) {
+    ns.dformat = function(v) {
+	return new Date(v).format('hh:MM TT ddd, d mmm yyyy')
+    }
+
     ns.item = function(item, schema) {
 	return {
 	    canTrade: function() {
@@ -945,7 +949,7 @@ var oo = (function() {
 	    }
 	    $('.listing-view-link a', target).attr('href', '/listing/'+listing.id)
 	    $('.listing-view-link > span.expires', target)
-		.append('<span class="mono float-right">Expires: {0}</span>'.fs(''+new Date(listing.expires)))
+		.append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
 	}
     })
 
@@ -988,6 +992,49 @@ var oo = (function() {
 	            $('#content-avatar-pod img').addClass(status.online_state)
 	            $('#content-avatar-pod img').addClass('profile-status')
 		})
+	},
+
+	putAvatar: function(p, c) {
+	    var lbl = $('span.av', c),
+	        img = $('img.av', c),
+                url = oo.util.profile.defaultUrl(p)
+            lbl.text(p.personaname).parent().attr('href', url)
+	    img.attr('src', p.avatar).parent().attr('href', url)
+	    return oo.data.status({suffix: p.id64})
+	        .success(function(s) {
+		    img.addClass('profile-status {0}'.fs(s.online_state))
+		})
+	},
+
+	putBadge: function(p) {
+            var possum = p.rating[0], poscnt = p.rating[1], negsum = p.rating[2], negcnt = p.rating[3],
+                pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
+                neg = Math.round(negcnt > 0 ? negsum / negcnt : 0)
+	    oo('badge-title').text(p.personaname)
+	    oo('owner-view-steam-profile').attr('href', p.profileurl)
+	    oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(p.steamid))
+	    oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(p.steamid))
+            oo('pos-label').text('{0}% Positive'.fs( pos ))
+            oo('pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
+            $('div.padding', oo('pos-bar').parent()).width('{0}%'.fs(100-pos) )
+            oo('neg-label').text('{0}% Negative'.fs( Math.abs(neg) ))
+            oo('neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
+            $('div.padding', oo('neg-bar').parent()).width('{0}%'.fs(100-neg) )
+	    if (p.avatarmedium) { oo('avatar').attr('src', p.avatarmedium)  }
+	    oo('avatar').parent().attr('href', oo.util.profile.defaultUrl(p))
+	    oo.data.status({suffix: p.id64}).success(function(s) {
+	        var m = s.message_state
+		GM = m; GS = s
+		oo('avatar').addClass(s.online_state)
+		if (/In-Game.*?Team Fortress 2/.test(m)) {
+		    if (/<a href/.test(m)) {
+			oo('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
+		    }
+		    m = m.replace(/ - .*/, '')
+		}
+		oo('badge-status').html(m).addClass(s.online_state).slideDown()
+	    })
+	    return oo('badge')
 	}
     })
 
@@ -1294,8 +1341,8 @@ var oo = (function() {
             var c = (oo.conf.auth.complete ? 'complete=1' : '')
 	    s = s + (c ? '&'+c : '')
 	    o.suffix = s
+	    return authLoader(o)
 	}
-	return authLoader(o)
     }
     ns.backpack = function(o) { return backpackLoader(o) }
     ns.bids = function(o) { return bidsLoader(o) }

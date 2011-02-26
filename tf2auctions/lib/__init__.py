@@ -137,6 +137,7 @@ class View(LocalHandler):
     ## javascripts for every template; values are modified to include
     ## script media prefix and app version number
     default_js = (
+        'df.js',
 	'base.js',
     )
 
@@ -202,6 +203,12 @@ class View(LocalHandler):
 
     def login_url_key(self):
 	return 'login-url:%s?%s' % (self.request.uri, self.request.query_string, )
+
+    def currency_types_encoded(self):
+        spaces = (160, 160, 160)
+        for key, (ents, label) in currency_types():
+            sym = ''.join('&#%s;' % e for e in (ents + spaces)[0:4])
+            yield (key, '%s - %s' % (sym, label))
 
     @cache(lambda self, **kwds:self.login_url_key(), ttl=60*60, verbose=True)
     def login_url(self, dest='/profile-update', provider='steamcommunity.com/openid'):
@@ -311,3 +318,32 @@ def slugify(val):
     val = unicodedata.normalize('NFKD', unicode(val)).encode('ascii', 'ignore')
     val = unicode(re.sub('[^\w\s-]', '', val).strip().lower())
     return re.sub('[-\s]+', '-', val)
+
+
+def currency_types():
+    return [
+        ('USD', ((36, ),           'U.S. Dollars')),
+        ('AUD', ((36, ),           'Australian Dollars')), 
+        ('BRL', ((82, 36, ),       'Brazilian Reais')), 
+        ('GBP', ((163, ),          'British Pounds')), 
+        ('CAD', ((36, ),           'Canadian Dollars')), 
+        ('CZK', ((75, 269, ),      'Czech Koruny')), 
+        ('DKK', ((107, 114, ),     'Danish Kroner')), 
+        ('EUR', ((8364, ),         'Euros')), 
+        ('HKD', ((36, ),           'Hong Kong Dollars')), 
+        ('HUF', ((70, 116, ),      'Hungarian Forints')), 
+        ('ILS', ((8362, ),         'Israeli New Shekels')), 
+        ('JPY', ((165, ),          'Japanese Yen')), 
+        ('MYR', ((82, 77, ),       'Malaysian Ringgit')), 
+        ('MXN', ((36, ),           'Mexican Pesos')), 
+        ('TWD', ((78, 84, 36, ),   'New Taiwan Dollars')), 
+        ('NZD', ((36, ),           'New Zealand Dollars')), 
+        ('NOK', ((107, 114, ),     'Norwegian Kroner')), 
+        ('PHP', ((80, 104, 112, ), 'Philippine Pesos')), 
+        ('PLN', ((122, 322, ),     'Polish Zlotys')), 
+        ('SGD', ((36, ),           'Singapore Dollars')), 
+        ('SEK', ((107, 114, ),     'Swedish Kronor')), 
+        ('CHF', ((67, 72, 70, ),   'Swiss Francs')), 
+        ('THB', ((3647, ),         'Thai Baht')), 
+        ('TRY', ((8356, ),         'Turkish Liras')),
+     ]

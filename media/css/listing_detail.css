@@ -1,22 +1,17 @@
 #listing-detail-left {
 float:left;
 width:44.5%;
-a-border:1px solid red;
 }
 
 #listing-detail-center {
 float:left;
 width:24.5%;
-a-border:1px solid blue;
 }
 
 #listing-detail-right {
 float:right;
 width:28.5%;
-a-border:1px solid green;
 margin:-2.5em 0.5em -2.5em 0;
-}
-
 }
 
 #listing-detail-place-bid-pod > h1:first-child {
@@ -89,12 +84,6 @@ padding-top:0.5em;
 #bidder-feedback-rating-slider {
 margin:0.5em 0 1em 0;
 width:90%;
-}
-
-#bidder-feedback-rating-value, .rating-value {
-font-size:300%;
-font-family:"TF2Build";
-text-shadow: 0.05em 0.05em #000;
 }
 
 #listing-detail-owner-neg-bar {

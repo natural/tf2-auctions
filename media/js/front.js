@@ -126,17 +126,6 @@
 		$('.listing-description-label', clone).empty()
 		$('.listing-description', clone).empty()
 	    }
-	    $('.listing-owner', clone).text(listing.owner.personaname)
-	    $('.listing-owner', clone).parent()
-		.attr('href', oo.util.profile.defaultUrl(listing.owner))
-	    $('.listing-avatar', clone)
-		.attr('src', listing.owner.avatar)
-	    $('.listing-avatar', clone).parent()
-		.attr('href', oo.util.profile.defaultUrl(listing.owner))
-	    oo.data.status({suffix: listing.owner.id64})
-		.success(function(status) {
-	            $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
-		})
 	    $('.bid-count-seed', clone).text(listing.bid_count || '0')
             var next = 0
 	    $.each(listing.items, function(index, item) {

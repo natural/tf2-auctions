@@ -12,7 +12,9 @@ oo.config({prefix: '#profile-', auth: {settings: 1, complete: 1}})
 var path = oo.util.pathTail(),
     owner = function(m) {
 	return (m.pageProfile && m.userProfile && m.pageProfile.id64 == m.userProfile.id64)
-    }
+    },
+    said = ['wrote', 'opined', 'remarked', 'said', 'flapped', 'gabbed', 'conveyed', 'uttered', 'proclaimed', 'expressed'],
+    fedback = ['had this to say', 'mentioned', 'uttered', 'reported', 'maintained', 'claimed', 'penned', 'scribbled', 'scrawled', 'noted']
 
 
 var DetailsModel = oo.model.extend({
@@ -67,20 +69,14 @@ var DetailsView = oo.view.extend({
 	    var proto = $('.profile-feedback-seed')
 	    $.each(model.feedback, function(idx, fb) {
 		var clone = proto.clone(), link = '<a href="/profile/{0}">{1}</a>'
+		clone.removeClass('null')
+		proto.after(clone)
 		oo.view.setRating($('.fb-rating', clone), fb.rating)
 		$('.fb-message', clone).text(fb.comment)
-		oo.data.status({suffix: fb.source})
-		    .success(function(status) {
-			if (status.avatar_icon) {
-			    var img = '<img src="{0}" class="msg-avatar" />&nbsp;'.fs(status.avatar_icon)
-			    // TODO:  fetch fb.source profile + use oo.util.profile.defaultUrl
-			    $('.source-name', clone).append(link.fs(fb.source, img))
-			    $('.source-name img', clone).addClass('profile-status ' + status.online_state)
-			}
-			$('.source-name', clone).append(link.fs(fb.source, status.name))
-			clone.removeClass('null')
-		    })
-		proto.after(clone)
+		oo.data.profile({suffix: fb.source})
+		    .success(function(p) { oo.util.profile.putAvatar(p, $('.source-seed', clone)) })
+		         // FIXME
+                        .success(function(s) { $('a span.av', clone).after(' {0}:'.fs( fedback[Math.round(Math.random()*10)-1] )) })
 	    })
 	} else {
 	    oo('feedback-pod h2.empty').fadeIn()
@@ -106,19 +102,11 @@ var DetailsView = oo.view.extend({
 	    $.each(msgs, function(idx, msg) {
 		var clone = oo('view-msg-pod div.prototype').clone()
 		$('.profile-msg-text-seed', clone).text(msg.message)
-		oo.data.status({suffix: msg.source})
-		    .success(function(status) {
-			var link = '<a href="/profile/{0}">{1}</a>'
-			if (status.avatar_icon) {
-			    var img = '<img src="{0}" class="msg-avatar" />'.fs(status.avatar_icon)
-			    $('.profile-msg-sender-name', clone)
-				.append(link.fs(msg.source, img))
-			    $('.profile-msg-sender-name img', clone)
-				.addClass('profile-status ' + status.online_state)
-			}
-			$('.profile-msg-sender-name', clone)
-			    .append('{0} wrote:'.fs( link.fs(msg.source, status.name)) )
-		    })
+
+		oo.data.profile({suffix: msg.source})
+		    .success(function(p) { oo.util.profile.putAvatar(p, $('.profile-msg-sender-seed', clone)) })
+		        .success(function(s) { $('a span.av', clone).after(' {0}:'.fs( said[Math.round(Math.random()*10)-1] )) })
+
 		$('.profile-msg-created-seed', clone).text('Left: {0}'.fs(msg.created))
 		clone.removeClass('null prototype')
 		$('.profile-msg-remove', clone).click(function (e) {
@@ -163,40 +151,8 @@ var DetailsView = oo.view.extend({
     },
 
     joinProfile: function(model) {
-	var profile = model.pageProfile,
-	    ownerid = profile.steamid,
-            setStatus = function(status) {
-	        var m = status.message_state
-		oo('avatar').addClass(status.online_state)
-		if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
-		    oo('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
-		    m = m.replace(/ - .*/, '')
-		}
-		oo('status').html(m).addClass(status.online_state).slideDown()
-	    }
-	this.docTitle(profile.personaname)
-	oo('title').text(profile.personaname)
-	if (profile.avatarmedium) {
-	    oo('avatar').attr('src', profile.avatarmedium)
-	}
-	oo.data.status({suffix: profile.id64}).success(setStatus)
-	oo('badge').slideDown()
-	oo('owner-view-steam-profile').attr('href', profile.profileurl)
-	oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(ownerid))
-	oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(ownerid))
-        var possum = profile.rating[0],
-            poscnt = profile.rating[1],
-            negsum = profile.rating[2],
-            negcnt = profile.rating[3],
-            pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
-            neg = Math.round(negcnt > 0 ? negsum / negcnt : 0)
-        oo('pos-label').text('{0}% Positive'.fs( pos ))
-        oo('pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
-        $('div.padding', oo('pos-bar').parent()).width('{0}%'.fs(100-pos) )
-        oo('neg-label').text('{0}% Negative'.fs( Math.abs(neg) ))
-        oo('neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
-        $('div.padding', oo('neg-bar').parent()).width('{0}%'.fs(100-neg) )
-
+	this.docTitle(model.pageProfile.personaname)
+	oo.util.profile.putBadge(model.pageProfile).slideDown()
 	this.joinProfile = oo.noop
     },
 
@@ -378,7 +334,7 @@ var BidsView = oo.view.schema.extend({
 	    $('.bid-message-private', clone).text(bid.message_private).parent().removeClass('null')
 	}
 	$('.bid-status', clone).text(bid.status)
-	$('.bid-created', clone).text('' + new Date(bid.created))
+	$('.bid-created', clone).text(oo.util.dformat(bid.created))
 	oo('bids').append(clone)
     }
 })

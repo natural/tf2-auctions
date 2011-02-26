@@ -59,70 +59,13 @@
 
 	    </div>
 	    <div id="${slug}-right">
-		<div class="owner np05 ">
-		    <label>Created by:
-			<span><a id="${slug}-owner-link" href="#" onclick="return false"></a></span>
-		    </label>
-		    <div class="center text-center m1">
-			<a href="#" id="${slug}-owner-profile-link">
-			    <img class="avatar" id="${slug}-owner-avatar" alt="foo" />
-			</a>
-			<div class="mt05" id="${slug}-owner-status"></div>
-                    </div>
-
-		    <!-- make macro and reuse in profile.pt -->
-		    <label>Rating:</label>
-		    <div class="center text-center">
-			<table class="w100" id="${slug}-owner-rating">
-			    <tr>
-				<td class="w50">
-				    <div class="padding float-left"></div>
-				    <div class="float-right" id="${slug}-owner-neg-bar"></div>
-				    <div class="clear"></div>
-				</td>
-				<td>
-				    <div id="${slug}-owner-pos-bar" class="float-left"></div>
-				    <div class="float-right padding"></div>
-				    <div class="clear"></div>
-				</td>
-			    </tr>
-			    <tr>
-				<td class="w50">
-				    <div id="${slug}-owner-neg-label" class="float-right mono">Negative</div>
-				</td>
-				<td>
-				    <div id="${slug}-owner-pos-label" class="mono">Positive</div>
-				</td>
-			    </tr>
-			</table>
-                    </div>
-
-		    <div class="owner-links m1-top null" id="${slug}-owner-links">
-			<ul>
-			    <li class="null">
-				<img src="/media/img/iconGo.png" width="16" height="16" />
-				<a href="#" id="${slug}-join-game">Join Game</a>
-			    </li>
-			    <li>
-				<img src="/media/img/iconSteam.png" />
-				<a href="#" target="_new" id="${slug}-view-steam-profile">View Steam Profile</a>
-			    </li>
-			    <li>
-				<img src="/media/img/iconAddFriend.png" />
-				<a href="#" id="${slug}-add-owner-friend" onclick="return false">Add Steam Friend</a>
-			    </li>
-			    <li>
-				<img src="/media/img/iconChat.png" />
-				<a href="#" id="${slug}-chat-owner" onclick="return false">Start Steam Chat</a>
-			    </li>
-			    <li>
-				<img src="/media/img/iconListings.png" />
-				<a href="#" id="${slug}-owner-listings">Other Listings</a>
-			    </li>
-			</ul>
-		    </div>
-
-
+		<div class="owner np05">
+			<metal:include
+			     metal:use-macro="context.view_parts.macros.profile_badge">
+			    <metal:fill fill-slot="header">
+				<label>Created by:</label>
+			    </metal:fill>
+			</metal:include>
 
 		    <div id="${slug}-owner-controls" class="null center mtb1">
 			<div id="${slug}-owner-controls-cancel">

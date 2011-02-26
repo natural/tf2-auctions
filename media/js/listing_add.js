@@ -74,7 +74,9 @@ var BackpackListingTool = function(params) {
 		    this.value = this.value.replace(/[^0-9\.]/g,'');
 		})
 		oo('min-bid-currency-use').click(function() {
-		    oo('min-bid-currency-amount').attr('disabled', !oo('min-bid-currency-use').attr('checked'))
+		    var dis = !oo('min-bid-currency-use').attr('checked')
+		    oo('min-bid-currency-amount').attr('disabled', dis)
+		    oo('min-bid-currency-type').attr('disabled', dis)
 		})
 	    } else {
 		oo('subscriber-pod').remove()
@@ -133,6 +135,7 @@ var BackpackListingTool = function(params) {
 	var min_bid = output.min_bid = []
 	output.min_bid_currency_use = input.min_bid_currency_use
 	output.min_bid_currency_amount = input.min_bid_currency_amount
+	output.min_bid_currency_type = input.min_bid_currency_type
 	output.feature_listing = input.feature_listing
 	output.days = input.days
 	output.desc = input.desc
@@ -202,8 +205,10 @@ var BackpackListingTool = function(params) {
 	// 5.  premium subscriber min bid currency: checkbox + amount
 	var min_bid_currency_use = oo('min-bid-currency-use').attr('checked')
 	var min_bid_currency_amount = 0.0
+	var min_bid_currency_type = null
 	if (min_bid_currency_use) {
 	    min_bid_currency_amount = oo('min-bid-currency-amount').val()
+	    min_bid_currency_type = oo('min-bid-currency-type option:selected').val()
 	    min_bid = []
 	}
 	// 6.  premium subscriber featured listing
@@ -231,6 +236,7 @@ var BackpackListingTool = function(params) {
 		items: items, desc: desc, days: days, min_bid: min_bid,
 		min_bid_currency_use: min_bid_currency_use,
 		min_bid_currency_amount: min_bid_currency_amount,
+		min_bid_currency_type: min_bid_currency_type,
 		feature_listing: feature_listing,
 	    })
 	}

@@ -29,65 +29,9 @@
 	        <h2 class="loading">Loading details...</h2>
 	        <div class="null">
 		    <!-- player profile badge on the right -->
-		    <div id="${slug}-badge-pod">
-		        <div id="${slug}-badge" class="null owner">
-			    <div class="center text-center">
-			        <h1 class="m05" id="${slug}-title"></h1>
-				<img id="${slug}-avatar" class="m1 profile-status" />
-				<div id="${slug}-status" class=""></div>
-				<h2 class="null m05" id="${slug}-is-you"></h2>
-			    </div>
-
-			    <div class="center ml1">
-                                <div class="owner-links null" id="${slug}-owner-links">
-				<ul>
-				    <li class="null">
-					<img src="/media/img/iconGo.png" width="16" height="16" />
-					<a href="#" id="${slug}-join-game">Join Game</a>
-				    </li>
-				    <li>
-					<img src="/media/img/iconSteam.png" />
-					<a href="#" target="_new" id="${slug}-owner-view-steam-profile">View Steam Profile</a>
-				    </li>
-				    <li>
-					<img src="/media/img/iconAddFriend.png" />
-					<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
-				    </li>
-				    <li>
-					<img src="/media/img/iconChat.png" />
-					<a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
-				    </li>
-				</ul>
-			        </div>
-			    </div>
-			    <div class="center text-center mt05">
-			        <label>Rating</label>
-			        <table class="w100" id="${slug}-rating">
-				    <tr>
-				        <td class="w50">
-					    <div class="padding float-left"></div>
-					    <div class="float-right" id="${slug}-neg-bar"></div>
-					    <div class="clear"></div>
-					</td>
-					<td>
-					    <div id="${slug}-pos-bar" class="float-left"></div>
-					    <div class="float-right padding"></div>
-					    <div class="clear"></div>
-					</td>
-				    </tr>
-				    <tr>
-				        <td class="w50">
-					    <div id="${slug}-neg-label" class="float-right mono">Negative</div>
-					</td>
-					<td>
-					    <div id="${slug}-pos-label" class="mono">Positive</div>
-					</td>
-				    </tr>
-				</table>
-			    </div>
-
-
-			</div>
+		    <div id="${slug}-badge-pod" class="owner p05">
+			<metal:include
+			     metal:use-macro="context.view_parts.macros.profile_badge" />
 		    </div>
 
 		    <!-- feedback -->
@@ -98,9 +42,10 @@
 			    <div class="${slug}-feedback-seed null w88 detail-view mt1">
 			    <table class="w100">
 			        <tr>
-				    <td class="valign-middle">
+				    <td>
 				        <div class="source-seed">
-					    <span class="source-name"></span> writes:
+					    <a href="#"><img class="av valign-middle" /></a>
+					    <a href="#"><span class="av"></span></a>
 					</div>
 				    </td>
 				    <td class="valign-middle"><span>Rating:</span></td>
@@ -136,10 +81,19 @@
 			    <h2 class="null empty">None.</h2>
 			    <div id="${slug}-view-msg-pod" class="mt1">
 			        <div class="null prototype ov mb1">
+
+
 				<div class="${slug}-msg-sender-seed">
-				    <span class="${slug}-msg-sender-name"></span>
+				    <a href="#">
+					<img class="av valign-middle" />
+				    </a>
+				    <a href="#">
+					<span class="av"></span>
+				    </a>
 				    <div class="float-right w50 text-right mono ${slug}-msg-created-seed"></div>
 				</div>
+
+
 				<pre class="${slug}-msg-text-seed mt05">
 				    text
 				</pre>

@@ -411,7 +411,7 @@ var DetailView = oo.view.schema.extend({
 	    self.putAuthTools()
 	}
         model.tool.putImages(profile ? profile.settings : null)
-        oo('content').fadeIn(function() { self.putListingOwnerStatus() })
+        oo('content').fadeIn()
     },
 
     putListing: function() {
@@ -446,7 +446,7 @@ var DetailView = oo.view.schema.extend({
 	    $('label', oo('expires').parent()).text('Expired:')
 	}
 	$.each(['created', 'expires'], function(idx, name) {
-	    oo(name).text(new Date(listing[name] + ' GMT').format())
+	    oo(name).text(oo.util.dformat(listing[name]))
         })
 	self.putListingBids()
 	self.putListingFeedback()
@@ -454,26 +454,8 @@ var DetailView = oo.view.schema.extend({
 
     putListingOwner: function() {
 	var self = this, listing = self.listing, owner = listing.owner
-	oo('owner-link').attr('href')
-	oo('owner-profile-link').attr('href', oo.util.profile.defaultUrl(owner))
-	if (owner.avatar) { oo('owner-avatar').attr('src', owner.avatarmedium) }
-	oo('view-steam-profile').attr('href', owner.profileurl)
-	oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(owner.steamid))
-	oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(owner.steamid))
-	oo('owner-listings').attr('href', '/profile/' + owner.id64 + '#1')
-	oo('owner-links').show()
-        var possum = owner.rating[0],
-            poscnt = owner.rating[1],
-            negsum = owner.rating[2],
-            negcnt = owner.rating[3],
-            pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
-            neg = Math.round(negcnt > 0 ? negsum / negcnt : 0)
-        oo('owner-pos-label').text('{0}% Positive'.fs( pos ))
-        oo('owner-pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
-        $('div.padding', oo('owner-pos-bar').parent()).width('{0}%'.fs(100-pos) )
-        oo('owner-neg-label').text('{0}% Negative'.fs( neg ))
-        oo('owner-neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
-        $('div.padding', oo('owner-neg-bar').parent()).width('{0}%'.fs(100-neg) )
+	oo.util.profile.putBadge(owner).slideDown()
+	oo('owner-links').slideDown()
     },
 
     putListingBids: function() {
@@ -485,17 +467,9 @@ var DetailView = oo.view.schema.extend({
 	    var clone = oo('bids .prototype').clone().removeClass('null prototype')
             self.putItems( $('table.chooser', clone), bid.items)
 	    $('.bid-status', clone).text(bid.status)
-	    $('.bid-created', clone).text('' + new Date(bid.created))
-	    if (bid.owner && bid.owner.avatar) {
-	        $('.bid-avatar', clone).attr('src', bid.owner.avatar)
-	    }
-            oo.data.status({suffix: bid.owner.id64})
-                .success(function(status) {
-		    $('.bid-avatar', clone).addClass('profile-status ' + status.online_state)
-	        })
-	    $('.bid-avatar', clone).parent().attr('href', '/profile/'+bid.owner.id64)
-	    $('.bid-owner', clone).text(bid.owner.personaname)
-	    $('.bid-owner', clone).parent().attr('href', '/profile/'+bid.owner.id64)
+	    $('.bid-created', clone).text(oo.util.dformat(bid.created))
+	    oo.data.profile({suffix: bid.owner.id64})
+		.success(function(p) { oo.util.profile.putAvatar(p, $('.bid-owner-seed', clone)) })
 	    if (bid.status == 'awarded') {
 	        $('.winner', clone).text('Winner!').parent().show()
 	        $('.bid-status', clone).text('Winner!')
@@ -537,25 +511,13 @@ var DetailView = oo.view.schema.extend({
 	}
     },
 
-    putListingOwnerStatus: function() {
-	oo.data.status({suffix: this.listing.owner.id64})
-	    .success(function(status) {
-		var m = status.message_state
-	        oo('owner-avatar').addClass('profile-status ' + status.online_state)
-		if (/In-Game<br \/>Team Fortress 2 - /.test(m)) {
-		    oo('join-game').attr('href', (/ - <a href="(.*)">Join<\/a>/)(m)[1]).parent().slideDown()
-		    m = m.replace(/ - .*/, '')
-		}
-		oo('owner-status').html(m).addClass(status.online_state)
-	    })
-    },
-
     putBidCount: function(count) {
 	oo('bidcount').text(count ? ('Bids (' + count + ')') : 'No Bids')
     },
 
     putOwnerTools: function() {
 	var status = this.listing.status
+	oo('is-you').text('This is you!').slideDown()
 	oo('owner-links').hide()
 	if (status == 'active') {
 	    oo('owner-controls').removeClass('null')

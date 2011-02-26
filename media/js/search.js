@@ -236,18 +236,7 @@ searchView = oo.view.searchbase.extend({
 	    $('.listing-description-label', clone).empty()
 	    $('.listing-description', clone).empty()
 	}
-	$('.listing-owner', clone).text(listing.owner.personaname)
-	$('.listing-owner', clone).parent()
-	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
-	$('.listing-avatar', clone)
-	    .attr('src', listing.owner.avatar)
-	$('.listing-avatar', clone).parent()
-	    .attr('href', oo.util.profile.defaultUrl(listing.owner))
-	oo.data.status({suffix: listing.owner.id64})
-            .success(function(status) {
-	        $('.listing-avatar', clone).addClass('profile-status ' + status.online_state)
-	    })
-
+	oo.util.profile.putAvatar(listing.owner, $('.listing-owner-seed', clone))
 	$('.bid-count-seed', clone).text(listing.bid_count || '0')
         var next = 0
 	$.each(listing.items, function(index, item) {
@@ -266,8 +255,9 @@ searchView = oo.view.searchbase.extend({
             $('.search-listing-view-min-bid', clone).hide()
 	}
 	$('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
+
 	$('.listing-view-link', clone)
-	    .append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
+	    .append('<span class="mono">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
 	if (listing.featured) {clone.addClass('featured')}
 	target.append(clone)
     },
