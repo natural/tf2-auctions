@@ -6,7 +6,6 @@
 	<metal:slot define-slot="style" />
 	<metal:slot define-slot="script" />
 	<metal:slot define-slot="feed" />
-        <metal:slot define-slot="analytics" />
     </head>
     <body metal:define-slot="body">
 	<div metal:define-slot="header" />

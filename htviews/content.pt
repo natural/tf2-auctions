@@ -15,8 +15,6 @@
         <!--[if lt IE 10]><link rel="stylesheet" href="/media/css/ie.css" type="text/css" media="screen, projection"><![endif]-->
         <metal:slot define-slot="style" />
     </metal:slot>
-
-
     <metal:slot fill-slot="script">
 	<metal:assoc tal:repeat="link controller.iter_link_js()">
 	    <script type="text/javascript" src="${link}"></script>
@@ -28,25 +26,11 @@
 	</metal:assoc>
         <metal:slot define-slot="script" />
     </metal:slot>
-
     <metal:slot fill-slot="feed">
 	<metal:assoc tal:repeat="link controller.iter_rss()">
 	    <link rel="alternate" title="RSS" type="application/rss+xml" href="${link}" />
 	</metal:assoc>
         <metal:slot define-slot="feed" />
-    </metal:slot>
-
-    <metal:slot fill-slot="analytics">
-        <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-576026-7']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-        </script>
     </metal:slot>
 </head>
 

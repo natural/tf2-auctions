@@ -134,6 +134,7 @@ class View(LocalHandler):
     if features.devel:
         block_js = (
             jq_min,
+            'ga.js',
             'jquery.json-2.2.js',
             'dateformat.js',
             'core.js',
@@ -174,7 +175,6 @@ class View(LocalHandler):
 	self.render(self.template_loader.load('500.pt'), traceback=tb, stack='')
 
     def iter_head_css(self, css_path=None):
-        urls = []
 	prefix = self.media_css_path if css_path is None else css_path
 	devel, version = features.devel, features.version
         for css in self.default_css + self.related_css:

@@ -4,14 +4,14 @@ dist_css := $(wildcard media/css/*.css)
 dist_js  := $(wildcard media/js/*.js)
 
 
-.PHONY:	all dist bump_version $(dist_css) $(dist_js)
+.PHONY:	all dist bump_version $(dist_css) $(dist_js) prod_js
 
 
 all:
 	@echo "try make bump_version && make dist"
 
 
-dist: $(dist_css) $(dist_js)
+dist: $(dist_css) $(dist_js) prod_js
 	@mkdir -p $(dist_dir)
 	@cp *.yaml $(dist_dir)
 	@cp admin_key.nodist $(dist_dir)
@@ -27,6 +27,8 @@ dist: $(dist_css) $(dist_js)
 	@mkdir -p $(dist_dir)/media/ttf
 	@cp -r media/ttf/* $(dist_dir)/media/ttf
 	@cp -r tf2auctions $(dist_dir)
+
+push:
 	@cd $(dist_dir) && appcfg.py update .
 	appcfg.py set_default_version .
 	git commit -a -m "make dist."
@@ -42,6 +44,8 @@ $(dist_js):
 	@mkdir -p $(dist_dir)/media/js
 	@yuicompressor --type js $@ -o $(dist_dir)/media/js/$(notdir $@)
 
+prod_js:
+	cd $(dist_dir)/media/js && cat ga.js jquery.json-2.2.js dateformat.js core.js > core.min.js
 
 bump_version:
 	@python -c "import yaml; d=yaml.load(open('app.yaml')); print 'Old Version', d['version']"
