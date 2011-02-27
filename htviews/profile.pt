@@ -18,7 +18,7 @@
 	    </ul>
 
 	    <div id="0">
-	        <h2 class="loading">Loading details...</h2>
+	        <h2 class="null loading">Loading details...</h2>
 	        <div class="null">
 		    <!-- player profile badge on the right -->
 		    <div id="${slug}-badge-pod" class="owner p05">
@@ -43,7 +43,7 @@
 				    <td class="valign-middle"><span>Rating:</span></td>
 				</tr>
 				<tr>
-				    <td class="fb-message"></td>
+				    <td><pre class="fb-message"></pre></td>
 				    <td class="fb-rating rating-badge rating-value"></td>
                                 </tr>
 			    </table>
@@ -73,8 +73,6 @@
 			    <h2 class="null empty">None.</h2>
 			    <div id="${slug}-view-msg-pod" class="mt1">
 			        <div class="null prototype ov mb1">
-
-
 				<div class="${slug}-msg-sender-seed">
 				    <a href="#">
 					<img class="av valign-middle" />
@@ -84,8 +82,6 @@
 				    </a>
 				    <div class="float-right w50 text-right mono ${slug}-msg-created-seed"></div>
 				</div>
-
-
 				<pre class="${slug}-msg-text-seed mt05">
 				    text
 				</pre>
@@ -102,13 +98,13 @@
 
 		<!-- listings tab -->
 		<div id="1">
-	            <h2 class="loading">Loading listings...</h2>
+	            <h2 class="null loading">Loading listings...</h2>
+	            <h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Listings</span></h1>
 		    <div id="${slug}-listings-pod" class="null">
-		        <h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Listings</span></h1>
 			<h2 class="null empty">Nothing recent.</h2>
 			<div class="mt1" id="${slug}-listings-inner">
 			    <metal:include
-			        tal:define="rows 2; cols 5; use_created False"
+			        tal:define="rows 2; cols 5; use_created False; use_dates True; use_status True"
 				metal:use-macro="context.view_parts.macros.listings_large" />
 			</div>
 		    </div>
@@ -116,7 +112,7 @@
 
 		<!-- bids tab -->
 		<div id="2">
-	            <h2 class="loading">Loading bids...</h2>
+	            <h2 class="null loading">Loading bids...</h2>
 		    <div id="${slug}-bids-pod" class="null">
 		        <h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Bids</span></h1>
 			<h2 class="null empty">Nothing recent.</h2>
@@ -130,7 +126,7 @@
 
 		<!-- backpack tab -->
 		<div id="3">
-	            <h2 class="loading">Loading backpack...</h2>
+	            <h2 class="null loading">Loading backpack...</h2>
 		    <div id="${slug}-backpack-pod" class="null">
 		        <h1 class="null">
 			    <span class="hilite">&nbsp;</span><span class="title">Backpack</span>
@@ -147,7 +143,7 @@
 
 
 		<div id="4">
-	            <h2 class="loading">Loading settings...</h2>
+	            <h2 class="null loading">Loading settings...</h2>
 		    <div id="${slug}-settings-pod"  class="null">
 		        <h1 class="null">
 			    <span class="hilite">&nbsp;</span><span class="title">Settings</span>

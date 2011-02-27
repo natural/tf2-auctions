@@ -16,9 +16,8 @@ class PlayerBids(ApiHandler):
 	    q = Bid.all()
 	    q.filter('owner = ', id64)
 	    qs = parse_qs(self.request.query_string)
-	    if (user_steam_id(users.get_current_user()) == id64) and 'ext' in qs:
-		pass ## no extra filters
-	    else:
+	    #if (user_steam_id(users.get_current_user()) == id64) and 'ext' in qs:
+            if not 'ext' in qs:
 		q.filter('status = ', 'active')
 	    q.order('-created')
 	    rs = [r.encode_builtin() for r in q.fetch(limit=100)]

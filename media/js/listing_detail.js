@@ -424,7 +424,7 @@ var DetailView = oo.view.schema.extend({
 	}
 	if (listing.min_bid_currency_use) {
             oo('min-bid-currency-use span.mono')
-		.text(listing.min_bid_currency_amount)
+		.html('{1}{0}'.fs(listing.min_bid_currency_amount, oo.util.listingCurrencySym(listing)))
 	        .parent().removeClass('null')
 	} else if (listing.min_bid.length > 0) {
 	    self.putItems(oo('min-bid table').first(), listing.min_bid, 5)
@@ -440,7 +440,7 @@ var DetailView = oo.view.schema.extend({
 			oo('timeleft').text('Expired')
 			oo('status').text('Expired')
 			oo('auth-bid-pod').slideUp()
-		    }), 1000)
+		    }), 100)
         } else {
 	    oo('timeleft').parent().hide()
 	    $('label', oo('expires').parent()).text('Expired:')
@@ -453,9 +453,9 @@ var DetailView = oo.view.schema.extend({
     },
 
     putListingOwner: function() {
-	var self = this, listing = self.listing, owner = listing.owner
-	oo.util.profile.putBadge(owner).slideDown()
-	oo('owner-links').slideDown()
+	oo.util.profile.putBadge(this.listing.owner).fadeIn(function() {
+	    oo('owner-links').slideDown()
+	})
     },
 
     putListingBids: function() {

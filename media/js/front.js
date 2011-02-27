@@ -120,6 +120,8 @@
 	},
 
 	putListing: function(listing, clone, target) {
+	    // called to put a single featured listing; parent object 'putOne' called
+	    // for each result.
 	    if (listing.description) {
 		$('.listing-description', clone).text(listing.description)
 	    } else {

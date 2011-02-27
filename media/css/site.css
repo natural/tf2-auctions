@@ -396,7 +396,7 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .w88  { width:88%; }
 .w90  { width:90%; }
 .w100 { width:100%; }
-.mono { font-family: Andale Mono, monospace; font-size:0.75em; }
+.mono, .fw { font-family: Andale Mono, monospace; font-size:0.75em; }
 .float-left { float:left; }
 .float-right { float:right; }
 .w49 { width:49%; }
@@ -887,4 +887,20 @@ padding:0.5em;
 font-size:300%;
 font-family:"TF2Build";
 text-shadow: 0.1em 0.1em #000;
+}
+
+
+
+.listing-active {
+}
+.listing-awarded {
+}
+.listing-cancelled {
+opacity:0.65;
+}
+.listing-expired {
+opacity:0.65;
+}
+.bid-ended {
+opacity:0.65;
 }

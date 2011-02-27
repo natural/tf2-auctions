@@ -21,18 +21,20 @@ String.prototype.fs = function() {
     return formatted
 }
 
-if(!Array.indexOf){
-  Array.prototype.indexOf = function(obj){
-   for(var i=0; i<this.length; i++){
-    if(this[i]==obj){
-     return i;
+if (!Array.indexOf) {
+    Array.prototype.indexOf = function(obj){
+	for (var i=0; i<this.length; i++) {
+	    if (this[i]==obj) { return i; }
+	}
+	return -1;
     }
-   }
-   return -1;
-  }
 }
 
-if(typeof String.prototype.trim !== 'function') {   String.prototype.trim = function() {     return this.replace(/^\s+|\s+$/g, '');    } }
+if (typeof String.prototype.trim !== 'function') {
+    String.prototype.trim = function() {
+	return this.replace(/^\s+|\s+$/g, '');
+    }
+}
 
 
 //
@@ -945,8 +947,9 @@ var oo = (function() {
 	    if (listing.min_bid_currency_use) {
 		$(prefix+'-listing-view-min-bid-currency-use', target).removeClass('null')
 		$(prefix+'-listing-view-min-bid-currency-use .currency', target)
-		    .text('${0}'.fs(listing.min_bid_currency_amount))
+		    .html('{1}{0}'.fs(listing.min_bid_currency_amount, oo.util.listingCurrencySym(listing)))
 		$(prefix+'-listing-view-min-bid', target).removeClass('null')
+		oo.info('Currency listing:', listing)
 	    } else {
 		if (listing.min_bid.length) {
 		    var next = 0
@@ -1271,6 +1274,9 @@ var oo = (function() {
     }
 
     ns.schema = function(s) { return new SchemaTool(s) }
+    ns.listingCurrencySym = function(l) {
+	return $.map(l.min_bid_currency_type[0], function(x) { return '&#' + x + ';'}).join('')
+    }
 
 })(oo.util = {});
 
@@ -1409,7 +1415,7 @@ var oo = (function() {
 	    // initalize the model associated with this controller.  the
 	    // model will initalize the view when it's ready.
 	    //self.model.init.apply(self.model, [self.view, self.config])
-	    self.model.init.apply(self.model, [self.view])
+	    var m = self.model.init.apply(self.model, [self.view])
 
 	    // initialize anything in the namespace that looks like an
 	    // event listener.
@@ -1430,6 +1436,7 @@ var oo = (function() {
                     }
 		}
             })
+	    return m
 	},
 
 	hash: function() { return location.hash.slice(1) }
@@ -1470,7 +1477,7 @@ var oo = (function() {
 	loader: oo.data.schema,
 	init: function(view) {
 	    var self = this
-	    return ns.model.init.apply(this, arguments)
+	    return ns.model.init.apply(self, arguments)
 	        .success(function(data) {
 		    var st = self.tool = oo.util.schema(data), tt = oo.backpack.itemHoverTool(st)
 		    $('div.ov td.item-view, #backpack-ac td, .backpack td')
@@ -1704,11 +1711,10 @@ var oo = (function() {
 })(jQuery);
 
 
-$(document)
-    .bind('ready', function() {
-	// perform an initial auth if the module has indicated authentication
-	oo.data.auth()
+head.ready(function() {
+    // perform an initial auth if the module has indicated authentication
+    oo.data.auth()
 
-	// initialize each direct clone of the oo.controller object:
-	$.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
-    })
+    // initialize each direct clone of the oo.controller object:
+    $.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
+})

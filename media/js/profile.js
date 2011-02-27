@@ -1,8 +1,3 @@
-// BUG:  empty listings not showing.
-// FIXME:  some text ("Messages") should only appear after init
-// FIXME: some text ("Backpack") should only appear after ajax load;
-//        fetch times are long and need better loading/waiting dispays.
-
 //(function() {
 
 
@@ -21,7 +16,7 @@ var DetailsModel = oo.model.extend({
     init: function(view) {
 	var self = this, args = arguments
 	self.view = view
-	oo.data.profile({suffix: path})
+	return oo.data.profile({suffix: path})
 	    .success(function(pageProfile) {
 		self.pageProfile = pageProfile
 		oo.model.auth.init()
@@ -75,8 +70,7 @@ var DetailsView = oo.view.extend({
 		$('.fb-message', clone).text(fb.comment)
 		oo.data.profile({suffix: fb.source})
 		    .success(function(p) { oo.util.profile.putAvatar(p, $('.source-seed', clone)) })
-		         // FIXME
-                        .success(function(s) { $('a span.av', clone).after(' {0}:'.fs( fedback[Math.round(Math.random()*10)-1] )) })
+                        .success(function(s) { $('a span.av', clone).after(' {0}:'.fs( fedback[Math.round(Math.random()*10) % 10] )) })
 	    })
 	} else {
 	    oo('feedback-pod h2.empty').fadeIn()
@@ -105,7 +99,7 @@ var DetailsView = oo.view.extend({
 
 		oo.data.profile({suffix: msg.source})
 		    .success(function(p) { oo.util.profile.putAvatar(p, $('.profile-msg-sender-seed', clone)) })
-		        .success(function(s) { $('a span.av', clone).after(' {0}:'.fs( said[Math.round(Math.random()*10)-1] )) })
+		        .success(function(s) { $('a span.av', clone).after(' {0}:'.fs( said[Math.round(Math.random()*10) % 10] )) })
 
 		$('.profile-msg-created-seed', clone).text('Left: {0}'.fs(msg.created))
 		clone.removeClass('null prototype')
@@ -214,7 +208,7 @@ var ListingsModel = oo.model.schema.extend({
 	    .success(function(s) {
 		oo.data.profile({suffix: path})
 	            .success(function(p) {
-			oo.data.listings({suffix: p.id64})
+			oo.data.listings({suffix: p.id64 + '?ext=1'})
 			    .success(function(listings) {
 				self.listings = listings
 				view.join(self)
@@ -254,7 +248,7 @@ var ListingsView = oo.view.schema.extend({
     },
 
     putOne: function(listing, clone) {
-	clone.removeClass('null prototype')
+	clone.removeClass('null prototype').addClass('listing-{0}'.fs(listing.status))
 	if (listing.description) {
 	    $('.listing-description', clone).text(listing.description)
 	} else {
@@ -270,7 +264,20 @@ var ListingsView = oo.view.schema.extend({
 	})
         $('.listing-view-link a', clone).attr('href', '/listing/'+listing.id)
 	$('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
-	// TODO:  add min bid
+	$('.listing-status-seed', clone).text(listing.status)
+	$('.listing-created-seed', clone).text(oo.util.dformat(listing.created))
+	$('.listing-expires-seed', clone).text(oo.util.dformat(listing.expires))
+	if (listing.min_bid.length) {
+	    next = 0
+	    $.each(listing.min_bid, function(index, defindex) {
+		$(  $('.profile-listing-view-min-bid .item-view div', clone)[next])
+		    .append($.toJSON({defindex:defindex, quality:6}))
+		next += 1
+	    })
+		$('.profile-listing-view-min-bid', clone).removeClass('null')
+	} else {
+	    $('.profile-listing-view-min-bid', clone).hide()
+	}
 	oo('listings').append(clone)
     }
 })
@@ -283,7 +290,7 @@ var BidsModel = oo.model.schema.extend({
 	    .success(function(s) {
 		oo.data.profile({suffix: path})
 	            .success(function(p) {
-			oo.data.bids({suffix: p.id64})
+			oo.data.bids({suffix: p.id64 + '?ext=1'})
 			    .success(function(bids) {
 				self.bids = bids
 				view.join(self)
@@ -321,7 +328,7 @@ var BidsView = oo.view.schema.extend({
     },
 
     putOne: function(bid, clone) {
-	clone.removeClass('null prototype')
+	clone.removeClass('null prototype').addClass('bid-{0}'.fs(bid.status))
 	var target = $('.items-view table.chooser', clone)
 	oo.view.schema.putItems(target, bid.items)
 	$('.profile-bid-view-link a', clone).attr('href', '/listing/'+ bid.listing.id)
@@ -522,7 +529,7 @@ var SettingsControllerDefn = {
 
     init: function() {
         this.validateNotifyBids()
-	oo.controller.init.apply(this)
+	return oo.controller.init.apply(this)
     },
 
     validateNotifyBids: function() {
@@ -628,18 +635,19 @@ var MainController = oo.controller.extend({
     view: MainView,
 
     show: function(event, ui) {
-	var name = (ui.tab.text || ui.tab.outerText).toLowerCase(),
-	    after = function() {
-		$('#{0} h2.loading'.fs(ui.index)).slideUp(
-		    function() { $('#{0} div:first'.fs(ui.index)).fadeIn() }
-		)
-	    }
-	if (name in SubControllers) {
-	    var c = SubControllers[name]
+	var n = (ui.tab.text || ui.tab.outerText).toLowerCase(),
+	    c = SubControllers[n]
+	if (c) {
 	    if (!c.config) {
 		c.config = this.config
-		oo.controller.extend(c).init()
-		$('h1 span.title', ui.panel).parent().fadeIn(after)
+		$('#{0} h2.loading'.fs(ui.index)).fadeIn()
+		oo.controller.extend(c).init().success(function(m) {
+		    $('#{0} h2.loading'.fs(ui.index)).slideUp(function() {
+			$('h1 span.title', ui.panel).parent().fadeIn('slow', function() {
+			    $('#{0} div:first'.fs(ui.index)).fadeIn('slow')
+			})
+		    })
+		})
 	    }
 	}
     },

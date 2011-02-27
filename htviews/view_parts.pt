@@ -155,7 +155,7 @@ large listings: um...
 -->
 <metal:macro
      metal:define-macro="listings_large"
-     tal:define="use_created use_created | True; use_bids use_bids | True">
+     tal:define="use_created use_created | True; use_bids use_bids | True; use_dates use_dates | False; use_status use_status | False">
     <div id="${slug}-listings">
 	<div class="null prototype ov">
             <table class="listing-view w100">
@@ -168,9 +168,12 @@ large listings: um...
 			    </div>
 			    <metal:display use-macro="macros.items_view" />
 			    <strong class="listing-description-label">Description:</strong>
-			    <div class="listing-description desc"></div>
+			    <div class="listing-description desc ml1"></div>
 			</td>
 			<td tal:condition="use_bids">
+			    <div tal:condition="use_status" class="mb1">
+				<strong>Status: </strong><span class="listing-status-seed"></span>
+			    </div>
 			    <metal:if tal:condition="use_created">
 				<strong>Created By:</strong>
 				<div class="listing-owner-seed mb1">
@@ -185,14 +188,22 @@ large listings: um...
 			    <div>
 				<strong>Bids: <span class="bid-count-seed"></span></strong>
 			    </div>
+			    <div tal:condition="use_dates">
+				<div class="mb1 mt1">
+				<strong>Created: </strong><div class="listing-created-seed ml1 mono"></div>
+				</div>
+				<div class="mb1">
+				<strong>Expires: </strong><div class="listing-expires-seed ml1 mono"></div>
+				</div>
+			    </div>
 			</td>
 		    </tr>
                     <tr>
 			<td tal:attributes="width '70%' if use_bids else '100%'">
 			    <div class="${slug}-listing-view-min-bid null mt1">
 				<label>Minimum Bid:</label>
-				<h3 class="null ${slug}-listing-view-min-bid-currency-use">
-				    <span class="currency"></span>
+				<h3 class="null ${slug}-listing-view-min-bid-currency-use ml1">
+				    <span class="currency fw"></span>
 				</h3>
 				<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
 			    </div>
