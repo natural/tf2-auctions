@@ -610,13 +610,13 @@ var oo = (function() {
 	}
 
 	self.setTradable = function(itemutil, element, item, settings) {
+	    if (settings.showAngrySalad) {
+		element.parent()
+		    .addClass('border-quality-{0} background-quality-{1}'.fs(item.quality, item.quality))
+	    }
 	    if (itemutil.canTrade()) {
 		element.parent('td')
 		    .removeClass('cannot-trade active-listing active-bid')
-		if (settings.showAngrySalad) {
-		    element.parent()
-			.addClass('border-quality-{0} background-quality-{1}'.fs(item.quality, item.quality))
-		}
 	    } else {
 		var td = element.parent('td')
 		td.addClass('cannot-trade')
@@ -636,12 +636,12 @@ var oo = (function() {
 	}
 
 	self.setTradableUnplaced = function(itemutil, element, item, settings) {
+	    if (settings.showAngrySalad) {
+		element.parent().parent()
+		    .addClass('border-quality-{0} background-quality-{1}'.fs(item.quality, item.quality))
+	    }
 	    if (itemutil.canTrade()) {
 		element.parent().removeClass('cannot-trade active-listing active-bid')
-		if (settings.showAngrySalad) {
-		    element.parent().parent()
-			.addClass('border-quality-{0} background-quality-{1}'.fs(item.quality, item.quality))
-		}
 	    } else {
 		var td = element.parents('td')
 		td.addClass('cannot-trade')
@@ -931,8 +931,7 @@ var oo = (function() {
             if (listing.description) {
 		$('.listing-description', target).text(listing.description)
 	    } else {
-		$('.listing-description-label', target).empty()
-		$('.listing-description', target).empty()
+		$('tr.ds', target).empty()
 	    }
 	    $('.listing-owner', target).text(listing.owner.personaname)
 	    $('.listing-owner', target).parent().attr('href', '/profile/'+listing.owner.id64)
@@ -960,12 +959,17 @@ var oo = (function() {
 		    })
 		    $(prefix+'-listing-view-min-bid', target).removeClass('null')
 		} else {
-		    $(prefix+'-listing-view-min-bid', target).hide()
+		    $('tr.mb', target).empty()
 		}
 	    }
 	    $('.listing-view-link a', target).attr('href', '/listing/'+listing.id)
-	    $('.listing-view-link > span.expires', target)
+	    $('tr.pr div.pr', target).animate({opacity:0}, 0)
+	    $('span.expires', target)
 		.append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
+	    oo.util.profile.putAvatar(listing.owner, $('span.av', target))
+	        .success(function(s) {
+		    $('tr.pr div.pr', target).animate({opacity:100}, 9999)
+		})
 	}
     })
 
@@ -1465,7 +1469,6 @@ var oo = (function() {
 		oo.data.bids(params),
 		oo.data.listings(params)
 	    ).done(function() {
-		oo.info('backpack arguments', arguments)
 		self.backpack = arguments[0][0]
 		self.bids = arguments[1][0]
 		self.listings = arguments[2][0]
@@ -1713,7 +1716,7 @@ var oo = (function() {
 
 head.ready(function() {
     // perform an initial auth if the module has indicated authentication
-    oo.data.auth()
+    oo.model.auth.init()
 
     // initialize each direct clone of the oo.controller object:
     $.each(oo.controller.clones, function(i, c) { c.init.apply(c) })

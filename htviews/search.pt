@@ -6,7 +6,7 @@
 <metal:fill fill-slot="main" tal:define="slug 'search'">
 
 
-    <div id="${slug}-pod" class="w100 pt05 desc">
+    <div id="${slug}-pod" class="w75 pt05 desc center ">
 	<div id="${slug}-controls" class="null build-font float-left w15 controls">
 	    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search</span></h1>
 
@@ -97,7 +97,7 @@
 
 	<div id="${slug}-listing-pod" class="ml1 float-left w83">
 
-	    <div class="null w100" id="featured-listings-pod">
+	    <div class="null w100 mb1" id="featured-listings-pod">
 		<metal:include
 		     tal:define="slug 'featured'; rows 2; cols 5;"
 		     metal:use-macro="context.view_parts.macros.featured_large">
@@ -106,7 +106,7 @@
 
 	    <h2 class="null" id="${slug}-no-listings"></h2>
 	    <h2 class="null mb05" id="${slug}-some-listings"></h2>
-	    <div class="" id="${slug}-results-pod">
+	    <div class="w100" id="${slug}-results-pod">
 		<metal:include
 		     tal:define="slug 'search'; rows 2; cols 5"
 		     metal:use-macro="context.view_parts.macros.listings_large" />

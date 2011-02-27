@@ -157,61 +157,69 @@ large listings: um...
      metal:define-macro="listings_large"
      tal:define="use_created use_created | True; use_bids use_bids | True; use_dates use_dates | False; use_status use_status | False">
     <div id="${slug}-listings">
-	<div class="null prototype ov">
+	<div class="null prototype">
+	    <div class="ov">
             <table class="listing-view w100">
 		<tbody>
-                    <tr>
-			<td tal:attributes="width '70%' if use_bids else '100%'">
-			    <div class="listing-view-link m05">
-				<a class="small-button small-item-button">View</a>
-				<span class="expires"></span>
-			    </div>
-			    <metal:display use-macro="macros.items_view" />
-			    <strong class="listing-description-label">Description:</strong>
-			    <div class="listing-description desc ml1"></div>
-			</td>
-			<td tal:condition="use_bids">
-			    <div tal:condition="use_status" class="mb1">
-				<strong>Status: </strong><span class="listing-status-seed"></span>
-			    </div>
-			    <metal:if tal:condition="use_created">
-				<strong>Created By:</strong>
-				<div class="listing-owner-seed mb1">
-				    <a href="#">
-					<img class="listing-avatar av" />
-				    </a>
-				    <a href="#">
-					<span class="listing-owner av"></span>
-				    </a>
-				</div>
-			    </metal:if>
-			    <div>
-				<strong>Bids: <span class="bid-count-seed"></span></strong>
-			    </div>
-			    <div tal:condition="use_dates">
-				<div class="mb1 mt1">
-				<strong>Created: </strong><div class="listing-created-seed ml1 mono"></div>
-				</div>
-				<div class="mb1">
-				<strong>Expires: </strong><div class="listing-expires-seed ml1 mono"></div>
-				</div>
+		    <tr>
+			<!-- items header -->
+			<td colspan="2">
+			    <div class="pl05 pt025 pr05">
+				<strong class="">Items:</strong>
+				<span class="expires ml1"></span>
 			    </div>
 			</td>
 		    </tr>
-                    <tr>
-			<td tal:attributes="width '70%' if use_bids else '100%'">
-			    <div class="${slug}-listing-view-min-bid null mt1">
-				<label>Minimum Bid:</label>
-				<h3 class="null ${slug}-listing-view-min-bid-currency-use ml1">
-				    <span class="currency fw"></span>
-				</h3>
+		    <tr>
+			<!-- items blocks and view link -->
+			<td width="75%">
+			    <metal:display use-macro="macros.items_view" />
+			</td>
+			<td valign="top">
+			    <div class="listing-view-link text-right mt05 pr05">
+				<a class="small-button small-item-button">View</a>
+			    </div>
+			</td>
+		    </tr>
+		    <tr class="mb">
+			<!-- min bid header -->
+			<td><div class="pl05 mt05"><label>Minimum Bid:</label></div></td>
+			<td></td>
+		    </tr>
+		    <tr class="mb">
+			<!-- min bid items -->
+			<td width="75%">
+			    <div class="${slug}-listing-view-min-bid null">
 				<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
 			    </div>
 			</td>
 			<td></td>
 		    </tr>
+		    <tr class="ds">
+			<!-- description header -->
+			<td><div class="mt05 pl05"><label>Description:</label></div></td>
+			<td></td>
+		    </tr>
+		    <tr class="ds">
+			<!-- description text -->
+			<td width="75%"><div class="listing-description desc pl05"></div></td>
+			<td></td>
+		    </tr>
+		    <tr class="pr">
+			<!-- profile -->
+			<td colspan="2">
+			    <div class="pl05 pt025 pr05 text-right pr">
+				<span class="av">
+				    <a href="#"><span class="av"></span></a>
+				    <a href="#"><img class="av" /></a>
+
+				</span>
+			    </div>
+			</td>
+		    </tr>
 		</tbody>
             </table>
+	    </div>
 	</div>
     </div>
 </metal:macro>

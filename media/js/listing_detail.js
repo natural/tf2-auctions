@@ -11,8 +11,12 @@ var NewBidModel = oo.model.status.extend({
 	var self = this, suffix = self.suffix
 	return oo.model.status.init.apply(self, arguments)
 	    .success(function(s) {
-		var sub = oo.model.backpack.extend({suffix: suffix})
-		sub.init().done( function() { oo.info(sub); view.join(sub) })
+		oo.data.listing({suffix: oo.util.pathTail()})
+		    .success(function(l) {
+			var sub = oo.model.backpack.extend({suffix: suffix})
+			sub.listing = l
+			sub.init().done( function() { view.join(sub) })
+		    })
 	    })
     },
 
@@ -42,7 +46,6 @@ var NewBidModel = oo.model.status.extend({
 
 
 var makeBpTool = function(model) {
-    oo.info('makeBpTool', model)
     return oo.backpack.itemTool({
         items: model.backpack.result.items.item,
         listingUids: oo.util.itemUids(model.listings),
@@ -620,19 +623,20 @@ var DetailView = oo.view.schema.extend({
     },
 
     showPlaceItemBid: function(existing) {
-	if (!this.bidController) {
-	    this.message('Loading your backpack...')
-	    var listing = this.listing, profile = this.profile
+	var self = this
+	if (!self.bidController) {
+	    self.message('Loading your backpack...')
+	    var listing = self.listing, profile = self.profile
 	    oo.model.auth.init()
 	        .success(function (p) {
 		    NewBidModel.profile = p
 		    NewBidModel.suffix = p.id64
 		    NewBidModel.listing = listing
-		    this.bidController = oo.controller.extend(NewBidController)
-		    this.bidController.init()
+		    self.bidController = oo.controller.extend(NewBidController)
+		    self.bidController.init()
 		})
          } else {
-	     this.bidController.reinit()
+	     self.bidController.reinit()
 	 }
     },
 

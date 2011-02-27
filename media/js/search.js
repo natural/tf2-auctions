@@ -218,7 +218,7 @@ searchView = oo.view.searchbase.extend({
 	    $('#search-prev-none, #search-bottom-prev-none').show()
 	}
 	if (init) { self.joinFeatured(results) }
-	oo.data.schema({})
+	oo.data.schema()
             .success(function(schema) {
 	        oo.model.auth.extend({suffix: '?settings=1'}).init()
 	            .success(function(profile) { oo.util.schema(schema).putImages(profile.settings) })
@@ -233,8 +233,7 @@ searchView = oo.view.searchbase.extend({
 	if (listing.description) {
 	    $('.listing-description', clone).text(listing.description)
 	} else {
-	    $('.listing-description-label', clone).empty()
-	    $('.listing-description', clone).empty()
+	    $('tr.ds', clone).empty()
 	}
 	oo.util.profile.putAvatar(listing.owner, $('.listing-owner-seed', clone))
 	$('.bid-count-seed', clone).text(listing.bid_count || '0')
@@ -252,13 +251,19 @@ searchView = oo.view.searchbase.extend({
             })
             $('.search-listing-view-min-bid', clone).removeClass('null')
 	} else {
-            $('.search-listing-view-min-bid', clone).hide()
+	    $('tr.mb', clone).empty()
 	}
 	$('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
+	$('span.expires', clone)
+	    .append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
 
-	$('.listing-view-link', clone)
-	    .append('<span class="mono">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
 	if (listing.featured) {clone.addClass('featured')}
+	    $('tr.pr div.pr', clone).animate({opacity:0}, 0)
+	    oo.util.profile.putAvatar(listing.owner, $('span.av', clone))
+	        .success(function(s) {
+		    $('tr.pr div.pr', clone).animate({opacity:100}, 9999)
+		})
+
 	target.append(clone)
     },
 
@@ -419,8 +424,9 @@ searchController = oo.controller.extend({
 
     'ready' : function() {
 	var self = this, q = self.hash()
+	$('#content-site-categories').fadeOut()
 	self.view.message('Loading...')
-	if (q) {
+	if (false) {
 	    window.setTimeout(function() {
 		$.each(q.split('&'), function(idx, pair) {
 	        try {

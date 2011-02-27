@@ -227,7 +227,7 @@ var ListingsView = oo.view.schema.extend({
 		if (model.listings && model.listings.length) {
 		    self.putMany(model.listings, model.userProfile)
 		} else {
-		    oo('bids-pod h2.empty').fadeIn()
+		    oo('listings-pod h2.empty').fadeIn()
 		}
 	    }
 	)
@@ -499,7 +499,7 @@ var SettingsView = oo.view.extend({
 
     saveSuccess: function() {
 	oo('settings-save-message div.information')
-	    .text('Saved!')
+	    .text('Settings saved.  Some settings take effect when you refresh or go to a new page.')
 	    .fadeIn()
 	    .delay(3000)
 	    .fadeOut()
