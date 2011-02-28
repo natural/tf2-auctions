@@ -225,7 +225,7 @@ var ListingsView = oo.view.schema.extend({
 	oo('listings-inner').slideDown(
 	    function() {
 		if (model.listings && model.listings.length) {
-		    self.putMany(model.listings, model.userProfile)
+		    self.put(model.listings, model.userProfile)
 		} else {
 		    oo('listings-pod h2.empty').fadeIn()
 		}
@@ -234,51 +234,18 @@ var ListingsView = oo.view.schema.extend({
 	self.join = oo.noop
     },
 
-    putMany: function(listings, profile) {
-	var self = this,
-            proto = oo('listings-inner div.prototype')
-	$.each(listings, function(idx, listing) {
-	    self.putOne(listing, proto.clone().addClass('listing-seed'))
+    put: function(listings, profile) {
+	oo.util.listing.putMany({
+	    listings: listings,
+	    prototype: oo('listings-inner div.prototype'),
+	    target: oo('listings'),
+	    dates: true
 	})
 	oo.data.auth()
 	    .success(function(p) { oo.util.schema().putImages(p.settings) })
 	    .error(function() { oo.util.schema().putImages() })
 	$('div.listing-seed td.item-view div:empty').parent().remove()
 	oo('listings-pod div.init-seed').slideDown('slow')
-    },
-
-    putOne: function(listing, clone) {
-	clone.removeClass('null prototype').addClass('listing-{0}'.fs(listing.status))
-	if (listing.description) {
-	    $('.listing-description', clone).text(listing.description)
-	} else {
-	    $('.listing-description-label', clone).empty()
-	    $('.listing-description', clone).empty()
-	}
-	$('.listing-owner', clone).text(listing.owner.personaname)
-	$('.listing-avatar', clone).attr('src', listing.owner.avatar)
-	var next = 0, prefix = '.profile'
-	$.each(listing.items, function(index, item) {
-	    $($('.item-view div', clone)[next]).append($.toJSON(item))
-	    next += 1
-	})
-        $('.listing-view-link a', clone).attr('href', '/listing/'+listing.id)
-	$('.bid-count-seed', clone).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
-	$('.listing-status-seed', clone).text(listing.status)
-	$('.listing-created-seed', clone).text(oo.util.dformat(listing.created))
-	$('.listing-expires-seed', clone).text(oo.util.dformat(listing.expires))
-	if (listing.min_bid.length) {
-	    next = 0
-	    $.each(listing.min_bid, function(index, defindex) {
-		$(  $('.profile-listing-view-min-bid .item-view div', clone)[next])
-		    .append($.toJSON({defindex:defindex, quality:6}))
-		next += 1
-	    })
-		$('.profile-listing-view-min-bid', clone).removeClass('null')
-	} else {
-	    $('.profile-listing-view-min-bid', clone).hide()
-	}
-	oo('listings').append(clone)
     }
 })
 

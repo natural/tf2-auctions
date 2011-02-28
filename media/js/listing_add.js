@@ -259,7 +259,7 @@ var showMinBid = function() {
     }
 
     var copyToMinbidChooser = function(e) {
-	var source = $(event.target)
+	var source = $(e.target)
 	var target = $("#bp-chooser-listing-add-min-bid td div:empty").first()
 	if (!target.length) { return;  }
 	var clone = source.clone()

@@ -94,7 +94,7 @@ searchModel = oo.model.schema.extend({
 //
 // View for searches.
 //
-searchView = oo.view.searchbase.extend({
+searchView = oo.view.extend({
     contentWidths: {controls:null, results:null},
 
     init: function(model, config) {
@@ -105,9 +105,9 @@ searchView = oo.view.searchbase.extend({
     configNext: function(results) {
 	var self = this
 	var navNext = function(e) {
-	    $('#search-some-listings').text('Loading...')
-	    $('#search-nav-extra').slideUp(function() {
-	        $('#search-listings').slideUp(function() {
+	    oo('some-listings').text('Loading...')
+	    oo('nav-extra').slideUp(function() {
+	        oo('listings').slideUp(function() {
 		    self.model.searchStack.push(results)
 		    var innerNext = function(rs) {
 		        window.location.hash = results.next_qs
@@ -124,16 +124,16 @@ searchView = oo.view.searchbase.extend({
 	    navNext(e)
 	    return false
         }
-        $('#search-next').unbind().click(navNext)
-        $('#search-bottom-next').unbind().click(navNextBottom)
+        oo('next').unbind().click(navNext)
+        oo('bottom-next').unbind().click(navNextBottom)
     },
 
     configPrev: function(results) {
 	var self = this
 	var navPrev = function(e) {
-	    $('#search-some-listings').text('Loading...')
-	    $('#search-nav-extra').slideUp(function() {
-	        $('#search-listings').slideUp(function() {
+	    oo('some-listings').text('Loading...')
+	    oo('nav-extra').slideUp(function() {
+	        oo('listings').slideUp(function() {
 		    var rs = self.model.searchStack.pop()
 		    window.location.hash = rs.next_qs
 		    self.putListings(rs)
@@ -146,78 +146,75 @@ searchView = oo.view.searchbase.extend({
 	    navPrev(e)
 	    return false
         }
-        $('#search-prev').unbind().click(navPrev)
-        $('#search-bottom-prev').unbind().click(navPrevBottom)
+        oo('prev').unbind().click(navPrev)
+        oo('bottom-prev').unbind().click(navPrevBottom)
     },
 
     joinSearch: function(search, query, init) {
 	var self = this
 	if (query) { window.location.hash = query }
-	if (! $('#search-filter-inputs').children().length) {
+	if (! oo('filter-inputs').children().length) {
 	    $.each(search.filters, function(idx, filter) {
 		if (!(filter[0])) {
 		    var item = '<br />'
 		} else {
 		    var item = '<input type="checkbox" name="{0}" />{1}<br />'.fs(filter[0], filter[1])
 	        }
-		$('#search-filter-inputs').append(item)
+		oo('filter-inputs').append(item)
 	    })
 		}
-        if (!$('#search-sort-inputs').children().length) {
+        if (!oo('sort-inputs').children().length) {
 	    $.each(search.orders, function(idx, order) {
 	        var input = '<input type="radio" name="sort" value="{0}" />{1}<br />'.fs(order[0], order[1])
-	        $('#search-sort-inputs').append(input)
+	        oo('sort-inputs').append(input)
 	    })
 	    $('input[name="sort"]').first().click()
         }
         this.putListings(search, init)
         this.message().fadeAway()
-        $('#search-controls').fadeIn('fast')
-        $('#search-listings').fadeIn('fast')
-        self.contentWidths.controls = $('#search-controls').width()
-        self.contentWidths.results = $('#search-listing-pod').width()
+        oo('controls').fadeIn('fast')
+        oo('listings').fadeIn('fast')
+        self.contentWidths.controls = oo('controls').width()
+        self.contentWidths.results = oo('listing-pod').width()
     },
 
     putListings: function(results, init) {
 	var self = this
-	$('#search-listings div.listing-seed').remove()
+	oo('listings div.listing-seed').remove()
 	if (!results.listings.length) {
-	    $('#search-no-listings').text('Nothing found.  You should add a listing.').show()
-	    $('#search-some-listings').hide()
-	    $('#search-nav').fadeAway()
-	    $('#search-bottom-nav').fadeAway()
+	    oo('no-listings').text('Nothing found.  You should add a listing.').show()
+	    oo('some-listings').hide()
+	    oo('nav').fadeAway()
+	    oo('bottom-nav').fadeAway()
 	    return
 	} else {
-	    $('#search-no-listings').hide()
-	    $('#search-some-listings').text('Results:').show()
-	    $('#search-nav').fadeBack()
-	    $('#search-bottom-nav').fadeBack()
+	    oo('no-listings').hide()
+	    oo('some-listings').text('Results:').show()
+	    oo('nav').fadeBack()
+	    oo('bottom-nav').fadeBack()
 	}
-	var proto = $('#search-listings div.prototype'),
-	    target = $('#search-listings')
-	$.each(results.listings, function(idx, listing) {
-            var clone = proto.clone()
-		       .addClass('listing-seed')
-		       .removeClass('null prototype')
-	    self.putListing(listing, clone, target)
+	oo.util.listing.putMany({
+	    listings: results.listings,
+	    prototype: oo('listings div.prototype'),
+	    target: oo('listings')
 	})
 	if (results.more) {
 	    self.configNext(results)
-	    $('#search-next-link, #search-bottom-next-link').show()
-	    $('#search-next-none, #search-bottom-next-none').hide()
+	    oo('next-link, bottom-next-link').show()
+	    oo('next-none, bottom-next-none').hide()
 	} else {
-	    $('#search-next-link, #search-bottom-next-link').hide()
-	    $('#search-next-none, #search-bottom-next-none').show()
+	    oo('next-link, bottom-next-link').hide()
+	    oo('next-none, bottom-next-none').show()
 	}
 	if (self.model.searchStack.depth()) {
 	    self.configPrev(results)
-	    $('#search-prev-link, #search-bottom-prev-link').show()
-	    $('#search-prev-none, #search-bottom-prev-none').hide()
+	    oo('prev-link, bottom-prev-link').show()
+	    oo('prev-none, bottom-prev-none').hide()
 	} else {
-	    $('#search-prev-link, #search-bottom-prev-link').hide()
-	    $('#search-prev-none, #search-bottom-prev-none').show()
+	    oo('prev-link, bottom-prev-link').hide()
+	    oo('prev-none, bottom-prev-none').show()
 	}
-	if (init) { self.joinFeatured(results) }
+	if (init) { oo.util.listing.putFeatured(results) }
 	oo.data.schema()
             .success(function(schema) {
 	        oo.model.auth.extend({suffix: '?settings=1'}).init()
@@ -225,69 +222,31 @@ searchView = oo.view.searchbase.extend({
 	            .error(function() { oo.util.schema(schema).putImages() })
             })
 	$('div.listing-seed td.item-view div:empty').parent().remove()
-	$('#search-listings').slideDown()
-	$('#search-nav-extra').fadeIn()
-    },
-
-    putListing: function(listing, clone, target) {
-	if (listing.description) {
-	    $('.listing-description', clone).text(listing.description)
-	} else {
-	    $('tr.ds', clone).empty()
-	}
-	oo.util.profile.putAvatar(listing.owner, $('.listing-owner-seed', clone))
-	$('.bid-count-seed', clone).text(listing.bid_count || '0')
-        var next = 0
-	$.each(listing.items, function(index, item) {
-	   $($('.item-view div', clone)[next]).append($.toJSON(item))
-	   next += 1
-        })
-	if (listing.min_bid.length) {
-	    next = 0
-	    $.each(listing.min_bid, function(index, defindex) {
-	        $($('.search-listing-view-min-bid .item-view div', clone)[next])
-                    .append($.toJSON({defindex:defindex, quality:6}))
-		    next += 1
-            })
-            $('.search-listing-view-min-bid', clone).removeClass('null')
-	} else {
-	    $('tr.mb', clone).empty()
-	}
-	$('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
-	$('span.expires', clone)
-	    .append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
-
-	if (listing.featured) {clone.addClass('featured')}
-	    $('tr.pr div.pr', clone).animate({opacity:0}, 0)
-	    oo.util.profile.putAvatar(listing.owner, $('span.av', clone))
-	        .success(function(s) {
-		    $('tr.pr div.pr', clone).animate({opacity:100}, 9999)
-		})
-
-	target.append(clone)
+	oo('listings').slideDown()
+	oo('nav-extra').fadeIn()
     },
 
     searchTitle: function(v) {
-	return $('#search-title').text(v)
+	return oo('title').text(v)
     },
 
     filterOptions: function() {// should grow a parameter and set checkboxes from it
-	return $('#search-controls input[type="checkbox"]')
+	return oo('controls input[type="checkbox"]')
     },
 
     sortOption: function() {
-	return $('#search-controls input[type="radio"]:checked')
+	return oo('controls input[type="radio"]:checked')
     },
 
     showBasic: function() {
         this.searchTitle('Search Listings')
-	$('#search-advanced-pod').slideUp()
-	$('#search-reverse-pod').slideUp()
-	$('#search-advanced-link-pod, #search-sorts, #search-filters, #search-reverse-link-pod').fadeBack()
-	$('#search-basic-link-pod').fadeOut()
-	$('#search-listing-pod').animate({width: this.contentWidths.results}, 400)
-	$('#search-controls').animate({width: this.contentWidths.controls} ,400)
-	$('#search-controls-nav').fadeIn()
+	oo('advanced-pod').slideUp()
+	oo('reverse-pod').slideUp()
+	oo('advanced-link-pod, sorts, filters, reverse-link-pod').fadeBack()
+	oo('basic-link-pod').fadeOut()
+	oo('listing-pod').animate({width: this.contentWidths.results}, 400)
+	oo('controls').animate({width: this.contentWidths.controls} ,400)
+	oo('controls-nav').fadeIn()
     },
 
     showAdvanced: function() {
@@ -295,7 +254,7 @@ searchView = oo.view.searchbase.extend({
 	if (!self.showAdvanced.initOnce) {
 	    self.showAdvanced.initOnce = true
 	    var chooserChanged = function () {
-		$('#search-some-listings').text('Loading...')
+		oo('some-listings').text('Loading...')
 		self.model.searchStack.chooserChanged('#bp-chooser-advanced-search img', 'di')
 	    },
 	    copyToSearchChoice = function(event) {
@@ -322,16 +281,16 @@ searchView = oo.view.searchbase.extend({
 	    initBackpack(self.model.tool, 'ac', 'advanced-search', chooserChanged)
 	    $('#bp-ac td div img').live('dblclick', copyToSearchChoice)
 	    $('#bp-chooser-advanced-search td').live('dblclick', removeSearchChoice)
-	    $('#search-advanced-reset').click(resetAdvancedSearch)
+	    oo('advanced-reset').click(resetAdvancedSearch)
 	}
         self.searchTitle('Advanced Search')
-	$('#search-advanced-link-pod, #search-reverse-link-pod, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
-	$('#search-basic-link-pod').fadeIn()
-	var width = $('#search-pod').width()
+	oo('advanced-link-pod, reverse-link-pod, sorts, filters, controls-nav').fadeOut()
+	oo('basic-link-pod').fadeIn()
+	var width = oo('pod').width()
 	$('#advanced-search-pod').show()
-	$('#search-controls').animate({width:400} ,400)
-	$('#search-listing-pod').animate({width:width-450}, 400, function() {
-	    $('#search-advanced-pod').show(function () {
+	oo('controls').animate({width:400} ,400)
+	oo('listing-pod').animate({width:width-450}, 400, function() {
+	    oo('advanced-pod').show(function () {
 	        $('#bp-nav-ac').width($('#bp-ac .bp-1').width() - 10)
             })
 	})
@@ -342,7 +301,7 @@ searchView = oo.view.searchbase.extend({
 	if (!self.showReverse.initOnce) {
 	    self.showReverse.initOnce = true
 	    var chooserChanged = function () {
-		$('#search-some-listings').text('Loading...')
+		oo('some-listings').text('Loading...')
 		self.model.searchStack.chooserChanged('#bp-chooser-reverse-search img', 'mb')
 	    },
 	    copyToSearchChoice = function(event) {
@@ -369,16 +328,16 @@ searchView = oo.view.searchbase.extend({
 	    initBackpack(self.model.tool, 'rv', 'reverse-search', chooserChanged)
 	    $('#bp-rv td div img').live('dblclick', copyToSearchChoice)
 	    $('#bp-chooser-reverse-search td').live('dblclick', removeSearchChoice)
-	    $('#search-reverse-reset').click(resetReverseSearch)
+	    oo('reverse-reset').click(resetReverseSearch)
 	}
         self.searchTitle('Reverse Search')
-	$('#search-advanced-link-pod, #search-reverse-link-pod, #search-sorts, #search-filters, #search-controls-nav').fadeOut()
-	$('#search-basic-link-pod').fadeIn()
-	var width = $('#search-pod').width()
+	oo('advanced-link-pod, reverse-link-pod, sorts, filters, controls-nav').fadeOut()
+	oo('basic-link-pod').fadeIn()
+	var width = oo('pod').width()
 	$('#reverse-search-pod').show()
-	$('#search-controls').animate({width:400} ,400)
-	$('#search-listing-pod').animate({width:width-450}, 400, function() {
-	    $('#search-reverse-pod').show(function () {
+	oo('controls').animate({width:400} ,400)
+	oo('listing-pod').animate({width:width-450}, 400, function() {
+	    oo('reverse-pod').show(function () {
 	        $('#bp-nav-rv').width($('#bp-rv .bp-1').width() - 10)
 	    })
 	})

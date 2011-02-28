@@ -148,14 +148,13 @@ items view: default 1 row * 10 columns
 </metal:macro>
 
 
+
 <!--
 
-large listings: um...
+large listings
 
 -->
-<metal:macro
-     metal:define-macro="listings_large"
-     tal:define="use_created use_created | True; use_bids use_bids | True; use_dates use_dates | False; use_status use_status | False">
+<metal:macro metal:define-macro="listings_large">
     <div id="${slug}-listings">
 	<div class="null prototype">
 	    <div class="ov">
@@ -173,7 +172,9 @@ large listings: um...
 		    <tr>
 			<!-- items blocks and view link -->
 			<td width="75%">
-			    <metal:display use-macro="macros.items_view" />
+			    <div class="bi">
+				 <metal:display use-macro="macros.items_view" />
+	                    </div>
 			</td>
 			<td valign="top">
 			    <div class="listing-view-link text-right mt05 pr05">
@@ -189,8 +190,12 @@ large listings: um...
 		    <tr class="mb">
 			<!-- min bid items -->
 			<td width="75%">
-			    <div class="${slug}-listing-view-min-bid null">
+			    <div class="${slug}-listing-view-min-bid null mb">
 				<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
+			    </div>
+			    <!-- (or mb currency) -->
+			    <div class="null mbc">
+				<span class="fw"></span>
 			    </div>
 			</td>
 			<td></td>
@@ -202,20 +207,11 @@ large listings: um...
 		    </tr>
 		    <tr class="ds">
 			<!-- description text -->
-			<td width="75%"><div class="listing-description desc pl05"></div></td>
+			<td width="75%"><div class="listing-description ds pl05"></div></td>
 			<td></td>
 		    </tr>
-		    <tr class="pr">
-			<!-- profile -->
-			<td colspan="2">
-			    <div class="pl05 pt025 pr05 text-right pr">
-				<span class="av">
-				    <a href="#"><span class="av"></span></a>
-				    <a href="#"><img class="av" /></a>
-
-				</span>
-			    </div>
-			</td>
+		    <tr class="bt">
+			<td colspan="2"><metal:slot define-slot="bottom" /></td>
 		    </tr>
 		</tbody>
             </table>
@@ -225,59 +221,11 @@ large listings: um...
 </metal:macro>
 
 
-<!--
-
-featured listings: um...
-
--->
-<metal:macro define-macro="featured_large">
-    <div class="w100 mb05">
-	<div id="${slug}-listings" class="ov">
-	    <div class="null prototype">
-		<table class="listing-view w100">
-		    <tbody>
-			<tr>
-			    <td>
-				<div class="listing-view-link m05">
-				    <a class="small-button small-item-button">View</a>
-				</div>
-			    </td>
-			    <td>
-				<div class="tools">
-				    <div class="navs text-right build-font nowrap mt05">
-					<span class="mb1 hi">Featured Listing!</span>
-					<span class="nonav prev null">&lt;</span>
-					<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
-					<span class="nonav next null">&gt;</span>
-					<span class="nav next null"><a onclick="return false" href="#">&gt;</a></span>
-				    </div>
-				</div>
-			    </td>
-			</tr>
-			<tr>
-			    <td colspan="2">
-				<metal:display use-macro="macros.items_view" />
-				<strong class="listing-description-label">Description:</strong>
-				<div class="listing-description desc"></div>
-			    </td>
-			</tr>
-
-		    </tbody>
-		</table>
-	    </div>
-
-
-
-
-	</div>
-    </div>
-</metal:macro>
-
 
 <!--
 
 
-large bids: ...
+large bids
 
 
 -->

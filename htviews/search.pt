@@ -96,11 +96,20 @@
 	</div>
 
 	<div id="${slug}-listing-pod" class="ml1 float-left w83">
-
 	    <div class="null w100 mb1" id="featured-listings-pod">
-		<metal:include
-		     tal:define="slug 'featured'; rows 2; cols 5;"
-		     metal:use-macro="context.view_parts.macros.featured_large">
+		<metal:include use-macro="context.view_parts.macros.listings_large"
+		     tal:define="slug 'featured'; rows 2; cols 5;">
+		    <metal:fill fill-slot="bottom">
+			<div class="tools">
+			    <div class="navs build-font text-right nowrap mt05 mb05">
+				<span class="mb1 hi">Featured Listing!</span>
+				<span class="nonav prev null">&lt;</span>
+				<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
+				<span class="nonav next null">&gt;</span>
+				<span class="nav next null"><a onclick="return false" href="#">&gt;</a></span>
+			    </div>
+			</div>
+		    </metal:fill>
                 </metal:include>
 	    </div>
 

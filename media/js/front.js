@@ -1,15 +1,18 @@
 (function() {
     oo.config({prefix: '#front-', auth: {settings: 1, complete: 0}})
 
+
     var initJoin = function(view) {
 	var self = this
 	return oo.model.init.apply(self, arguments)
             .success(function() { view.join.apply(view, [self]) })
     },
 
+
     newsModel = oo.model.extend({loader: oo.data.news, init: initJoin}),
     newsView = oo.view.extend({
 	cloneClass: 'news-seed',
+
 	join: function(model) {
 	    var self = this, news = model.data.appnews.newsitems.newsitem
 	    if (!news || !news[0]) { return }
@@ -46,6 +49,7 @@
     blogModel = oo.model.extend({loader: oo.data.blog, init: initJoin}),
     blogView = oo.view.extend({
 	cloneClass: 'blog-seed',
+
 	join: function(model) {
 	    var entries = model.data, self = this
 	    $.each(entries, function(idx, blogpost) {
@@ -70,19 +74,21 @@
 
 	init: function(view) {
 	    var self = this
-            oo.model.auth.init().success(view.authSuccess).error(view.authError)
+            oo.model.auth.init()
+		.success(view.authSuccess)
+		.error(view.authError)
 	    return $.when(
 		oo.model.init.apply(this, arguments),
 		oo.model.schema.init()
-	    ).done(function(searchDone, schemaDone) {
+	    ).done(function() {
 		self.tool = oo.model.schema.tool
-		view.join(self)
+		view.putListings(self)
 	    })
 	}
     }),
 
 
-    searchView = oo.view.searchbase.extend({
+    searchView = oo.view.extend({
 	authSuccess: function(profile) {
 	    oo('auth').slideDown()
 	    oo('auth > h1').text('Welcome, {0}!'.fs(profile.personaname))
@@ -93,66 +99,30 @@
 	    oo('no-auth').slideDown()
 	},
 
-	join: function(model) {
+	putListings: function(model) {
 	    var results = model.data
-	    if (!results.listings) { return }
-
 	    if (!results.listings.length) {
-		oo('no-listings').text('Nothing found.').show()
-		oo('some-listings').hide()
+		oo('no-listings').text('Nothing found.').show().parent().show()
 		return
 	    } else {
 		oo('no-listings').hide()
-		oo('some-listings').text('Latest Listings:').show()
+		oo('some-listings').text('Latest Listings:').addClass('mt1').show()
 	    }
-	    this.joinListings({
+	    oo.util.listing.putMany({
 		listings: results.listings,
 		prototype: oo('new-listings-pod .prototype'),
 		target: oo('results-pod'),
 		prefix: '.new-listings'
 	    })
-	    this.joinFeatured(results)
+	    oo.util.listing.putFeatured(results)
+
 	    oo.data.auth()
 		.success(function(p) {model.tool.putImages(p.settings) })
 	        .error(function() { model.tool.putImages() })
 	    $('div.listing-seed td.item-view div:empty').parent().remove()
 	    oo('new-listings-pod').slideDown()
-	},
-
-	putListing: function(listing, clone, target) {
-	    // called to put a single featured listing; parent object 'putOne' called
-	    // for each result.
-	    if (listing.description) {
-		$('.listing-description', clone).text(listing.description)
-	    } else {
-		$('.listing-description-label', clone).empty()
-		$('.listing-description', clone).empty()
-	    }
-	    $('.bid-count-seed', clone).text(listing.bid_count || '0')
-            var next = 0
-	    $.each(listing.items, function(index, item) {
-		$($('.item-view div', clone)[next]).append($.toJSON(item))
-		next += 1
-            })
-		if (listing.min_bid.length) {
-		    next = 0
-		    $.each(listing.min_bid, function(index, defindex) {
-			$($('.search-listing-view-min-bid .item-view div', clone)[next])
-			    .append($.toJSON({defindex:defindex, quality:6}))
-			next += 1
-		    })
-			$('.search-listing-view-min-bid', clone).removeClass('null')
-		} else {
-		    $('.search-listing-view-min-bid', clone).hide()
-		}
-	    $('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
-	    //	$('.listing-view-link', clone)
-	    //	    .append('<span class="mono">Expires: {0}</span>'.fs(''+new Date(listing.expires)) )
-	    if (listing.featured) {clone.addClass('featured')}
-	    target.append(clone)
 	}
     })
-
 
     oo.controller.extend({
 	model: searchModel,
@@ -170,4 +140,3 @@
     oo.controller.extend({model: statsModel, view: statsView})
     oo.controller.extend({model: newsModel, view: newsView})
 })()
-

@@ -103,9 +103,8 @@
 		    <div id="${slug}-listings-pod" class="null">
 			<h2 class="null empty">Nothing recent.</h2>
 			<div class="mt1" id="${slug}-listings-inner">
-			    <metal:include
-			        tal:define="rows 2; cols 5; use_created False; use_dates True; use_status True"
-				metal:use-macro="context.view_parts.macros.listings_large" />
+			    <metal:include use-macro="context.view_parts.macros.listings_large"
+			        tal:define="rows 2; cols 5" />
 			</div>
 		    </div>
 		</div>

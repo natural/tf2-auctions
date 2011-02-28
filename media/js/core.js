@@ -41,7 +41,10 @@ if (typeof String.prototype.trim !== 'function') {
 // Create the 'oo' namespace.
 //
 var oo = (function() {
-    var ns = function(suffix, next) { return $('{0}{1}'.fs(ns.conf.prefix, suffix), next) }
+    var ns = function(suffix, next) {
+	var sel = $.map(suffix.split(', '), function(v) { return ns.conf.prefix + v }).join(', ')
+	return $(sel, next)
+    }
     ns.conf = {prefix: ''}
     ns.config = function(c) { $.extend(ns.conf, c) }
 
@@ -912,64 +915,102 @@ var oo = (function() {
 	    var self = this
 	    $.each(options.listings, function(idx, listing) {
 		var clone = options.prototype.clone()
-		self.putOne(listing, clone, options.prefix)
-		if (options.withStatus) { self.putStatus(listing, clone) }
+		self.putOne(listing, clone, options)
 		options.target.append(clone)
 	    })
 	},
 
-	putStatus: function(listing, target) {
-	    oo.model.status({suffix: listing.owner.id64})
-	        .success(function(status) {
-		    $('.listing-avatar', target)
-			.addClass('profile-status ' + status.online_state)
-		})
-	},
-
-	putOne: function(listing, target, prefix) {
-            target.removeClass('null prototype').addClass('listing-seed')
+	putOne: function(listing, context, options) {
+            context.removeClass('null prototype').addClass('listing-seed')
             if (listing.description) {
-		$('.listing-description', target).text(listing.description)
+		$('.listing-description', context).text(listing.description)
 	    } else {
-		$('tr.ds', target).empty()
+		$('tr.ds', context).empty()
 	    }
-	    $('.listing-owner', target).text(listing.owner.personaname)
-	    $('.listing-owner', target).parent().attr('href', '/profile/'+listing.owner.id64)
-	    $('.listing-avatar', target).attr('src', listing.owner.avatar)
-	    $('.listing-avatar', target).parent().attr('href', '/profile/'+listing.owner.id64)
-	    $('.bid-count-seed', target).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
+	    $('.bid-count-seed', context).text(listing.bid_count || '0') // bid_count because bids aren't fetched.
 	    var next = 0
 	    $.each(listing.items, function(index, item) {
-		$( $('.item-view div', target)[next]).append( $.toJSON(item) )
+		$( $('div.bi .item-view div', context)[next]).append( $.toJSON(item) )
 		next += 1
 	    })
 	    if (listing.min_bid_currency_use) {
-		$(prefix+'-listing-view-min-bid-currency-use', target).removeClass('null')
-		$(prefix+'-listing-view-min-bid-currency-use .currency', target)
-		    .html('{1}{0}'.fs(listing.min_bid_currency_amount, oo.util.listingCurrencySym(listing)))
-		$(prefix+'-listing-view-min-bid', target).removeClass('null')
-		oo.info('Currency listing:', listing)
-	    } else {
-		if (listing.min_bid.length) {
+		var v = '{1}{0}'.fs(listing.min_bid_currency_amount, oo.util.listingCurrencySym(listing))
+		$('tr.mb div.mbc .fw', context).html(v).parent().removeClass('null')
+	    } else if (listing.min_bid.length) {
 		    var next = 0
 		    $.each(listing.min_bid, function(index, defindex) {
-			$($(prefix+'-listing-view-min-bid .item-view div', target)[next])
+			$($('div.mb .item-view div', context)[next])
 			    .append($.toJSON({defindex:defindex, quality:6}))
 			next += 1
 		    })
-		    $(prefix+'-listing-view-min-bid', target).removeClass('null')
-		} else {
-		    $('tr.mb', target).empty()
-		}
+		    $('tr.mb div.mb', context).removeClass('null')
+	    } else {
+		$('tr.mb', context).empty()
 	    }
-	    $('.listing-view-link a', target).attr('href', '/listing/'+listing.id)
-	    $('tr.pr div.pr', target).animate({opacity:0}, 0)
-	    $('span.expires', target)
+	    $('.listing-view-link a', context).attr('href', '/listing/'+listing.id)
+	    $('tr.pr div.pr', context).animate({opacity:0}, 0)
+	    $('span.expires', context)
 		.append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
-	    oo.util.profile.putAvatar(listing.owner, $('span.av', target))
+	    oo.util.profile.putAvatar(listing.owner, $('span.av', context))
 	        .success(function(s) {
-		    $('tr.pr div.pr', target).animate({opacity:100}, 9999)
+		    $('tr.pr div.pr', context).animate({opacity:100}, 9999)
 		})
+//	$('.listing-status-seed', clone).text(listing.status)
+//	$('.listing-created-seed', clone).text(oo.util.dformat(listing.created))
+//	$('.listing-expires-seed', clone).text(oo.util.dformat(listing.expires))
+
+	},
+
+	putFeatured: function(results) {
+	    if (results.featured && results.featured.length) {
+		var featured = results.featured
+	    } else {
+		return
+	    }
+	    var target = $('#featured-listings'),
+	        self = this
+	    $.each(featured, function(index, fitem) {
+		var proto = $('#featured-listings div.prototype').clone()
+		    .addClass('listing-seed featured')
+	            .removeClass('prototype')
+		target.append( self.putFeaturedEx(fitem, proto) )
+	    })
+	    if (featured.length) {
+		$('#featured-listings div.listing-seed.null:first').removeClass('null')
+		if (featured.length > 1) {
+		    $('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
+		    $('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
+		}
+		$('#featured-listings-pod').slideDown()
+	    }
+	},
+
+	putFeaturedEx: function(listing, clone) {
+            var next = 0
+	    if (listing.description) {
+		$('div.ds', clone).text(listing.description)
+	    } else {
+		$('tr.ds', clone).empty()
+	    }
+	    $('.bid-count-seed', clone).text(listing.bid_count || '0')
+	    $.each(listing.items, function(index, item) {
+		$($('.item-view div', clone)[next]).append($.toJSON(item))
+		next += 1
+            })
+            if (listing.min_bid.length) {
+	       next = 0
+	       $.each(listing.min_bid, function(index, defindex) {
+		   $($('div.mb .item-view div', clone)[next])
+		       .append($.toJSON({defindex:defindex, quality:6}))
+		   next += 1
+	       })
+	       $('div.mb', clone).removeClass('null')
+	    } else {
+	       $('tr.mb', clone).empty()
+	    }
+	    $('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
+	    if (listing.featured) {}
+	    return clone
 	}
     })
 
@@ -982,10 +1023,11 @@ var oo = (function() {
 	    return p.custom_name ? '/id/{0}'.fs(p.custom_name) : '/profile/{0}'.fs(p.id64)
 	},
 
-	defaultUserAuthError: function(request, status, error) {
+	defaultUserAuthError: function() {
 	    $('#content-login-link').attr('href', oo.util.profile.loginUrl())
 	    $('#content-search-link, #content-quick-backpack').show()
             $('#content-site-buttons').show()
+	    ns.profile.defaultUserAuthError = oo.noop
 	},
 
 	defaultUserAuthOkay: function(p) {
@@ -994,6 +1036,7 @@ var oo = (function() {
 	    $('#content-login-link').hide()
 	    $('#content-user-buttons, #content-logout-link').show()
             $('#content-site-buttons').show()
+	    ns.profile.defaultUserAuthOkay = oo.noop
 	},
 
 	put: function(p, force) {
@@ -1563,6 +1606,36 @@ var oo = (function() {
 	    return false
 	},
 
+	navFeatured: function(offset) {
+	    var prefix = '#featured-listings div.listing-seed',
+	        current = $('{0}.listing-seed:visible'.fs(prefix)),
+	        others = $('{0}.listing-seed:hidden'.fs(prefix)),
+	        all = $('{0}.listing-seed'.fs(prefix)),
+	        index = all.index(current),
+                count = all.length
+	    if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
+		current.fadeOut(function () { $(all[index+offset]).fadeIn() })
+		var nonPrev = $('{0} div.navs span.nonav.prev'.fs(prefix)),
+                    navPrev = $('{0} div.navs span.nav.prev'.fs(prefix)),
+                    nonNext = $('{0} div.navs span.nonav.next'.fs(prefix)),
+                    navNext = $('{0} div.navs span.nav.next'.fs(prefix))
+		if (index+offset == 0) {
+		    nonPrev.show()
+		    navPrev.hide()
+		} else {
+		    nonPrev.hide()
+		    navPrev.show()
+		}
+		if (index+offset == count-1) {
+		    nonNext.show()
+		    navNext.hide()
+		} else {
+		    nonNext.hide()
+		    navNext.show()
+		}
+	    }
+	},
+
 	hiliteSpan: function(after) {
 	    return '<span class="hilite">&nbsp;</span><span>{0}</span>'.fs(after)
 	},
@@ -1639,66 +1712,6 @@ var oo = (function() {
 		    $('tr:last', target).append(pad)
 		}
 	    $('td div:empty', target).parent().remove()
-	},
-
-	joinListings: function(options) {
-	    oo.util.listing.putMany(options)
-	}
-    })
-
-    ns.view.searchbase = ns.view.schema.extend({
-	joinFeatured: function(results) {
-	    if (results.featured && results.featured.length) {
-		var featured = results.featured
-	    } else {
-		return
-	    }
-	    var target = $('#featured-listings'),
-	        self = this
-	    $.each(featured, function(index, fitem) {
-		var proto = $('#featured-listings div.prototype').clone()
-		    .addClass('listing-seed')
-	            .removeClass('prototype')
-		self.putListing(fitem, proto, target)
-	    })
-	    if (featured.length) {
-		$('#featured-listings div.listing-seed.null:first').removeClass('null')
-		if (featured.length > 1) {
-		    $('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
-		    $('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
-		}
-		$('#featured-listings-pod').slideDown()
-	    }
-	},
-
-	navFeatured: function(offset) {
-	    var prefix = '#featured-listings div.listing-seed'
-	    current = $('{0}.listing-seed:visible'.fs(prefix)),
-	    others = $('{0}.listing-seed:hidden'.fs(prefix)),
-	    all = $('{0}.listing-seed'.fs(prefix)),
-	    index = all.index(current),
-            count = all.length
-	    if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
-		current.fadeOut(function () { $(all[index+offset]).fadeIn() })
-		var nonPrev = $('{0} div.navs span.nonav.prev'.fs(prefix)),
-                navPrev = $('{0} div.navs span.nav.prev'.fs(prefix)),
-                nonNext = $('{0} div.navs span.nonav.next'.fs(prefix)),
-                navNext = $('{0} div.navs span.nav.next'.fs(prefix))
-		if (index+offset == 0) {
-		    nonPrev.show()
-		    navPrev.hide()
-		} else {
-		    nonPrev.hide()
-		    navPrev.show()
-		}
-		if (index+offset == count-1) {
-		    nonNext.show()
-		    navNext.hide()
-		} else {
-		    nonNext.hide()
-		    navNext.show()
-		}
-	    }
 	}
     })
 })(oo);
