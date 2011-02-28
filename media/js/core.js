@@ -58,6 +58,13 @@ var oo = (function() {
 	for (var k in o) { vs.push(o[k]) }
 	return vs
     }
+    // bound to the given prefix, not the conf
+    ns.prefix$ = function(prefix) {
+	return function(suffix, next) {
+	    var sel = $.map(suffix.split(', '), function(v) { return prefix + v }).join(', ')
+	    return $(sel, next)
+	}
+    }
     ns.ident = ident = function(a) { return a }
     ns.noop = function() {}
     ns.info = function() { console.debug.apply(console, arguments) }
@@ -911,17 +918,19 @@ var oo = (function() {
     }
 
     ns.listing = Object.create({
-	putMany: function(options) {
+	put: function(displays, target) {
+	    $.each(displays, function(idx, disp) { target: target.append(disp.removeClass('null')) })
+	},
+
+	many: function(options) {
 	    var self = this
-	    $.each(options.listings, function(idx, listing) {
-		var clone = options.prototype.clone()
-		self.putOne(listing, clone, options)
-		options.target.append(clone)
+	    return $.map(options.listings, function(listing, idx) {
+		return self.one(listing, options.prototype.clone(), options)
 	    })
 	},
 
-	putOne: function(listing, context, options) {
-            context.removeClass('null prototype').addClass('listing-seed')
+	one: function(listing, context, options) {
+            context.removeClass('prototype').addClass('listing-seed')
             if (listing.description) {
 		$('.listing-description', context).text(listing.description)
 	    } else {
@@ -952,13 +961,11 @@ var oo = (function() {
 	    $('span.expires', context)
 		.append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
 	    oo.util.profile.putAvatar(listing.owner, $('span.av', context))
-	        .success(function(s) {
-		    $('tr.pr div.pr', context).animate({opacity:100}, 9999)
-		})
+	        .success(function(s) { $('tr.pr div.pr', context).animate({opacity:100}, 9999) })
 //	$('.listing-status-seed', clone).text(listing.status)
 //	$('.listing-created-seed', clone).text(oo.util.dformat(listing.created))
 //	$('.listing-expires-seed', clone).text(oo.util.dformat(listing.expires))
-
+	    return context
 	},
 
 	putFeatured: function(results) {
@@ -967,50 +974,20 @@ var oo = (function() {
 	    } else {
 		return
 	    }
-	    var target = $('#featured-listings'),
-	        self = this
-	    $.each(featured, function(index, fitem) {
-		var proto = $('#featured-listings div.prototype').clone()
-		    .addClass('listing-seed featured')
-	            .removeClass('prototype')
-		target.append( self.putFeaturedEx(fitem, proto) )
-	    })
+	    var $$ = oo.prefix$('#featured-'),
+	        displays = oo.util.listing.many({
+		    listings: featured,
+		    prototype: $$('listings div.prototype'),
+		})
+	    $.each(displays, function(idx, disp) { $$('listings').append(disp) })
 	    if (featured.length) {
-		$('#featured-listings div.listing-seed.null:first').removeClass('null')
+		$$('listings div.listing-seed.null:first').removeClass('null')
 		if (featured.length > 1) {
-		    $('#featured-listings div.listing-seed div.navs span.nav.next').removeClass('null')
-		    $('#featured-listings div.listing-seed div.navs span.nonav.prev').removeClass('null')
+		    $$('listings span.nav.next').removeClass('null')
+		    $$('listings span.nonav.prev').removeClass('null')
 		}
-		$('#featured-listings-pod').slideDown()
+		$$('listings-pod').slideDown()
 	    }
-	},
-
-	putFeaturedEx: function(listing, clone) {
-            var next = 0
-	    if (listing.description) {
-		$('div.ds', clone).text(listing.description)
-	    } else {
-		$('tr.ds', clone).empty()
-	    }
-	    $('.bid-count-seed', clone).text(listing.bid_count || '0')
-	    $.each(listing.items, function(index, item) {
-		$($('.item-view div', clone)[next]).append($.toJSON(item))
-		next += 1
-            })
-            if (listing.min_bid.length) {
-	       next = 0
-	       $.each(listing.min_bid, function(index, defindex) {
-		   $($('div.mb .item-view div', clone)[next])
-		       .append($.toJSON({defindex:defindex, quality:6}))
-		   next += 1
-	       })
-	       $('div.mb', clone).removeClass('null')
-	    } else {
-	       $('tr.mb', clone).empty()
-	    }
-	    $('.listing-view-link a', clone).attr('href', '/listing/{0}'.fs(listing.id))
-	    if (listing.featured) {}
-	    return clone
 	}
     })
 

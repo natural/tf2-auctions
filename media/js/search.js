@@ -193,11 +193,12 @@ searchView = oo.view.extend({
 	    oo('nav').fadeBack()
 	    oo('bottom-nav').fadeBack()
 	}
-	oo.util.listing.putMany({
+	var displays = oo.util.listing.many({
 	    listings: results.listings,
-	    prototype: oo('listings div.prototype'),
-	    target: oo('listings')
+	    prototype: oo('listings div.prototype')
 	})
+	oo.util.listing.put(displays, oo('listings'))
+
 	if (results.more) {
 	    self.configNext(results)
 	    oo('next-link, bottom-next-link').show()

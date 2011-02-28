@@ -211,7 +211,7 @@ large listings
 			<td></td>
 		    </tr>
 		    <tr class="bt">
-			<td colspan="2"><metal:slot define-slot="bottom" /></td>
+			<td colspan="2"><div class="mb05"><metal:slot define-slot="bottom" /></div></td>
 		    </tr>
 		</tbody>
             </table>

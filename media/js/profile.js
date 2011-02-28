@@ -235,12 +235,12 @@ var ListingsView = oo.view.schema.extend({
     },
 
     put: function(listings, profile) {
-	oo.util.listing.putMany({
+	var displays = oo.util.listing.many({
 	    listings: listings,
 	    prototype: oo('listings-inner div.prototype'),
-	    target: oo('listings'),
 	    dates: true
 	})
+	$.each(displays, function(idx, disp) { target: oo('listings').append(disp.removeClass('null')) })
 	oo.data.auth()
 	    .success(function(p) { oo.util.schema().putImages(p.settings) })
 	    .error(function() { oo.util.schema().putImages() })

@@ -108,14 +108,15 @@
 		oo('no-listings').hide()
 		oo('some-listings').text('Latest Listings:').addClass('mt1').show()
 	    }
-	    oo.util.listing.putMany({
-		listings: results.listings,
-		prototype: oo('new-listings-pod .prototype'),
-		target: oo('results-pod'),
-		prefix: '.new-listings'
-	    })
 	    oo.util.listing.putFeatured(results)
-
+	    var displays = oo.util.listing.many({
+		listings: results.listings,
+		prototype: oo('new-listings-pod .prototype')
+	    })
+	    // hide the spans with the avatar names.  these are faded
+	    // in and out by the controller on hover
+	    $.each(displays, function(i, d) { $('div.pr span.av a span.av', d).hide() })
+	    oo.util.listing.put(displays, oo('results-pod'))
 	    oo.data.auth()
 		.success(function(p) {model.tool.putImages(p.settings) })
 	        .error(function() { model.tool.putImages() })
@@ -134,6 +135,10 @@
 
 	'#featured-listings div.listing-seed div.navs span.nav.prev live:click' : function(e) {
 	    e.controller.view.navFeatured(-1)
+	},
+
+	'div.pr > span.av a img live:hover' : function(e) {
+	    $('a span.av', $(e.target).parents('span')).fadeToggle()
 	}
     })
     oo.controller.extend({model: blogModel, view: blogView})
