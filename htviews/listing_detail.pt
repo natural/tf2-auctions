@@ -22,8 +22,10 @@
 		</div>
 		<div class="mt1" id="${slug}-min-bid-pod">
 		    <label>Minimum Bid:</label>
-		    <h3 class="null ml1" id="${slug}-min-bid-currency-use">
-			<span class="text-right mono"></span>
+		    <h3 class="null pl05" id="${slug}-min-bid-currency-use">
+			<div class="mbc mt05" style="aawidth:5.15em !important;">
+ 			    <h1 class="build-font hi value"></h1>
+			</div>
 		    </h3>
 		    <div class="items-view backpack" id="${slug}-min-bid"><table></table></div>
 		</div>

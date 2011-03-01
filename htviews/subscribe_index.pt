@@ -125,6 +125,17 @@
 
 			<tr>
 			    <td>
+				Create Shops
+				<div class="help">
+				    Create shops where your inventory comes from your backpack.
+				</div>
+			    </td>
+			    <td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
+			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Coming Soon!</td>
+			</tr>
+
+			<tr>
+			    <td>
 				Price
 				<div class="help">
 				    How much does it cost?  Very little, really.

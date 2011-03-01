@@ -504,7 +504,6 @@ var oo = (function() {
 	}
 
 	self.putItems = function(items, settings) {
-
 	    oo.data.schema()
 		.success(function(s) {
 		    var newIdx = -1,
@@ -944,7 +943,7 @@ var oo = (function() {
 	    })
 	    if (listing.min_bid_currency_use) {
 		var v = '{1}{0}'.fs(listing.min_bid_currency_amount, oo.util.listingCurrencySym(listing))
-		$('tr.mb div.mbc .fw', context).html(v).parent().removeClass('null')
+		$('tr.mb .mbc .value', context).html(v).parent().removeClass('null')
 	    } else if (listing.min_bid.length) {
 		    var next = 0
 		    $.each(listing.min_bid, function(index, defindex) {
@@ -962,10 +961,10 @@ var oo = (function() {
 		.append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
 	    oo.util.profile.putAvatar(listing.owner, $('span.av', context))
 	        .success(function(s) { $('tr.pr div.pr', context).animate({opacity:100}, 9999) })
+	    return context
 //	$('.listing-status-seed', clone).text(listing.status)
 //	$('.listing-created-seed', clone).text(oo.util.dformat(listing.created))
 //	$('.listing-expires-seed', clone).text(oo.util.dformat(listing.expires))
-	    return context
 	},
 
 	putFeatured: function(results) {
@@ -985,7 +984,11 @@ var oo = (function() {
 		if (featured.length > 1) {
 		    $$('listings span.nav.next').removeClass('null')
 		    $$('listings span.nonav.prev').removeClass('null')
+		    $$('listings span.seenav').removeClass('null')
 		}
+		// stupid visual fix:
+		$$('listings div.ov').removeClass('ov')
+		$$('listings').addClass('ov')
 		$$('listings-pod').slideDown()
 	    }
 	}
@@ -1156,26 +1159,31 @@ var oo = (function() {
 	    }
 	}
 
-	self.putImages = function(settings, callback) {
+	self.putImages = function(settings, context, options) {
 	    // replace any items on the page that have the "schema
 	    // definition index replace" class with the url of the item
 	    // specified in the content.
 	    var itemImg = function(url) { return oo.util.img({src:url, width:64, height:64}) },
 	        toolDefs = self.tools(),
 	        actionDefs = self.actions(),
-	        settingV = oo.util.settings(settings)
-	    $('.defindex-lazy').each(function(index, tag) {
+	        settingV = oo.util.settings(settings),
+	        options = options || {fast:true},
+	        fast = options.fast,
+	        // specifically check for the absence of an image because
+	        // some pages (e.g., search) get bad overwrites when
+                // looking for just the .defindex-lazy class.
+ 	        divs = $('.defindex-lazy'+( fast ? '' : ':not(:has(img))'), context) 
+
+	    divs.each(function(index, tag) {
 		try {
 		    var data = $.parseJSON($(tag).text())
+		    if (typeof data === 'number') { throw '' } // picked up the quantity span content, not the div content
+		    if (!data) { throw '' }
 		} catch (e) {
 		    return
 		}
-		if (!data) { return }
-		if (typeof(data) == 'object') {
-		    var defindex = data.defindex
-		} else {
-		    var defindex = data
-		}
+		var defindex = data.defindex
+		if (defindex==1) { oo.error(tag, $(tag), $.parseJSON($(tag).text())); throw "ONE WRONG" }
 		var def = self.itemDefs()[defindex]
 		if (!def) { return }
 		var pitem = self.asPlayerItem(data)
@@ -1210,7 +1218,6 @@ var oo = (function() {
 			.addClass('border-quality-{0} background-quality-{1}'.fs( pitem.quality, pitem.quality ))
 		}
 	    })
-		if (callback) { callback() }
 	}
 
 	self.select = function(key, match) {
@@ -1297,10 +1304,12 @@ var oo = (function() {
 	}
     }
 
+    ns.hash = function() { return location.hash.slice(1) }
     ns.schema = function(s) { return new SchemaTool(s) }
     ns.listingCurrencySym = function(l) {
 	return $.map(l.min_bid_currency_type[0], function(x) { return '&#' + x + ';'}).join('')
     }
+
 
 })(oo.util = {});
 
@@ -1477,6 +1486,12 @@ var oo = (function() {
 	    suffix = (typeof suffix === 'function' ? suffix() : suffix)
 	    return self.req = self.loader({suffix: suffix})
 		.success(function(d) { self.data = d })
+	},
+
+	initJoin: function(view) {
+	    var self = this
+	    return oo.model.init.apply(self)
+		.success(function() { view.join(self) })
 	}
 
     })

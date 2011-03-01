@@ -164,7 +164,9 @@ large listings
 			<!-- items header -->
 			<td colspan="2">
 			    <div class="pl05 pt025 pr05">
-				<strong class="">Items:</strong>
+				<metal:slot define-slot="items-header-label">
+				    <strong class="">Items:</strong>
+				</metal:slot>
 				<span class="expires ml1"></span>
 			    </div>
 			</td>
@@ -194,8 +196,8 @@ large listings
 				<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
 			    </div>
 			    <!-- (or mb currency) -->
-			    <div class="null mbc">
-				<span class="fw"></span>
+			    <div class="null mbc pl05 mt1 text-center" style="width:5.15em !important;">
+ 				<h1 class="build-font hi value"></h1>
 			    </div>
 			</td>
 			<td></td>

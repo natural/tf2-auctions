@@ -2,14 +2,7 @@
     oo.config({prefix: '#front-', auth: {settings: 1, complete: 0}})
 
 
-    var initJoin = function(view) {
-	var self = this
-	return oo.model.init.apply(self, arguments)
-            .success(function() { view.join.apply(view, [self]) })
-    },
-
-
-    newsModel = oo.model.extend({loader: oo.data.news, init: initJoin}),
+    var newsModel = oo.model.extend({loader: oo.data.news, init: oo.model.initJoin}),
     newsView = oo.view.extend({
 	cloneClass: 'news-seed',
 
@@ -34,7 +27,7 @@
     }),
 
 
-    statsModel = oo.model.extend({loader: oo.data.stats, init: initJoin}),
+    statsModel = oo.model.extend({loader: oo.data.stats, init: oo.model.initJoin}),
     statsView = oo.view.extend({
 	join: function(model) {
 	    var stats = model.data
@@ -46,7 +39,7 @@
     }),
 
 
-    blogModel = oo.model.extend({loader: oo.data.blog, init: initJoin}),
+    blogModel = oo.model.extend({loader: oo.data.blog, init: oo.model.initJoin}),
     blogView = oo.view.extend({
 	cloneClass: 'blog-seed',
 

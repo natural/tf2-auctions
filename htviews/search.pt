@@ -6,7 +6,7 @@
 <metal:fill fill-slot="main" tal:define="slug 'search'">
 
 
-    <div id="${slug}-pod" class="w75 pt05 desc center ">
+    <div id="${slug}-pod" class="w75 pt05 desc center">
 	<div id="${slug}-controls" class="null build-font float-left w15 controls">
 	    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search</span></h1>
 
@@ -102,7 +102,7 @@
 		    <metal:fill fill-slot="bottom">
 			<div class="tools">
 			    <div class="navs build-font text-right nowrap mt05 mb05">
-				<span class="mb1 hi">Featured Listing!</span>
+				<span class="mb1">More Featured Listings:</span>
 				<span class="nonav prev null">&lt;</span>
 				<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
 				<span class="nonav next null">&gt;</span>
@@ -116,9 +116,17 @@
 	    <h2 class="null" id="${slug}-no-listings"></h2>
 	    <h2 class="null mb05" id="${slug}-some-listings"></h2>
 	    <div class="w100" id="${slug}-results-pod">
-		<metal:include
-		     tal:define="slug 'search'; rows 2; cols 5"
-		     metal:use-macro="context.view_parts.macros.listings_large" />
+		<metal:include use-macro="context.view_parts.macros.listings_large"
+		     tal:define="slug 'search'; rows 2; cols 5">
+			<metal:fill fill-slot="bottom">
+			    <div class="pl05 pt025 pr05 text-right pr">
+				<span class="av">
+				    <a href="#"><span class="av"></span></a>
+				    <a href="#"><img class="av" /></a>
+				</span>
+			    </div>
+			</metal:fill>
+		</metal:include>
 		<div class="w100 null" id="${slug}-nav-extra">
 		    <div class="float-right tools w100" id="${slug}-bottom-nav">
 			<div class="navs text-right build-font nowrap">

@@ -1,5 +1,6 @@
-$(function() {
-    oo.config({prefix:'#subscribe-'})
+(function() {
+    oo.config({prefix:'#subscribe-', auth: {settings: 1, complete: 0}})
+
 
     oo.model.auth.init()
 	.success(function(profile) {
@@ -13,5 +14,5 @@ $(function() {
 	.error(function() {
 	    oo('login-pod').slideDown()
 	})
-})
 
+})()

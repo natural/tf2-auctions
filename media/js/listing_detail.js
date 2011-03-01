@@ -426,9 +426,9 @@ var DetailView = oo.view.schema.extend({
 	    oo('description').text(listing.description).parent().removeClass('null')
 	}
 	if (listing.min_bid_currency_use) {
-            oo('min-bid-currency-use span.mono')
+            oo('min-bid-currency-use h1')
 		.html('{1}{0}'.fs(listing.min_bid_currency_amount, oo.util.listingCurrencySym(listing)))
-	        .parent().removeClass('null')
+	        .parent().parent().removeClass('null')
 	} else if (listing.min_bid.length > 0) {
 	    self.putItems(oo('min-bid table').first(), listing.min_bid, 5)
 	} else {

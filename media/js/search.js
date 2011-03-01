@@ -1,12 +1,16 @@
-// BUG:  find-fast links that target /search aren't working correctly
+//
+// BUG: this is pretty minor, but when the hash is updated with a
+//      cursor (e.g., next page) and then the user browses away and
+//      returns via the back button, the prev/next buttons do not get
+//      configured correctly.
 
-//(function() {
+
+(function() {
+
 
 oo.config({prefix: '#search-', auth: {settings: 1, complete: 0}})
 
-//
-// creates and initializes a backpack and chooser tool.
-//
+
 var initBackpack = function(schema, bpSlug, chSlug, afterDrop) {
     var items = schema.tradableBackpack(),
         bpTool = oo.backpack.itemTool({
@@ -32,10 +36,24 @@ var initBackpack = function(schema, bpSlug, chSlug, afterDrop) {
 },
 
 
-//
-// Model for searches.
-//
 searchModel = oo.model.schema.extend({
+    init: function(view) {
+	var self = this, q = oo.util.hash()
+	self.view = view
+	view.model = self
+        self.searchStack = self.makeStack()
+	return oo.model.schema.init.apply(self, arguments)
+	    .success(function(s) {
+		oo.data.search({suffix: '?' + q})
+		    .success(function(rs) {
+			self.searchResults = rs
+			self.view.putControls(rs.filters, rs.orders)
+			self.afterInit(self, q)
+			self.view.joinSearch(rs, q, true)
+		    })
+	    })
+    },
+
     makeStack: function() {
 	var stack = [],
 	    self = this,
@@ -70,37 +88,12 @@ searchModel = oo.model.schema.extend({
 		    .success(function(rs) { self.view.joinSearch(rs, q) })
 	    }
         }
-    },
-
-    init: function(view) {
-	var self = this, q = self.hash()
-	self.view = view
-	view.model = self
-        self.searchStack = self.makeStack()
-	return oo.model.schema.init.apply(self, arguments)
-	    .success(function(s) {
-		oo.data.search({suffix: '?' + q})
-		    .success(function(rs) {
-			self.searchResults = rs
-			self.view.joinSearch(rs, q, true)
-		    })
-	    })
-    },
-
-    hash: function() { return location.hash.slice(1) },
+    }
 }),
 
 
-//
-// View for searches.
-//
 searchView = oo.view.extend({
     contentWidths: {controls:null, results:null},
-
-    init: function(model, config) {
-        $('#content-site-categories').hide()
-	oo.view.schema.init(model, config)
-    },
 
     configNext: function(results) {
 	var self = this
@@ -153,8 +146,17 @@ searchView = oo.view.extend({
     joinSearch: function(search, query, init) {
 	var self = this
 	if (query) { window.location.hash = query }
+        this.putListings(search, init)
+        this.message().fadeAway()
+        oo('controls').fadeIn('fast')
+        oo('listings').fadeIn('fast')
+        self.contentWidths.controls = oo('controls').width()
+        self.contentWidths.results = oo('listing-pod').width()
+    },
+
+    putControls: function(filters, orders) {
 	if (! oo('filter-inputs').children().length) {
-	    $.each(search.filters, function(idx, filter) {
+	    $.each(filters, function(idx, filter) {
 		if (!(filter[0])) {
 		    var item = '<br />'
 		} else {
@@ -164,18 +166,12 @@ searchView = oo.view.extend({
 	    })
 		}
         if (!oo('sort-inputs').children().length) {
-	    $.each(search.orders, function(idx, order) {
+	    $.each(orders, function(idx, order) {
 	        var input = '<input type="radio" name="sort" value="{0}" />{1}<br />'.fs(order[0], order[1])
 	        oo('sort-inputs').append(input)
 	    })
 	    $('input[name="sort"]').first().click()
         }
-        this.putListings(search, init)
-        this.message().fadeAway()
-        oo('controls').fadeIn('fast')
-        oo('listings').fadeIn('fast')
-        self.contentWidths.controls = oo('controls').width()
-        self.contentWidths.results = oo('listing-pod').width()
     },
 
     putListings: function(results, init) {
@@ -218,9 +214,12 @@ searchView = oo.view.extend({
 	if (init) { oo.util.listing.putFeatured(results) }
 	oo.data.schema()
             .success(function(schema) {
+		var put = function(s) {
+		    oo.util.schema(schema).putImages(s, null, {fast:false}) 
+		}
 	        oo.model.auth.extend({suffix: '?settings=1'}).init()
-	            .success(function(profile) { oo.util.schema(schema).putImages(profile.settings) })
-	            .error(function() { oo.util.schema(schema).putImages() })
+	            .success(function(p) { put(p.settings) })
+	            .error(function() { put() })
             })
 	$('div.listing-seed td.item-view div:empty').parent().remove()
 	oo('listings').slideDown()
@@ -350,8 +349,24 @@ searchController = oo.controller.extend({
     model: searchModel,
     view: searchView,
 
-    hash: function() {
-	return location.hash.slice(1)
+    init: function() {
+	this.model.afterInit = this.afterInit
+	return oo.controller.init.apply(this, arguments)
+    },
+
+    afterInit: function(model, hash) {
+	if (hash) {
+	    $.map(hash.split('&'), function(x) {
+		var v = x.split('=')
+		$('input[name={0}]'.fs(v[0])).attr('checked', v[1] == 'on')
+	    })
+	}
+	$('#search-controls input[type="checkbox"]').live('change', function() {
+	    model.searchStack.optionChanged()
+	})
+	$('#search-controls input[type="radio"]').live('change', function() {
+	    model.searchStack.optionChanged()
+	})
     },
 
     '#search-reverse-link click' : function(e) {
@@ -366,14 +381,6 @@ searchController = oo.controller.extend({
 	e.controller.view.showBasic(e)
     },
 
-    '#search-controls input[type="checkbox"] live:click' : function(e) {
-	e.controller.model.searchStack.optionChanged(e)
-    },
-
-    '#search-controls input[type="radio"] live:click' : function(e) {
-         e.controller.model.searchStack.optionChanged(e)
-    },
-
     '#featured-listings div.listing-seed div.navs span.nav.next live:click' : function(e) {
 	e.controller.view.navFeatured(1)
     },
@@ -383,21 +390,11 @@ searchController = oo.controller.extend({
     },
 
     'ready' : function() {
-	var self = this, q = self.hash()
 	$('#content-site-categories').fadeOut()
-	self.view.message('Loading...')
-	if (false) {
-	    window.setTimeout(function() {
-		$.each(q.split('&'), function(idx, pair) {
-	        try {
-		    var p = pair.split('='), name = p[0], val = p[1]
-		    $('input[name={0}]'.fs(name)).attr('checked', val=='on')
-	        } catch (e) {  console.error('error:', e) }
-	         })
-	    }, 500)
-        }
+	this.view.message('Loading...')
     }
+
 })
 
 
-//})()
+})()

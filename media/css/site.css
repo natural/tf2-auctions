@@ -94,11 +94,17 @@ vertical-align:middle;
 white-space:nowrap !important;
 }
 
-.big-button:hover {
+.big-button:hover, #featured-listings .listing-view-link a, #featured-listings span.nav a {
 background-color:#512a20;
 background: -moz-linear-gradient(top, #995040, #512a20);
 background: -webkit-gradient(linear, left top, left bottom, from(#995040), to(#512a20));
 color:#ebe2ca;
+}
+
+#featured-listings .listing-view-link a:hover, #featured-listings span.nav a:hover  {
+background: -moz-linear-gradient(top, #512a20, #995040);
+background: -webkit-gradient(linear, left top, left bottom, from(#512a20), to(#995040));
+
 }
 
 /* start organizer view, detail view */
@@ -186,6 +192,24 @@ text-align:center;
 vertical-align:middle;
 }
 
+#featured-listings {
+background-color:#9a8b6b;
+background-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0, #766B5E),
+    color-stop(1, #2E2B2A)
+);
+background-image: -moz-linear-gradient(
+    center bottom,
+    #766B5E 0%,
+    #2E2B2A 100%
+);
+}
+
+
+
 #featured-listings div.tools {
 margin:0;
 margin-right:0.25em;
@@ -211,8 +235,10 @@ vertical-align:middle;
 width:2em;
 }
 
-span.hilite, span.hi { color:#c8503c; }
+span.hilite, .hi { color:#c8503c; }
 span.hilite:before { content:">>"; }
+
+.hi2 { color: #995040; }
 
 
 img.equipped { margin-top:-0.35em; }
@@ -396,8 +422,9 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .w15  { width:15%; }
 .w20  { width:20%; }
 .w25  { width:25%; }
+.w30  { width:30%; }
 .w40  { width:40%; }
-.w49 { width:49%; }
+.w49  { width:49%; }
 .w50  { width:50%; }
 .w59  { width:59%; }
 .w75  { width:75%; }
@@ -405,9 +432,11 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 .w88  { width:88%; }
 .w90  { width:90%; }
 
-.o0 { opacity: 0 }
+.tan { color:#827868 }
 
 .mono, .fw { font-family: Andale Mono, monospace; font-size:0.75em; }
+
+
 .float-left { float:left; }
 .float-right { float:right; }
 .vis-hidden { visibility: hidden; }
@@ -790,7 +819,7 @@ display:inline-block;
 font-size:135%;
 text-align:center;
 vertical-align:middle;
-width:3.5em; /* width instead of l/r margins to prevent button moving */
+width:2.5em; /* width instead of l/r margins to prevent button moving */
 }
 
 
@@ -826,7 +855,7 @@ border:2px solid #766B5E;
 color:#766B5E;
 font-size:1em;
 height:2em;
-margin-right:2em;
+a-margin-right:2em;
 }
 
 /* specific to reverse and advanced search: */
@@ -909,4 +938,8 @@ opacity:0.65;
 }
 .bid-ended {
 opacity:0.65;
+}
+
+div.mbc h1 {
+font-size:2em;
 }

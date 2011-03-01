@@ -4,7 +4,7 @@
 </head>
 <body>
     <metal:fill fill-slot="main" tal:define="slug 'front'">
-	<div id="${slug}-col2" class="w40 float-right">
+	<div id="${slug}-col2" class="float-right" style="min-width:22em; max-width:45%">
 	    <div id="${slug}-no-auth" class="null mb1">
 		<h1>Lookin to Trade?</h1>
 		<div class="mt05">You've gotta login to bid or make listing.</div>
@@ -21,10 +21,13 @@
 	    <div class="null w100" id="featured-listings-pod">
 		<metal:include use-macro="context.view_parts.macros.listings_large"
 		     tal:define="slug 'featured'; rows 2; cols 5;">
+		    <metal:fill fill-slot="items-header-label">
+			<h2 class="hi2">Featured Listing!</h2>
+		    </metal:fill>
 		    <metal:fill fill-slot="bottom">
 			<div class="tools">
 			    <div class="navs build-font text-right nowrap mt05 mb05">
-				<span class="mb1 hi">Featured Listing!</span>
+				<span class="mb1 null seenav">See more:</span>
 				<span class="nonav prev null">&lt;</span>
 				<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
 				<span class="nonav next null">&gt;</span>
@@ -54,7 +57,7 @@
 	    </div>
 	</div>
 
-	<div id="${slug}-news-blog-pod" class="float-left w59">
+	<div id="${slug}-news-blog-pod" class="float-left" style="min-width:22em; max-width:55%">
 	    <div id="${slug}-blog" class="null mb1">
 		<div class="blog-seed null prototype mb1">
 		    <label><span class="blog-title-seed"></span></label>
