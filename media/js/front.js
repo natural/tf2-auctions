@@ -1,4 +1,4 @@
-(function() {
+//(function() {
     oo.config({prefix: '#front-', auth: {settings: 1, complete: 0}})
 
 
@@ -103,7 +103,7 @@
 	    }
 	    oo.util.listing.putFeatured(results)
 	    var displays = oo.util.listing.many({
-		listings: results.listings,
+		listings: $(results.listings).filter(function(x) { return !results.listings[x].featured }),
 		prototype: oo('new-listings-pod .prototype')
 	    })
 	    // hide the spans with the avatar names.  these are faded
@@ -137,4 +137,4 @@
     oo.controller.extend({model: blogModel, view: blogView})
     oo.controller.extend({model: statsModel, view: statsView})
     oo.controller.extend({model: newsModel, view: newsView})
-})()
+//})()

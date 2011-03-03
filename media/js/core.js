@@ -37,6 +37,12 @@ if (typeof String.prototype.trim !== 'function') {
 }
 
 
+Number.prototype.formatMoney = function(c, d, t){
+    var n = this, c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? '.' : d, t = t == undefined ? ',' : t, s = n < 0 ? '-' : '', i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + '', j = (j = i.length) > 3 ? j % 3 : 0;
+    return s + (j ? i.substr(0, j) + t : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : '');
+}
+
+
 //
 // Create the 'oo' namespace.
 //
@@ -942,7 +948,10 @@ var oo = (function() {
 		next += 1
 	    })
 	    if (listing.min_bid_currency_use) {
-		var v = '{1}{0}'.fs(listing.min_bid_currency_amount, oo.util.listingCurrencySym(listing))
+		var v = '{1}{0}'.fs(
+		    listing.min_bid_currency_amount.formatMoney(),
+		    oo.util.listingCurrencySym(listing)
+		)
 		$('tr.mb .mbc .value', context).html(v).parent().removeClass('null')
 	    } else if (listing.min_bid.length) {
 		    var next = 0
@@ -1426,9 +1435,9 @@ var oo = (function() {
     ns.mvc = {
 	clones: [],
 	init: function() { return this },
-	extend: function(ext) {
+	extend: function() {
 	    var obj = Object.create(this)
-	    if (ext) { $.extend(obj, ext) }
+	    for (var i = 0; i < arguments.length; i++) { $.extend(obj, arguments[i]) }
 	    this.clones.push(obj)
 	    return obj
 	}

@@ -126,7 +126,7 @@ class View(LocalHandler):
     default_css = ('site.css', )
     related_css = ()
 
-    jq_min = 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js'
+    jq_min = 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'
     jq_ui = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/jquery-ui.min.js'
     media_js_path = '/media/js'
     link_js = ('head.load.min.js', )

@@ -197,7 +197,7 @@ large listings
 			    </div>
 			    <!-- (or mb currency) -->
 			    <div class="null mbc pl05 mt1 text-center" style="width:5.15em !important;">
- 				<h1 class="build-font hi value"></h1>
+ 				<h1 class="build-font hi2 value"></h1>
 			    </div>
 			</td>
 			<td></td>
@@ -257,13 +257,17 @@ large bids
 				Leave Feedback
 				</a>
 			    </div>
+			    <div class="mb1 null bid-currency-seed">
+				<strong class="bid-currency-val-label">Bid Amount:</strong>
+				<div class="mbc m05"><h1 class="bid-currency-val-amount build-font hi2"></h1></div>
+			    </div>
 			    <div class="mb1 null">
 				<strong class="bid-message-label-private">Private Message:</strong>
-				<div class="bid-message-private"></div>
+				<div class="bid-message-private m05"></div>
 			    </div>
 			    <div>
 				<strong class="bid-message-label">Message:</strong>
-				<div class="bid-message"></div>
+				<div class="bid-message m05"></div>
 			    </div>
 			    <metal:macro tal:define="slug 'lister'"
 				 metal:use-macro="macros.leave_feedback" />

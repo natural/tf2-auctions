@@ -5,6 +5,14 @@
 <body>
     <metal:main fill-slot="main" tal:define="slug 'listing-add'">
 	<h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Add a New Listing</h1>
+
+	<div class="null center text-center" id="${slug}-after-cancel">
+	    Well, that's too bad.  You can <a href="/listing/add"
+	    class="nice">try again</a> or visit another part of the
+	    site using the links above.
+	</div>
+
+
 	<div class="ov null" id="${slug}-own-backpack">
 	    <metal:include
 		 tal:define="include_unplaced True; slug 'a'"

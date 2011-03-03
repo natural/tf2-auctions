@@ -1,5 +1,3 @@
-// BUG:  angry salad settings not applied.
-
 var pid = '#listing-add-'
 oo.config({prefix: pid, auth: {settings: 1, complete: 1}})
 
@@ -71,7 +69,7 @@ var BackpackListingTool = function(params) {
 	    if (profile.subscription && profile.subscription.status == 'Verified') {
 		oo('subscriber-pod').show()
 		oo('min-bid-currency-amount').keyup(function () {
-		    this.value = this.value.replace(/[^0-9\.]/g,'');
+		    this.value = this.value.replace(/[^0-9\.\,]/g,'');
 		})
 		oo('min-bid-currency-use').click(function() {
 		    var dis = !oo('min-bid-currency-use').attr('checked')
@@ -111,10 +109,10 @@ var BackpackListingTool = function(params) {
     }
 
     self.cancel = function() {
-	// TODO: reveal nav away/start again
 	oo('own-backpack').fadeAway()
 	oo('intro').fadeBack().slideDown(750)
 	$('html body').animate({scrollTop: 0})
+	oo('after-cancel').slideDown().prev().slideUp()
 	return false
     }
 

@@ -4,7 +4,9 @@
 </head>
 <body>
     <metal:fill fill-slot="main" tal:define="slug 'front'">
-	<div id="${slug}-col2" class="float-right" style="min-width:22em; max-width:45%">
+
+
+	<div id="${slug}-col2" class="float-right" style="min-width:33%; max-width:45%">
 	    <div id="${slug}-no-auth" class="null mb1">
 		<h1>Lookin to Trade?</h1>
 		<div class="mt05">You've gotta login to bid or make listing.</div>

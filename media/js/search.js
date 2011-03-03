@@ -190,7 +190,9 @@ searchView = oo.view.extend({
 	    oo('bottom-nav').fadeBack()
 	}
 	var displays = oo.util.listing.many({
-	    listings: results.listings,
+	    listings: results.listings, // does not filter out
+					// featured listings because
+					// they may match the search
 	    prototype: oo('listings div.prototype')
 	})
 	oo.util.listing.put(displays, oo('listings'))

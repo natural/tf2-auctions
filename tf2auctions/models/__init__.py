@@ -346,6 +346,7 @@ class Bid(db.Model):
     message_public = db.StringProperty('Public message', multiline=True)
     status = db.StringProperty('Status', required=True, default='active', indexed=True)
     status_reason = db.StringProperty('Status Reason', required=True, default='Created by system.')
+    currency_val = db.FloatProperty('Bid currency value', default=0.0)
 
     @classmethod
     def build(cls, **kwds):
@@ -377,12 +378,12 @@ class Bid(db.Model):
 
 
     @classmethod
-    def build_transaction(cls, owner, profile, listing, item_ids, public_msg, private_msg):
+    def build_transaction(cls, owner, profile, listing, item_ids, public_msg, private_msg, currency_val):
 	if not cls.lazy_verify:
 	    if not profile.owns_all(uid for uid, item in item_ids):
 		raise ValueError('Incorrect ownership.')
 	schema = json_loads(fetch.schema())
-	bid = cls(owner=owner, listing=listing, message_private=private_msg, message_public=public_msg)
+	bid = cls(owner=owner, listing=listing, message_private=private_msg, message_public=public_msg, currency_val=currency_val)
 	key = bid.put()
 	item_types = item_type_map(schema)
 	for uid, item in item_ids:
@@ -465,6 +466,7 @@ class Bid(db.Model):
 	    'listing' : self.listing.encode_builtin(bids=False, items=False) if listing else None,
 	    'key' : str(self.key()),
 	    'feedback': lfb.encode_builtin() if lfb else None,
+            'currency_val' : self.currency_val
 	    }
 
     def items(self):
