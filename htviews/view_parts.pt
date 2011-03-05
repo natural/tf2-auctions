@@ -9,6 +9,10 @@ backpack_full: a wide backpack
 <metal:macro metal:define-macro="backpack_full" tal:define="slug slug | ''">
     <div class="bp bp-full" id="bp-${slug}">
         <div><h3></h3></div>
+	<div id="${slug}-bp-intro-pod">
+            <div><h3></h3></div>
+	    <div><span class="help"></span></div>
+	</div>
 	<div class="bp-view">
 	    <metal:unplaced metal:use-macro="macros.unplaced" />
 	    <div class="bp-placed p05" id="bp-placed-${slug}">
@@ -184,24 +188,6 @@ large listings
 			    </div>
 			</td>
 		    </tr>
-		    <tr class="mb">
-			<!-- min bid header -->
-			<td><div class="pl05 mt05"><label>Minimum Bid:</label></div></td>
-			<td></td>
-		    </tr>
-		    <tr class="mb">
-			<!-- min bid items -->
-			<td width="75%">
-			    <div class="${slug}-listing-view-min-bid null mb">
-				<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
-			    </div>
-			    <!-- (or mb currency) -->
-			    <div class="null mbc pl05 mt1 text-center" style="width:5.15em !important;">
- 				<h1 class="build-font hi2 value"></h1>
-			    </div>
-			</td>
-			<td></td>
-		    </tr>
 		    <tr class="ds">
 			<!-- description header -->
 			<td><div class="mt05 pl05"><label>Description:</label></div></td>
@@ -212,6 +198,39 @@ large listings
 			<td width="75%"><div class="listing-description ds pl05"></div></td>
 			<td></td>
 		    </tr>
+		    <tr class="mb">
+			<!-- min bid header -->
+			<td><div class="pl05 mt05"><label>Starting Bid:</label></div></td>
+			<td></td>
+		    </tr>
+		    <tr class="mb">
+			<!-- min bid items -->
+			<td width="75%">
+			    <div class="${slug}-listing-view-min-bid null mb">
+				<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
+			    </div>
+			    <!-- (or mb currency) -->
+			    <div class="null pl05 text-center" style="width:5.15em !important;">
+ 				<h1 class="build-font hi2 value"></h1>
+			    </div>
+			</td>
+			<td></td>
+		    </tr>
+		    <tr class="cb">
+			<!-- current bid header -->
+			<td><div class="null pl05 mt05"><label>Current:</label></div></td>
+			<td></td>
+		    </tr>
+		    <tr class="cb">
+			<!-- current bid header -->
+			<td>
+			    <div class="null pl05 text-center" style="width:5.15em !important;">
+ 				<h1 class="build-font hi2 value"></h1>
+			    </div>
+			</td>
+			<td></td>
+		    </tr>
+
 		    <tr class="bt">
 			<td colspan="2"><div class="mb05"><metal:slot define-slot="bottom" /></div></td>
 		    </tr>
@@ -235,7 +254,10 @@ large bids
      tal:define="use_created use_created | True;
 		 use_view use_view | True;">
     <div id="${slug}-bids">
+
 	<div class="null prototype ov">
+	    <div class="wrap">
+	    <div class="status-header w100 null mt25 mb1"><div class="p1 text-center"><h1>Winner!</h1></div></div>
             <table class="w100">
 		<tbody>
                     <tr>
@@ -295,6 +317,7 @@ large bids
 		    </tr>
 		</tbody>
             </table>
+	    </div>
 	</div>
     </div>
 </metal:macro>
@@ -371,7 +394,7 @@ leave feedback form (new):
 	</table>
     </div>
 
-    <div class="w100" id="${slug}-feedback-comment-pod">
+    <div class="p1" id="${slug}-feedback-comment-pod">
 	<div id="${slug}-feedback-comment-value" class="null">text</div>
 	<div id="${slug}-feedback-controls" class="feedback-controls">
 	    <div id="${slug}-feedback-comment-help">Message:</div>

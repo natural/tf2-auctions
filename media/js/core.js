@@ -947,12 +947,19 @@ var oo = (function() {
 		$( $('div.bi .item-view div', context)[next]).append( $.toJSON(item) )
 		next += 1
 	    })
-	    if (listing.min_bid_currency_use) {
+	    if (listing.bid_currency_use) {
 		var v = '{1}{0}'.fs(
-		    listing.min_bid_currency_amount.formatMoney(),
+		    listing.bid_currency_start.formatMoney(),
 		    oo.util.listingCurrencySym(listing)
 		)
-		$('tr.mb .mbc .value', context).html(v).parent().removeClass('null')
+		$('tr.mb .value', context).html(v).parent().removeClass('null')
+		$('tr.cb div', context).removeClass('null')
+		v = '{1}{0}'.fs(
+		    listing.bid_currency_top.formatMoney(),
+		    oo.util.listingCurrencySym(listing)
+		)
+		$('tr.cb .value', context).html(v)
+
 	    } else if (listing.min_bid.length) {
 		    var next = 0
 		    $.each(listing.min_bid, function(index, defindex) {
@@ -1316,7 +1323,7 @@ var oo = (function() {
     ns.hash = function() { return location.hash.slice(1) }
     ns.schema = function(s) { return new SchemaTool(s) }
     ns.listingCurrencySym = function(l) {
-	return $.map(l.min_bid_currency_type[0], function(x) { return '&#' + x + ';'}).join('')
+	return $.map(l.bid_currency_type[0], function(x) { return '&#' + x + ';'}).join('')
     }
 
 
@@ -1471,8 +1478,6 @@ var oo = (function() {
 		    } else if (name.indexOf('live:') == 0) {
 			var inner = name.split(':')
 			$(names.join(' ')).live(inner[1], function(e) { e.controller = self; value.apply(self, [e]) })
-
-			// bug:  IE claims eventNames doesn't have an 'indexOf' method.  le sigh.
 	            } else if (name && eventNames.indexOf(name) > -1) {
 			$(names.join(' ')).bind(name, function(e) { e.controller = self; value.apply(self, [e]) })
                     }

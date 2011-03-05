@@ -20,9 +20,9 @@ class AddListing(ApiHandler):
 		raise TypeError('Invalid duration.')
 	    min_bid = [b+0 for b in data['min_bid']] # again, force an exception
 	    key = Listing.build(item_ids=item_ids, desc=desc, days=days, min_bid=min_bid,
-				min_bid_currency_use=data.get('min_bid_currency_use'),
-				min_bid_currency_amount=data.get('min_bid_currency_amount'),
-				min_bid_currency_type=data.get('min_bid_currency_type'),
+				bid_currency_use=data.get('bid_currency_use'),
+				bid_currency_start=data.get('bid_currency_start'),
+				bid_currency_type=data.get('bid_currency_type'),
 				feature_listing=data.get('feature_listing'))
 	except (Exception, ), exc:
 	    error('add listing: %s', exc)

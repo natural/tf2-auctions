@@ -6,7 +6,7 @@ from tf2auctions.lib import ApiHandler, user_steam_id
 from tf2auctions.models import Bid, Feedback, Listing
 
 
-class AddFeedback(ApiHandler):
+class SaveFeedback(ApiHandler):
     def post(self):
 	try:
 	    vs = self.body_json()
@@ -16,8 +16,6 @@ class AddFeedback(ApiHandler):
 	    bid = Bid.get(bid)
 	    listing = Listing.get(listing)
 	    fb = Feedback.get_by_source(bid, listing, user_steam_id(user))
-	    if fb:
-		raise TypeError('Feedback exists')
 	    if rating > 100 or rating < -100:
 		raise TypeError('Invalid feedback rating')
 	    if source == 'lister':
@@ -29,7 +27,13 @@ class AddFeedback(ApiHandler):
 	    else:
 		raise TypeError('Invalid feedback source')
 	    source = user_steam_id(user)
-	    fb = Feedback.build(bid, listing, source, target, rating, text)
+            if fb:
+		#raise TypeError('Feedback exists')
+                fb.rating = rating
+                fb.comment = text
+                fb.put()
+            else:
+                fb = Feedback.build(bid, listing, source, target, rating, text)
 	except (Exception, ), exc:
 	    self.error(500)
 	    raise
@@ -40,7 +44,7 @@ class AddFeedback(ApiHandler):
 	return self.write_json(result)
 
 
-main = ApiHandler.make_main(AddFeedback)
+main = ApiHandler.make_main(SaveFeedback)
 
 
 if __name__ == '__main__':

@@ -64,19 +64,19 @@
 			<label class="mt1">
 			    <input type="checkbox" name="${slug}-min-bid-currency-use"
 				   id="${slug}-min-bid-currency-use" />
-			    Minimum Bid as Currency Amount (Optional)
+			    Bid for Currency (Optional)
 			</label>
 			<div class="help mb05">
 			    Check the box above to enter a currency
-			    amount for a minimum bid.  Your listing
-			    can only have one type of minimum bid
-			    (currency amount or items).
+			    amount for bids.  Your listing can only
+			    have one type of minimum bid (currency
+			    amount or items, not both).
 			</div>
 
 			<div class="mb1" id="${slug}-min-bid-currency-pod">
 			    <table class="ml1 cp05">
 				<tr>
-				    <td>Minimum Bid:</td>
+				    <td>Starting Bid:</td>
 				    <td>
 					<input id="${slug}-min-bid-currency-amount"
 					       class="text-right mono w100" type="text"

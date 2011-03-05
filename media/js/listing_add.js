@@ -1,3 +1,7 @@
+//
+// NEW:  use full width backpack for player items.
+//
+
 var pid = '#listing-add-'
 oo.config({prefix: pid, auth: {settings: 1, complete: 1}})
 
@@ -131,16 +135,16 @@ var BackpackListingTool = function(params) {
 	var output = {}
 	var items = output.items = []
 	var min_bid = output.min_bid = []
-	output.min_bid_currency_use = input.min_bid_currency_use
-	output.min_bid_currency_amount = input.min_bid_currency_amount
-	output.min_bid_currency_type = input.min_bid_currency_type
+	output.bid_currency_use = input.bid_currency_use
+	output.bid_currency_start = input.bid_currency_start
+	output.bid_currency_type = input.bid_currency_type
 	output.feature_listing = input.feature_listing
 	output.days = input.days
 	output.desc = input.desc
 	$.each(input.items, function(idx, img) {
 	    items.push( $(img).data('node'))
 	})
-	if (!input.min_bid_currency_use) {
+	if (!input.bid_currency_use) {
             $.each(input.min_bid, function(idx, img) {
 		min_bid.push( $(img).data('node').defindex )
 	    })
@@ -201,12 +205,12 @@ var BackpackListingTool = function(params) {
 		       msg:'Too many items. Select 0-10 items as a minimum bid.'})
 	}
 	// 5.  premium subscriber min bid currency: checkbox + amount
-	var min_bid_currency_use = oo('min-bid-currency-use').attr('checked')
-	var min_bid_currency_amount = 0.0
-	var min_bid_currency_type = null
-	if (min_bid_currency_use) {
-	    min_bid_currency_amount = oo('min-bid-currency-amount').val()
-	    min_bid_currency_type = oo('min-bid-currency-type option:selected').val()
+	var bid_currency_use = oo('min-bid-currency-use').attr('checked')
+	var bid_currency_start = 0.0
+	var bid_currency_type = null
+	if (bid_currency_use) {
+	    bid_currency_start = oo('min-bid-currency-amount').val()
+	    bid_currency_type = oo('min-bid-currency-type option:selected').val()
 	    min_bid = []
 	}
 	// 6.  premium subscriber featured listing
@@ -232,9 +236,9 @@ var BackpackListingTool = function(params) {
 	    oo('working').removeClass('null').text('Working...').fadeIn('fast')
 	    self.addListing({
 		items: items, desc: desc, days: days, min_bid: min_bid,
-		min_bid_currency_use: min_bid_currency_use,
-		min_bid_currency_amount: min_bid_currency_amount,
-		min_bid_currency_type: min_bid_currency_type,
+		bid_currency_use: bid_currency_use,
+		bid_currency_start: bid_currency_start,
+		bid_currency_type: bid_currency_type,
 		feature_listing: feature_listing,
 	    })
 	}

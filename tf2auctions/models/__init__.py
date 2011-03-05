@@ -34,9 +34,11 @@ class Listing(db.Model):
     bid_count = db.IntegerProperty('Bid Count', default=0)
 
     ## subscriber fields:
-    min_bid_currency_use = db.BooleanProperty('Minimum Bid is Currency', default=False)
-    min_bid_currency_amount = db.FloatProperty('Minimum Bid Currency Amount', default=0.0)
-    min_bid_currency_type = db.StringProperty('Minimum Bid Currency Type', default='')
+    bid_currency_use = db.BooleanProperty('Bids as Currency', default=False)
+    bid_currency_start = db.FloatProperty('Currency Bids Start Amount', default=0.0)
+    bid_currency_type = db.StringProperty('Bid Currency Type', default='')
+    bid_currency_top = db.FloatProperty('Current Top Bid', default=0.0)
+
     featured = db.BooleanProperty('Featured Listing', indexed=True, default=False)
 
     @classmethod
@@ -66,9 +68,9 @@ class Listing(db.Model):
     @classmethod
     def build_transaction(cls, owner, profile, item_ids, desc, days, min_bid=None,
 			  is_subscriber=False,
-			  min_bid_currency_use=False,
-			  min_bid_currency_amount=0,
-			  min_bid_currency_type='',
+			  bid_currency_use=False,
+			  bid_currency_start=0,
+			  bid_currency_type='',
 			  feature_listing=False):
 	## 1.  check the user, get their backpack and verify the
 	## inidicated items belong to them.
@@ -110,9 +112,10 @@ class Listing(db.Model):
 
 	## 4b.  set subscriber features:
 	if is_subscriber:
-	    listing.min_bid_currency_use = min_bid_currency_use
-	    listing.min_bid_currency_amount = float(min_bid_currency_amount)
-	    listing.min_bid_currency_type = min_bid_currency_type
+	    listing.bid_currency_use = bid_currency_use
+	    listing.bid_currency_start = float(bid_currency_start)
+	    listing.bid_currency_type = bid_currency_type
+            ## listing.bid_currency_top == 0 by default
 	    listing.featured = feature_listing
 
 	key = listing.put()
@@ -238,6 +241,10 @@ class Listing(db.Model):
 	"""
 	return PlayerProfile.get_by_user(self.owner)
 
+    def update_top(self):
+        self.bid_currency_top = max(bid.currency_val for bid in self.bids())
+        self.put()
+
     def url(self):
 	return 'http://www.tf2auctions.com/listing/%s' % (self.key().id(), )
 
@@ -254,7 +261,7 @@ class Listing(db.Model):
 	if bids and user and user_steam_id(user) == self.owner:
 	    private = True
         try:
-            currency_type = currency_type_map[self.min_bid_currency_type]
+            currency_type = currency_type_map[self.bid_currency_type]
         except (KeyError, ):
             currency_type = None
 	return {
@@ -272,9 +279,10 @@ class Listing(db.Model):
 	    'bids' : [b.encode_builtin(listing=False, private=private) for b in bids],
 	    'feedback' : [fb.encode_builtin() for fb in bfb],
 	    'featured' : self.featured,
-	    'min_bid_currency_use' : self.min_bid_currency_use,
-	    'min_bid_currency_amount' : self.min_bid_currency_amount,
-	    'min_bid_currency_type' : currency_type,
+	    'bid_currency_use' : self.bid_currency_use,
+	    'bid_currency_start' : self.bid_currency_start,
+	    'bid_currency_type' : currency_type,
+            'bid_currency_top' : self.bid_currency_top,
 	}
 
 
@@ -420,15 +428,17 @@ class Bid(db.Model):
 	kwds['profile'] = PlayerProfile.get_by_user(owner)
 	verify_items_inactive(uid for uid, item in kwds['item_ids'])
 	key = db.run_in_transaction(cls.build_update_transaction, **kwds)
+        listing.update_top()
 	return key
 
     @classmethod
-    def build_update_transaction(cls, owner, profile, listing, bid, item_ids, public_msg, private_msg):
+    def build_update_transaction(cls, owner, profile, listing, bid, item_ids, public_msg, private_msg, currency_val=0):
 	if not profile.owns_all(uid for uid, item in item_ids):
 	    raise ValueError('Incorrect ownership.')
 	schema = json_loads(fetch.schema())
 	bid.message_public = public_msg
 	bid.message_private = private_msg
+        bid.currency_val = currency_val
 	bid.put()
 	item_types = item_type_map(schema)
 	for uid, item in item_ids:

@@ -20,13 +20,24 @@
 		    <label>Items:</label>
 		    <div class="items-view backpack" id="${slug}-items"><table></table></div>
 		</div>
-		<div class="mt1" id="${slug}-min-bid-pod">
-		    <label>Minimum Bid:</label>
-		    <h3 class="null pl05" id="${slug}-min-bid-currency-use">
-			<div class="mbc mt05">
+
+		<div class="mt1 w30" id="${slug}-min-bid-pod">
+		    <div class="mbc null">
+		    <label>Highest Bid:</label>
+		    <h3 class="text-right mb1" id="${slug}-min-bid-currency-top">
+			<div class="mbc">
  			    <h1 class="build-font hi2 value"></h1>
 			</div>
 		    </h3>
+		    <label>Starting Bid:</label>
+		    <h3 class="text-right" id="${slug}-min-bid-currency-use">
+			<div class="mbc">
+ 			    <h1 class="build-font hi2 value"></h1>
+			</div>
+		    </h3>
+		    </div>
+
+
 		    <div class="items-view backpack" id="${slug}-min-bid"><table></table></div>
 		</div>
 <!--
@@ -121,15 +132,13 @@
 			</span>
 		    </span>
 		</div>
-
 		<div id="${slug}-auth-bid-feedback-pod" class="null">
 	          <h1 class="mt2 mb05"><span class="hilite">&nbsp;</span>Your Feedback</h1>
 		  <div class="ov w50">
-		    <metal:macro tal:define="slug 'bidder'"
-				 use-macro="context.view_parts.macros.leave_feedback2" />
+		      <metal:macro tal:define="slug 'bidder'"
+				   use-macro="context.view_parts.macros.leave_feedback2" />
 		  </div>
 		</div>
-
 	    </div>
 
 

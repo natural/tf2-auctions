@@ -8,13 +8,25 @@
 // DONE:  Update currency bid.
 // DONE:  Cancel currency bid.
 // 
-// Add feedback.
+// DONE:  Add bidder feedback for lister.
+// DONE:  Update bidder feedback for lister.
+// 
+// Add lister feedback for bidders.
+// Update lister feedback for bidders.
+//
+// DONE:  Select winner.
+//
+// Send winner notification.
 //
 // On add/update currency bid, make default bid equal to 0.01 +
 // current max bid (aka min bid)
 //
 // On view w/ currency bids, sort + hilight max bid
-
+//
+// ui cleanups.
+// 
+// SKIP:  Delete bidder feedback for lister.
+// SKIP:  Delete lister feedback for bidders.
 
 //(function() {
 
@@ -258,10 +270,26 @@ var BidView = oo.view.extend({
 
 
 // extends model.schema only because we need a loader.
-var BidderFeedbackModel = oo.model.schema.extend({
+var BidderFeedbackModel = oo.model.status.extend({
+    init: function(view) {
+	var self = this
+	self.suffix = ListingController.model.profile.id64
+	try {
+	    self.feedback = $.grep(pageListing().feedback, function(x) {
+		return x.source == '76561198031408075' }
+	    )[0]
+	} catch (x) {
+	    self.feedback = null
+	}
+	return oo.model.status.init.apply(self, [view])
+	    .success(function(d) {
+                view.init(self)
+            })
+    },
+						     
     saveFeedback: function(data, success, error) {
 	$.ajax({
-	    url: '/api/v1/auth/add-feedback',
+	    url: '/api/v1/auth/save-feedback',
 	    type: 'POST',
 	    data: $.toJSON(data),
 	    dataType: 'json',
@@ -285,6 +313,12 @@ var BidderFeedbackView = oo.view.extend({
 	    })
 	$('#bidder-feedback-rating-value').text('+100').addClass('rate-pos')
 	oo('auth-bid-feedback-pod').show()
+	if (model.feedback) {
+	    this.slider.slider('value', model.feedback.rating)
+	    $('#bidder-feedback-comment-text').val(model.feedback.comment)
+	    $('#bidder-feedback-save').text('Update Feedback')
+	}
+	this.model = model
     },
 
     sliderChange: function(event, ui) {
@@ -375,7 +409,7 @@ var BidControllerDefn = {
 	    listing = self.model.listing
 
 	// 1.  bid items or amount
-	if (listing.min_bid_currency_use) {
+	if (listing.bid_currency_use) {
 	    var b = parseFloat(currency_val)
 	    if (!b || b <=0 ) {
 		errs.push({id:'#listing-detail-currency-bid-amount', msg:'Enter a bid value.'})
@@ -497,15 +531,23 @@ var ListingView = oo.view.schema.extend({
 	if (listing.description) {
 	    oo('description').text(listing.description).parent().removeClass('null')
 	}
-	if (listing.min_bid_currency_use) {
+	if (listing.bid_currency_use) {
 	    oo('min-bid-currency-use h1')
 		.html('{1}{0}'.fs(
-			  listing.min_bid_currency_amount.formatMoney(),
+			  listing.bid_currency_start.formatMoney(),
 			  oo.util.listingCurrencySym(listing))
 		     )
-		.parent().parent().removeClass('null')
+	    oo('min-bid-currency-top h1')
+		.html('{1}{0}'.fs(
+			  listing.bid_currency_top.formatMoney(),
+			  oo.util.listingCurrencySym(listing))
+		     )
+	    oo('min-bid-currency-{0} h1'.fs(
+		   listing.bid_currency_top > listing.bid_currency_start ? 'top' : 'use')
+	      ).addClass('bigger')
+	    oo('min-bid-pod div.mbc').removeClass('null')
 	    oo('currency-bid-currency-symbol').html( oo.util.listingCurrencySym(listing) )
-	    oo('currency-bid-currency-name').html('({0})'.fs(listing.min_bid_currency_type[1]))
+	    oo('currency-bid-currency-name').html('({0})'.fs(listing.bid_currency_type[1]))
 	} else if (listing.min_bid.length > 0) {
 	    self.putItems(oo('min-bid table').first(), listing.min_bid, 5)
 	} else {
@@ -545,7 +587,7 @@ var ListingView = oo.view.schema.extend({
 	self.putBidCount(bids.length)
 	$.each(bids, function(idx, bid) {
 	    var clone = oo('bids .prototype').clone().removeClass('null prototype')
-            if (listing.min_bid_currency_use) {
+            if (listing.bid_currency_use) {
 		var v = '{1}{0}'.fs(bid.currency_val.formatMoney(), oo.util.listingCurrencySym(listing))
 		$('.bid-currency-val-amount', clone).html(v)
 		$('.bid-currency-seed', clone).removeClass('null')
@@ -557,9 +599,11 @@ var ListingView = oo.view.schema.extend({
 	    oo.data.profile({suffix: bid.owner.id64})
 		.success(function(p) { oo.util.profile.putAvatar(p, $('.bid-owner-seed', clone)) })
 	    if (bid.status == 'awarded') {
-		$('.winner', clone).text('Winner!').parent().show()
-		$('.bid-status', clone).text('Winner!')
-		clone.addClass('winner')
+		$('.bid-status', clone).text('Look at the heading!  This one wins!')
+		var hs = $('.status-header', clone).removeClass('null')
+		$('h1', hs).text('Winner!')
+		clone.removeClass('ov').addClass('msg')
+		$('.wrap', clone).addClass('information')
 	    }
 	    clone.data('bid', bid)
 	    if (bid.message_public) {
@@ -618,10 +662,18 @@ var ListingView = oo.view.schema.extend({
 	$('.bid-message-private').parent().show()
 	if (this.listing.status == 'active') {
 	    oo('auth-bid-pod').show()
-	    // bleh
-	    if ($.inArray(this.profile.steamid, $(this.listing.bids).map(function(i, x) { return x.owner.steamid })) > -1) {
+	    if (profileBid()) {
 		oo('place-start').text('Update It').data('update', true)
 		oo('existing-bid-cancel').text('Cancel It').data('cancel', true).parent().show()
+		oo('auth-bid-feedback-pod').show()
+		var m = $.extend({}, BidderFeedbackModel)
+		var c = oo.controller.extend({model: m}, BidderFeedbackController)
+		this.bidderFeedbackController = c
+		c.init()
+	    }
+//	    oo('auth-bid-feedback-pod').show()
+	    // bleh
+/*	    if ($.inArray(this.profile.steamid, $(this.listing.bids).map(function(i, x) { return x.owner.steamid })) > -1) {
 
 		if (!this.bidFeedbackController) {
 		    var bfcondef = $.extend({}, BidderFeedbackController)
@@ -636,6 +688,7 @@ var ListingView = oo.view.schema.extend({
 		// otherwise show feedback form
 
 	    }
+*/
 	}
     },
 
@@ -844,7 +897,7 @@ var ListingController = oo.controller.extend({
 
     '#listing-detail-place-start click' : function(e) {
 	var c = e.controller, m = c.model, l = m.listing, v = c.view
-	if (l.min_bid_currency_use) {
+	if (l.bid_currency_use) {
 	    v.showPlaceCurrencyBid.apply(v, [m.existingBid()])
 	} else {
 	    v.showPlaceItemBid.apply(v, [m.existingBid()])
