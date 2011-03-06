@@ -16,7 +16,7 @@ class AddBid(ApiHandler):
 		raise TypeError('Missing item identifiers.')
 	    public_msg = bid['public_msg'][0:400]
 	    private_msg = bid['private_msg'][0:400]
-            currency_val = float(bid['currency_val'])
+            currency_val = float(bid['currency_val'] or 0)
 	    if bid.get('update'):
 		key = Bid.build_update(
 		    item_ids=item_ids,
@@ -33,6 +33,7 @@ class AddBid(ApiHandler):
                     currency_val=currency_val
                     )
 	except (Exception, ), exc:
+            raise
 	    error('add bid: %s', exc)
 	    self.error(500)
 	    exc = exc.message if hasattr(exc, 'message') else str(exc)

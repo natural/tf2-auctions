@@ -64,7 +64,7 @@
 			<label class="mt1">
 			    <input type="checkbox" name="${slug}-min-bid-currency-use"
 				   id="${slug}-min-bid-currency-use" />
-			    Bid for Currency (Optional)
+			    Auction for Currency (Optional)
 			</label>
 			<div class="help mb05">
 			    Check the box above to enter a currency

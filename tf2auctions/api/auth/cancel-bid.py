@@ -20,6 +20,7 @@ class CancelBid(ApiHandler):
 		bid.cancel()
 	except (Exception, ), exc:
 	    self.error(500)
+            raise
 	    error('cancel bid exception: %s', exc)
 	return self.write_json({})
 

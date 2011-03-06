@@ -241,9 +241,12 @@ class Listing(db.Model):
 	"""
 	return PlayerProfile.get_by_user(self.owner)
 
-    def update_top(self):
-        self.bid_currency_top = max(bid.currency_val for bid in self.bids())
-        self.put()
+    def update_top(self, put=True):
+        bids = self.bids()
+        top = max(bid.currency_val for bid in bids) if bids else 0
+        self.bid_currency_top = float(top)
+        if put:
+            self.put()
 
     def url(self):
 	return 'http://www.tf2auctions.com/listing/%s' % (self.key().id(), )
@@ -381,6 +384,7 @@ class Bid(db.Model):
 	    raise TypeError('Invalid listing status.')
 	key = db.run_in_transaction(cls.build_transaction, **kwds)
     	listing.bid_count += 1
+        listing.update_top(put=False)
 	listing.put()
 	return key
 
@@ -428,7 +432,7 @@ class Bid(db.Model):
 	kwds['profile'] = PlayerProfile.get_by_user(owner)
 	verify_items_inactive(uid for uid, item in kwds['item_ids'])
 	key = db.run_in_transaction(cls.build_update_transaction, **kwds)
-        listing.update_top()
+        listing.update_top(put=True)
 	return key
 
     @classmethod
@@ -495,6 +499,7 @@ class Bid(db.Model):
 	for item in self.items():
 	    item.delete()
 	self.delete()
+        self.listing.update_top(put=True)
 
 
 class BidItem(PlayerItem):

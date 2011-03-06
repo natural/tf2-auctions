@@ -398,6 +398,10 @@ background-color:rgba(56, 92, 120, 0.5);
 border:0.25em solid rgba(91, 122, 140, 0.5);
 }
 
+.hibid {
+border:0.25em solid rgba(91, 122, 140, 0.5);
+}
+
 .m05  { margin:0.5em; }
 .m1   { margin:1em; }
 .m2   { margin:2em; }

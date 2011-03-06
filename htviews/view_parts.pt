@@ -255,7 +255,7 @@ large bids
 		 use_view use_view | True;">
     <div id="${slug}-bids">
 
-	<div class="null prototype ov">
+	<div class="null prototype ov bid">
 	    <div class="wrap">
 	    <div class="status-header w100 null mt25 mb1"><div class="p1 text-center"><h1>Winner!</h1></div></div>
             <table class="w100">
@@ -266,19 +266,35 @@ large bids
 				<a class="small-button small-item-button">View</a>
 			    </div>
 			    <div class="items-view backpack"><table class="chooser"></table></div>
-			    <div class="select-winner-seed mt05 mb1 null">
-				<a href="#" onclick="return false" class="small-button select-winner-link">Select Winner</a>
+
+
+
+			    <div class="lister-tools-seed mt05 mb1 null">
+				<div class="main-buttons">
+				    <a href="#" onclick="return false" class="small-button select-winner-link">Select Winner</a>
+				    <a href="#" onclick="return false" class="small-button lister-feedback-link">Leave Feedback</a>
+				</div>
+
+				<div class="mb1">
 				<span class="select-winner-confirm null">
 				    <span class="mr1">Are you sure this bid is the winner?</span>
 				    <a href="#" class="small-button select-winner-submit" onclick="return false">Yep, This one Wins!</a>
 				    <a href="#" class="small-button select-winner-cancel" onclick="return false">Cancel</a>
 			        </span>
+				</div>
+
+				<div class="mb1">
+				    <div class="w75 ov outline null lister-feedback-form">
+					<metal:macro use-macro="context.view_parts.macros.feedback_tool" />
+				    </div>
+				</div>
 			    </div>
 			    <div class="${slug}-bid-view-refresh null m05">
 				<a href="#" class="small-button leave-feedback" onclick="return false">
 				Leave Feedback
 				</a>
 			    </div>
+
 			    <div class="mb1 null bid-currency-seed">
 				<strong class="bid-currency-val-label">Bid Amount:</strong>
 				<div class="mbc m05"><h1 class="bid-currency-val-amount build-font hi2"></h1></div>
@@ -291,8 +307,6 @@ large bids
 				<strong class="bid-message-label">Message:</strong>
 				<div class="bid-message m05"></div>
 			    </div>
-			    <metal:macro tal:define="slug 'lister'"
-				 metal:use-macro="macros.leave_feedback" />
 			</td>
 			<td class="valign-top">
 			    <div tal:condition="use_created">
@@ -324,7 +338,6 @@ large bids
 
 
 
-
 <!--
 
 
@@ -332,95 +345,42 @@ leave feedback form:
 
 
 -->
-<metal:macro define-macro="leave_feedback" tal:define="default_feedback default_feedback|''">
-    <div class="${slug}-rating-seed w75 null p1 mt05 rating-view">
-	<div class="">
-	    <strong class="${slug}-rating-label">Comments and Rating:</strong>
-	</div>
-	<table class="">
+<metal:macro define-macro="feedback_tool">
+    <div class="null p05 feedback-view-seed">
+	<table>
 	    <tr>
 		<td class="w25">
-		    <div class="${slug}-rating rating-badge"></div>
+		    <div class="rating-badge"></div>
 		</td>
 		<td class="w75">
-		    <div class="${slug}-rating-text desc"></div>
+		    <div class="desc rating-text"></div>
 		</td>
 	    </tr>
 	</table>
     </div>
-    <div class="${slug}-feedback-seed w100 null">
-	<div class="mt1">
-	    <strong class="${slug}-feedback-label">Leave Your Feedback:</strong>
-	</div>
-	<div class="${slug}-feedback-value null">text</div>
-	<div class="${slug}-feedback-controls">
-	    <div class="${slug}-feedback-help">Enter your feedback:</div>
-	    <div><textarea class="${slug}-feedback-text">${default_feedback}</textarea></div>
-	    <div class="mt1 mb1">
-		<div class="${slug}-rating w25"></div>
-		<div class="${slug}-rating-slider w25 mt05 mr1" name="duration"></div>
-		<div class="float-right mt05 ml1">
-		    <a href="#" onclick="return false" class="small-button save-button">Save</a>
-		    <a href="#" onclick="return false" class="small-button cancel-button">Cancel</a>
-		</div>
-	    </div>
-	    <div class="clear"></div>
-	</div>
-    </div>
-</metal:macro>
-
-
-
-
-<!--
-
-
-leave feedback form (new):
-
-
--->
-<metal:macro define-macro="leave_feedback2" tal:define="default_feedback default_feedback|''">
-
-    <div class="null w75 p1 mt05 rating-view" id="${slug}-feedback-rating-pod">
-	<table class="">
-	    <tr>
-		<td class="w25">
-		    <div id="${slug}-rating" class="rating-badge"></div>
-		</td>
-		<td class="w75">
-		    <div id="${slug}-rating-text" class="desc"></div>
-		</td>
-	    </tr>
-	</table>
-    </div>
-
-    <div class="p1" id="${slug}-feedback-comment-pod">
-	<div id="${slug}-feedback-comment-value" class="null">text</div>
-	<div id="${slug}-feedback-controls" class="feedback-controls">
-	    <div id="${slug}-feedback-comment-help">Message:</div>
-	    <div>
-		<textarea id="${slug}-feedback-comment-text">${default_feedback}</textarea>
+    <div class="null p05 feedback-comment-seed">
+	<div class="feedback-controls">
+	    <div>Message:</div>
+            <div>
+		<textarea class="comment-text"></textarea>
 	    </div>
 	    <table class="mt1 mb1 w100">
 	        <tr>
-		    <td class="w25">
-			<div id="${slug}-feedback-rating-value-label">Rating:</div>
-		    </td>
+		    <td class="w25">Rating:</td>
 		    <td class="w75">&nbsp;</td>
 		</tr>
 		<tr>
 		    <td class="text-center valign-middle">
-			<div id="${slug}-feedback-rating-value" class="rating-value"></div>
+			<div class="rating-value"></div>
 		    </td>
 		    <td class="valign-middle">
-			<div id="${slug}-feedback-rating-slider" class="w100 center text-center" name=""></div>
+			<div class="w100 center text-center rating-slider"></div>
 		    </td>
 		</tr>
 	    </table>
-
 	    <div class="nowrap text-right w100">
-			<a id="${slug}-feedback-save" href="#" onclick="return false" class="button save-button">Save Feedback</a>
-			<a id="${slug}-feedback-cancel" href="#" onclick="return false" class="button cancel-button">Cancel</a>
+		<a href="#" onclick="return false" class="small-button save-button">Save Feedback</a>
+		<a href="#" onclick="return false" class="small-button cancel-button">Cancel</a>
 	    </div>
 	</div>
     </div>

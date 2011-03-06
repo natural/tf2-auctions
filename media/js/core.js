@@ -1,7 +1,7 @@
 //
 // Begin local extensions and top-level functions.
 //
-if (typeof console == 'undefined') {
+if (typeof console === 'undefined') {
     var console = {log: $.noop, error: $.noop, debug: $.noop, warn: $.noop}
 }
 
@@ -69,6 +69,12 @@ var oo = (function() {
 	return function(suffix, next) {
 	    var sel = $.map(suffix.split(', '), function(v) { return prefix + v }).join(', ')
 	    return $(sel, next)
+	}
+    }
+    // bound to the given context
+    ns.context$ = function(context) {
+	return function(selector) {
+	    return $(selector, context)
 	}
     }
     ns.ident = ident = function(a) { return a }
@@ -1661,7 +1667,7 @@ var oo = (function() {
 	setRating: function(e, v) {
 	    e.text(oo.view.formatRating(v)).removeClass('rate-pos rate-neg rate-zero')
 	    //'{0}{1}'.fs(v>0 ? '+' : '', v)).
-	    e.addClass(v > 0 ? 'rate-pos' : (v<0 ? 'rate-neg' : 'rate-zero'))
+	    e.addClass('rating-value ' + (v > 0 ? 'rate-pos' : (v<0 ? 'rate-neg' : 'rate-zero')))
 	},
 
 	updateTimeLeft: function (expires, onChange, onExpires) {
@@ -1727,8 +1733,8 @@ var oo = (function() {
 // document and library initialization
 //
 (function(jq) {
-    jq.fn.fadeAway = function(cb) { return this.each(function() { jq(this).fadeTo(750, 0, 'linear', cb) })  }
-    jq.fn.fadeBack = function(cb) { return this.each(function() { jq(this).fadeTo(750, 100, 'linear', cb) }) }
+    jq.fn.fadeAway = function(cb) { return this.each(function() { jq(this).fadeTo(400, 0, 'linear', cb) })  }
+    jq.fn.fadeBack = function(cb) { return this.each(function() { jq(this).fadeTo(9999, 100, 'linear', cb) }) }
     jq.fn.scrollTopAni = function() { return jq('html body').animate({scrollTop: jq(this).offset().top}) }
 })(jQuery);
 
