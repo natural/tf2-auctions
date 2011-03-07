@@ -36,9 +36,10 @@
 			</div>
 		    </h3>
 		    </div>
-
-
-		    <div class="items-view backpack" id="${slug}-min-bid"><table></table></div>
+		    <div class="items-view backpack" id="${slug}-min-bid">
+			<label>Minimum Bid:</label>
+			<table></table>
+		    </div>
 		</div>
             </div>
 	    <div id="${slug}-center" class="ml1">
@@ -69,12 +70,12 @@
 			<div id="${slug}-owner-controls-cancel">
 			    <label>Tools:</label>
 			    <div class="mt1 mb05 text-center" id="${slug}-cancel-prompt">
-				<a href="#" id="${slug}-cancel-show-confirm" class="small-button" onclick="return false">Cancel this Listing</a>
+				<a href="#" id="${slug}-cancel-show-confirm" class="button" onclick="return false">Cancel this Listing</a>
 			    </div>
 			    <div class="center text-center null" id="${slug}-cancel-confirm">
 				<div class="m1 nowrap">Are you sure?
-				<a href="#" class="small-button" id="${slug}-cancel-submit" onclick="return false">Yes</a>
-				<a href="#" class="small-button" id="${slug}-cancel-cancel" onclick="return false">No</a>
+				<a href="#" class="button" id="${slug}-cancel-submit" onclick="return false">Yes</a>
+				<a href="#" class="button" id="${slug}-cancel-cancel" onclick="return false">No</a>
 				</div>
 			    </div>
 			</div>
@@ -93,73 +94,12 @@
 	    <div class="clear"></div>
         </div>
 
-	<div id="${slug}-existing-bids-pod">
-
-	    <tal:comment condition="False">
-		this block is shown when the user isn't logged in
-	    </tal:comment>
-	    <div id="${slug}-login-pod" class="null mtb1">
-		<h1><span class="hilite">&nbsp;</span>You have to
-		    <a id="${slug}-login-link" class="nice"
-		       href="">login to place a bid</a> for these items
-		</h1>
-	    </div>
-
-	    <tal:comment condition="False">
-	        this block is shown when the user is logged in; may be
-		changed by the page scripts to allow for bid update
-	    </tal:comment>
-	    <div id="${slug}-auth-bid-pod" class="null mtb1">
-
-		<div id="${slug}-auth-bid-feedback-pod" class="null">
-
-	            <h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Your Feedback</h1>
-		    <div class="ov w50">
-			<metal:macro use-macro="context.view_parts.macros.feedback_tool" />
-		    </div>
-		</div>
-
-		<h1 class="mt1 mb1"><span class="hilite">&nbsp;</span>Your Bid</h1>
-		<div class="m1 mb2">
-		    <a class="small-button" id="${slug}-place-start"
-		       onclick="return false" href="#">Place Your Bid</a>
-		    <span id="${slug}-auth-bid-cancelled" class="null"></span>
-		    <span class="null">
-			<a class="small-button" id="${slug}-existing-bid-cancel"
-			   href="#" onclick="return false"></a>
-			<span class="null" id="${slug}-existing-bid-confirm">
-			    Are you sure you want to cancel your bid?
-			    <a class="small-button" href="#" onclick="return false"
-			       id="${slug}-existing-bid-cancel-yes">Yes</a>
-			    <a class="small-button" href="#" onclick="return false"
-			       id="${slug}-existing-bid-cancel-no">No</a>
-			</span>
-		    </span>
-		</div>
-	    </div>
-	    <tal:comment condition="False">
-		this block is a list of existing bids
-	    </tal:comment>
-	    <div id="${slug}-existing-bid-pod" class="null">
-		<h1 class="pt05"><span class="hilite">&nbsp;</span><span id="${slug}-bidcount"></span></h1>
-		<div id="${slug}-bids" class="mt05 msg">
-		    <metal:include
-			tal:define="slug slug+'-profile'; use_view False"
-			metal:use-macro="context.view_parts.macros.bids_large" />
-		</div>
-	    </div>
-	</div>
-
 	<!-- wrapper for new/update bid controls -->
 	<div id="${slug}-place-bid-pod" class="null center">
             <h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Place Your Bid</h1>
-
-
-	    <div class="ov">
-
+	    <div class="ov null">
 		<!-- for currency bids -->
 		<div class="null center" id="${slug}-bid-currency">
-
 		    <div class="w100 mb1" id="${slug}-currency-bid-form">
 			<div class="msg mt05 mb1 w100">
 			    <div class="text-left warning p1">
@@ -171,7 +111,6 @@
 				</label>
 			    </div>
 			</div>
-
 			<label class="mt2 mb25">Your Bid</label>
 			<div class="message null"><div class="error" id="${slug}-currency-bid-amount-error"></div></div>
 			<div class="mb1">
@@ -189,7 +128,6 @@
 			</div>
 		    </div>
 		</div>
-
 		<!-- for item bids -->
 		<div class="null" id="${slug}-own-backpack">
 		    <metal:include
@@ -199,7 +137,6 @@
 			 tal:define="slug slug+'-add-bid-item'"
 			 metal:use-macro="context.view_parts.macros.chooser" />
 		</div>
-
 		<!-- for all bids -->
 		<div>
 		    <div id="${slug}-add-bid-fields" class="center">
@@ -246,7 +183,54 @@
 		</div>
 	    </div>
 	</div>
+
+
+	<div id="${slug}-existing-bids-pod">
+	    <div id="${slug}-login-pod" class="null mtb1">
+		<h1 class="w83 text-center">
+		    You have to <a id="${slug}-login-link" class="nice" href="">login to place a bid</a> for these items
+		</h1>
+	    </div>
+	    <div id="${slug}-auth-bid-pod" class="null mtb1">
+		<div id="${slug}-auth-bid-feedback-pod" class="null">
+	            <h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Your Feedback</h1>
+		    <div class="ov w50">
+			<metal:macro use-macro="context.view_parts.macros.feedback_tool" />
+		    </div>
+		</div>
+		<h1 class="mt1 mb1"><span class="hilite">&nbsp;</span>Your Bid</h1>
+		<div class="m1 mb2">
+		    <a class="button" id="${slug}-place-start"
+		       onclick="return false" href="#">Place Your Bid</a>
+		    <span id="${slug}-auth-bid-cancelled" class="null"></span>
+		    <span class="null">
+			<a class="button" id="${slug}-existing-bid-cancel"
+			   href="#" onclick="return false"></a>
+			<span class="null" id="${slug}-existing-bid-confirm">
+			    Are you sure you want to cancel your bid?
+			    <a class="button" href="#" onclick="return false"
+			       id="${slug}-existing-bid-cancel-yes">Yes</a>
+			    <a class="button" href="#" onclick="return false"
+			       id="${slug}-existing-bid-cancel-no">No</a>
+			</span>
+		    </span>
+		</div>
+	    </div>
+	    <div id="${slug}-existing-bid-pod" class="null">
+		<h1 class="pt05"><span class="hilite">&nbsp;</span><span id="${slug}-bidcount"></span></h1>
+
+
+		<div id="${slug}-bids" class="mt05">
+		    <metal:include
+			tal:define="slug slug+'-profile'; use_view False"
+			metal:use-macro="context.view_parts.macros.bids_large" />
+		</div>
+	    </div>
+	</div>
+
 	<div class="clear"></div>
+
+
     </div>
 </body>
 </html>

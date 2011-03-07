@@ -968,6 +968,7 @@ var oo = (function() {
 
 	    } else if (listing.min_bid.length) {
 		    var next = 0
+		    $('tr.mb label', context).first().text('Minimum Bid:')
 		    $.each(listing.min_bid, function(index, defindex) {
 			$($('div.mb .item-view div', context)[next])
 			    .append($.toJSON({defindex:defindex, quality:6}))

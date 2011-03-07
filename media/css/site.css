@@ -399,7 +399,8 @@ border:0.25em solid rgba(91, 122, 140, 0.5);
 }
 
 .hibid {
-border:0.25em solid rgba(91, 122, 140, 0.5);
+border:0.25em solid #995040;
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
 }
 
 .m05  { margin:0.5em; }
