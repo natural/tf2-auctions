@@ -1,5 +1,6 @@
 (function() {
 
+
 oo.config({prefix: '#backpack-viewer-', auth: {settings: 1, complete: 0}})
 
 
@@ -48,9 +49,9 @@ backpackView = oo.view.schema.extend({
 
     searchText: function(v) {
 	if (v) {
-            return $('#backpack-viewer-search-value').val(v)
+            return oo('search-value').val(v)
 	} else {
-	    return $('#backpack-viewer-search-value').val()
+	    return oo('search-value').val()
 	}
     },
 
@@ -66,23 +67,23 @@ backpackView = oo.view.schema.extend({
         oo.data.schema().success(function() {
             self.message().hide()
             if (results.length == 0) {
-		$('#backpack-viewer-result-none')
+		oo('result-none')
 		    .text('Your search did not match any players.')
             } else if (results.length == 1) {
 		var result = results[0], model = oo.model.backpack.extend({suffix: result.id})
 		self.message('Loading backpack...')
 		model.init().done(function() {self.ready(result.id, result.persona, model)})
 	    } else if (results.length > 1) {
-		$('#backpack-viewer-result-many-label')
+		oo('result-many-label')
 		    .text('Matched {0} players: '.fs(results.length))
-		var chooser = $('#backpack-viewer-result-many-choose')
+		var chooser = oo('result-many-choose')
 		$('option', chooser).remove()
 		chooser.append('<option>Select...</option>')
 		$.each(results, function(index, result) {
 		    chooser.append('<option>{0}</option>'.fs(result.persona))
 		    $('option:last', chooser).data('result', result)
 		})
-                $('#backpack-viewer-result-many').fadeIn()
+                oo('result-many').fadeIn()
 	    }
 	})
     },
@@ -91,14 +92,14 @@ backpackView = oo.view.schema.extend({
 	var self = this, items = model.backpack.result.items.item
         window.location.hash = id64
         if (!items.length || items[0]==null) {
-	    $('#backpack-viewer-backpack-title')
+	    oo('backpack-title')
 		.html(self.hiliteSpan('Backpack is Private or Empty'))
 		.fadeIn()
             self.clear()
 	    self.message().fadeOut()
 	    return
         }
-	$('#backpack-viewer-backpack-title').html(self.hiliteSpan('Backpack - {0}'.fs(name)))
+	oo('backpack-title').html(self.hiliteSpan('Backpack - {0}'.fs(name)))
 	self.put(model.backpack, model.listings, model.bids)
     },
 
@@ -107,11 +108,11 @@ backpackView = oo.view.schema.extend({
     },
 
     reset: function() {
-	$('#backpack-viewer-search-controls')
+	oo('search-controls')
 	    .animate({'margin-left':0, 'width':'100%'})
-	$('#backpack-viewer-result-none').text('')
-	$('#backpack-viewer-result-one').html('')
-	$('#backpack-viewer-result-many').fadeOut()
+	oo('result-none').text('')
+	oo('result-one').html('')
+	oo('result-many').fadeOut()
     },
 
     put: function(backpack, listings, bids) {
@@ -134,7 +135,7 @@ backpackView = oo.view.schema.extend({
 	    .error(function() { bpTool.init(null) })
         self.message().fadeOut()
         if (!self.put.initOnce) {
-	    $('#backpack-viewer-backpack-inner').fadeIn()
+	    oo('backpack-inner').fadeIn()
 	    self.put.initOnce = true
         }
     }

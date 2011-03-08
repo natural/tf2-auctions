@@ -1,245 +1,227 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com - Subscribe</title>
-</head>
-<body>
-    <metal:fill fill-slot="main" tal:define="slug 'subscribe'">
-        <style type="text/css">
-	    #${slug}-features-list td {
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Subscribe</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'subscribe'">
+            <style type="text/css">
+		#${slug}-features-list td {
 	        padding:0.5em;
 	        font-family:"TF2Build";
-	    }
-	    #${slug}-features-list td:nth-child(2), #${slug}-features-list td:nth-child(3) {
+		}
+		#${slug}-features-list td:nth-child(2), #${slug}-features-list td:nth-child(3) {
 	        text-align:center;
-	    }
-	    #${slug}-features-list td img {
+		}
+		#${slug}-features-list td img {
 	        vertical-align:middle;
-	    }
-        </style>
+		}
+            </style>
+	    <div class="center" id="${slug}-content-pod">
+		<h1><span class="hilite">&nbsp;</span>Features, Benefits, and Subscriptions</h1>
+		<div id="${slug}-features-pod" class="w50 center">
+		    <div>
+			<table class="w100 mt1" id="${slug}-features-list">
+			    <tr>
+				<td class="w50"><h2>Feature and Benefit</h2></td>
+				<td class="w25"><h2>Member</h2></td>
+				<td class="w25"><h2>Subscriber</h2></td>
+			    </tr>
+			    <tr>
+				<td>
+				    Create Listings
+				    <div class="help">
+					Make listings with items from your backpack
+					for other players to bid on.
+				    </div>
+				</td>
+				<td>Unlimited*</td>
+				<td>Unlimited*</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Create Bids
+				    <div class="help">
+					Place bids with items from your backpack.
+				    </div>
+				</td>
+				<td>Unlimited*</td>
+				<td>Unlimited*</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Search
+				    <div class="help">
+					Find stuff quickly, easily, and with verve!
+				    </div>
+				</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+			    </tr>
+			    <tr>
+				<td>
+				    View Backpacks
+				    <div class="help">
+					Check player backpacks with the friendliest backpack viewer on the web.
+				    </div>
+				</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Send Messages
+				    <div class="help">
+					Leave messages for other site members.
+				    </div>
+				</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Bid Notifications
+				    <div class="help">
+					Receive email messages when bids are placed on
+					your listings.
+				    </div>
+				</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Listing Notifications
+				    <div class="help">
+					Receive email messages when new listings are
+					created that match your filters.
+				    </div>
+				</td>
+				<td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Featured Listings
+				    <div class="help">
+					Newly created listings featured on the front
+					page of the site and featured on search results.
+				    </div>
+				</td>
+				<td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Create Bids with $$ Minimum Bid
+				    <div class="help">
+					Create listings with currency amount minimum bid.
+				    </div>
+				</td>
+				<td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
+			    </tr>
 
-	<div class="center" id="${slug}-content-pod">
-	    <h1><span class="hilite">&nbsp;</span>Features, Benefits, and Subscriptions</h1>
-
-	    <div id="${slug}-features-pod" class="w50 center">
-		<div>
-		    <table class="w100 mt1" id="${slug}-features-list">
-			<tr>
-			    <td class="w50"><h2>Feature and Benefit</h2></td>
-			    <td class="w25"><h2>Member</h2></td>
-			    <td class="w25"><h2>Subscriber</h2></td>
-			</tr>
-			<tr>
-			    <td>
-				Create Listings
-				<div class="help">
-				    Make listings with items from your backpack
-				    for other players to bid on.
-				</div>
-			    </td>
-			    <td>Unlimited*</td>
-			    <td>Unlimited*</td>
-			</tr>
-			<tr>
-			    <td>
-				Create Bids
-				<div class="help">
-				    Place bids with items from your backpack.
-				</div>
-			    </td>
-			    <td>Unlimited*</td>
-			    <td>Unlimited*</td>
-			</tr>
-			<tr>
-			    <td>
-				Search
-				<div class="help">
-				    Find stuff quickly, easily, and with verve!
-				</div>
-			    </td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			</tr>
-			<tr>
-			    <td>
-				View Backpacks
-				<div class="help">
-				    Check player backpacks with the friendliest backpack viewer on the web.
-				</div>
-			    </td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			</tr>
-			<tr>
-			    <td>
-				Send Messages
-				<div class="help">
-				    Leave messages for other site members.
-				</div>
-			    </td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			</tr>
-			<tr>
-			    <td>
-				Bid Notifications
-				<div class="help">
-				    Receive email messages when bids are placed on
-				    your listings.
-				</div>
-			    </td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			</tr>
-			<tr>
-			    <td>
-				Listing Notifications
-				<div class="help">
-				    Receive email messages when new listings are
-				    created that match your filters.
-				</div>
-			    </td>
-			    <td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			</tr>
-			<tr>
-			    <td>
-				Featured Listings
-				<div class="help">
-				    Newly created listings featured on the front
-				    page of the site and featured on search results.
-				</div>
-			    </td>
-			    <td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			</tr>
-			<tr>
-			    <td>
-				Create Bids with $$ Minimum Bid
-				<div class="help">
-				    Create listings with currency amount minimum bid.
-				</div>
-			    </td>
-			    <td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Yes</td>
-			</tr>
-
-			<tr>
-			    <td>
-				Create Shops
-				<div class="help">
-				    Create shops where your inventory comes from your backpack.
-				</div>
-			    </td>
-			    <td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
-			    <td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Coming Soon!</td>
-			</tr>
-
-			<tr>
-			    <td>
-				Price
-				<div class="help">
-				    How much does it cost?  Very little, really.
-				</div>
-			    </td>
-			    <td>Free</td>
-			    <td><div>$5 / month</div> or <div>$50 / year</div></td>
-			</tr>
-
-
-			<tr>
-			    <td colspan="3">
-				<div class="help w100 text-center">
-				    * Unlimited means as much as you can, limited
-				    only by the items in your backpack.  Obviously.
-				</div>
-			    </td>
-			</tr>
-		    </table>
+			    <tr>
+				<td>
+				    Create Shops
+				    <div class="help">
+					Create shops where your inventory comes from your backpack.
+				    </div>
+				</td>
+				<td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Coming Soon!</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Price
+				    <div class="help">
+					How much does it cost?  Very little, really.
+				    </div>
+				</td>
+				<td>Free</td>
+				<td><div>$5 / month</div> or <div>$50 / year</div></td>
+			    </tr>
+			    <tr>
+				<td colspan="3">
+				    <div class="help w100 text-center">
+					* Unlimited means as much as you can, limited
+					only by the items in your backpack.  Obviously.
+				    </div>
+				</td>
+			    </tr>
+			</table>
+		    </div>
 		</div>
 	    </div>
-	</div>
+	    <div class="w25 center null" id="${slug}-login-pod">
+		<h1 class="mt2">Login to Subscribe</h1>
+	    </div>
+	    <div class="w25 center null" id="${slug}-thanks-pod">
+		<h1>You're already subscribed.  Thank you!</h1>
+	    </div>
+	    <div class="w25 center null" id="${slug}-form-pod">
+		<h1 class="mt2">Subscribe Now!</h1>
+		<metal:if tal:condition="not features.devel">
+		    <form
+			 action="https://www.paypal.com/cgi-bin/webscr"
+			 method="post">
+			<input type="hidden" name="cmd" value="_s-xclick" />
+			<input type="hidden" name="hosted_button_id" value="CDU9LSTHQK7HC" />
+			<input type="hidden" name="on0" value="Subscription Type" />
+			<table>
+			    <tr>
+				<td>
+				    <input type="hidden" name="on1" value="Profile ID" />
+				    <input type="hidden" name="os1" value="76111" />
+				</td>
+			    </tr>
+			    <tr>
+				<td>
+				    Subscription Type
+				    <select name="os0">
+					<option value="Premium (Monthly)">Premium (Monthly) : $5.00USD - monthly</option>
+					<option value="Premium (Yearly)">Premium (Yearly) : $50.00USD - yearly</option>
+				    </select>
+				</td>
+			    </tr>
+			</table>
+			<input type="hidden" name="currency_code" value="USD" />
+			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif"
+			       border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
+			<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+		    </form>
 
-	<div class="w25 center null" id="${slug}-login-pod">
-	    <h1 class="mt2">Login to Subscribe</h1>
-	</div>
-
-	<div class="w25 center null" id="${slug}-thanks-pod">
-	    <h1>You're already subscribed.  Thank you!</h1>
-	</div>
-
-	<div class="w25 center null" id="${slug}-form-pod">
-	    <h1 class="mt2">Subscribe Now!</h1>
-
-
-<metal:if tal:condition="not features.devel">
-	    <form
-		 action="https://www.paypal.com/cgi-bin/webscr"
-		 method="post">
-		<input type="hidden" name="cmd" value="_s-xclick" />
-		<input type="hidden" name="hosted_button_id" value="CDU9LSTHQK7HC" />
-		<input type="hidden" name="on0" value="Subscription Type" />
-		<table>
-		    <tr>
-			<td>
-			    <input type="hidden" name="on1" value="Profile ID" />
-			    <input type="hidden" name="os1" value="76111" />
-		        </td>
-		    </tr>
-		    <tr>
-			<td>
-Subscription Type
-<select name="os0">
-	       <option value="Premium (Monthly)">Premium (Monthly) : $5.00USD - monthly</option>
-	       <option value="Premium (Yearly)">Premium (Yearly) : $50.00USD - yearly</option>
-</select>
-		        </td>
-                    </tr>
-		</table>
-		<input type="hidden" name="currency_code" value="USD" />
-		<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif"
-		       border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
-		<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-	    </form>
-
-</metal:if>
-
-<metal:if tal:condition="features.devel">
-<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
-			    <input type="hidden" name="on1" value="Profile ID" />
-			    <input type="hidden" name="os1" value="76111" />
-
-<input type="hidden" name="cmd" value="_xclick" />
-<input type="hidden" name="business" value="Y5T7AVZMQF8ES" />
-<input type="hidden" name="lc" value="US" />
-<input type="hidden" name="button_subtype" value="services" />
-<input type="hidden" name="currency_code" value="USD" />
-
-<input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted" />
-<table>
-<tr><td><input type="hidden" name="on0" value="Subscription" />
-	Subscription
-</td></tr><tr><td>
-<select name="os0">
-		<option value="Monthly">Monthly $3.00</option>
-		<option value="Yearly">Yearly $29.00</option>
-</select> </td></tr>
-</table>
-<input type="hidden" name="currency_code" value="USD" />
-<input type="hidden" name="option_select0" value="Monthly" />
-<input type="hidden" name="option_amount0" value="3.00" />
-<input type="hidden" name="option_select1" value="Yearly" />
-<input type="hidden" name="option_amount1" value="29.00" />
-<input type="hidden" name="option_index" value="0" />
-
-<input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
-<img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-
-</form>
-</metal:if>
-
-
-	</div>
-
-    </metal:fill>
-</body>
+		</metal:if>
+		<metal:if tal:condition="features.devel">
+		    <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+			<input type="hidden" name="on1" value="Profile ID" />
+			<input type="hidden" name="os1" value="76111" />
+			<input type="hidden" name="cmd" value="_xclick" />
+			<input type="hidden" name="business" value="Y5T7AVZMQF8ES" />
+			<input type="hidden" name="lc" value="US" />
+			<input type="hidden" name="button_subtype" value="services" />
+			<input type="hidden" name="currency_code" value="USD" />
+			<input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted" />
+			<table>
+			    <tr><td><input type="hidden" name="on0" value="Subscription" />
+				    Subscription
+			    </td></tr><tr><td>
+				    <select name="os0">
+					<option value="Monthly">Monthly $3.00</option>
+					<option value="Yearly">Yearly $29.00</option>
+			    </select> </td></tr>
+			</table>
+			<input type="hidden" name="currency_code" value="USD" />
+			<input type="hidden" name="option_select0" value="Monthly" />
+			<input type="hidden" name="option_amount0" value="3.00" />
+			<input type="hidden" name="option_select1" value="Yearly" />
+			<input type="hidden" name="option_amount1" value="29.00" />
+			<input type="hidden" name="option_index" value="0" />
+			<input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
+			<img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+		    </form>
+		</metal:if>
+	    </div>
+	</metal:fill>
+    </body>
 </html>

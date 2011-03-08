@@ -1,469 +1,468 @@
 <metal:parts>
 
 
-<!--
+    <!--
 
-backpack_full: a wide backpack
+    backpack_full: a wide backpack
 
--->
-<metal:macro metal:define-macro="backpack_full" tal:define="slug slug | ''">
-    <div class="bp bp-full" id="bp-${slug}">
-        <div><h3></h3></div>
-	<div id="${slug}-bp-intro-pod">
-            <div><h3></h3></div>
-	    <div><span class="help"></span></div>
+    -->
+    <metal:macro metal:define-macro="backpack_full" tal:define="slug slug | ''">
+	<div class="bp bp-full" id="bp-${slug}">
+	    <div><h3></h3></div>
+	    <div id="${slug}-bp-intro-pod">
+		<div><h3></h3></div>
+		<div><span class="help"></span></div>
+	    </div>
+	    <div class="bp-view">
+		<metal:unplaced metal:use-macro="macros.unplaced" />
+		<div class="bp-placed p05" id="bp-placed-${slug}">
+		    <div class="bp-pages center">
+			<metal:nav metal:use-macro="macros.navigator" />
+		    </div>
+		</div>
+	    </div>
 	</div>
-	<div class="bp-view">
-	    <metal:unplaced metal:use-macro="macros.unplaced" />
-	    <div class="bp-placed p05" id="bp-placed-${slug}">
-		<div class="bp-pages center">
-		    <metal:nav metal:use-macro="macros.navigator" />
+    </metal:macro>
+
+
+    <!--
+
+    backpack_slim: a narrow backpack
+
+    -->
+    <metal:macro metal:define-macro="backpack_slim" tal:define="slug slug | ''">
+	<div class="bp bp-slim" id="bp-${slug}">
+	    <div id="${slug}-bp-intro-pod">
+		<div><h3></h3></div>
+		<div><span class="help"></span></div>
+	    </div>
+	    <div class="bp-view">
+		<metal:unplaced metal:use-macro="macros.unplaced" />
+		<div class="bp-placed p05" id="bp-placed-${slug}">
+		    <div class="bp-pages center">
+			<metal:nav metal:use-macro="macros.navigator" />
+		    </div>
 		</div>
-            </div>
-        </div>
-    </div>
-</metal:macro>
-
-
-<!--
-
-backpack_slim: a narrow backpack
-
--->
-<metal:macro metal:define-macro="backpack_slim" tal:define="slug slug | ''">
-    <div class="bp bp-slim" id="bp-${slug}">
-	<div id="${slug}-bp-intro-pod">
-            <div><h3></h3></div>
-	    <div><span class="help"></span></div>
+	    </div>
 	</div>
-	<div class="bp-view">
-	    <metal:unplaced metal:use-macro="macros.unplaced" />
-	    <div class="bp-placed p05" id="bp-placed-${slug}">
-		<div class="bp-pages center">
-		    <metal:nav metal:use-macro="macros.navigator" />
-		</div>
-            </div>
-        </div>
-    </div>
-</metal:macro>
+    </metal:macro>
 
 
-<!--
+    <!--
 
-chooser:  a small area for backpack item drag and drop.
+    chooser:  a small area for backpack item drag and drop.
 
--->
-<metal:macro metal:define-macro="chooser"
-     tal:define="slug slug | ''; rows rows | 2; cols cols | 5;">
-    <div class="bp bp-slim" id="bp-chooser-${slug}">
-	<div id="${slug}-ch-intro-pod">
-	    <h3>&nbsp;<span id="${slug}-title-extra"></span></h3>
-	    <div><span class="help"></span></div>
-	</div>
-	<table class="bp-chooser center">
-	    <caption>
-		<div class="message null">
-		    <div class="error" id="bp-chooser-${slug}-error"></div>
-		</div>
- 		<div class="message null">
-		    <div class="warning" id="bp-chooser-${slug}-warn"></div>
-		</div>
-	    </caption>
-	    <tbody>
-		<metal:loop tal:repeat="row range(rows)">
-		    <tr>
-			<metal:loop tal:repeat="col range(cols)">
-			    <td id="${slug}-${(row*cols)+col+1}"><div></div></td>
-			</metal:loop>
-		    </tr>
-		</metal:loop>
-	    </tbody>
-	</table>
-    </div>
-</metal:macro>
-
-
-<!--
-
-navigator: buttons for backpack navigation
-
--->
-<metal:macro metal:define-macro="navigator">
-    <div class="bp-nav text-right mt1 build-font pb05 mr05 null" id="bp-nav-${slug}">
-	<span class="bp-nav-filter null">
-	    <span class="help"></span>
-	    <select class="bp-nav-filter build-font" id="bp-nav-filter-${slug}"></select>
-	</span>
-	<span class="all mr1 null"><a href="#" onclick="return false">Show All Pages</a></span>
-	<span class="non">&lt;</span>
-	<span class="nav"><a onclick="return false" href="#">&lt;</a></span>
-	<span class="bp-count" id="bp-count-${slug}">A/B</span>
-	<span class="non">&gt;</span>
-	<span class="nav"><a onclick="return false" href="#">&gt;</a></span>
-    </div>
-</metal:macro>
-
-
-
-
-<!--
-
-unplaced: an area for unplaced backpack items
-
--->
-<metal:macro metal:define-macro="unplaced" tal:define="cols cols | 10">
-    <div class="bp-unplaced null center bp-pages" id="bp-unplaced-${slug}">
-	<label></label>
-	<table class="bp-unplaced">
-	    <tbody>
-		<tr><!-- prototype  -->
-		    <metal:loop tal:repeat="col range(cols)">
-			<td><div></div></td>
+    -->
+    <metal:macro metal:define-macro="chooser"
+		 tal:define="slug slug | ''; rows rows | 2; cols cols | 5;">
+	<div class="bp bp-slim" id="bp-chooser-${slug}">
+	    <div id="${slug}-ch-intro-pod">
+		<h3>&nbsp;<span id="${slug}-title-extra"></span></h3>
+		<div><span class="help"></span></div>
+	    </div>
+	    <table class="bp-chooser center">
+		<caption>
+		    <div class="message null">
+			<div class="error" id="bp-chooser-${slug}-error"></div>
+		    </div>
+		    <div class="message null">
+			<div class="warning" id="bp-chooser-${slug}-warn"></div>
+		    </div>
+		</caption>
+		<tbody>
+		    <metal:loop tal:repeat="row range(rows)">
+			<tr>
+			    <metal:loop tal:repeat="col range(cols)">
+				<td id="${slug}-${(row*cols)+col+1}"><div></div></td>
+			    </metal:loop>
+			</tr>
 		    </metal:loop>
-		</tr>
-	    </tbody>
-	</table>
-    </div>
-</metal:macro>
+		</tbody>
+	    </table>
+	</div>
+    </metal:macro>
 
 
-<!--
+    <!--
 
-items view: default 1 row * 10 columns
+    navigator: buttons for backpack navigation
 
--->
-<metal:macro metal:define-macro="items_view"
-     tal:define="rows rows | 1; cols cols | 10; ">
-    <div class="item-view">
-	<table class="chooser">
-            <tbody>
-		<metal:loop tal:repeat="row range(rows)">
-   		    <tr>
+    -->
+    <metal:macro metal:define-macro="navigator">
+	<div class="bp-nav text-right mt1 build-font pb05 mr05 null" id="bp-nav-${slug}">
+	    <span class="bp-nav-filter null">
+		<span class="help"></span>
+		<select class="bp-nav-filter build-font" id="bp-nav-filter-${slug}"></select>
+	    </span>
+	    <span class="all mr1 null"><a href="#" onclick="return false">Show All Pages</a></span>
+	    <span class="non">&lt;</span>
+	    <span class="nav"><a onclick="return false" href="#">&lt;</a></span>
+	    <span class="bp-count" id="bp-count-${slug}">A/B</span>
+	    <span class="non">&gt;</span>
+	    <span class="nav"><a onclick="return false" href="#">&gt;</a></span>
+	</div>
+    </metal:macro>
+
+
+
+
+    <!--
+
+    unplaced: an area for unplaced backpack items
+
+    -->
+    <metal:macro metal:define-macro="unplaced" tal:define="cols cols | 10">
+	<div class="bp-unplaced null center bp-pages" id="bp-unplaced-${slug}">
+	    <label></label>
+	    <table class="bp-unplaced">
+		<tbody>
+		    <tr><!-- prototype  -->
 			<metal:loop tal:repeat="col range(cols)">
-			    <td class="item-view">
-				<div class="defindex-lazy"></div>
-			    </td>
+			    <td><div></div></td>
 			</metal:loop>
 		    </tr>
-		</metal:loop>
-	    </tbody>
-	</table>
-    </div>
-</metal:macro>
-
-
-
-<!--
-
-large listings
-
--->
-<metal:macro metal:define-macro="listings_large">
-    <div id="${slug}-listings">
-	<div class="null prototype">
-	    <div class="ov">
-            <table class="listing-view w100">
-		<tbody>
-		    <tr>
-			<!-- items header -->
-			<td colspan="2">
-			    <div class="pl05 pt025 pr05">
-				<metal:slot define-slot="items-header-label">
-				    <strong class="">Items:</strong>
-				</metal:slot>
-				<span class="expires ml1"></span>
-			    </div>
-			</td>
-		    </tr>
-		    <tr>
-			<!-- items blocks and view link -->
-			<td width="75%">
-			    <div class="bi">
-				 <metal:display use-macro="macros.items_view" />
-	                    </div>
-			</td>
-			<td valign="top">
-			    <div class="listing-view-link text-right mt05 pr05">
-				<a class="small-button small-item-button">View</a>
-			    </div>
-			</td>
-		    </tr>
-		    <tr class="ds">
-			<!-- description header -->
-			<td><div class="mt05 pl05"><label>Description:</label></div></td>
-			<td></td>
-		    </tr>
-		    <tr class="ds">
-			<!-- description text -->
-			<td width="75%"><div class="listing-description ds pl05"></div></td>
-			<td></td>
-		    </tr>
-		    <tr class="mb">
-			<!-- min bid header -->
-			<td><div class="pl05 mt05"><label>Starting Bid:</label></div></td>
-			<td></td>
-		    </tr>
-		    <tr class="mb">
-			<!-- min bid items -->
-			<td width="75%">
-			    <div class="${slug}-listing-view-min-bid null mb">
-				<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
-			    </div>
-			    <!-- (or mb currency) -->
-			    <div class="null pl05 text-center" style="width:5.15em !important;">
- 				<h1 class="build-font hi2 value"></h1>
-			    </div>
-			</td>
-			<td></td>
-		    </tr>
-		    <tr class="cb">
-			<!-- current bid header -->
-			<td><div class="null pl05 mt05"><label>Current:</label></div></td>
-			<td></td>
-		    </tr>
-		    <tr class="cb">
-			<!-- current bid header -->
-			<td>
-			    <div class="null pl05 text-center" style="width:5.15em !important;">
- 				<h1 class="build-font hi2 value"></h1>
-			    </div>
-			</td>
-			<td></td>
-		    </tr>
-
-		    <tr class="bt">
-			<td colspan="2"><div class="mb05"><metal:slot define-slot="bottom" /></div></td>
-		    </tr>
 		</tbody>
-            </table>
-	    </div>
+	    </table>
 	</div>
-    </div>
-</metal:macro>
+    </metal:macro>
 
 
+    <!--
 
-<!--
+    items view: default 1 row * 10 columns
 
-
-large bids
-
-
--->
-<metal:macro metal:define-macro="bids_large"
-     tal:define="use_created use_created | True;
-		 use_view use_view | True;">
-    <div id="${slug}-bids">
-
-	<div class="null prototype ov bid">
-	    <div class="wrap">
-	    <div class="status-header w100 null mt25 mb1"><div class="p1 text-center"><h1>Winner!</h1></div></div>
-	    <div class="existing-feedback">
-		<metal:macro use-macro="macros.feedback_view" />
-	    </div>
-            <table class="w100">
+    -->
+    <metal:macro metal:define-macro="items_view"
+		 tal:define="rows rows | 1; cols cols | 10; ">
+	<div class="item-view">
+	    <table class="chooser">
 		<tbody>
-                    <tr>
-			<td tal:attributes="width '70%'; valign 'top'">
-			    <div class="${slug}-bid-view-link m05" tal:condition="use_view">
-				<a class="small-button small-item-button">View</a>
-			    </div>
-			    <div class="items-view backpack"><table class="chooser"></table></div>
-			    <div class="lister-tools-seed mt05 mb1 null">
-				<div class="main-buttons">
-				    <a href="#" onclick="return false" class="button select-winner-link">Select Winner</a>
-				    <a href="#" onclick="return false" class="button lister-feedback-link">Leave Feedback</a>
-				</div>
+		    <metal:loop tal:repeat="row range(rows)">
+			<tr>
+			    <metal:loop tal:repeat="col range(cols)">
+				<td class="item-view">
+				    <div class="defindex-lazy"></div>
+				</td>
+			    </metal:loop>
+			</tr>
+		    </metal:loop>
+		</tbody>
+	    </table>
+	</div>
+    </metal:macro>
 
-				<div class="mb1">
-				<span class="select-winner-confirm null">
-				    <span class="mr1">Are you sure this bid is the winner?</span>
-				    <a href="#" class="button select-winner-submit" onclick="return false">Yep, This one Wins!</a>
-				    <a href="#" class="button select-winner-cancel" onclick="return false">Cancel</a>
-			        </span>
-				</div>
-				<div class="mb1">
-				    <div class="w75 ov outline null lister-feedback-form">
-					<metal:macro use-macro="macros.feedback_tool" />
+
+
+    <!--
+
+    large listings
+
+    -->
+    <metal:macro metal:define-macro="listings_large">
+	<div id="${slug}-listings">
+	    <div class="null prototype">
+		<div class="ov">
+		    <table class="listing-view w100">
+			<tbody>
+			    <tr>
+				<!-- items header -->
+				<td colspan="2">
+				    <div class="pl05 pt025 pr05">
+					<metal:slot define-slot="items-header-label">
+					    <strong class="">Items:</strong>
+					</metal:slot>
+					<span class="expires ml1"></span>
 				    </div>
-				</div>
-			    </div>
-<!--
-			    <div class="${slug}-bid-view-refresh null m05">
-				<a href="#" class="button leave-feedback" onclick="return false">
-				Leave Feedback
-				</a>
-			    </div>
--->
-			    <div class="mb1 null bid-currency-seed">
-				<strong class="bid-currency-val-label">Bid Amount:</strong>
-				<div class="mbc m05"><h1 class="bid-currency-val-amount build-font hi2"></h1></div>
-			    </div>
-			    <div class="mb1 null">
-				<strong class="bid-message-label-private">Private Message:</strong>
-				<div class="bid-message-private m05"></div>
-			    </div>
-			    <div>
-				<strong class="bid-message-label">Message:</strong>
-				<div class="bid-message m05"></div>
-			    </div>
+				</td>
+			    </tr>
+			    <tr>
+				<!-- items blocks and view link -->
+				<td width="75%">
+				    <div class="bi">
+					<metal:display use-macro="macros.items_view" />
+				    </div>
+				</td>
+				<td valign="top">
+				    <div class="listing-view-link text-right mt05 pr05">
+					<a class="small-button small-item-button">View</a>
+				    </div>
+				</td>
+			    </tr>
+			    <tr class="ds">
+				<!-- description header -->
+				<td><div class="mt05 pl05"><label>Description:</label></div></td>
+				<td></td>
+			    </tr>
+			    <tr class="ds">
+				<!-- description text -->
+				<td width="75%"><div class="listing-description ds pl05"></div></td>
+				<td></td>
+			    </tr>
+			    <tr class="mb">
+				<!-- min bid header -->
+				<td><div class="pl05 mt05"><label>Starting Bid:</label></div></td>
+				<td></td>
+			    </tr>
+			    <tr class="mb">
+				<!-- min bid items -->
+				<td width="75%">
+				    <div class="${slug}-listing-view-min-bid null mb">
+					<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
+				    </div>
+				    <!-- (or mb currency) -->
+				    <div class="null pl05 text-center" style="width:5.15em !important;">
+					<h1 class="build-font hi2 value"></h1>
+				    </div>
+				</td>
+				<td></td>
+			    </tr>
+			    <tr class="cb">
+				<!-- current bid header -->
+				<td><div class="null pl05 mt05"><label>Current:</label></div></td>
+				<td></td>
+			    </tr>
+			    <tr class="cb">
+				<!-- current bid header -->
+				<td>
+				    <div class="null pl05 text-center" style="width:5.15em !important;">
+					<h1 class="build-font hi2 value"></h1>
+				    </div>
+				</td>
+				<td></td>
+			    </tr>
+
+			    <tr class="bt">
+				<td colspan="2"><div class="mb05"><metal:slot define-slot="bottom" /></div></td>
+			    </tr>
+			</tbody>
+		    </table>
+		</div>
+	    </div>
+	</div>
+    </metal:macro>
+
+
+    <!--
+
+    large bids
+
+    -->
+    <metal:macro metal:define-macro="bids_large"
+		 tal:define="use_created use_created | True;
+			     use_view use_view | True;">
+	<div id="${slug}-bids">
+
+	    <div class="null prototype ov bid">
+		<div class="wrap">
+		    <div class="status-header w100 null mt25 mb1"><div class="p1 text-center"><h1>Winner!</h1></div></div>
+		    <div class="existing-feedback">
+			<metal:macro use-macro="macros.feedback_view" />
+		    </div>
+		    <table class="w100">
+			<tbody>
+			    <tr>
+				<td tal:attributes="width '70%'; valign 'top'">
+				    <div class="${slug}-bid-view-link m05" tal:condition="use_view">
+					<a class="small-button small-item-button">View</a>
+				    </div>
+				    <div class="items-view backpack"><table class="chooser"></table></div>
+				    <div class="lister-tools-seed mt05 mb1 null">
+					<div class="main-buttons">
+					    <a href="#" onclick="return false" class="button select-winner-link">Select Winner</a>
+					    <a href="#" onclick="return false" class="button lister-feedback-link">Leave Feedback</a>
+					</div>
+
+					<div class="mb1">
+					    <span class="select-winner-confirm null">
+						<span class="mr1">Are you sure this bid is the winner?</span>
+						<a href="#" class="button select-winner-submit" onclick="return false">Yep, This one Wins!</a>
+						<a href="#" class="button select-winner-cancel" onclick="return false">Cancel</a>
+					    </span>
+					</div>
+					<div class="mb1">
+					    <div class="w75 ov outline null lister-feedback-form">
+						<metal:macro use-macro="macros.feedback_tool" />
+					    </div>
+					</div>
+				    </div>
+				    <div class="mb1 null bid-currency-seed">
+					<strong class="bid-currency-val-label">Bid Amount:</strong>
+					<div class="mbc m05"><h1 class="bid-currency-val-amount build-font hi2"></h1></div>
+				    </div>
+				    <div class="mb1 null">
+					<strong class="bid-message-label-private">Private Message:</strong>
+					<div class="bid-message-private m05"></div>
+				    </div>
+				    <div>
+					<strong class="bid-message-label">Message:</strong>
+					<div class="bid-message m05"></div>
+				    </div>
+				</td>
+				<td class="valign-top">
+				    <div tal:condition="use_created">
+					<strong>Created By:</strong>
+					<div class="bid-owner-seed">
+					    <a href="#"><img class="bid-avatar av" /></a>
+					    <a href="#"><span class="bid-owner av"></span></a>
+					</div>
+				    </div>
+				    <div class="mt1">
+					<strong class="bid-created-label">Placed:</strong>
+					<div class="bid-created ml1 mono"></div>
+				    </div>
+				    <div class="mt1">
+					<strong class="bid-status-label">Status:</strong>
+					<div class="ml1">
+					    <span class="bid-status"></span>
+					</div>
+					<div class="null message"><div class="winner">Winner!</div></div>
+				    </div>
+				</td>
+			    </tr>
+			</tbody>
+		    </table>
+		</div>
+	    </div>
+	</div>
+    </metal:macro>
+
+
+    <!--
+
+	feedback_view:  small swatch for viewing existing feedback value + comment
+
+    -->
+    <metal:macro define-macro="feedback_view">
+	<div class="null p05 feedback-view-seed">
+	    <table>
+		<tr>
+		    <td class="w25">
+			<div class="rating-badge"></div>
+		    </td>
+		    <td class="w75">
+			<div class="desc rating-text"></div>
+		    </td>
+		</tr>
+	    </table>
+	</div>
+    </metal:macro>
+
+
+    <!--
+
+    leave feedback form:
+
+    -->
+    <metal:macro define-macro="feedback_tool">
+	<metal:macro use-macro="macros.feedback_view" />
+	<div class="null p05 feedback-comment-seed">
+	    <div class="feedback-controls">
+		<div>Message:</div>
+		<div>
+		    <textarea class="comment-text"></textarea>
+		</div>
+		<table class="mt1 mb1 w100">
+		    <tr>
+			<td class="w25">Rating:</td>
+			<td class="w75">&nbsp;</td>
+		    </tr>
+		    <tr>
+			<td class="text-center valign-middle">
+			    <div class="rating-value"></div>
 			</td>
-			<td class="valign-top">
-			    <div tal:condition="use_created">
-				<strong>Created By:</strong>
-				<div class="bid-owner-seed">
-				    <a href="#"><img class="bid-avatar av" /></a>
-				    <a href="#"><span class="bid-owner av"></span></a>
-				</div>
-			    </div>
-			    <div class="mt1">
-				<strong class="bid-created-label">Placed:</strong>
-				<div class="bid-created ml1 mono"></div>
-			    </div>
-			    <div class="mt1">
-				<strong class="bid-status-label">Status:</strong>
-				<div class="ml1">
-				    <span class="bid-status"></span>
-				</div>
-				<div class="null message"><div class="winner">Winner!</div></div>
-			    </div>
+			<td class="valign-middle">
+			    <div class="w100 center text-center rating-slider"></div>
 			</td>
 		    </tr>
-		</tbody>
-            </table>
+		</table>
+		<div class="nowrap text-right w100">
+		    <a href="#" onclick="return false" class="button save-button">Save Feedback</a>
+		    <a href="#" onclick="return false" class="button cancel-button">No Feedback</a>
+		</div>
 	    </div>
 	</div>
-    </div>
-</metal:macro>
+    </metal:macro>
 
 
-<metal:macro define-macro="feedback_view">
-    <div class="null p05 feedback-view-seed">
-	<table>
-	    <tr>
-		<td class="w25">
-		    <div class="rating-badge"></div>
-		</td>
-		<td class="w75">
-		    <div class="desc rating-text"></div>
-		</td>
-	    </tr>
-	</table>
-    </div>
-</metal:macro>
-<!--
+    <!--
 
+    profile badge
 
-leave feedback form:
-
-
--->
-<metal:macro define-macro="feedback_tool">
-    <metal:macro use-macro="macros.feedback_view" />
-    <div class="null p05 feedback-comment-seed">
-	<div class="feedback-controls">
-	    <div>Message:</div>
-            <div>
-		<textarea class="comment-text"></textarea>
+    -->
+    <metal:macro metal:define-macro="profile_badge" tal:define="slug slug | ''">
+	<div id="${slug}-badge" class="null badge">
+	    <metal:def define-slot="header"></metal:def>
+	    <div class="center text-center">
+		<h1 class="mt05"><span id="${slug}-badge-title"></span></h1>
+		<h2><span class="null" id="${slug}-is-you"></span></h2>
+		<a href="#"><img id="${slug}-avatar" class="m1 profile-status" /></a>
+		<div id="${slug}-badge-status" class=""></div>
+		
 	    </div>
-	    <table class="mt1 mb1 w100">
-	        <tr>
-		    <td class="w25">Rating:</td>
-		    <td class="w75">&nbsp;</td>
-		</tr>
-		<tr>
-		    <td class="text-center valign-middle">
-			<div class="rating-value"></div>
-		    </td>
-		    <td class="valign-middle">
-			<div class="w100 center text-center rating-slider"></div>
-		    </td>
-		</tr>
-	    </table>
-	    <div class="nowrap text-right w100">
-		<a href="#" onclick="return false" class="button save-button">Save Feedback</a>
-		<a href="#" onclick="return false" class="button cancel-button">No Feedback</a>
+	    <div class="center ml1">
+		<div class="owner-links null" id="${slug}-owner-links">
+		    <ul>
+			<li class="null">
+			    <img src="/media/img/iconGo.png" width="16" height="16" />
+			    <a href="#" id="${slug}-join-game">Join Game</a>
+			</li>
+			<li>
+			    <img src="/media/img/iconSteam.png" />
+			    <a href="#" target="_new" id="${slug}-owner-view-steam-profile">View Steam Profile</a>
+			</li>
+			<li>
+			    <img src="/media/img/iconAddFriend.png" />
+			    <a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
+			</li>
+			<li>
+			    <img src="/media/img/iconChat.png" />
+			    <a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
+			</li>
+		    </ul>
+		</div>
 	    </div>
-	</div>
-    </div>
-</metal:macro>
-
-
-
-<!--
-
-profile badge
-
--->
-<metal:macro metal:define-macro="profile_badge" tal:define="slug slug | ''">
-    <div id="${slug}-badge" class="null badge">
-	<metal:def define-slot="header"></metal:def>
-	<div class="center text-center">
-	    <h1 class="mt05"><span id="${slug}-badge-title"></span></h1>
-	    <h2><span class="null" id="${slug}-is-you"></span></h2>
-	    <a href="#"><img id="${slug}-avatar" class="m1 profile-status" /></a>
-	    <div id="${slug}-badge-status" class=""></div>
-	    
-	</div>
-	<div class="center ml1">
-            <div class="owner-links null" id="${slug}-owner-links">
-		<ul>
-		    <li class="null">
-			<img src="/media/img/iconGo.png" width="16" height="16" />
-			<a href="#" id="${slug}-join-game">Join Game</a>
-		    </li>
-		    <li>
-			<img src="/media/img/iconSteam.png" />
-			<a href="#" target="_new" id="${slug}-owner-view-steam-profile">View Steam Profile</a>
-		    </li>
-		    <li>
-			<img src="/media/img/iconAddFriend.png" />
-			<a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
-		    </li>
-		    <li>
-			<img src="/media/img/iconChat.png" />
-			<a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
-		    </li>
-		</ul>
+	    <div class="mt1">
+		<label>Rating:</label>
+	    </div>
+	    <div class="center text-center mt05">
+		<table class="w100 rating" id="${slug}-rating">
+		    <tr>
+			<td class="w50">
+			    <div class="padding float-left"></div>
+			    <div class="float-right neg-bar" id="${slug}-neg-bar"></div>
+			    <div class="clear"></div>
+			</td>
+			<td>
+			    <div class="float-left pos-bar" id="${slug}-pos-bar"></div>
+			    <div class="float-right padding"></div>
+			    <div class="clear"></div>
+			</td>
+		    </tr>
+		    <tr>
+			<td class="w50">
+			    <div id="${slug}-neg-label" class="float-right mono">Negative</div>
+			</td>
+			<td>
+			    <div id="${slug}-pos-label" class="mono">Positive</div>
+			</td>
+		    </tr>
+		</table>
 	    </div>
 	</div>
-	<div class="mt1">
-	    <label>Rating:</label>
-	</div>
-	<div class="center text-center mt05">
-	    <table class="w100 rating" id="${slug}-rating">
-		<tr>
-		    <td class="w50">
-			<div class="padding float-left"></div>
-			<div class="float-right neg-bar" id="${slug}-neg-bar"></div>
-			<div class="clear"></div>
-		    </td>
-		    <td>
-			<div class="float-left pos-bar" id="${slug}-pos-bar"></div>
-			<div class="float-right padding"></div>
-			<div class="clear"></div>
-		    </td>
-		</tr>
-		<tr>
-		    <td class="w50">
-			<div id="${slug}-neg-label" class="float-right mono">Negative</div>
-		    </td>
-		    <td>
-			<div id="${slug}-pos-label" class="mono">Positive</div>
-		    </td>
-		</tr>
-	    </table>
-	</div>
-    </div>
-</metal:macro>
+    </metal:macro>
 
 
+    <!--
 
-<metal:macro metal:define-macro="currency_options">
-    <tal:loop tal:repeat="item controller.currency_types_encoded()">
-	<option value="${item[0]}">${item[1]}</option>
-    </tal:loop>
-</metal:macro>
+    currency_options: renders a sequence of option for a currency
+    select form element.
+
+    -->
+    <metal:macro metal:define-macro="currency_options">
+	<tal:loop tal:repeat="item controller.currency_types_encoded()">
+	    <option value="${item[0]}">${item[1]}</option>
+	</tal:loop>
+    </metal:macro>
 
 
 </metal:parts>

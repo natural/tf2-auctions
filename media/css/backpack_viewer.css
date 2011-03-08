@@ -1,0 +1,9 @@
+#backpack-viewer-search-value, #backpack-viewer-result-many-choose {
+width:24em;
+line-height:1em;
+padding:0.35em 1.5em 0.35em 0.25em;
+vertical-align:middle;
+}
+
+#backpack-viewer-search-value { width: 30em }
+

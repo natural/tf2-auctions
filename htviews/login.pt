@@ -1,60 +1,52 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com - Login</title>
-</head>
-<body>
-    <metal:fill fill-slot="main">
-	<div id="login-content" class="w40 center mt1">
-	    <div class="">
-		<h1><span class="hilite">&nbsp;</span>Safe and Secure Login</h1>
-
-		Click the link to sign in with your Steam account.
-		This site never gets your username or your password.
-
-		<div id="login-link" class="text-center mt1">
-		    <a href="${controller.login_url()}" title="Sign in through Steam">
-			<img alt="Sign in through Steam" width="118" height="51"
-			     src="http://steamcommunity.com/public/images/signinthroughsteam/sits_large_border.png" />
-		    </a>
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Login</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main">
+	    <div id="login-content" class="w40 center mt1">
+		<div class="">
+		    <h1><span class="hilite">&nbsp;</span>Safe and Secure Login</h1>
+		    Click the link to sign in with your Steam account.
+		    This site never gets your username or your password.
+		    <div id="login-link" class="text-center mt1">
+			<a href="${controller.login_url()}" title="Sign in through Steam">
+			    <img alt="Sign in through Steam" width="118" height="51"
+				 src="http://steamcommunity.com/public/images/signinthroughsteam/sits_large_border.png" />
+			</a>
+		    </div>
+		</div>
+		<div class="m1 w100 center" style="margin:5em auto 0 auto;">
+		    <h3 class="mt2">Q:  Is it safe?  A:  Yes, it's safe.</h3>
+		    <p class="mt05">
+			You don't log into this site directly, you log into the Steam Community at
+			<a class="nice" target="_new"
+			   href="https://steamcommunity.com">steamcommunity.com</a>.
+			That's a Valve web server.  That's where you enter
+			your username and password.  You never, ever enter
+			your username and password on this site.  Click
+			the login link to see for yourself.  If you're
+			using a modern web browser, you'll notice that the
+			login page is secure.  Nifty, huh?
+		    </p>
+		    <h3 class="mt2">Q:  No, really, is it safe?  A:  Yes, really, it's safe.</h3>
+		    <p class="mt05">
+			When you enter your username and password on
+			<a class="nice" target="_new" href="https://steamcommunity.com">steamcommunity.com</a>,
+			only that site gets it.  We use a technology
+			called <a class="nice" target="_new" href="http://en.wikipedia.org/wiki/OpenID">OpenID</a> 
+			to communicate with the Valve servers.  Those
+			Valve servers tell us your Steam ID and that
+			you're cool, and that's all.  No passwords, no emails, nothin.
+		    </p>
+		    <h3 class="mt2">But I don't think it's safe cause my bro said sometimes the intertubes eat computers and stuff.</h3>
+		    <p class="mt05">
+			Yeah, I heard that, too.  But you don't have to
+			trust me, you believe whatever you want, bro.  If you're not gonna log in here,
+			you might like <a href="http://images.google.com/images?q=trollface">some cool pictures</a>.
+		    </p>
 		</div>
 	    </div>
-
-	    <div class="m1 w100 center" style="margin:5em auto 0 auto;">
-		<h3 class="mt2">Q:  Is it safe?  A:  Yes, it's safe.</h3>
-		<p class="mt05">
-
-		    You don't log into this site directly, you log into the Steam Community at
-		    <a class="nice" target="_new"
-		    href="https://steamcommunity.com">steamcommunity.com</a>.
-		    That's a Valve web server.  That's where you enter
-		    your username and password.  You never, ever enter
-		    your username and password on this site.  Click
-		    the login link to see for yourself.  If you're
-		    using a modern web browser, you'll notice that the
-		    login page is secure.  Nifty, huh?
-		</p>
-
-		<h3 class="mt2">Q:  No, really, is it safe?  A:  Yes, really, it's safe.</h3>
-		<p class="mt05">
-		    When you enter your username and password on
-		    <a class="nice" target="_new" href="https://steamcommunity.com">steamcommunity.com</a>,
-		    only that site gets it.  We use a technology
-		    called <a class="nice" target="_new" href="http://en.wikipedia.org/wiki/OpenID">OpenID</a> 
-		    to communicate with the Valve servers.  Those
-		    Valve servers tell us your Steam ID and that
-		    you're cool, and that's all.  No passwords, no emails, nothin.
-		</p>
-
-		<h3 class="mt2">But I don't think it's safe cause my bro said sometimes the intertubes eat computers and stuff.</h3>
-		<p class="mt05">
-		    Yeah, I heard that, too.  But you don't have to
-		    trust me, you believe whatever you want, bra.  If you're not gonna log in here,
-		    you might like <a href="http://images.google.com/images?q=trollface">some cool pictures</a>.
-		</p>
-	    </div>
-
-
-	</div>
-    </metal:fill>
-</body>
+	</metal:fill>
+    </body>
 </html>

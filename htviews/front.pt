@@ -1,100 +1,91 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com - Get Stuff for TF2</title>
-</head>
-<body>
-    <metal:fill fill-slot="main" tal:define="slug 'front'">
-
-
-	<div id="${slug}-col2" class="float-right" style="min-width:33%; max-width:45%">
-	    <div id="${slug}-no-auth" class="null mb1">
-		<h1>Lookin to Trade?</h1>
-		<div class="mt05">You've gotta login to bid or make listing.</div>
-	    </div>
-
-	    <div id="${slug}-auth" class="null">
-		<h1>Welcome!</h1>
-		<div class="mb1">
-		    Now that you're logged in, you can create listings and
-		    bids.
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Get Stuff for TF2</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'front'">
+	    <div id="${slug}-col2" class="float-right w40">
+		<div id="${slug}-no-auth" class="null mb1">
+		    <h1>Lookin to Trade?</h1>
+		    <div class="mt05">You've gotta login to bid or make listing.</div>
 		</div>
-	    </div>
-
-	    <div class="null w100" id="featured-listings-pod">
-		<metal:include use-macro="context.view_parts.macros.listings_large"
-		     tal:define="slug 'featured'; rows 2; cols 5;">
-		    <metal:fill fill-slot="items-header-label">
-			<h2 class="hi2">Featured Listing!</h2>
-		    </metal:fill>
-		    <metal:fill fill-slot="bottom">
-			<div class="tools">
-			    <div class="navs build-font text-right nowrap mt05 mb05">
-				<span class="mb1 null seenav">See more:</span>
-				<span class="nonav prev null">&lt;</span>
-				<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
-				<span class="nonav next null">&gt;</span>
-				<span class="nav next null"><a onclick="return false" href="#">&gt;</a></span>
-			    </div>
-			</div>
-		    </metal:fill>
-                </metal:include>
-	    </div>
-
-	    <div id="${slug}-new-listings-pod" class="null">
-		<h2 class="null mb05" id="${slug}-no-listings"></h2>
-		<h2 class="null mb05" id="${slug}-some-listings"></h2>
-		<div class="" id="${slug}-results-pod">
-		    <metal:include use-macro="context.view_parts.macros.listings_large"
-			 tal:define="rows 2; cols 5; slug 'new-listings';">
-			<metal:fill fill-slot="bottom">
-			    <div class="pl05 pt025 pr05 text-right pr">
-				<span class="av">
-				    <a href="#"><span class="av"></span></a>
-				    <a href="#"><img class="av" /></a>
-				</span>
-			    </div>
-			</metal:fill>
-		    </metal:include>
-		</div>
-	    </div>
-	</div>
-
-	<div id="${slug}-news-blog-pod" class="float-left" style="min-width:22em; max-width:55%">
-	    <div id="${slug}-blog" class="null mb1">
-		<div class="blog-seed null prototype mb1">
-		    <label><span class="blog-title-seed"></span></label>
-		    <div class="blog-intro-seed"></div>
-		    <div class="blog-encoded-seed"></div>
-		</div>
-		<h1 class="mb05"><span class="hilite">&nbsp;</span>Site News</h1>
-            </div>
-	    <div id="${slug}-news" class="null mb1">
-		<div class="news-seed null prototype mb1">
-		    <label>
-			<a target="_new" href="#"><span class="news-title-seed"></span></a>
-			<span class="news-author-seed"></span>
-		    </label>
-		    <div>
-			<p class="news-contents-seed">
-			    <small class="ml1"><a class="" target="_new" href="#"></a></small>
-			</p>
+		<div id="${slug}-auth" class="null">
+		    <h1>Welcome!</h1>
+		    <div class="mb1">
+			Now that you're logged in, you can create
+			listings and bids.
 		    </div>
 		</div>
-		<h1 class="mb05"><span class="hilite">&nbsp;</span>TF2 News</h1>
+		<div class="null w100" id="featured-listings-pod">
+		    <metal:include use-macro="context.view_parts.macros.listings_large"
+				   tal:define="slug 'featured'; rows 2; cols 5;">
+			<metal:fill fill-slot="items-header-label">
+			    <h2 class="hi2">Featured Listing!</h2>
+			</metal:fill>
+			<metal:fill fill-slot="bottom">
+			    <div class="tools">
+				<div class="navs build-font text-right nowrap mt05 mb05">
+				    <span class="mb1 null seenav">See more:</span>
+				    <span class="nonav prev null">&lt;</span>
+				    <span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
+				    <span class="nonav next null">&gt;</span>
+				    <span class="nav next null"><a onclick="return false" href="#">&gt;</a></span>
+				</div>
+			    </div>
+			</metal:fill>
+                    </metal:include>
+		</div>
+		<div id="${slug}-new-listings-pod" class="null">
+		    <h2 class="null mb05" id="${slug}-no-listings"></h2>
+		    <h2 class="null mb05" id="${slug}-some-listings"></h2>
+		    <div class="" id="${slug}-results-pod">
+			<metal:include use-macro="context.view_parts.macros.listings_large"
+				       tal:define="rows 2; cols 5; slug 'new-listings';">
+			    <metal:fill fill-slot="bottom">
+				<div class="pl05 pt025 pr05 text-right pr">
+				    <span class="av">
+					<a href="#"><span class="av"></span></a>
+					<a href="#"><img class="av" /></a>
+				    </span>
+				</div>
+			    </metal:fill>
+			</metal:include>
+		    </div>
+		</div>
 	    </div>
-	</div>
-	<div class="clear"></div>
-
-
-	<div id="${slug}-stats" class="null mb1">
-	    <h2>Some Silly Site Stats:</h2>
-	    <h4>Players: <span id="${slug}-players"></span></h4>
-	    <h4>Listings: <span id="${slug}-listings"></span></h4>
-	    <h4>Listed Items: <span id="${slug}-listing-items"></span></h4>
-	    <h4>Bids: <span id="${slug}-bids"></span></h4>
-	    <h4>Bid Items: <span id="${slug}-bid-items"></span></h4>
-	</div>
-
-    </metal:fill>
-</body>
+	    <div id="${slug}-news-blog-pod" class="float-left w59">
+		<div id="${slug}-blog" class="null mb1">
+		    <div class="blog-seed null prototype mb1">
+			<label><span class="blog-title-seed"></span></label>
+			<div class="blog-intro-seed"></div>
+			<div class="blog-encoded-seed"></div>
+		    </div>
+		    <h1 class="mb05"><span class="hilite">&nbsp;</span>Site News</h1>
+		</div>
+		<div id="${slug}-news" class="null mb1">
+		    <div class="news-seed null prototype mb1">
+			<label>
+			    <a target="_new" href="#"><span class="news-title-seed"></span></a>
+			    <span class="news-author-seed"></span>
+			</label>
+			<div>
+			    <p class="news-contents-seed">
+				<small class="ml1"><a class="" target="_new" href="#"></a></small>
+			    </p>
+			</div>
+		    </div>
+		    <h1 class="mb05"><span class="hilite">&nbsp;</span>TF2 News</h1>
+		</div>
+	    </div>
+	    <div class="clear"></div>
+	    <div id="${slug}-stats" class="null mb1">
+		<h2>Some Silly Site Stats:</h2>
+		<h4>Players: <span id="${slug}-players"></span></h4>
+		<h4>Listings: <span id="${slug}-listings"></span></h4>
+		<h4>Listed Items: <span id="${slug}-listing-items"></span></h4>
+		<h4>Bids: <span id="${slug}-bids"></span></h4>
+		<h4>Bid Items: <span id="${slug}-bid-items"></span></h4>
+	    </div>
+	</metal:fill>
+    </body>
 </html>

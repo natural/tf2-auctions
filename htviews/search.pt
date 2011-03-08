@@ -1,148 +1,133 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com - Search</title>
-</head>
-<body>
-<metal:fill fill-slot="main" tal:define="slug 'search'">
-
-
-    <div id="${slug}-pod" class="w75 pt05 desc center">
-	<div id="${slug}-controls" class="null build-font float-left w15 controls">
-	    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search</span></h1>
-
-	    <div id="${slug}-controls-nav">
-		<h2>Page:</h2>
-		<div class="tools" id="${slug}-nav">
-		    <div class="navs text-left ml1 build-font nowrap">
-			<span class="nonav" id="${slug}-prev-none">&lt;</span>
-			<span class="nav" id="${slug}-prev-link"><a href="" id="${slug}-prev">&lt;</a></span>
-			<span class="nav" id="${slug}-next-link"><a href="" id="${slug}-next">&gt;</a></span>
-			<span class="nonav" id="${slug}-next-none">&gt;</span>
-		    </div>
-		</div>
-	    </div>
-
-	    <div class="null" id="${slug}-advanced-pod">
-		<div class="help mb1">
-		    Search for listings with specific items with this
-		    thing that kinda looks like a backpack.
-		</div>
-		<div class="ov">
-		    <label>Tradable Items:</label>
-		    <span class="help">Drag items to the search area below.  Double click works, too.
-		    </span>
-		    <metal:include
-			 tal:define="slug 'ac'"
-			 metal:use-macro="context.view_parts.macros.backpack_slim" />
-		    <label>Your Search:</label>
-		    <span class="help">Double click an item to remove it or
-			<a href="#" id="${slug}-advanced-reset" onclick="return false">remove all</a>.
-		    </span>
-		    <metal:include
-			 tal:define="slug 'advanced-search'; rows 1; cols 4"
-			 metal:use-macro="context.view_parts.macros.chooser" />
-		</div>
-	    </div>
-
-	    <div class="null" id="${slug}-reverse-pod">
-		<div class="help mb1">
-		    Search for listings by minimum bid with this handy dandy backpack dohicky.
-		</div>
-		<div class="ov">
-		    <label>Tradable Items:</label>
-		    <span class="help">Drag items to the search area below.  Double click works, too.
-		    </span>
-		    <metal:include
-			 tal:define="slug 'rv'"
-			 metal:use-macro="context.view_parts.macros.backpack_slim" />
-		    <label>Your Search:</label>
-		    <span class="help">Double click an item to remove it or
-			<a href="#" id="${slug}-reverse-reset" onclick="return false">remove all</a>.
-		    </span>
-		    <metal:include
-			 tal:define="slug 'reverse-search'; rows 1; cols 4"
-			 metal:use-macro="context.view_parts.macros.chooser" />
-		</div>
-	    </div>
-
-	    <div id="${slug}-basic-link-pod" class="null mt1 mb1">
-		<a id="${slug}-basic-link" href="#" class="small-button"
-		   onclick="return false">Back to Basic Search &lt;&lt;</a>
-	    </div>
-
-
-            <div id="${slug}-filters"><h2>Filters:</h2> <div id="${slug}-filter-inputs"></div></div>
-	    <div id="${slug}-sorts" class="mt1"><h2>Sort:</h2> <div id="${slug}-sort-inputs"></div></div>
-
-	    <div id="${slug}-advanced-link-pod" class="mt2">
-		<a id="${slug}-advanced-link" onclick="return false"
-		   href="#" class="small-button">Advanced &gt;&gt;</a>
-		<div class="help mt1">
-		    Use the "Advanced" search feature to find listings
-		    with a specific item or items.
-		</div>
-	    </div>
-
-	    <div id="${slug}-reverse-link-pod" class="mt2">
-		<a id="${slug}-reverse-link" onclick="return false"
-		   href="#" class="small-button">Reverse &gt;&gt;</a>
-		<div class="help mt1">
-		    Use the "Reverse" search feature to find listings by minimum bid.
-		</div>
-	    </div>
-
-
-
-	</div>
-
-	<div id="${slug}-listing-pod" class="ml1 float-left w83">
-	    <div class="null w100 mb1" id="featured-listings-pod">
-		<metal:include use-macro="context.view_parts.macros.listings_large"
-		     tal:define="slug 'featured'; rows 2; cols 5;">
-		    <metal:fill fill-slot="bottom">
-			<div class="tools">
-			    <div class="navs build-font text-right nowrap mt05 mb05">
-				<span class="mb1">More Featured Listings:</span>
-				<span class="nonav prev null">&lt;</span>
-				<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
-				<span class="nonav next null">&gt;</span>
-				<span class="nav next null"><a onclick="return false" href="#">&gt;</a></span>
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Search</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'search'">
+	    <div id="${slug}-pod" class="w75 pt05 desc center">
+		<div id="${slug}-controls" class="null build-font float-left w15 controls">
+		    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search</span></h1>
+		    <div id="${slug}-controls-nav">
+			<h2>Page:</h2>
+			<div class="tools" id="${slug}-nav">
+			    <div class="navs text-left ml1 build-font nowrap">
+				<span class="nonav" id="${slug}-prev-none">&lt;</span>
+				<span class="nav" id="${slug}-prev-link"><a href="" id="${slug}-prev">&lt;</a></span>
+				<span class="nav" id="${slug}-next-link"><a href="" id="${slug}-next">&gt;</a></span>
+				<span class="nonav" id="${slug}-next-none">&gt;</span>
 			    </div>
 			</div>
-		    </metal:fill>
-                </metal:include>
-	    </div>
-
-	    <h2 class="null" id="${slug}-no-listings"></h2>
-	    <h2 class="null mb05" id="${slug}-some-listings"></h2>
-	    <div class="w100" id="${slug}-results-pod">
-		<metal:include use-macro="context.view_parts.macros.listings_large"
-		     tal:define="slug 'search'; rows 2; cols 5">
-			<metal:fill fill-slot="bottom">
-			    <div class="pl05 pt025 pr05 text-right pr">
-				<span class="av">
-				    <a href="#"><span class="av"></span></a>
-				    <a href="#"><img class="av" /></a>
-				</span>
-			    </div>
-			</metal:fill>
-		</metal:include>
-		<div class="w100 null" id="${slug}-nav-extra">
-		    <div class="float-right tools w100" id="${slug}-bottom-nav">
-			<div class="navs text-right build-font nowrap">
-			<span class="nonav" id="${slug}-bottom-prev-none">&lt;</span>
-			<span class="nav" id="${slug}-bottom-prev-link"><a href="" id="${slug}-bottom-prev">&lt;</a></span>
-			<span class="nav" id="${slug}-bottom-next-link"><a href="" id="${slug}-bottom-next">&gt;</a></span>
-			<span class="nonav" id="${slug}-bottom-next-none">&gt;</span>
+		    </div>
+		    <div class="null" id="${slug}-advanced-pod">
+			<div class="help mb1">
+			    Search for listings with specific items with this
+			    thing that kinda looks like a backpack.
+			</div>
+			<div class="ov">
+			    <label>Tradable Items:</label>
+			    <span class="help">
+				Drag items to the search area below.
+				Double click works, too.
+			    </span>
+			    <metal:include
+				 tal:define="slug 'ac'"
+				 metal:use-macro="context.view_parts.macros.backpack_slim" />
+			    <label>Your Search:</label>
+			    <span class="help">Double click an item to remove it or
+				<a href="#" id="${slug}-advanced-reset" onclick="return false">remove all</a>.
+			    </span>
+			    <metal:include
+				 tal:define="slug 'advanced-search'; rows 1; cols 4"
+				 metal:use-macro="context.view_parts.macros.chooser" />
 			</div>
 		    </div>
-		    <div class="clear"></div>
+		    <div class="null" id="${slug}-reverse-pod">
+			<div class="help mb1">
+			    Search for listings by minimum bid with this handy dandy backpack dohicky.
+			</div>
+			<div class="ov">
+			    <label>Tradable Items:</label>
+			    <span class="help">Drag items to the search area below.  Double click works, too.
+			    </span>
+			    <metal:include
+				 tal:define="slug 'rv'"
+				 metal:use-macro="context.view_parts.macros.backpack_slim" />
+			    <label>Your Search:</label>
+			    <span class="help">Double click an item to remove it or
+				<a href="#" id="${slug}-reverse-reset" onclick="return false">remove all</a>.
+			    </span>
+			    <metal:include
+				 tal:define="slug 'reverse-search'; rows 1; cols 4"
+				 metal:use-macro="context.view_parts.macros.chooser" />
+			</div>
+		    </div>
+		    <div id="${slug}-basic-link-pod" class="null mt1 mb1">
+			<a id="${slug}-basic-link" href="#" class="small-button"
+			   onclick="return false">Back to Basic Search &lt;&lt;</a>
+		    </div>
+		    <div id="${slug}-filters"><h2>Filters:</h2> <div id="${slug}-filter-inputs"></div></div>
+		    <div id="${slug}-sorts" class="mt1"><h2>Sort:</h2> <div id="${slug}-sort-inputs"></div></div>
+		    <div id="${slug}-advanced-link-pod" class="mt2">
+			<a id="${slug}-advanced-link" onclick="return false"
+			   href="#" class="small-button">Advanced &gt;&gt;</a>
+			<div class="help mt1">
+			    Use the "Advanced" search feature to find listings
+			    with a specific item or items.
+			</div>
+		    </div>
+		    <div id="${slug}-reverse-link-pod" class="mt2">
+			<a id="${slug}-reverse-link" onclick="return false"
+			   href="#" class="small-button">Reverse &gt;&gt;</a>
+			<div class="help mt1">
+			    Use the "Reverse" search feature to find listings by minimum bid.
+			</div>
+		    </div>
+		</div>
+		<div id="${slug}-listing-pod" class="ml1 float-left w83">
+		    <div class="null w100 mb1" id="featured-listings-pod">
+			<metal:include use-macro="context.view_parts.macros.listings_large"
+				       tal:define="slug 'featured'; rows 2; cols 5;">
+			    <metal:fill fill-slot="bottom">
+				<div class="tools">
+				    <div class="navs build-font text-right nowrap mt05 mb05">
+					<span class="mb1">More Featured Listings:</span>
+					<span class="nonav prev null">&lt;</span>
+					<span class="nav prev null"><a onclick="return false" href="#">&lt;</a></span>
+					<span class="nonav next null">&gt;</span>
+					<span class="nav next null"><a onclick="return false" href="#">&gt;</a></span>
+				    </div>
+				</div>
+			    </metal:fill>
+			</metal:include>
+		    </div>
+		    <h2 class="null" id="${slug}-no-listings"></h2>
+		    <h2 class="null mb05" id="${slug}-some-listings"></h2>
+		    <div class="w100" id="${slug}-results-pod">
+			<metal:include use-macro="context.view_parts.macros.listings_large"
+				       tal:define="slug 'search'; rows 2; cols 5">
+			    <metal:fill fill-slot="bottom">
+				<div class="pl05 pt025 pr05 text-right pr">
+				    <span class="av">
+					<a href="#"><span class="av"></span></a>
+					<a href="#"><img class="av" /></a>
+				    </span>
+				</div>
+			    </metal:fill>
+			</metal:include>
+			<div class="w100 null" id="${slug}-nav-extra">
+			    <div class="float-right tools w100" id="${slug}-bottom-nav">
+				<div class="navs text-right build-font nowrap">
+				    <span class="nonav" id="${slug}-bottom-prev-none">&lt;</span>
+				    <span class="nav" id="${slug}-bottom-prev-link"><a href="" id="${slug}-bottom-prev">&lt;</a></span>
+				    <span class="nav" id="${slug}-bottom-next-link"><a href="" id="${slug}-bottom-next">&gt;</a></span>
+				    <span class="nonav" id="${slug}-bottom-next-none">&gt;</span>
+				</div>
+			    </div>
+			    <div class="clear"></div>
+			</div>
+		    </div>
 		</div>
 	    </div>
-	</div>
-
-    </div>
-
-</metal:fill>
-</body>
+	</metal:fill>
+    </body>
 </html>

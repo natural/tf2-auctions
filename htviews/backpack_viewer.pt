@@ -1,46 +1,33 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com - Backpack Viewer</title>
-</head>
-<body>
-    <metal:fill fill-slot="main" tal:define="slug 'backpack-viewer'">
-	<style type="text/css">
-	    #${slug}-search-value,
-	    #${slug}-result-many-choose {
-	        width:24em;
-	        line-height:1em;
-                padding:0.35em 1.5em 0.35em 0.25em;
-                vertical-align:middle;
-	    }
-	    #${slug}-search-value { width: 30em }
-	</style>
-
-	<div id="${slug}-content-pod">
-	    <div class="mt1 w49 center" id="${slug}-search-controls">
-		<input type="text" id="${slug}-search-value" /><a href="#" class="ml1 button small-button" onclick="return false" id="${slug}-search">Search</a>
-
-		<span id="${slug}-result-summary" class="">
-		    <span class="" id="${slug}-result-none"></span>
-		    <span class="" id="${slug}-result-one"></span>
-		    <span class="ml1 null" id="${slug}-result-many">
-			<span id="${slug}-result-many-label"></span>
-			<select class="" id="${slug}-result-many-choose"></select>
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Backpack Viewer</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'backpack-viewer'">
+	    <div id="${slug}-content-pod">
+		<div class="mt1 w49 center" id="${slug}-search-controls">
+		    <input type="text" id="${slug}-search-value" />
+		    <a href="#" class="ml1 button small-button"
+		       onclick="return false" id="${slug}-search">Search</a>
+		    <span id="${slug}-result-summary" class="">
+			<span class="" id="${slug}-result-none"></span>
+			<span class="" id="${slug}-result-one"></span>
+			<span class="ml1 null" id="${slug}-result-many">
+			    <span id="${slug}-result-many-label"></span>
+			    <select class="" id="${slug}-result-many-choose"></select>
+			</span>
 		    </span>
-		</span>
-	    </div>
-
-
-	    <div id="${slug}-backpack-pod">
-		<h1 class="mt1"><span id="${slug}-backpack-title"></span></h1>
-		<div class="mt05 center w100 null ov" id="${slug}-backpack-inner">
-		    <h2 class="null" id="${slug}-backpack-none"></h2>
+		</div>
+		<div id="${slug}-backpack-pod">
+		    <h1 class="mt1"><span id="${slug}-backpack-title"></span></h1>
+		    <div class="mt05 center w100 null ov" id="${slug}-backpack-inner">
+			<h2 class="null" id="${slug}-backpack-none"></h2>
 			<metal:include
 			     tal:define="include_unplaced True; slug 'bv'; "
 			     metal:use-macro="context.view_parts.macros.backpack_full" />
+		    </div>
 		</div>
 	    </div>
-
-	</div>
-    </metal:fill>
-</body>
+	</metal:fill>
+    </body>
 </html>

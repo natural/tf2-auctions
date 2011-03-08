@@ -417,7 +417,7 @@ var SettingsView = oo.view.extend({
 	$.each(oo.keys(settings), function(index, key) {
 	    var value = settings[key], pkey = 'profile-{0}'.fs(key)
 	    if (typeof(value) == 'boolean') {
-		$('#'+pkey).attr('checked', value)
+		$('#'+pkey).attr('checked', value).trigger('change')
 	    }
 	    if (typeof(value) == 'string') {
 		$('#'+pkey).val(value)
@@ -521,6 +521,14 @@ var SettingsControllerDefn = {
 	    var msg = 'unknown error.  this is bad.'
 	}
 	this.view.saveError(msg)
+    },
+
+    toggleLiteSalad: function(b) {
+	$('#profile-angry-fruit-salad-lite').attr('disabled', !b).parent().css('opacity', b ? 1 : 0.5)
+    },
+
+    '#profile-angry-fruit-salad change' : function(e) {
+	e.controller.toggleLiteSalad(e.target.checked)
     },
 
     '#profile-notify-bids click' : function(e) { e.controller.validateNotifyBids() },
@@ -631,7 +639,6 @@ var MainController = oo.controller.extend({
 	// force scroll on document load in case there is a hash
 	document.body.scrollTop = 0
     }
-
 })
 
 

@@ -1,13 +1,13 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">Not Found</title>
-</head>
-<body>
-    <metal:lol fill-slot="main">
-	<div class="text-center">
-	    <h1>404 Not Found</h1>
-	    <h1>LOL</h1>
-	 </div>
-    </metal:lol>
-</body>
+    <head>
+	<title metal:fill-slot="title">Not Found</title>
+    </head>
+    <body>
+	<metal:lol fill-slot="main">
+	    <div class="text-center">
+		<h1>404 Not Found</h1>
+		<h1>LOL</h1>
+	    </div>
+	</metal:lol>
+    </body>
 </html>

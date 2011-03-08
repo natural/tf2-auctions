@@ -35,6 +35,14 @@ class PlayerSettings(db.Expando, UserId64Mixin):
 		    When enabled, you will get an email message when
 		    someone bids on your listings."""
 	    },
+	    {
+		'id':'notify-winning-bid', 'type':bool, 'label':'Notify Me When My Bid Wins',
+		'widget':'checkbox', 'default':False,
+		'help':"""
+		    When enabled, you will get an email message when
+		    one of your bid wins an auction."""
+	    },
+
         ]),
 
 	('User Interface', [
@@ -72,6 +80,30 @@ class PlayerSettings(db.Expando, UserId64Mixin):
 		    like the in-game interface.
 		"""
 	    },
+
+	    {
+		'id':'angry-fruit-salad-lite', 'type':bool, 'label':'Color Only Borders When Coloring By Rarity',
+		'widget':'checkbox', 'default':False,
+		'help':"""
+		    When enabled, backpack items will be bordered but
+		    not shaded with their specific rarity color. This
+		    only applies if you enable 'Color Items By Rarity'
+		    above.
+		"""
+	    },
+
+	    {
+		'id':'unusual-item-background', 'type':bool, 'label':'Show Unusual Item Effects',
+		'widget':'checkbox', 'default':False,
+		'help':"""
+		    When enabled, backpack items with unusual effects
+                    will show a background image in addition to the
+                    item image.
+		"""
+	    },
+
+
+
 	]),
 
     ]

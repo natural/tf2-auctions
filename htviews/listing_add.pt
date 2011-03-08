@@ -1,150 +1,139 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com -- Add Listing</title>
-</head>
-<body>
-    <metal:main fill-slot="main" tal:define="slug 'listing-add'">
-	<h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Add a New Listing</h1>
-
-	<div class="null center text-center" id="${slug}-after-cancel">
-	    Well, that's too bad.  You can <a href="/listing/add"
-	    class="nice">try again</a> or visit another part of the
-	    site using the links above.
-	</div>
-
-
-	<div class="ov null" id="${slug}-own-backpack">
-	    <metal:include
-		 tal:define="include_unplaced True; slug 'a'"
-		 metal:use-macro="context.view_parts.macros.backpack_slim" />
-	    <metal:include
-		 tal:define="slug slug+'-item'"
-		 metal:use-macro="context.view_parts.macros.chooser" />
-	    <div id="${slug}-fields" class="center any-slim">
-		<label class="mt05" for="${slug}-fields">Description:</label>
-		<div class="message null"><div class="error" id="${slug}-description-error"></div></div>
-		<textarea class="mb1" id="${slug}-description" name="${slug}-description"></textarea>
-		<label class="mt05" for="${slug}-duration">Duration:</label>
-		<div class="message null"><div class="error" id="${slug}-duration-slider-error"></div></div>
-		<div class="center">
-		    <div id="${slug}-duration" class="w20 float-left">15 days</div>
-		    <div id="${slug}-duration-slider" name="duration" class="w75 float-right mt05 mb1"></div>
-		    <div class="clear"></div>
-		</div>
-
-		<div id="${slug}-min-bid-wrapper-pod">
-		<div class="center">
-		    <label class="mt05" for="${slug}-min-bid" id="${slug}-min-bid-label">
-			Minimum Bid Items (Optional):
-		    </label>
-                </div>
-		<div class="center text-center mt05">
-		    <span id="${slug}-min-bid-show"><a href="#" class="nice">Click to Show Items</a></span>
-		</div>
-		<div class="null" id="${slug}-min-bid-pod">
-		    <div class="" id="${slug}-min-bid">
-			<metal:include
-			     tal:define="slug 'mb'"
-			     metal:use-macro="context.view_parts.macros.backpack_slim" />
-			<label id="${slug}-min-bid-title" class="center any-slim mt05">
-			    Minimum Bid <span id="${slug}-min-bid-title-extra">(0 items)</span>
-			</label>
-			<metal:include
-			     tal:define="slug 'listing-add-min-bid'"
-			     metal:use-macro="context.view_parts.macros.chooser" />
-		    </div>
-		</div>
-		</div>
-
-
-		<div class="notnullyet msg mt2" id="${slug}-subscriber-pod">
-		    <div class="information p1">
-			<label class="center text-center">Premium Subscriber Features</label>
-
-			<label class="mt1">
-			    <input type="checkbox" name="${slug}-min-bid-currency-use"
-				   id="${slug}-min-bid-currency-use" />
-			    Auction for Currency (Optional)
-			</label>
-			<div class="help mb05">
-			    Check the box above to enter a currency
-			    amount for bids.  Your listing can only
-			    have one type of minimum bid (currency
-			    amount or items, not both).
-			</div>
-
-			<div class="mb1" id="${slug}-min-bid-currency-pod">
-			    <table class="ml1 cp05">
-				<tr>
-				    <td>Starting Bid:</td>
-				    <td>
-					<input id="${slug}-min-bid-currency-amount"
-					       class="text-right mono w100" type="text"
-					       name="${slug}-min-bid-currency-amount"
-					       disabled="disabled"
-					       value="0.00" />
-				    </td>
-				</tr>
-				<tr>
-				    <td>Currency:</td>
-				    <td>
-					<select id="${slug}-min-bid-currency-type"
-						class="w100 mono" disabled="disabled">
-					    <metal:include
-						 use-macro="context.view_parts.macros.currency_options" />
-					</select>
-				    </td>
-				</tr>
-			    </table>
-			</div>
-
-			<label class="mt1">
-			    <input type="checkbox" name="${slug}-feature-listing"
-				   id="${slug}-feature-listing" />
-			    Make Featured Listing (Optional)
-			</label>
-			<div class="help">
-			    Check the box above if you would like your
-			    listing to be featured on the first page
-			    and in search results.
-			</div>
-
-		    </div>
-		</div>
-
-
-		<div class="center mt2 any-slim">
-		    <label class="mt05" for="" id="${slug}-terms-desc">Site Rules, Terms and Conditions:</label>
-		    <div class="message null"><div class="error" id="${slug}-terms-error"></div></div>
-		    <div class="mt05">
-			<input type="checkbox" id="${slug}-terms" />
-			I Agree to
-                        <span>
-			    <a href="#" class="nice" id="${slug}-show-terms">the Site Rules and Terms of Use</a>.
-			</span>
-		    </div>
-		</div>
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com -- Add Listing</title>
+    </head>
+    <body>
+	<metal:main fill-slot="main" tal:define="slug 'listing-add'">
+	    <h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Add a New Listing</h1>
+	    <div class="null center text-center" id="${slug}-after-cancel">
+		Well, that's too bad.  You can <a href="/listing/add"
+		class="nice">try again</a> or visit another part of the
+		site using the links above.
 	    </div>
-	    <div id="${slug}-buttons" class="center text-center m2">
-		<span class="mr05">
-		    <a href="#" id="${slug}-submit" class="button">Yep, I'm Sure!  Post It!</a>
-		</span>
-		<span class="">
-		    <a href="#" id="${slug}-cancel" class="button">Cancel</a>
-		</span>
-	    </div>
-	    <div id="${slug}-response" class="center text-center">
-		<div id="${slug}-working" class="m1 null"></div>
-		<div id="${slug}-success" class="m1 null">
+	    <div class="ov null" id="${slug}-own-backpack">
+		<metal:include
+		    tal:define="include_unplaced True; slug 'a'"
+		    metal:use-macro="context.view_parts.macros.backpack_slim" />
+		<metal:include
+		    tal:define="slug slug+'-item'"
+		    metal:use-macro="context.view_parts.macros.chooser" />
+		<div id="${slug}-fields" class="center any-slim">
+		    <label class="mt05" for="${slug}-fields">Description:</label>
+		    <div class="message null"><div class="error" id="${slug}-description-error"></div></div>
+		    <textarea class="mb1" id="${slug}-description" name="${slug}-description"></textarea>
+		    <label class="mt05" for="${slug}-duration">Duration:</label>
+		    <div class="message null"><div class="error" id="${slug}-duration-slider-error"></div></div>
+		    <div class="center">
+			<div id="${slug}-duration" class="w20 float-left">15 days</div>
+			<div id="${slug}-duration-slider" name="duration" class="w75 float-right mt05 mb1"></div>
+			<div class="clear"></div>
+		    </div>
+		    <div id="${slug}-min-bid-wrapper-pod">
+			<div class="center">
+			    <label class="mt05" for="${slug}-min-bid" id="${slug}-min-bid-label">
+				Minimum Bid Items (Optional):
+			    </label>
+			</div>
+			<div class="center text-center mt05">
+			    <span id="${slug}-min-bid-show"><a href="#" class="nice">Click to Show Items</a></span>
+			</div>
+			<div class="null" id="${slug}-min-bid-pod">
+			    <div class="" id="${slug}-min-bid">
+				<metal:include
+				    tal:define="slug 'mb'"
+				    metal:use-macro="context.view_parts.macros.backpack_slim" />
+				<label id="${slug}-min-bid-title" class="center any-slim mt05">
+				    Minimum Bid <span id="${slug}-min-bid-title-extra">(0 items)</span>
+				</label>
+				<metal:include
+				    tal:define="slug 'listing-add-min-bid'"
+				    metal:use-macro="context.view_parts.macros.chooser" />
+			    </div>
+			</div>
+		    </div>
+		    <div class="notnullyet msg mt2" id="${slug}-subscriber-pod">
+			<div class="information p1">
+			    <label class="center text-center">Premium Subscriber Features</label>
+			    <label class="mt1">
+				<input type="checkbox" name="${slug}-min-bid-currency-use"
+				       id="${slug}-min-bid-currency-use" />
+				Auction for Money (Optional)
+			    </label>
+			    <div class="help mb05">
+				Check the box above to require a
+				monetary amount for bids.  Your
+				listing can only have one type of
+				minimum bid (money or items, not
+				both).
+			    </div>
+			    <div class="mb1" id="${slug}-min-bid-currency-pod">
+				<table class="ml1 cp05">
+				    <tr>
+					<td>Starting Bid:</td>
+					<td>
+					    <input id="${slug}-min-bid-currency-amount"
+						   class="text-right mono w100" type="text"
+						   name="${slug}-min-bid-currency-amount"
+						   disabled="disabled"
+						   value="0.00" />
+					</td>
+				    </tr>
+				    <tr>
+					<td>Currency:</td>
+					<td>
+					    <select id="${slug}-min-bid-currency-type"
+						    class="w100 mono" disabled="disabled">
+						<metal:include
+						    use-macro="context.view_parts.macros.currency_options" />
+					    </select>
+					</td>
+				    </tr>
+				</table>
+			    </div>
+			    <label class="mt1">
+				<input type="checkbox" name="${slug}-feature-listing"
+				       id="${slug}-feature-listing" />
+				Make Featured Listing (Optional)
+			    </label>
+			    <div class="help">
+				Check the box above if you would like your
+				listing to be featured on the first page
+				and in search results.
+			    </div>
+			</div>
+		    </div>
+		    <div class="center mt2 any-slim">
+			<label class="mt05" for="" id="${slug}-terms-desc">Site Rules, Terms and Conditions:</label>
+			<div class="message null"><div class="error" id="${slug}-terms-error"></div></div>
+			<div class="mt05">
+			    <input type="checkbox" id="${slug}-terms" />
+			    I Agree to
+                            <span>
+				<a href="#" class="nice" id="${slug}-show-terms">the Site Rules and Terms of Use</a>.
+			    </span>
+			</div>
+		    </div>
+		</div>
+		<div id="${slug}-buttons" class="center text-center m2">
 		    <span class="mr05">
-			<a id="${slug}-success-view" class="button" href="#">View Listing</a>
+			<a href="#" id="${slug}-submit" class="button">Yep, I'm Sure!  Post It!</a>
+		    </span>
+		    <span class="">
+			<a href="#" id="${slug}-cancel" class="button">Cancel</a>
 		    </span>
 		</div>
-		<div class="message null">
-		    <div id="${slug}-error" class="error m1"></div>
+		<div id="${slug}-response" class="center text-center">
+		    <div id="${slug}-working" class="m1 null"></div>
+		    <div id="${slug}-success" class="m1 null">
+			<span class="mr05">
+			    <a id="${slug}-success-view" class="button" href="#">View Listing</a>
+			</span>
+		    </div>
+		    <div class="message null">
+			<div id="${slug}-error" class="error m1"></div>
+		    </div>
 		</div>
-            </div>
-	</div>
-    </metal:main>
-</body>
+	    </div>
+	</metal:main>
+    </body>
 </html>

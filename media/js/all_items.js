@@ -1,4 +1,6 @@
 (function() {
+
+
     var model = oo.model.schema.extend({
 	init: function(view) {
 	    var self = this
@@ -38,6 +40,7 @@
 	    self.message().fadeOut()
 	}
     })
+
 
     oo.controller.extend({
 	model: model,

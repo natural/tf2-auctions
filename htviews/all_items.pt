@@ -1,22 +1,19 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com -- All Items</title>
-</head>
-<body>
-    <metal:fill fill-slot="main" tal:define="slug 'all-items'">
-	<div id="${slug}-content-pod">
-	    <h1 class="mb05"><span class="hilite">&nbsp;</span>All Items</h1>
-	    <div class="null prototype mb1">
-		<div class="group-proto-seed ov mb1">
-		    <h2 class="group-title-seed"></h2>
-		    <table class="center backpack group-items-seed"></table>
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com -- All Items</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'all-items'">
+	    <div id="${slug}-content-pod">
+		<h1 class="mb05"><span class="hilite">&nbsp;</span>All Items</h1>
+		<div class="null prototype mb1">
+		    <div class="group-proto-seed ov mb1">
+			<h2 class="group-title-seed"></h2>
+			<table class="center backpack group-items-seed"></table>
+		    </div>
 		</div>
 	    </div>
-	</div>
-	<div id="${slug}-group-target-pod">
-	</div>
-
-
-    </metal:fill>
-</body>
+	    <div id="${slug}-group-target-pod"></div>
+	</metal:fill>
+    </body>
 </html>

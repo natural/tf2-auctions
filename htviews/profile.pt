@@ -1,234 +1,226 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com Profile</title>
-</head>
-<body>
-<metal:fill fill-slot="main" tal:define="slug 'profile'">
-    <div id="${slug}-main-pod">
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com Profile</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'profile'">
+	    <div id="${slug}-main-pod">
+		<div id="tabs" class="tabs">
+		    <ul>
+			<li><h4><a href="#0">Details</a></h4></li>
+			<li><h4><a href="#1">Listings</a></h4></li>
+			<li><h4><a href="#2">Bids</a></h4></li>
+			<li><h4><a href="#3">Backpack</a></h4></li>
+			<li id="${slug}-settings-tab" class="null" onclick="return false">
+			    <h4><a href="#4">Settings</a></h4>
+			</li>
+		    </ul>
+		    <div id="0">
+			<h2 class="null loading">Loading details...</h2>
+			<div class="null">
 
-	<div id="tabs" class="tabs">
-	    <ul>
-		<li><h4><a href="#0">Details</a></h4></li>
-		<li><h4><a href="#1">Listings</a></h4></li>
-		<li><h4><a href="#2">Bids</a></h4></li>
-		<li><h4><a href="#3">Backpack</a></h4></li>
-		<li id="${slug}-settings-tab" class="null" onclick="return false">
-		    <h4><a href="#4">Settings</a></h4>
-		</li>
-	    </ul>
 
-	    <div id="0">
-	        <h2 class="null loading">Loading details...</h2>
-	        <div class="null">
-		    <!-- player profile badge on the right -->
-		    <div id="${slug}-badge-pod" class="owner p05">
-			<metal:include
-			     metal:use-macro="context.view_parts.macros.profile_badge" />
-		    </div>
+			    <!-- player profile badge on the right -->
+			    <div id="${slug}-badge-pod" class="owner p05">
+				<metal:include
+				     metal:use-macro="context.view_parts.macros.profile_badge" />
+			    </div>
 
-		    <!-- feedback -->
-		    <div id="${slug}-feedback-pod">
-	                <h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Feedback</span></h1>
-		        <div id="${slug}-feedback-existing-pod" class="">
-			    <h2 class="null empty">Sadly, there isn't any.</h2>
-			    <div class="${slug}-feedback-seed null w88 detail-view mt1">
-			    <table class="w100">
-			        <tr>
-				    <td>
-				        <div class="source-seed">
-					    <a href="#"><img class="av valign-middle" /></a>
-					    <a href="#"><span class="av"></span></a>
+
+			    <!-- feedback -->
+			    <div id="${slug}-feedback-pod">
+				<h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Feedback</span></h1>
+				<div id="${slug}-feedback-existing-pod" class="">
+				    <h2 class="null empty">Sadly, there isn't any.</h2>
+				    <div class="${slug}-feedback-seed null w88 detail-view mt1">
+					<table class="w100">
+					    <tr>
+						<td>
+						    <div class="source-seed">
+							<a href="#"><img class="av valign-middle" /></a>
+							<a href="#"><span class="av"></span></a>
+						    </div>
+						</td>
+						<td class="valign-middle"><span>Rating:</span></td>
+					    </tr>
+					    <tr>
+						<td><pre class="fb-message"></pre></td>
+						<td class="fb-rating rating-badge rating-value"></td>
+					    </tr>
+					</table>
+				    </div>
+				</div>
+				<div id="${slug}-leave-feedback-pod" class="null">
+				    <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-new-title">Leave Feedback</span></h1>
+				</div>
+			    </div>
+
+
+			    <!-- messages -->
+			    <div id="${slug}-msg-pod" class="mt1">
+				<h1 class="null">
+				    <span class="hilite">&nbsp;</span><span class="title">Messages</span><span id="profile-view-msg-count"></span>
+				</h1>
+				<!-- inner wrapper for msg drop  -->
+				<div id="${slug}-leave-msg-pod" class="null">
+				    <div class="mb1 mt05" id="${slug}-leave-msg-form">
+					<textarea id="${slug}-leave-msg-txt" name="${slug}-leave-msg-txt"></textarea>
+					<div class="text-right w50 mt1">
+					    <a href="#" onclick="return false" class="button" id="${slug}-leave-msg-submit">Submit</a>
 					</div>
-				    </td>
-				    <td class="valign-middle"><span>Rating:</span></td>
-				</tr>
-				<tr>
-				    <td><pre class="fb-message"></pre></td>
-				    <td class="fb-rating rating-badge rating-value"></td>
-                                </tr>
-			    </table>
-			    </div>
+				    </div>
+				</div>
+				<!-- inner wrapper for msg view  -->
+				<div id="${slug}-view-msg-pod" class="null mb1 w90">
+				    <h2 class="null empty">None.</h2>
+				    <div id="${slug}-view-msg-pod" class="mt1">
+					<div class="null prototype ov mb1">
+					    <div class="${slug}-msg-sender-seed">
+						<a href="#">
+						    <img class="av valign-middle" />
+						</a>
+						<a href="#">
+						    <span class="av"></span>
+						</a>
+						<div class="float-right w50 text-right mono ${slug}-msg-created-seed"></div>
+					    </div>
+					    <pre class="${slug}-msg-text-seed mt05">
+						text
+					    </pre>
+					    <div class="text-right p1">
+						<a href="#" onclick="return false" class="small-button ${slug}-msg-remove">Remove</a>
+					    </div>
+					</div>
+				    </div>
+				</div>
+		            </div>
 			</div>
-			<div id="${slug}-leave-feedback-pod" class="null">
-			    <h1><span class="hilite">&nbsp;</span><span id="${slug}-feedback-new-title">Leave Feedback</span></h1>
+	            </div>
+
+
+		    <!-- listings -->
+		    <div id="1">
+			<h2 class="null loading">Loading listings...</h2>
+			<h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Listings</span></h1>
+			<div id="${slug}-listings-pod" class="null">
+			    <h2 class="null empty">Nothing recent.</h2>
+			    <div class="mt1" id="${slug}-listings-inner">
+				<metal:include use-macro="context.view_parts.macros.listings_large"
+					       tal:define="rows 2; cols 5" />
+			    </div>
 			</div>
 		    </div>
 
-		    <!-- messages -->
-		    <div id="${slug}-msg-pod" class="mt1">
-	                <h1 class="null">
-			    <span class="hilite">&nbsp;</span><span class="title">Messages</span><span id="profile-view-msg-count"></span>
-			</h1>
-		        <!-- inner wrapper for msg drop  -->
-			<div id="${slug}-leave-msg-pod" class="null">
-			    <div class="mb1 mt05" id="${slug}-leave-msg-form">
-			        <textarea id="${slug}-leave-msg-txt" name="${slug}-leave-msg-txt"></textarea>
-				<div class="text-right w50 mt1">
-				    <a href="#" onclick="return false" class="button" id="${slug}-leave-msg-submit">Submit</a>
-				</div>
-			    </div>
-			</div>
-			<!-- inner wrapper for msg view  -->
-			<div id="${slug}-view-msg-pod" class="null mb1 w90">
-			    <h2 class="null empty">None.</h2>
-			    <div id="${slug}-view-msg-pod" class="mt1">
-			        <div class="null prototype ov mb1">
-				<div class="${slug}-msg-sender-seed">
-				    <a href="#">
-					<img class="av valign-middle" />
-				    </a>
-				    <a href="#">
-					<span class="av"></span>
-				    </a>
-				    <div class="float-right w50 text-right mono ${slug}-msg-created-seed"></div>
-				</div>
-				<pre class="${slug}-msg-text-seed mt05">
-				    text
-				</pre>
-				<div class="text-right p1">
-				    <a href="#" onclick="return false" class="small-button ${slug}-msg-remove">Remove</a>
-				</div>
-			    </div>
-			    </div>
-			</div>
-		        </div>
-		    </div>
-	        </div>
 
-
-		<!-- listings tab -->
-		<div id="1">
-	            <h2 class="null loading">Loading listings...</h2>
-	            <h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Listings</span></h1>
-		    <div id="${slug}-listings-pod" class="null">
-			<h2 class="null empty">Nothing recent.</h2>
-			<div class="mt1" id="${slug}-listings-inner">
-			    <metal:include use-macro="context.view_parts.macros.listings_large"
-			        tal:define="rows 2; cols 5" />
+		    <!-- bids -->
+		    <div id="2">
+			<h2 class="null loading">Loading bids...</h2>
+			<div id="${slug}-bids-pod" class="null">
+		            <h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Bids</span></h1>
+			    <h2 class="null empty">Nothing recent.</h2>
+			    <div class="null mt1" id="${slug}-bids-inner">
+				<metal:include
+				     tal:define="use_created False"
+				     metal:use-macro="context.view_parts.macros.bids_large" />
+			    </div>
 			</div>
 		    </div>
-		</div>
 
-		<!-- bids tab -->
-		<div id="2">
-	            <h2 class="null loading">Loading bids...</h2>
-		    <div id="${slug}-bids-pod" class="null">
-		        <h1 class="null"><span class="hilite">&nbsp;</span><span class="title">Bids</span></h1>
-			<h2 class="null empty">Nothing recent.</h2>
-			<div class="null mt1" id="${slug}-bids-inner">
+
+		    <!-- backpack -->
+		    <div id="3">
+			<h2 class="null loading">Loading backpack...</h2>
+			<div id="${slug}-backpack-pod" class="null">
+		            <h1 class="null">
+				<span class="hilite">&nbsp;</span><span class="title">Backpack</span>
+			    </h1>
+			    <div class="ov null" id="${slug}-backpack-inner">
+				<h2 class="null" id="${slug}-backpack-none"></h2>
+				<metal:include
+				     tal:define="include_unplaced True; slug slug"
+				     metal:use-macro="context.view_parts.macros.backpack_full" />
+			    </div>
+			</div>
+		    </div>
+
+
+		    <!-- settings -->
+		    <div id="4">
+			<h2 class="null loading">Loading settings...</h2>
+			<div id="${slug}-settings-pod"  class="null">
+		            <h1 class="null">
+				<span class="hilite">&nbsp;</span><span class="title">Settings</span>
+			    </h1>
 			    <metal:include
-				 tal:define="use_created False"
-				 metal:use-macro="context.view_parts.macros.bids_large" />
+				 tal:define="schema settings_schema; slug slug"
+				 metal:use-macro="context.form_parts.macros.schema_form" />
+			    <div class="null" id="${slug}-premium-signup-pod" tal:condition="features.subscriber_accounts">
+				<h2>Premium Subscription Features</h2>
+				<div class="field">
+				    <div class="field-container">
+					<label>You Don't Have Any Because You're Not Subscribed</label>
+					<div class="help">
+					    But you could be!  Head over to the <a href="/subscribe">Subscribe Page</a>
+					    and sign up for extra features that come only with premium subscriptions.
+					    Also, I like turtles.
+					</div>
+				    </div>
+				</div>
+
+			    </div>
+			    <div class="null" id="${slug}-premium-settings-pod" tal:condition="features.subscriber_accounts">
+				<h2>Premium Subscription Features</h2>
+				<div class="field">
+				    <div class="field-container">
+					<label>Listings w/ Minimum Bid Currency Amounts</label>
+					<div class="help">
+					    You can create listings with currency amounts as the minimum bid.
+					    You do this on the <a href="/listing/add">Add Listing</a> page.
+					</div>
+				    </div>
+				</div>
+				<div class="field">
+				    <div class="field-container">
+					<label>Featured Listings</label>
+					<div class="help">
+					    You can have your listings featured on the front page and in search results.
+					    You do this on the <a href="/listing/add">Add Listing</a> page.
+					</div>
+				    </div>
+				</div>
+				<div class="field">
+				    <div class="field-container">
+					<label>Notify Me of New Listings</label>
+					<div class="help">
+					    When new listings are created with any of the items below,
+					    an email notification will be sent to you.  Of course, you'll
+					    have to enter your email address above.
+					</div>
+					<div class="ov">
+					    <metal:include
+						 tal:define="slug 'nl'"
+						 metal:use-macro="context.view_parts.macros.backpack_slim" />
+					    <div class="help">Double click an item to remove it or
+						<a href="#" id="${slug}-notify-listing-reset" onclick="return false">remove all</a>.
+					    </div>
+					    <metal:include
+						 tal:define="slug 'notify-listing'"
+						 metal:use-macro="context.view_parts.macros.chooser" />
+					</div>
+				    </div>
+				</div>
+			    </div>
+			    <div class="message" id="${slug}-settings-save-message">
+				<div class="error null"></div>
+				<div class="information null"></div>
+			    </div>
+			    <div class="p05">
+				<a href="#" class="button" onclick="return false" id="${slug}-settings-save">Save</a>
+			    </div>
 			</div>
 		    </div>
 		</div>
-
-		<!-- backpack tab -->
-		<div id="3">
-	            <h2 class="null loading">Loading backpack...</h2>
-		    <div id="${slug}-backpack-pod" class="null">
-		        <h1 class="null">
-			    <span class="hilite">&nbsp;</span><span class="title">Backpack</span>
-			</h1>
-			<div class="ov null" id="${slug}-backpack-inner">
-			    <h2 class="null" id="${slug}-backpack-none"></h2>
-			    <metal:include
-			       tal:define="include_unplaced True; slug slug"
-			       metal:use-macro="context.view_parts.macros.backpack_full" />
-			</div>
-
-		    </div>
-		</div>
-
-
-		<div id="4">
-	            <h2 class="null loading">Loading settings...</h2>
-		    <div id="${slug}-settings-pod"  class="null">
-		        <h1 class="null">
-			    <span class="hilite">&nbsp;</span><span class="title">Settings</span>
-			</h1>
-			<metal:include
-			     tal:define="schema settings_schema; slug slug"
-			     metal:use-macro="context.form_parts.macros.schema_form" />
-
-			<div class="null" id="${slug}-premium-signup-pod" tal:condition="features.subscriber_accounts">
-			    <h2>Premium Subscription Features</h2>
-			    <div class="field">
-				<div class="field-container">
-				    <label>You Don't Have Any Because You're Not Subscribed</label>
-				    <div class="help">
-					But you could be!  Head over to the <a href="/subscribe">Subscribe Page</a>
-					and sign up for extra features that come only with premium subscriptions.
-					Also, I like turtles.
-				    </div>
-				</div>
-			    </div>
-
-			</div>
-			<div class="null" id="${slug}-premium-settings-pod" tal:condition="features.subscriber_accounts">
-			    <h2>Premium Subscription Features</h2>
-
-			    <div class="field">
-				<div class="field-container">
-				    <label>Listings w/ Minimum Bid Currency Amounts</label>
-				    <div class="help">
-					You can create listings with currency amounts as the minimum bid.
-					You do this on the <a href="/listing/add">Add Listing</a> page.
-				    </div>
-				</div>
-			    </div>
-
-			    <div class="field">
-				<div class="field-container">
-				    <label>Featured Listings</label>
-				    <div class="help">
-					You can have your listings featured on the front page and in search results.
-					You do this on the <a href="/listing/add">Add Listing</a> page.
-				    </div>
-				</div>
-			    </div>
-
-			    <div class="field">
-				<div class="field-container">
-				    <label>Notify Me of New Listings</label>
-				    <div class="help">
-					When new listings are created with any of the items below,
-					an email notification will be sent to you.  Of course, you'll
-					have to enter your email address above.
-				    </div>
-				    <div class="ov">
-				    <metal:include
-					 tal:define="slug 'nl'"
-					 metal:use-macro="context.view_parts.macros.backpack_slim" />
-				    <div class="help">Double click an item to remove it or
-					<a href="#" id="${slug}-notify-listing-reset" onclick="return false">remove all</a>.
-				    </div>
-				    <metal:include
-					 tal:define="slug 'notify-listing'"
-					 metal:use-macro="context.view_parts.macros.chooser" />
-				    </div>
-				</div>
-			    </div>
-			</div>
-
-			<div class="message" id="${slug}-settings-save-message">
-			    <div class="error null"></div>
-			    <div class="information null"></div>
-			</div>
-
-			<div class="p05">
-			    <a href="#" class="button" onclick="return false" id="${slug}-settings-save">Save</a>
-			</div>
-
-
-
-
-		    </div>
-		</div>
-
 	    </div>
-	</div>
-
-</metal:fill>
-</body>
+	</metal:fill>
+    </body>
 </html>

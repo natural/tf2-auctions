@@ -4,20 +4,16 @@
         <title tal:content="controller.title" />
         <link tal:content="controller.url" />
         <description tal:content="controller.description" />
-
 	<category tal:condition="getattr(controller, 'category', None)" tal:content="controller.category" />
 	<copyright tal:condition="getattr(controller, 'copyright', None)" tal:content="controller.copyright" />
 	<image tal:condition="getattr(controller, 'image', None)" tal:content="controller.image" />
 	<language tal:condition="getattr(controller, 'language', None)" tal:content="controller.language" />
-
         <pubDate tal:content="controller.pub_date()" />
         <ttl tal:content="controller.ttl" />
-
         <item tal:repeat="item controller.items()">
             <title tal:content="item.title" />
 	    <link tal:content="item.link" />
 	    <description tal:content="item.description" />
-
 	    <author tal:condition="item.get('author')" tal:content="item.author" />
 	    <category tal:condition="item.get('category')" tal:content="item.category" />
 	    <comments tal:condition="item.get('comments')" tal:content="item.comments" />

@@ -43,6 +43,10 @@ Number.prototype.formatMoney = function(c, d, t){
 }
 
 
+var itemEffect = function(i) {
+}
+
+
 //
 // Create the 'oo' namespace.
 //
@@ -92,8 +96,6 @@ var oo = (function() {
 (function(ns) {
     // haven't found these definitions anywhere in the source files:
     ns.itemEffects = {
-	2:  'Flying Bits',
-	3:  'Nemesis Burst',
 	4:  'Community Sparkle',
 	5:  'Holy Glow',
 	6:  'Green Confetti',
@@ -542,6 +544,7 @@ var oo = (function() {
 			    self.setTradable(iutil, ele, item, uprefs)
 			    self.setPaintJewel(iutil, img, uprefs)
 			    self.setUseCount(img, item, uprefs, toolDefs, actionDefs)
+			    self.setEffect(iutil, ele, uprefs)
 			} else {
 			    newIdx += 1
 			    var target = $('#bp-unplaced-{0} table.bp-unplaced'.fs(slug))
@@ -630,10 +633,21 @@ var oo = (function() {
 	    }
 	}
 
+	self.setEffect = function(itemutil, element, settings) {
+            if (settings.showItemEffect && itemutil.effect()) {
+		element.parent()
+		    .addClass('effect-{0}'.fs(itemutil.effect()))
+	    }
+	}
+
 	self.setTradable = function(itemutil, element, item, settings) {
 	    if (settings.showAngrySalad) {
 		element.parent()
-		    .addClass('border-quality-{0} background-quality-{1}'.fs(item.quality, item.quality))
+		    .addClass('border-quality-{0}'.fs(item.quality))
+		if (!settings.showAngryLite) {
+		    element.parent()
+		        .addClass('background-quality-{0}'.fs(item.quality))
+		}
 	    }
 	    if (itemutil.canTrade()) {
 		element.parent('td')
@@ -658,8 +672,12 @@ var oo = (function() {
 
 	self.setTradableUnplaced = function(itemutil, element, item, settings) {
 	    if (settings.showAngrySalad) {
-		element.parent().parent()
-		    .addClass('border-quality-{0} background-quality-{1}'.fs(item.quality, item.quality))
+		element.parent()
+		    .addClass('border-quality-{0}'.fs(item.quality))
+		if (!settings.showAngryLite) {
+		    element.parent()
+		        .addClass('background-quality-{0}'.fs(item.quality))
+		}
 	    }
 	    if (itemutil.canTrade()) {
 		element.parent().removeClass('cannot-trade active-listing active-bid')
@@ -918,12 +936,11 @@ var oo = (function() {
 		    return paint
 	    },
 	    effect: function() {
-		var attrs = (item.attributes || {}).attribute || []
-		var effect = 0
-		$.each( $(attrs), function (idx, attr) {
-		    if (attr.defindex==134) { effect = attr.float_value }
-		})
-		    return effect
+		try {
+		    return $.grep(item.attributes.attribute, function(x) { return x.defindex==134 })[0].float_value
+		} catch (x) {
+		    return null
+		}
 	    }
 	}
     }
@@ -1110,7 +1127,9 @@ var oo = (function() {
 	    showEquipped: (valid ? s['badge-equipped'] : true),
 	    showPainted: (valid ? s['badge-painted'] : true),
 	    showUseCount: (valid ? s['badge-usecount'] : true),
-	    showAngrySalad: (valid ? s['angry-fruit-salad'] : false)
+	    showAngrySalad: (valid ? s['angry-fruit-salad'] : false),
+            showAngryLite: (valid ? (s['angry-fruit-salad'] && s['angry-fruit-salad-lite']) : false),
+            showItemEffect: (valid ? s['unusual-item-background'] : false)
 	}
     }
 
@@ -1205,15 +1224,14 @@ var oo = (function() {
 		} catch (e) {
 		    return
 		}
-		var defindex = data.defindex
-		if (defindex==1) { oo.error(tag, $(tag), $.parseJSON($(tag).text())); throw "ONE WRONG" }
-		var def = self.itemDefs()[defindex]
+		var defindex = data.defindex,
+		    def = self.itemDefs()[defindex]
 		if (!def) { return }
 		var pitem = self.asPlayerItem(data)
 		$(tag).data('node', pitem)
 		$(tag).html(itemImg(def['image_url'])).fadeIn()
-		var iutil = oo.util.item(pitem, schema)
-		var img = $('img', tag)
+		var iutil = oo.util.item(pitem, schema),
+		    img = $('img', tag)
 		if (!img.data('node')) { img.data('node', data) }
 
 		if (iutil.isEquipped() && settingV.showEquipped ) {
@@ -1238,7 +1256,14 @@ var oo = (function() {
 		}
 		if (settingV.showAngrySalad) {
 		    img.parent().parent()
-			.addClass('border-quality-{0} background-quality-{1}'.fs( pitem.quality, pitem.quality ))
+			.addClass('border-quality-{0}'.fs( pitem.quality))
+		    if (!settingV.showAngryLite) {
+			img.parent().parent()
+			    .addClass('background-quality-{0}'.fs( pitem.quality))
+		    }
+		}
+	        if (settingV.showItemEffect && iutil.effect()) {
+		    img.parent().parent().addClass('effect-{0}'.fs(iutil.effect()))
 		}
 	    })
 	}
@@ -1416,8 +1441,8 @@ var oo = (function() {
             var c = (oo.conf.auth.complete ? 'complete=1' : '')
 	    s = s + (c ? '&'+c : '')
 	    o.suffix = s
-	    return authLoader(o)
 	}
+	return authLoader(o)
     }
     ns.backpack = function(o) { return backpackLoader(o) }
     ns.bids = function(o) { return bidsLoader(o) }

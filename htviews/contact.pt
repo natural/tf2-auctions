@@ -1,44 +1,43 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com - Contact</title>
-</head>
-<body>
-    <metal:fill fill-slot="main" tal:define="slug 'contact'">
-	<div class="center null" id="${slug}-content-pod">
-	    <h1><span class="hilite">&nbsp;</span>Contact and Feedback</h1>
-
-	    <div class="w50">
-		<div id="${slug}-complete" class="message null">
-		    <div class="information">Message Sent.  Thank you!</div>
-		</div>
-		<form id="${slug}-form" onsubmit="return false">
-		    <input type="hidden" id="${slug}-id64"
-			   name="${slug}-id64" value="" />
-		    <div class="mt1">
-			<label>Name:</label>
-			<input type="text" id="${slug}-name"
-			       name="${slug}-name" class="w100" value="" />
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Contact</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'contact'">
+	    <div class="center null" id="${slug}-content-pod">
+		<h1><span class="hilite">&nbsp;</span>Contact and Feedback</h1>
+		<div class="w50">
+		    <div id="${slug}-complete" class="message null">
+			<div class="information">Message Sent.  Thank you!</div>
 		    </div>
-		    <div class="mt1">
-			<label>Email:</label>
-			<input type="text" id="${slug}-email"
-			       name="${slug}-email" class="w100" value="" />
-		    </div>
-		    <div class="mt1">
-			<label>Question, comments and/or feedback:</label>
-			<div>
-			    <textarea id="${slug}-message"
-				      style="height:10em"
-				      class="w100"></textarea>
+		    <form id="${slug}-form" onsubmit="return false">
+			<input type="hidden" id="${slug}-id64"
+			       name="${slug}-id64" value="" />
+			<div class="mt1">
+			    <label>Name:</label>
+			    <input type="text" id="${slug}-name"
+				   name="${slug}-name" class="w100" value="" />
 			</div>
-		    </div>
-		    <div class="mt1 w100 text-right">
-			<a class="button" href="#" onclick="return false"
-			   id="${slug}-form-submit">Submit</a>
-		    </div>
-		</form>
+			<div class="mt1">
+			    <label>Email:</label>
+			    <input type="text" id="${slug}-email"
+				   name="${slug}-email" class="w100" value="" />
+			</div>
+			<div class="mt1">
+			    <label>Question, comments and/or feedback:</label>
+			    <div>
+				<textarea id="${slug}-message"
+					  style="height:10em"
+					  class="w100"></textarea>
+			    </div>
+			</div>
+			<div class="mt1 w100 text-right">
+			    <a class="button" href="#" onclick="return false"
+			       id="${slug}-form-submit">Submit</a>
+			</div>
+		    </form>
+		</div>
 	    </div>
-	</div>
-    </metal:fill>
-</body>
+	</metal:fill>
+    </body>
 </html>

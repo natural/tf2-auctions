@@ -342,8 +342,8 @@ td.background-quality-5.outline { background-color:#874FAD !important; }
 .border-quality-6  { border-color:#FFD800 !important; } /* unique */
 .background-quality-6 { background-color: #9D8617 !important; }
 /* inverse on hover */
-td.border-quality-6.outline {background-color:#FFD800 !important;}
-td.background-quality-6.outline { border-color: #9D8617 !important; }
+td.border-quality-6.outline {border-color: #9D8617 !important; }
+td.background-quality-6.outline { background-color:#FFD800 !important;}
 
 
 .border-quality-7  { border-color:#70B04A !important; } /* community */
@@ -705,6 +705,25 @@ top:2px;
 
 
 
+.effect-6 { background-image:url('/media/img/effects_tmp/smaller/6.png'); }
+.effect-7 { background-image:url('/media/img/effects_tmp/smaller/7.png'); }
+.effect-8 { background-image:url('/media/img/effects_tmp/smaller/8.png'); }
+.effect-9 { background-image:url('/media/img/effects_tmp/smaller/9.png'); }
+.effect-10 { background-image:url('/media/img/effects_tmp/smaller/10.png'); }
+.effect-11 { background-image:url('/media/img/effects_tmp/smaller/11.png'); }
+.effect-12 { background-image:url('/media/img/effects_tmp/smaller/12.png'); }
+.effect-13 { background-image:url('/media/img/effects_tmp/smaller/13.png'); }
+.effect-14 { background-image:url('/media/img/effects_tmp/smaller/14.png'); }
+.effect-15 { background-image:url('/media/img/effects_tmp/smaller/15.png'); }
+.effect-16 { background-image:url('/media/img/effects_tmp/smaller/16.png'); }
+.effect-17 { background-image:url('/media/img/effects_tmp/smaller/17.png'); }
+.effect-18 { background-image:url('/media/img/effects_tmp/smaller/18.png'); }
+.effect-19 { background-image:url('/media/img/effects_tmp/smaller/19.png'); }
+
+
+
+
+
 img.profile-status
 {
 border:2px solid;
@@ -913,12 +932,21 @@ color:#827868;
 
 
 .neg-bar {
-background-color:#9d302f;
+background-color:#F80000;
 }
 
 .pos-bar {
-background-color:#385c78;
+background-color:#00F800;
 }
+
+.pos-bar, .neg-bar {
+box-shadow: 3px 3px rgba(0,0,0,0.5);
+    -moz-box-shadow: 3px 3px rgba(0,0,0,0.5);
+    -webkit-box-shadow: 3px 3px rgba(0,0,0,0.5);
+border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+
 
 table.rating td {
 padding:0.25em;

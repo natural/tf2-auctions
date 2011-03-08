@@ -1,27 +1,24 @@
 <html metal:use-macro="context.content.macros.layout">
-<head>
-    <title metal:fill-slot="title">TF2Auctions.com - About</title>
-</head>
-<body>
-    <metal:fill fill-slot="main" tal:define="slug 'about'">
-	<div class="center w100" id="${slug}-content-pod">
-
-	    <h1><span class="hilite">&nbsp;</span>About</h1>
-	    <div class="m1">
-		You login.  You list items from your backpack.  Other players bid on them.  You select
-		which bid you want.  You trade with the winner.  Everybody's happy.
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - About</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'about'">
+	    <div class="center w100" id="${slug}-content-pod">
+		<h1><span class="hilite">&nbsp;</span>About</h1>
+		<div class="m1">
+		    You login.  You list items from your backpack.
+		    Other players bid on them.  You select which bid
+		    you want.  You trade with the winner.  Everybody's
+		    happy.
+		</div>
+		<h1 class="mt2"><span class="hilite">&nbsp;</span>About the Logo</h1>
+		<div class="m1">
+		    Our new fine logo was created by
+		    <a class="nice" href="http://steamcommunity.com/id/Ienzo">Ienzo</a>.
+		    You should tell him how much you like it.
+		</div>
 	    </div>
-
-	    <h1 class="mt2"><span class="hilite">&nbsp;</span>About the Logo</h1>
-	    <div class="m1">
-		Our new fine logo was created by
-		<a class="nice" href="http://steamcommunity.com/id/Ienzo">Ienzo</a>.
-		You should tell him how much you like it.
-	    </div>
-
-
-
-	</div>
-    </metal:fill>
-</body>
+	</metal:fill>
+    </body>
 </html>
