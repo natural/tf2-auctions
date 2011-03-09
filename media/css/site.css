@@ -704,22 +704,27 @@ top:2px;
 .jewel-8289918 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8289918.png'); }
 
 
-
-.effect-6 { background-image:url('/media/img/effects_tmp/smaller/6.png'); }
-.effect-7 { background-image:url('/media/img/effects_tmp/smaller/7.png'); }
-.effect-8 { background-image:url('/media/img/effects_tmp/smaller/8.png'); }
-.effect-9 { background-image:url('/media/img/effects_tmp/smaller/9.png'); }
-.effect-10 { background-image:url('/media/img/effects_tmp/smaller/10.png'); }
-.effect-11 { background-image:url('/media/img/effects_tmp/smaller/11.png'); }
-.effect-12 { background-image:url('/media/img/effects_tmp/smaller/12.png'); }
-.effect-13 { background-image:url('/media/img/effects_tmp/smaller/13.png'); }
-.effect-14 { background-image:url('/media/img/effects_tmp/smaller/14.png'); }
-.effect-15 { background-image:url('/media/img/effects_tmp/smaller/15.png'); }
-.effect-16 { background-image:url('/media/img/effects_tmp/smaller/16.png'); }
-.effect-17 { background-image:url('/media/img/effects_tmp/smaller/17.png'); }
-.effect-18 { background-image:url('/media/img/effects_tmp/smaller/18.png'); }
-.effect-19 { background-image:url('/media/img/effects_tmp/smaller/19.png'); }
-
+.tool-tag { background-repeat: no-repeat; }
+.effect-6 { background-image:url('/media/img/effects_tmp/6.png'); }
+.effect-7 { background-image:url('/media/img/effects_tmp/7.png'); }
+.effect-8 { background-image:url('/media/img/effects_tmp/8.png'); }
+.effect-9 { background-image:url('/media/img/effects_tmp/9.png'); }
+.effect-10 { background-image:url('/media/img/effects_tmp/10.png'); }
+.effect-11 { background-image:url('/media/img/effects_tmp/11.png'); }
+.effect-12 { background-image:url('/media/img/effects_tmp/12.png'); }
+.effect-13 { background-image:url('/media/img/effects_tmp/13.png'); }
+.effect-14 { background-image:url('/media/img/effects_tmp/14.png'); }
+.effect-15 { background-image:url('/media/img/effects_tmp/15.png'); }
+.effect-16 { background-image:url('/media/img/effects_tmp/16.png'); }
+.effect-17 { background-image:url('/media/img/effects_tmp/17.png'); }
+.effect-18 { background-image:url('/media/img/effects_tmp/18.png'); }
+.effect-19 { background-image:url('/media/img/effects_tmp/19.png'); }
+.effect-20 { background-image:url('/media/img/effects_tmp/20.png'); }
+/* earbuds: */
+.effect-99 { background-image:url('/media/img/effects_tmp/99.png'); }
+.tool-5020 { background-image:url('/media/img/tools_tmp/5020.png'); }
+.tool-5044 { background-image:url('/media/img/tools_tmp/5044.png'); }
+.tool-5020-5044 { background-image:url('/media/img/tools_tmp/5020-5044.png'); }
 
 
 

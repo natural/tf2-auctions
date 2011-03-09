@@ -344,6 +344,9 @@ var BackpackView = oo.view.schema.extend({
 	    .success(function(p) { 
 		bpTool.init(p.settings)
 		oo('backpack-inner').fadeIn()
+	        if (p.settings['backpack-expando']) {
+		    $('div.bp-nav span.all a').click()
+		}
 	    })
 	    .error(function() {
 		bpTool.init()

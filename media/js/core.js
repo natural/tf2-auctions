@@ -43,10 +43,6 @@ Number.prototype.formatMoney = function(c, d, t){
 }
 
 
-var itemEffect = function(i) {
-}
-
-
 //
 // Create the 'oo' namespace.
 //
@@ -636,7 +632,7 @@ var oo = (function() {
 	self.setEffect = function(itemutil, element, settings) {
             if (settings.showItemEffect && itemutil.effect()) {
 		element.parent()
-		    .addClass('effect-{0}'.fs(itemutil.effect()))
+		    .addClass('effect-{0} tool-tag'.fs(itemutil.effect()))
 	    }
 	}
 
@@ -648,6 +644,12 @@ var oo = (function() {
 		    element.parent()
 		        .addClass('background-quality-{0}'.fs(item.quality))
 		}
+	    }
+	    if (settings.showItemTags && itemutil.isNamed()) {
+		element.parent()
+		    .addClass('tool-{0} tool-tag'.fs(
+                      item.custom_name && item.custom_desc ? '5020-5044' : (item.custom_name ? '5020' : '5044')				  
+		      ))
 	    }
 	    if (itemutil.canTrade()) {
 		element.parent('td')
@@ -679,6 +681,7 @@ var oo = (function() {
 		        .addClass('background-quality-{0}'.fs(item.quality))
 		}
 	    }
+	    // unplaced with a custom name or description?  i don't think so...
 	    if (itemutil.canTrade()) {
 		element.parent().removeClass('cannot-trade active-listing active-bid')
 	    } else {
@@ -924,6 +927,9 @@ var oo = (function() {
 	    isEquipped: function() {
 		return (item['inventory'] & 0xff0000) != 0
 	    },
+	    isNamed: function() {
+		return (item.custom_name != undefined || item.custom_desc != undefined)
+	    },
 	    pos:  function() {
 		return (item.pos) ? item.pos : item['inventory'] & 0xFFFF
 	    },
@@ -936,6 +942,8 @@ var oo = (function() {
 		    return paint
 	    },
 	    effect: function() {
+		if (item.defindex == 143) { return 99 }  // notes for earbuds
+		if (item.defindex == 1899) { return 20 } // stamps for travelers hat
 		try {
 		    return $.grep(item.attributes.attribute, function(x) { return x.defindex==134 })[0].float_value
 		} catch (x) {
@@ -1044,18 +1052,21 @@ var oo = (function() {
 	},
 
 	defaultUserAuthError: function() {
-	    $('#content-login-link').attr('href', oo.util.profile.loginUrl())
-	    $('#content-search-link, #content-quick-backpack').show()
-            $('#content-site-buttons').show()
+	    var $$ = oo.prefix$('#content-')
+	    $$('login-link').attr('href', oo.util.profile.loginUrl())
+	    $$('search-link, quick-backpack, site-buttons, sub-buttons').fadeIn()
 	    ns.profile.defaultUserAuthError = oo.noop
 	},
 
 	defaultUserAuthOkay: function(p) {
-	    $('#content-player-profile-link').attr('href', oo.util.profile.defaultUrl(p))
 	    oo.util.profile.put(p)
-	    $('#content-login-link').hide()
-	    $('#content-user-buttons, #content-logout-link').show()
-            $('#content-site-buttons').show()
+	    var $$ = oo.prefix$('#content-')
+	    $$('player-profile-link').attr('href', oo.util.profile.defaultUrl(p))
+	    $$('login-link').hide()
+	    $$('user-buttons, logout-link, site-buttons').show()
+            if (p.subscription.status != 'Verified') {
+		$$('sub-buttons').show()
+	    }
 	    ns.profile.defaultUserAuthOkay = oo.noop
 	},
 
@@ -1129,7 +1140,8 @@ var oo = (function() {
 	    showUseCount: (valid ? s['badge-usecount'] : true),
 	    showAngrySalad: (valid ? s['angry-fruit-salad'] : false),
             showAngryLite: (valid ? (s['angry-fruit-salad'] && s['angry-fruit-salad-lite']) : false),
-            showItemEffect: (valid ? s['unusual-item-background'] : false)
+            showItemEffect: (valid ? s['unusual-item-background'] : false),
+	    showItemTags: (valid ? s['badge-tags'] : false)
 	}
     }
 
@@ -1262,8 +1274,14 @@ var oo = (function() {
 			    .addClass('background-quality-{0}'.fs( pitem.quality))
 		    }
 		}
+                if (settingV.showItemTags && iutil.isNamed()) {
+		    img.parent().parent()
+			.addClass('tool-{0} tool-tag'.fs(
+                             pitem.custom_name && pitem.custom_desc ? '5020-5044' : (pitem.custom_name ? '5020' : '5044')
+		      ))
+		}
 	        if (settingV.showItemEffect && iutil.effect()) {
-		    img.parent().parent().addClass('effect-{0}'.fs(iutil.effect()))
+		    img.parent().parent().addClass('effect-{0} tool-tag'.fs(iutil.effect()))
 		}
 	    })
 	}
@@ -1767,8 +1785,9 @@ var oo = (function() {
 
 head.ready(function() {
     // perform an initial auth if the module has indicated authentication
-    oo.model.auth.init()
-
+    if (oo.conf.auth) {
+	oo.model.auth.init()	
+    }
     // initialize each direct clone of the oo.controller object:
     $.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
 })

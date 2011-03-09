@@ -47,6 +47,13 @@ class PlayerSettings(db.Expando, UserId64Mixin):
 
 	('User Interface', [
 	    {
+		'id':'badge-tags', 'type':bool, 'label':'Show Item Name and Description Tags',
+		'widget':'checkbox', 'default':False,
+		'help':"""
+		    When enabled, backpack items with custom names and/or custom descriptions will be shown
+                    with extra tag icons."""
+	    },
+	    {
 		'id':'badge-equipped', 'type':bool, 'label':'Show Item Equipped Badge',
 		'widget':'checkbox', 'default':True,
 		'help':"""
@@ -86,7 +93,7 @@ class PlayerSettings(db.Expando, UserId64Mixin):
 		'widget':'checkbox', 'default':False,
 		'help':"""
 		    When enabled, backpack items will be bordered but
-		    not shaded with their specific rarity color. This
+		    not shaded with their spe1cific rarity color. This
 		    only applies if you enable 'Color Items By Rarity'
 		    above.
 		"""
@@ -102,8 +109,14 @@ class PlayerSettings(db.Expando, UserId64Mixin):
 		"""
 	    },
 
-
-
+	    {
+		'id':'backpack-expando', 'type':bool, 'label':'Automatically Expand Backpacks',
+		'widget':'checkbox', 'default':False,
+		'help':"""
+		    When enabled, backpacks will show all pages by
+		    default (and not the nifty navigation buttons).
+		"""
+	    },
 	]),
 
     ]

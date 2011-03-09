@@ -1,0 +1,12 @@
+<html metal:use-macro="context.content.macros.layout">
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Subscribe</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main">
+	    <h1>Awwww...</h1>
+	    <p>You canceled.  We understand.  No hard feelings.  Enjoy the rest of the site.</p>
+	</metal:fill>
+    </body>
+</html>
+

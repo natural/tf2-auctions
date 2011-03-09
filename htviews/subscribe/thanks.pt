@@ -1,0 +1,12 @@
+<html metal:use-macro="context.content.macros.layout">
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Subscribe</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main">
+	    <h1>Yippekayaheeyapakayo!  Thanks for Subscribing! </h1>
+	    <p>That's great.  Really nice of you.  Enjoy all of the extra features and benefits.</p>
+	</metal:fill>
+    </body>
+</html>
+

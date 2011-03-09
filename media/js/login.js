@@ -4,4 +4,5 @@ $(document).ready(function(){
     oo('site-categories').fadeOut()
     oo('login-link').fadeAway()
     oo('site-buttons').fadeIn()
+    oo('sub-buttons').fadeOut()
 })

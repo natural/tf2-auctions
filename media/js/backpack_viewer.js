@@ -131,7 +131,12 @@ backpackView = oo.view.schema.extend({
 	         rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
         })
         oo.model.auth.init()
-	    .success(function(profile) { bpTool.init(profile.settings) })
+	    .success(function(profile) {
+	        bpTool.init(profile.settings) 
+	        if (profile.settings['backpack-expando']) {
+		    $('div.bp-nav span.all a').click()
+		}
+            })
 	    .error(function() { bpTool.init(null) })
         self.message().fadeOut()
         if (!self.put.initOnce) {
