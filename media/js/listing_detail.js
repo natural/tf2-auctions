@@ -33,7 +33,8 @@
 // SKIP:  Update lister feedback for bidders.
 //
 //
-//(function() {
+
+var init = function() {
 
 
 oo.config({prefix: '#listing-detail-', auth: {settings: 1, complete: 0}})
@@ -1000,4 +1001,5 @@ var ListingController = oo.controller.extend({
 })
 
 
-//})()
+}
+

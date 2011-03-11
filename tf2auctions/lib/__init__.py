@@ -129,20 +129,21 @@ class View(LocalHandler):
     jq_min = 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'
     jq_ui = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/jquery-ui.min.js'
     media_js_path = '/media/js'
-    link_js = ('head.load.min.js', )
+    link_js = ('LAB.min.js', )
     related_js = ()
     if features.devel:
         block_js = (
-            jq_min,
-            'ga.js',
-            'jquery.json-2.2.js',
-            'dateformat.js',
-            'core.js',
+            ('ga.js', None),
+            (jq_min, ''),
+            ('jquery.json-2.2.js', None),
+            ('dateformat.js', None),
+            ('core.js', ''),
             )
     else:
         block_js = (
-            jq_min,
-            'core.min.js',
+            ('ga.js', None),
+            (jq_min, ''),
+            ('core.min.js', ''),
             )
 
     ## rss feeds for the view
@@ -188,14 +189,14 @@ class View(LocalHandler):
 	    yield js if js.startswith('http:') else '%s/%s' % (prefix, js)
 
     def iter_tag_js(self, js_path=None):
-        urls = []
+        calls = []
 	prefix = self.media_js_path if js_path is None else js_path
 	devel, version = features.devel, features.version
-        for js in self.block_js + self.related_js:
+        for js, wait in self.block_js + tuple((js, 'function() {init(); core()}') for js in self.related_js):
             if not js.startswith('http:'):
                 js = '%s/%s?v=%s' % (prefix, js, int(time()) if devel else version)
-            urls.append('"%s"' % js)
-        yield 'head.js(%s);' % (', '.join(urls), )
+            calls.append('.script("%s")%s' % (js, ('.wait(%s)' % wait if wait is not None else '')))
+        yield '$LAB\n%s'% ('\n'.join(calls))
 
     def iter_rss(self, prefix_path=''):
 	for rss in self.related_rss:

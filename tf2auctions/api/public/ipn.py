@@ -16,8 +16,7 @@ else:
 
 
 def make_verify_request(data):
-    data['cmd'] = '_notify-validate'
-    req = UrlRequest(PP_URL, urlencode(data))
+    req = UrlRequest(PP_URL, data=data + '&cmd=_notify-validate')
     req.add_header('Content-type', 'application/x-www-form-urlencoded')
     return req
 
@@ -32,22 +31,32 @@ class Ipn(ApiHandler):
 
     def post(self):
 	params = dict(self.request.POST)
-	payment_status = params['payment_status'].lower()
-	id64 = params['custom']
+        try:
+            txn_type = params['txn_type'].lower()
+        except (KeyError, ):
+            warn('no txn type: %s', params)
+            return
+        try:
+            id64 = params['option_selection2']
+        except (KeyError, ):
+            try:
+                id64 = params['custom']
+            except (KeyError, ):
+                warn('no id64: %s', params)
+                return
 
-
-	request = make_verify_request(params)
+	request = make_verify_request(self.request.body_file.read())
 	response = urlopen(request)
 	status = response.read()
-
 	okay = is_verified(status)
 	if not okay:
-	    error('could not verify ipn: %s', params)
+	    error('could not verify ipn: %s - %s', okay, params)
 	    return
+        if txn_type in ('subscr_signup', 'subscr_modify', 'subscr_payment'):
+            txn_type = Subscription.verified
+	sub, hst = Subscription.put_status_history(id64, txn_type, params)
 
-	sub, hst = Subscription.put_status_history(id64, status, params)
-
-	warn('%s', [payment_status, id64, status, okay])
+	warn('%s', [txn_type, id64, status, okay])
 	for k in params:
 	    warn('%s = %s', k, params[k])
 	self.write_json('post okay')

@@ -41,7 +41,7 @@ class NotifyListing(ApiHandler):
 	next = None
 	bookmark = self.request.get('subscription_key')
 
-	q = Subscription.all().order('__key__').filter('status =', 'Verified')
+	q = Subscription.all().order('__key__').filter('status =', Subscription.verified)
 	if bookmark:
 	    q.filter('__key__ >', db.Key(bookmark))
 	subscription = q.get()

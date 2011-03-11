@@ -28,6 +28,8 @@ class Subscription(db.Model, UserId64Mixin):
     """ Subscription -> state of a players subscription status.
 
     """
+    verified = 'verified'
+
     status = db.StringProperty('Subscription status', required=True)
     profile = db.ReferenceProperty(None, required=True, indexed=True, collection_name='profile_set')
     settings = db.ReferenceProperty(None, required=True, indexed=True, collection_name='settings_set')
@@ -59,4 +61,4 @@ class Subscription(db.Model, UserId64Mixin):
 
 
     def is_subscriber(self):
-	return self.status == 'Verified'
+	return self.status == self.verified

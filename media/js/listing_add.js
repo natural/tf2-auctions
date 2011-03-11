@@ -3,6 +3,8 @@
 //
 
 var pid = '#listing-add-'
+var init = function() {
+
 oo.config({prefix: pid, auth: {settings: 1, complete: 1}})
 
 
@@ -70,7 +72,7 @@ var BackpackListingTool = function(params) {
 	    var settings = profile.settings
 	    bpTool.init(profile.settings)
 	    chTool.init(profile.settings)
-	    if (profile.subscription && profile.subscription.status == 'Verified') {
+	    if (profile.subscription && profile.subscription.status == 'verified') {
 		oo('subscriber-pod').show()
 		oo('min-bid-currency-amount').keyup(function () {
 		    this.value = this.value.replace(/[^0-9\.\,]/g,'');
@@ -341,3 +343,4 @@ $(document).ready(function() {
     oo('min-bid-show a').click(showMinBid)
     oo('show-terms').click(oo.view.showTermsDialog)
 })
+}

@@ -5,7 +5,7 @@
 //      configured correctly.
 
 
-(function() {
+var init = function() {
 
 
 oo.config({prefix: '#search-', auth: {settings: 1, complete: 0}})
@@ -398,5 +398,4 @@ searchController = oo.controller.extend({
 
 })
 
-
-})()
+}

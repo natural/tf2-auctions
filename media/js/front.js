@@ -1,4 +1,4 @@
-//(function() {
+var init = function() {
     oo.config({prefix: '#front-', auth: {settings: 1, complete: 0}})
 
 
@@ -137,4 +137,6 @@
     oo.controller.extend({model: blogModel, view: blogView})
     oo.controller.extend({model: statsModel, view: statsView})
     oo.controller.extend({model: newsModel, view: newsView})
-//})()
+
+    oo.error('front.js loaded')
+}

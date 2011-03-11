@@ -1,6 +1,4 @@
-(function() {
-
-
+var init = function() {
     var model = oo.model.schema.extend({
 	init: function(view) {
 	    var self = this
@@ -22,8 +20,6 @@
 	    ]
 	}
     }),
-
-
     view = oo.view.schema.extend({
 	cloneClass: 'group-proto-seed',
 
@@ -40,8 +36,6 @@
 	    self.message().fadeOut()
 	}
     })
-
-
     oo.controller.extend({
 	model: model,
 	view: view,
@@ -50,6 +44,4 @@
 	    oo.model.auth.init()
 	}
     })
-
-
-})()
+}

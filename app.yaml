@@ -71,7 +71,7 @@ handlers:
     url: /subscribe
 
 -   script: tf2auctions/scripts/public/subscribe/\1.py
-    url: /subscribe/(success|thanks)
+    url: /subscribe/(cancel|thanks)
 
 -   script: tf2auctions/scripts/public/\1.py
     url: /(search|login|terms|terms-dialog|all-items|about|contact|faq|backpack)

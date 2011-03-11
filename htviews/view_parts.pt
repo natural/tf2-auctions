@@ -465,4 +465,35 @@
     </metal:macro>
 
 
+
+    <!--
+
+    subscription form
+
+    -->
+    <metal:macro define-macro="subscribe_form">
+	<form action="${action}" method="post">
+	    <input type="hidden" name="cmd" value="_s-xclick" />
+	    <input type="hidden" name="hosted_button_id" value="${button}" />
+	    <input type="hidden" name="on0" value="Subscription Type" />
+	    <input type="hidden" name="on1" value="Profile ID" />
+	    <input type="hidden" name="os1" value="76111" />
+	    <input type="hidden" name="currency_code" value="USD" />
+
+	    <div class="p05">
+		<select name="os0" class="valign-middle">
+		    <option value="Monthly">Monthly : $${mp}.00USD per month</option>
+		    <option value="Yearly">Yearly : $${yp}.00USD per year</option>
+		</select>
+	    <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif"
+		   border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" 
+		   class="valign-middle" />
+	    </div>
+
+	    <img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+	</form>
+    </metal:macro>
+
+
+
 </metal:parts>

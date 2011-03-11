@@ -1064,7 +1064,7 @@ var oo = (function() {
 	    $$('player-profile-link').attr('href', oo.util.profile.defaultUrl(p))
 	    $$('login-link').hide()
 	    $$('user-buttons, logout-link, site-buttons').show()
-            if (p.subscription.status != 'Verified') {
+            if (p.subscription.status != 'verified') {
 		$$('sub-buttons').show()
 	    }
 	    ns.profile.defaultUserAuthOkay = oo.noop
@@ -1783,11 +1783,13 @@ var oo = (function() {
 })(jQuery);
 
 
-head.ready(function() {
+var core = function() {
     // perform an initial auth if the module has indicated authentication
     if (oo.conf.auth) {
 	oo.model.auth.init()	
     }
     // initialize each direct clone of the oo.controller object:
     $.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
-})
+
+    oo.error('core.js loaded')
+}

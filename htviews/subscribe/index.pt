@@ -3,7 +3,7 @@
 	<title metal:fill-slot="title">TF2Auctions.com - Subscribe</title>
     </head>
     <body>
-	<metal:fill fill-slot="main" tal:define="slug 'subscribe'">
+	<metal:fill fill-slot="main" tal:define="slug 'subscribe'; mp 3; yp 29">
             <style type="text/css">
 		#${slug}-features-list td {
 	        padding:0.5em;
@@ -17,7 +17,12 @@
 		}
             </style>
 	    <div class="center" id="${slug}-content-pod">
-		<h1><span class="hilite">&nbsp;</span>Features, Benefits, and Subscriptions</h1>
+		<div class="w50 center">
+		    <h1><span class="hilite">&nbsp;</span>Subscriptions:  Features and Benefits</h1>
+		    <span class="help">
+			You get a lot of stuff.  Just look at all this stuff.
+		    </span>
+		</div>
 		<div id="${slug}-features-pod" class="w50 center">
 		    <div>
 			<table class="w100 mt1" id="${slug}-features-list">
@@ -112,9 +117,9 @@
 			    </tr>
 			    <tr>
 				<td>
-				    Create Bids with $$ Minimum Bid
+				    Create Bids with Money Minimum Bid
 				    <div class="help">
-					Create listings with currency amount minimum bid.
+					Create listings where bids are money.
 				    </div>
 				</td>
 				<td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
@@ -129,7 +134,7 @@
 				    </div>
 				</td>
 				<td><img src="/media/img/button_no.png" width="24" height="24" />&nbsp;No</td>
-				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Coming Soon!</td>
+				<td><img src="/media/img/button_yes.png" width="24" height="24" />&nbsp;Soon!</td>
 			    </tr>
 			    <tr>
 				<td>
@@ -139,11 +144,11 @@
 				    </div>
 				</td>
 				<td>Free</td>
-				<td><div>$5 / month</div> or <div>$50 / year</div></td>
+				<td>$${mp} / month <br /> - or - <br />$${yp} / year</td>
 			    </tr>
 			    <tr>
 				<td colspan="3">
-				    <div class="help w100 text-center">
+				    <div class="help w100">
 					* Unlimited means as much as you can, limited
 					only by the items in your backpack.  Obviously.
 				    </div>
@@ -153,75 +158,39 @@
 		    </div>
 		</div>
 	    </div>
-	    <div class="w25 center null" id="${slug}-login-pod">
-		<h1 class="mt2">Login to Subscribe</h1>
-	    </div>
-	    <div class="w25 center null" id="${slug}-thanks-pod">
-		<h1>You're already subscribed.  Thank you!</h1>
-	    </div>
-	    <div class="w25 center null" id="${slug}-form-pod">
-		<h1 class="mt2">Subscribe Now!</h1>
-		<metal:if tal:condition="not features.devel">
-		    <form
-			 action="https://www.paypal.com/cgi-bin/webscr"
-			 method="post">
-			<input type="hidden" name="cmd" value="_s-xclick" />
-			<input type="hidden" name="hosted_button_id" value="CDU9LSTHQK7HC" />
-			<input type="hidden" name="on0" value="Subscription Type" />
-			<table>
-			    <tr>
-				<td>
-				    <input type="hidden" name="on1" value="Profile ID" />
-				    <input type="hidden" name="os1" value="76111" />
-				</td>
-			    </tr>
-			    <tr>
-				<td>
-				    Subscription Type
-				    <select name="os0">
-					<option value="Premium (Monthly)">Premium (Monthly) : $5.00USD - monthly</option>
-					<option value="Premium (Yearly)">Premium (Yearly) : $50.00USD - yearly</option>
-				    </select>
-				</td>
-			    </tr>
-			</table>
-			<input type="hidden" name="currency_code" value="USD" />
-			<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif"
-			       border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
-			<img alt="" border="0" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-		    </form>
 
-		</metal:if>
-		<metal:if tal:condition="features.devel">
-		    <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
-			<input type="hidden" name="on1" value="Profile ID" />
-			<input type="hidden" name="os1" value="76111" />
-			<input type="hidden" name="cmd" value="_xclick" />
-			<input type="hidden" name="business" value="Y5T7AVZMQF8ES" />
-			<input type="hidden" name="lc" value="US" />
-			<input type="hidden" name="button_subtype" value="services" />
-			<input type="hidden" name="currency_code" value="USD" />
-			<input type="hidden" name="bn" value="PP-BuyNowBF:btn_buynowCC_LG.gif:NonHosted" />
-			<table>
-			    <tr><td><input type="hidden" name="on0" value="Subscription" />
-				    Subscription
-			    </td></tr><tr><td>
-				    <select name="os0">
-					<option value="Monthly">Monthly $3.00</option>
-					<option value="Yearly">Yearly $29.00</option>
-			    </select> </td></tr>
-			</table>
-			<input type="hidden" name="currency_code" value="USD" />
-			<input type="hidden" name="option_select0" value="Monthly" />
-			<input type="hidden" name="option_amount0" value="3.00" />
-			<input type="hidden" name="option_select1" value="Yearly" />
-			<input type="hidden" name="option_amount1" value="29.00" />
-			<input type="hidden" name="option_index" value="0" />
-			<input type="image" src="https://www.sandbox.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" />
-			<img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
-		    </form>
-		</metal:if>
+	    <div class="w50 text-center center null mt2" id="${slug}-login-pod">
+		<h1 class="mt2">You have to <a id="${slug}-login-link" class="nice" href="">login to subscribe</a></h1>
 	    </div>
+
+	    <div class="w50 text-center center null mt2" id="${slug}-thanks-pod">
+		<h1>You're already subscribed.  <span class="hi2">Thank you!</span></h1>
+	    </div>
+
+	    <div class="w50 center null mt2" id="${slug}-form-pod">
+		<h1><span class="hilite">&nbsp;</span>Subscribe Now!</h1>
+		<div class="help mb1">
+		    Select your subscription type and press the
+		    Subscribe button.  You'll be taken to PayPal to
+		    complete the transaction, and then you'll come
+		    back and have all of the subscriber benefits.
+		</div>
+		<div class="m50 center text-center">
+		    <metal:if tal:condition="features.devel"
+			      tal:define="action 'https://www.paypal.com/cgi-bin/webscr';
+					  button 'CDU9LSTHQK7HC'">
+			<metal:macro use-macro="context.view_parts.macros.subscribe_form" />
+		    </metal:if>
+
+		    <metal:if tal:condition="not features.devel"
+			      tal:define="action 'https://www.paypal.com/cgi-bin/webscr';
+					  button 'CDU9LSTHQK7HC'">
+			<metal:macro use-macro="context.view_parts.macros.subscribe_form" />
+		    </metal:if>
+		</div>
+	    </div>
+
+
 	</metal:fill>
     </body>
 </html>

@@ -1,4 +1,4 @@
-//(function() {
+var init = function() {
 
 
 oo.config({prefix: '#profile-', auth: {settings: 1, complete: 1}})
@@ -427,7 +427,7 @@ var SettingsView = oo.view.extend({
 	    }
 	    oo('settings-pod').slideDown()
 	})
-	if (profile.subscription && profile.subscription.status == 'Verified') {
+	if (profile.subscription && profile.subscription.status == 'verified') {
 	    oo.data.schema()
 	        .success(function(s) {
 		    var nlt = self.notifyTool(s),
@@ -637,7 +637,7 @@ var MainController = oo.controller.extend({
 	    // apply the hash in 'select', not 'show', to prevent
 	    // scrolling to the div
 	    select: function(e, ui) { window.location.hash = ui.tab.hash },
-	    show: function() {self.show.apply(self, arguments) },
+	    show: function() {self.show.apply(self, arguments) }
 	})
 	// force scroll on document load in case there is a hash
 	document.body.scrollTop = 0
@@ -645,5 +645,4 @@ var MainController = oo.controller.extend({
 })
 
 
-//})()
-
+}

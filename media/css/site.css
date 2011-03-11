@@ -704,27 +704,37 @@ top:2px;
 .jewel-8289918 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8289918.png'); }
 
 
+.jewel-8421376 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8421376.png'); }
+.jewel-15787660 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/15787660.png'); }
+.jewel-3100495 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/3100495.png'); }
+.jewel-15308410 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/15308410.png'); }
+.jewel-3329330 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/3329330.png'); }
+.jewel-16738740 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/16738740.png'); }
+
+
+
+
 .tool-tag { background-repeat: no-repeat; }
-.effect-6 { background-image:url('/media/img/effects_tmp/6.png'); }
-.effect-7 { background-image:url('/media/img/effects_tmp/7.png'); }
-.effect-8 { background-image:url('/media/img/effects_tmp/8.png'); }
-.effect-9 { background-image:url('/media/img/effects_tmp/9.png'); }
-.effect-10 { background-image:url('/media/img/effects_tmp/10.png'); }
-.effect-11 { background-image:url('/media/img/effects_tmp/11.png'); }
-.effect-12 { background-image:url('/media/img/effects_tmp/12.png'); }
-.effect-13 { background-image:url('/media/img/effects_tmp/13.png'); }
-.effect-14 { background-image:url('/media/img/effects_tmp/14.png'); }
-.effect-15 { background-image:url('/media/img/effects_tmp/15.png'); }
-.effect-16 { background-image:url('/media/img/effects_tmp/16.png'); }
-.effect-17 { background-image:url('/media/img/effects_tmp/17.png'); }
-.effect-18 { background-image:url('/media/img/effects_tmp/18.png'); }
-.effect-19 { background-image:url('/media/img/effects_tmp/19.png'); }
-.effect-20 { background-image:url('/media/img/effects_tmp/20.png'); }
-/* earbuds: */
-.effect-99 { background-image:url('/media/img/effects_tmp/99.png'); }
-.tool-5020 { background-image:url('/media/img/tools_tmp/5020.png'); }
-.tool-5044 { background-image:url('/media/img/tools_tmp/5044.png'); }
-.tool-5020-5044 { background-image:url('/media/img/tools_tmp/5020-5044.png'); }
+.effect-6 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/6.png'); }
+.effect-7 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/7.png'); }
+.effect-8 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/8.png'); }
+.effect-9 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/9.png'); }
+.effect-10 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/10.png'); }
+.effect-11 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/11.png'); }
+.effect-12 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/12.png'); }
+.effect-13 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/13.png'); }
+.effect-14 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/14.png'); }
+.effect-15 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/15.png'); }
+.effect-16 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/16.png'); }
+.effect-17 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/17.png'); }
+.effect-18 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/18.png'); }
+.effect-19 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/19.png'); }
+.effect-20 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/20.png'); }
+.effect-99 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/99.png'); } /* earbuds: */
+
+.tool-5020      { background-image:url('http://tf2apiproxy.appspot.com/media/img/tags/5020.png'); }
+.tool-5044      { background-image:url('http://tf2apiproxy.appspot.com/media/img/tags/5044.png'); }
+.tool-5020-5044 { background-image:url('http://tf2apiproxy.appspot.com/media/img/tags/5020-5044.png'); }
 
 
 

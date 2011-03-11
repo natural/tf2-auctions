@@ -1,4 +1,4 @@
-$(document).ready(function() {
+var init = function() {
     oo.config({prefix:'#faq-'})
 
     var cat = $('.prototype.category-seed'),
@@ -35,4 +35,4 @@ $(document).ready(function() {
 	})
 	target.fadeIn()
     })
-})
+}

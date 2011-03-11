@@ -1,4 +1,4 @@
-(function() {
+var init = function() {
 
 var submitFeedback = function() {
     var feedback = {
@@ -44,4 +44,4 @@ $(document).ready(function() {
         .error(function() {userAuthError() })
 })
 
-})()
+}
