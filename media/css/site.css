@@ -579,7 +579,7 @@ font-size:11pt;
 #tooltip .level { color:#756b5e; }
 #tooltip .vintage { color:#476291; }
 #tooltip .ctrl { color:#fff; text-align:left; }
-#tooltip .alt { color:#e4dbc4; max-width:24em; }
+#tooltip .alt { color:#e4dbc4; amax-width:32em !important; white-space:nowrap; }
 #tooltip .positive { color:#8dbceb; }
 #tooltip .negative { color:#eb3b3b; }
 
@@ -702,8 +702,6 @@ top:2px;
 .jewel-8154199 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8154199.png'); }
 .jewel-8208497 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8208497.png'); }
 .jewel-8289918 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8289918.png'); }
-
-
 .jewel-8421376 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/8421376.png'); }
 .jewel-15787660 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/15787660.png'); }
 .jewel-3100495 { background-image:url('http://tf2apiproxy.appspot.com/media/img/jewels/3100495.png'); }
@@ -714,7 +712,8 @@ top:2px;
 
 
 
-.tool-tag { background-repeat: no-repeat; }
+.effect-base { background-repeat: no-repeat; }
+.effect-4 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/4.png'); }
 .effect-6 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/6.png'); }
 .effect-7 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/7.png'); }
 .effect-8 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/8.png'); }
@@ -732,6 +731,14 @@ top:2px;
 .effect-20 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/20.png'); }
 .effect-99 { background-image:url('http://tf2apiproxy.appspot.com/media/img/effects/99.png'); } /* earbuds: */
 
+.tool-base { 
+height:48px !important;
+width:24px !important;
+background-repeat:no-repeat;
+position:absolute;
+left:2px;
+top:2px;
+}
 .tool-5020      { background-image:url('http://tf2apiproxy.appspot.com/media/img/tags/5020.png'); }
 .tool-5044      { background-image:url('http://tf2apiproxy.appspot.com/media/img/tags/5044.png'); }
 .tool-5020-5044 { background-image:url('http://tf2apiproxy.appspot.com/media/img/tags/5020-5044.png'); }

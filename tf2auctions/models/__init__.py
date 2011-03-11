@@ -309,7 +309,7 @@ class PlayerItem(polymodel.PolyModel):
 	item = json_loads(self.source)
 	this = {'uniqueid':self.uniqueid, 'defindex':self.defindex}
 	this.update((k, item.get(k)) for k in
-		    ('attributes', 'level', 'quantity', 'quality', 'inventory'))
+		    ('attributes', 'level', 'quantity', 'quality', 'inventory', 'custom_name', 'custom_desc'))
 	return this
 
     @classmethod

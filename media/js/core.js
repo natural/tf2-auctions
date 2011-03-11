@@ -36,6 +36,17 @@ if (typeof String.prototype.trim !== 'function') {
     }
 }
 
+if (typeof String.prototype.wordwrap !== 'function') {
+    String.prototype.wordwrap = function(width, brk, cut) {
+	brk = brk || '<br />\n'
+	width = width || 75
+	cut = cut || false
+	if (!this) { return this }
+	var rx = '.{1,' +width+ '}(\\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\\S+?(\\s|$)')
+	return this.match( RegExp(rx, 'g') ).join( brk )
+    }
+}
+
 
 Number.prototype.formatMoney = function(c, d, t){
     var n = this, c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? '.' : d, t = t == undefined ? ',' : t, s = n < 0 ? '-' : '', i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + '', j = (j = i.length) > 3 ? j % 3 : 0;
@@ -255,8 +266,13 @@ var oo = (function() {
 		    }
 	    if (schemaItem['item_description']) {
 		var current = $('#tooltip .alt').html(),
-	        desc = schemaItem['item_description']
-		$('#tooltip .alt').html('{0}'.fs( (current ? current + '<br />' : '') + desc))
+	            ddesc = schemaItem['item_description']
+		if (ddesc.indexOf('\n') > -1) {
+		    ddesc = ddesc.replace(/\n/g, '<br />')		    
+		} else {
+		    ddesc = ddesc.wordwrap(64)
+		}
+		$('#tooltip .alt').html('{0}'.fs( (current ? current + '<br />' : '') + ddesc))
 	    }
 	    if (playerItem['custom_desc']) {
 		var current = $('#tooltip .alt').html()
@@ -632,7 +648,7 @@ var oo = (function() {
 	self.setEffect = function(itemutil, element, settings) {
             if (settings.showItemEffect && itemutil.effect()) {
 		element.parent()
-		    .addClass('effect-{0} tool-tag'.fs(itemutil.effect()))
+		    .addClass('effect-{0} effect-base'.fs(itemutil.effect()))
 	    }
 	}
 
@@ -646,10 +662,10 @@ var oo = (function() {
 		}
 	    }
 	    if (settings.showItemTags && itemutil.isNamed()) {
-		element.parent()
-		    .addClass('tool-{0} tool-tag'.fs(
-                      item.custom_name && item.custom_desc ? '5020-5044' : (item.custom_name ? '5020' : '5044')				  
-		      ))
+		element
+		    .append('<span class="tool-base tool-{0}">&nbsp;</span>'.fs(
+				item.custom_name && item.custom_desc ? '5020-5044' : (item.custom_name ? '5020' : '5044')
+			    ))
 	    }
 	    if (itemutil.canTrade()) {
 		element.parent('td')
@@ -711,7 +727,8 @@ var oo = (function() {
 	})
     }, 
     moveSalad = function(source, target) {
-	return moveClasses(source, target, /(border|background)-quality/)
+	moveClasses(source, target, /(border|background)-quality/)
+	moveClasses(source, target, /effect-.*/)
     }
 
 
@@ -751,7 +768,7 @@ var oo = (function() {
 		$(this).append(item)
 		item.data('original-cell', ui.draggable)
 		$('img', this).css('margin-top', '0')
-		var others = $('span.equipped:only-child, span.quantity:only-child, span.jewel', ui.draggable)
+		var others = $('span.equipped, span.quantity, span.jewel, span.tool-base', ui.draggable)
 		$(this).append(others)
 		$('#bp-chooser-{0} td, #bp-{1} td'.fs(chooserSlug, backpackSlug))
 		    .removeClass('selected outline')
@@ -866,7 +883,7 @@ var oo = (function() {
 	    if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	    cell.removeClass('selected')
 	    source.data('original-cell', cell)
-	    var others = $('span.equipped, span.quantity, span.jewel', cell)
+	    var others = $('span.equipped, span.quantity, span.jewel, span.tool-base', cell)
 	    target.prepend(source)
 	    target.append(others)
 	    moveSalad(cell, target.parent())
@@ -878,7 +895,7 @@ var oo = (function() {
 	    var source = $(event.target),
 	        target = $('div', source.data('original-cell'))
 	    if (target.length==1) {
-    		var others = $('span.equipped, span.quantity, span.jewel', source.parent())
+    		var others = $('span.equipped, span.quantity, span.jewel, span.tool-base', source.parent())
 		moveSalad(source.parent().parent(), target.parent())
 		target.append(source)
 		target.append(others)
@@ -1209,7 +1226,9 @@ var oo = (function() {
 		level: i.level || '',
 		quality: i.quality || i.item_quality,
 		quantity: i.quantity || 1,
-		inventory: i.inventory || 0
+		inventory: i.inventory || 0,
+		custom_name: i.custom_name,
+		custom_desc: i.custom_desc
 	    }
 	}
 
@@ -1275,13 +1294,13 @@ var oo = (function() {
 		    }
 		}
                 if (settingV.showItemTags && iutil.isNamed()) {
-		    img.parent().parent()
-			.addClass('tool-{0} tool-tag'.fs(
-                             pitem.custom_name && pitem.custom_desc ? '5020-5044' : (pitem.custom_name ? '5020' : '5044')
-		      ))
+		    img.parent()
+		    .append('<span class="tool-base tool-{0}">&nbsp;</span>'.fs(
+				pitem.custom_name && pitem.custom_desc ? '5020-5044' : (pitem.custom_name ? '5020' : '5044')
+			    ))
 		}
 	        if (settingV.showItemEffect && iutil.effect()) {
-		    img.parent().parent().addClass('effect-{0} tool-tag'.fs(iutil.effect()))
+		    img.parent().parent().addClass('effect-{0} effect-base'.fs(iutil.effect()))
 		}
 	    })
 	}
