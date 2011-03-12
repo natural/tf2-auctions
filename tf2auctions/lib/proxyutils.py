@@ -8,7 +8,7 @@ from google.appengine.api import memcache
 
 class fetch:
     class config:
-	url_root = 'http://tf2apiproxy.appspot.com/api/v1/'
+	url_root = 'http://tf2apiproxy.appspot.com/api/v2/public/'
 	url_schema = url_root + 'schema%s'
 	url_items = url_root + 'items/%s'
 	url_profile = url_root + 'profile/%s'
