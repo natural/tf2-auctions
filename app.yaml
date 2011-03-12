@@ -51,37 +51,27 @@ handlers:
     login: required
     script: tf2auctions/scripts/auth/\1/\2.py
     url: /(listing)/(add)
-
 -   auth_fail_action: unauthorized
     login: required
     script: tf2auctions/scripts/auth/\1.py
     url: /(profile-update)(/.*)?
-
 -   script: tf2auctions/scripts/public/search-redirect.py
     url: /(listing|profile)(/?)
-
 -   script: tf2auctions/scripts/public/\1.py
     url: /(listing|profile)/\d{1,20}
-
 -   script: tf2auctions/scripts/public/profile.py
     url: /id/(.{1,32})
-
-
 -   script: tf2auctions/scripts/public/subscribe/index.py
     url: /subscribe
-
 -   script: tf2auctions/scripts/public/subscribe/\1.py
     url: /subscribe/(cancel|thanks)
-
 -   script: tf2auctions/scripts/public/\1.py
     url: /(search|login|terms|terms-dialog|all-items|about|contact|faq|backpack|openmarket|openmarket-dialog)
-
 -   script: tf2auctions/scripts/public/front_rss.py
     url: /index.rss
-
 -   script: tf2auctions/scripts/public/front.py
     url: /
 -   script: tf2auctions/scripts/public/404.py
     url: .*
 runtime: python
-version: 69
+version: 70
