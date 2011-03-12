@@ -262,6 +262,7 @@ font-family:"TF2secondary";
 font-size:0.85em;
 color:#c8503c;
 padding:0.25em 0.4em 0.25em 0.4em;
+cursor: default;
 }
 
 span.equipped {

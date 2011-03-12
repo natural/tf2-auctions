@@ -99,7 +99,7 @@
 					Warning: Trading game items for
 					cash is not supported or
 					recommended by Valve.  You do so
-					at your own risk.  <a href="#" class="nice">Read More</a>.
+					at your own risk.  <a href="#" class="nice" onclick="return false" id="${slug}-show-open-market">Read More</a>.
 				    </label>
 				</div>
 			    </div>
@@ -150,7 +150,7 @@
 				<input type="checkbox" id="${slug}-add-bid-terms" />
 				I Agree to
 				<span>
-				    <a href="#" class="nice" id="${slug}-add-bid-show-terms" onclick="return false">the Site Rules and Terms of Use</a>.
+				    <a href="#" class="nice" id="${slug}-show-terms" onclick="return false">the Site Rules and Terms of Use</a>.
 				</span>
 			    </div>
 			</div>

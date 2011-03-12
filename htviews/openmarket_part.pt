@@ -5,8 +5,8 @@
 
     <div class="msg m1 w100">
 	<div class="error p1 center text-center w75">
-	    <h1 class="text-center center">IMPORTANT:</h1>
-	    <label class="mt1">
+	    <h1 class="local text-center center">IMPORTANT:</h1>
+	    <label class="mt1 local">
 	    Trading for money or items outside of the game is not
 	    supported by Valve.  You do so at your own risk.  <a class="nice" target="_new"
 	    href="https://support.steampowered.com/kb_article.php?ref=9958-MJDG-3003">Read
@@ -15,7 +15,7 @@
 	</div>
     </div>
 
-    <h1 class="mt2"><span class="hilite">&nbsp;</span>The Open Market for TF2 Items</h1>
+    <h1 class="local mt2"><span class="hilite">&nbsp;</span>The Open Market for TF2 Items</h1>
 
     <div>
 	<p>
@@ -33,14 +33,14 @@
 	    <li>Because it is bound to happen, it is better to do it
 	    <em>in the open</em> where others can watch, and where
 	    scammers can be identified, avoided, and ultimately
-	    bannished from the community.
+	    banished from the community.
 	    </li>
 	</ul>
 	</p>
     </div>
 
     <div>
-	<h1 class="mt2"><span class="hilite">&nbsp;</span>Who should I trust?</h1>
+	<h1 class="local mt2"><span class="hilite">&nbsp;</span>Who should I trust?</h1>
 
 	<p>Remember:  if it seems too good to be true, it probably is! Other things to keep in mind:
 	<ul class="ml1">
@@ -60,7 +60,7 @@
 
 
     <div>
-	<h1 class="mt2"><span class="hilite">&nbsp;</span>Who will help me if I get scammed?</h1>
+	<h1 class="local mt2"><span class="hilite">&nbsp;</span>Who will help me if I get scammed?</h1>
 
 	<p>Sadly, no one. You're taking a risk.  Sometimes that risk
 	is small, sometimes it is not, but it is always there and it

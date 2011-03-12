@@ -1681,6 +1681,24 @@ var oo = (function() {
 	    return false
 	},
 
+        showOpenMarketDialog: function(e) {
+	    $.ajax({
+		url: '/openmarket-dialog',
+		cache: true,
+		success: function(text) {
+		    $('#content-terms-dialog').html(text).dialog({
+			dialogClass: 'terms-dialog',
+			modal: true,
+			resizable: false,
+			show: 'fade',
+			height: 400,
+			title: 'TF2 Open Market',
+			width: $(window).width() * 0.9, position: 'top' });
+		}
+	    })
+	    return false
+	},
+
 	navFeatured: function(offset) {
 	    var prefix = '#featured-listings div.listing-seed',
 	        current = $('{0}.listing-seed:visible'.fs(prefix)),
@@ -1809,6 +1827,4 @@ var core = function() {
     }
     // initialize each direct clone of the oo.controller object:
     $.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
-
-    oo.error('core.js loaded')
 }

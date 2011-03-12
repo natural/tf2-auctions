@@ -33,9 +33,9 @@ class BlogEntry(db.Model):
 
     entry_decoded = db.TextProperty(default='')
 
-    @TransformProperty(entry_decoded)
-    def entry_encoded(value):
-	return markdown(value)
+#    @TransformProperty(entry_decoded)
+#    def entry_encoded(value):
+#	return markdown(value)
 
     def has_edits(self):
 	delta = self.updated_at - self.created_at
@@ -90,5 +90,5 @@ class BlogEntry(db.Model):
 	    'updated_by':up_by,
 	    'updated_at':str(self.updated_at),
 	    'intro':self.intro_encoded,
-	    'entry':self.entry_encoded,
+	    'entry':markdown(self.entry_decoded),
 	}

@@ -936,6 +936,11 @@ var ListingController = oo.controller.extend({
 	return pf ? pf[0] : undefined
     },
 
+    'ready' : function(e) {
+	oo('show-terms').click(oo.view.showTermsDialog)
+	oo('show-open-market').click(oo.view.showOpenMarketDialog)
+    },
+
     '#listing-detail-cancel-show-confirm click' : function(e) {
 	e.controller.view.showCancelListing()
     },

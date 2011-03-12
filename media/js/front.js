@@ -137,6 +137,4 @@ var init = function() {
     oo.controller.extend({model: blogModel, view: blogView})
     oo.controller.extend({model: statsModel, view: statsView})
     oo.controller.extend({model: newsModel, view: newsView})
-
-    oo.error('front.js loaded')
 }

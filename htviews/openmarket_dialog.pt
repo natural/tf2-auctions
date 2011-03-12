@@ -1,0 +1,6 @@
+<div>
+    <style type="text/css">
+	h1.local, h2.local, label.local { color:black; }
+    </style>
+    <div metal:use-macro="context.openmarket_part.macros.openmarket" />
+</div>
