@@ -202,6 +202,7 @@ class Listing(db.Model):
 	    for other in [b for b in self.bids() if str(b.key()) != k]:
 		other.set_status('lost', 'Bid not chosen as winner.')
 	    self.set_status('awarded', 'Listing awarded to chosen bid.', set_items=True, set_bids=False)
+            queue_tool.notify_win({'bid':k})
 
     def set_status(self, status, reason, set_items=True, set_bids=True):
 	""" Common workflow transition routine.
@@ -471,7 +472,7 @@ class Bid(db.Model):
 	    if user and user_steam_id(user) == self.owner:
 		private = True
 	return {
-	    'owner' : PlayerProfile.get_by_user(self.owner).encode_builtin(),
+	    'owner' : self.owner_profile().encode_builtin(),
 	    'created' : js_datetime(self.created),
 	    'message_public' : self.message_public,
 	    'message_private' : self.message_private if private else None,
@@ -482,6 +483,12 @@ class Bid(db.Model):
 	    'feedback': lfb.encode_builtin() if lfb else None,
             'currency_val' : self.currency_val
 	    }
+
+    def owner_profile(self):
+	""" Returns the player profile for this bid.
+
+	"""
+	return PlayerProfile.get_by_user(self.owner)
 
     def items(self):
 	return BidItem.all().filter('bid = ', self).fetch(limit=10)

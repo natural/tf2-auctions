@@ -13,3 +13,7 @@ queue:
 
 - name: listing-notify
   rate: 1/s
+
+- name: win-notify
+  rate: 1/s
+

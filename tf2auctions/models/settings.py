@@ -36,7 +36,7 @@ class PlayerSettings(db.Expando, UserId64Mixin):
 		    someone bids on your listings."""
 	    },
 	    {
-		'id':'notify-winning-bid', 'type':bool, 'label':'Notify Me When My Bid Wins',
+		'id':'notify-wins', 'type':bool, 'label':'Notify Me When My Bid Wins',
 		'widget':'checkbox', 'default':False,
 		'help':"""
 		    When enabled, you will get an email message when

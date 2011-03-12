@@ -59,6 +59,15 @@ class QueueTool(object):
 	)
 
 
+    def notify_win(self, params, transactional=False):
+	return taskqueue.add(
+	    url='/api/v1/admin/queue/notify-win',
+	    transactional=transactional,
+	    queue_name='win-notify',
+	    params=params
+	)
+
+
     def reverify_items(self, params, transactional=False):
 	return taskqueue.add(
 	    url='/api/v1/admin/queue/reverify-items',

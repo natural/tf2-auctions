@@ -1,0 +1,73 @@
+<metal:macro metal:define-macro="openmarket">
+    <style type="text/css">
+    </style>
+
+
+    <div class="msg m1 w100">
+	<div class="error p1 center text-center w75">
+	    <h1 class="text-center center">IMPORTANT:</h1>
+	    <label class="mt1">
+	    Trading for money or items outside of the game is not
+	    supported by Valve.  You do so at your own risk.  <a class="nice" target="_new"
+	    href="https://support.steampowered.com/kb_article.php?ref=9958-MJDG-3003">Read
+	    This</a> before you trade, buy, or sell items.
+	    </label>
+	</div>
+    </div>
+
+    <h1 class="mt2"><span class="hilite">&nbsp;</span>The Open Market for TF2 Items</h1>
+
+    <div>
+	<p>
+	    This site allows you to buy, sell, and auction your TF2
+	    items for money.  We do this because:
+        <ul class="ml1">
+	    <li>There is nothing illegal about it.  By definition, it
+	    is not a black market, but an open market.</li>
+
+	    <li>It is against the recommendations of Valve Software,
+	    creators of TF2, but Valve has not forbidden it.  Because
+	    Valve has not forbidden this kind of transaction, <em>it
+	    is bound to happen</em>.</li>
+
+	    <li>Because it is bound to happen, it is better to do it
+	    <em>in the open</em> where others can watch, and where
+	    scammers can be identified, avoided, and ultimately
+	    bannished from the community.
+	    </li>
+	</ul>
+	</p>
+    </div>
+
+    <div>
+	<h1 class="mt2"><span class="hilite">&nbsp;</span>Who should I trust?</h1>
+
+	<p>Remember:  if it seems too good to be true, it probably is! Other things to keep in mind:
+	<ul class="ml1">
+	    <li>Look at the feedback of a seller or trader.  Have they
+	    completed successful trades in the past?  Have they bought
+	    or sold items to a variety of players?</li>
+
+	    <li>Use a trusted middle man if you're not sure.  Doing so
+	    is beyond the scope of this document (and this site), but
+	    they're not hard to find.</li>
+
+	    <li>When in doubt, back right out.  If you're not
+	    comfortable, just don't do it.</li>
+	</ul>
+	</p>
+    </div>
+
+
+    <div>
+	<h1 class="mt2"><span class="hilite">&nbsp;</span>Who will help me if I get scammed?</h1>
+
+	<p>Sadly, no one. You're taking a risk.  Sometimes that risk
+	is small, sometimes it is not, but it is always there and it
+	is always yours.  If you're not sure, don't buy, sell, or trade!
+	</p>
+
+    </div>
+
+
+</metal:macro>
