@@ -2,7 +2,7 @@ version := $(shell python -c "import yaml;d=yaml.load(open('app.yaml')); print d
 dist_dir := dist-$(version)
 dist_css := $(wildcard media/css/*.css)
 dist_js  := $(wildcard media/js/*.js)
-
+dist_subscribe_js  := $(wildcard media/js/subscribe/*.js)
 
 .PHONY:	all dist bump_version $(dist_css) $(dist_js) prod_js
 
@@ -11,7 +11,7 @@ all:
 	@echo "try make bump_version && make dist"
 
 
-dist: $(dist_css) $(dist_js) prod_js
+dist: $(dist_css) $(dist_js) $(dist_subscribe_js) prod_js
 	@mkdir -p $(dist_dir)
 	@cp *.yaml $(dist_dir)
 	@cp admin_key.nodist $(dist_dir)
@@ -43,6 +43,10 @@ $(dist_css):
 $(dist_js):
 	@mkdir -p $(dist_dir)/media/js
 	@yuicompressor --type js $@ -o $(dist_dir)/media/js/$(notdir $@)
+
+$(dist_subscribe_js):
+	@mkdir -p $(dist_dir)/media/js/subscribe
+	@yuicompressor --type js $@ -o $(dist_dir)/media/js/subscribe/$(notdir $@)
 
 prod_js:
 	cd $(dist_dir)/media/js && cat ga.js jquery.json-2.2.js dateformat.js core.js > core.min.js
