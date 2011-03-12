@@ -4,7 +4,7 @@ dist_css := $(wildcard media/css/*.css)
 dist_js  := $(wildcard media/js/*.js)
 dist_subscribe_js  := $(wildcard media/js/subscribe/*.js)
 
-.PHONY:	all dist bump_version $(dist_css) $(dist_js) prod_js
+.PHONY:	all dist bump_version $(dist_css) $(dist_js) $(dist_subscribe_js) prod_js
 
 
 all:
