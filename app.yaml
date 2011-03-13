@@ -65,8 +65,10 @@ handlers:
     url: /subscribe
 -   script: tf2auctions/scripts/public/subscribe/\1.py
     url: /subscribe/(cancel|thanks)
+
 -   script: tf2auctions/scripts/public/\1.py
-    url: /(search|login|terms|terms-dialog|all-items|about|contact|faq|backpack|openmarket|openmarket-dialog)
+    url: /(search|login|terms|terms-dialog|all-items|about|backpack|support|openmarket|openmarket-dialog)
+
 -   script: tf2auctions/scripts/public/front_rss.py
     url: /index.rss
 -   script: tf2auctions/scripts/public/front.py

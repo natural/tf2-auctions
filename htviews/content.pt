@@ -89,18 +89,22 @@
 	    <div class="p1">
 		<metal:slot define-slot="footer" />
 		<div class="text-center">
+		    More Stuff:
 		    <a href="/all-items" class="nice">All Items</a> &middot;
 		    <a href="/about" class="nice">About this Site</a> &middot;
-		    <a href="/faq" class="nice">FAQ</a> &middot;
-		    <a href="/terms" class="nice">Rules, Terms &amp; Privacy Policy</a> &middot;
-		    <a href="/contact" class="nice">Contact &amp; Feedback</a>
+		    <a href="/terms" class="nice">Rules, Terms &amp; Privacy Policy</a>
 		</div>
-		<div class="text-center m05 mb1">
-		    Powered by <a href="http://steampowered.com" class="nice">Steam</a>
-		    (but we don't have anything to do with Valve or Steam)
+		<div class="text-center m05 mb2">
+		    Help and Support:
+		    <a href="/support#contact" class="nice">Contact &amp; Feedback</a> &middot;
+		    <a href="/support#issues" class="nice">Issues</a> &middot;
+		    <a href="/support#faq" class="nice">FAQ</a> &middot;
+		    <a href="/support#changelog" class="nice">Change Log</a> &middot;
+		    <a href="/support#todo" class="nice">Coming Soon</a>
 		</div>
-		<div class="text-center m05">
-		    Site created and operated by <a href="/profile/76561197992805111">pnatural</a>
+		<div class="text-center m05 mb2">
+		    Powered by <a href="http://steampowered.com" class="nice">Steam</a> &middot;
+		    Created by <a href="/profile/76561197992805111">pnatural</a>
 		</div>
 	    </div>
 	</div>

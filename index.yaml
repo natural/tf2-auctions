@@ -177,13 +177,6 @@ indexes:
 
 - kind: Listing
   properties:
-  - name: featured
-  - name: status
-  - name: created
-    direction: desc
-
-- kind: Listing
-  properties:
   - name: owner
   - name: created
     direction: desc

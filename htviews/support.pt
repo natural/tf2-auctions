@@ -1,0 +1,12 @@
+<html metal:use-macro="context.content.macros.layout">
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com - Support</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'support'">
+	    <div class="center" id="${slug}-content-pod">
+		<h1><span class="hilite">&nbsp;</span>Support.  Like foundations and basements and stuff.</h1>
+	    </div>
+	</metal:fill>
+    </body>
+</html>
