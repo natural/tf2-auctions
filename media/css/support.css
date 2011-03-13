@@ -1,0 +1,76 @@
+/*
+  this starts the copy pasta from profile.css; should move both into
+  'tabs-at-the-top.css'
+*/
+.ui-tabs .ui-tabs-hide {
+display: none;
+}
+
+
+div.tabs > ul li.ui-tabs-selected {
+background: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0.22, rgb(153,80,64)),
+    color-stop(0.83, rgb(81,42,32))
+);
+background: -moz-linear-gradient(
+    center bottom,
+    rgb(153,80,64) 22%,
+    rgb(81,42,32) 83%
+);
+}
+
+
+div.tabs > ul {
+list-style: none;
+float:left;
+width:100%;
+margin-bottom:1em;
+}
+
+
+div.tabs > ul li {
+width:10em;
+float:left;
+margin-right:1em;
+text-align:center;
+background: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    color-stop(0.1, rgb(74,66,51)),
+    color-stop(0.8, rgb(100,90,78)),
+    color-stop(0.97, rgb(57,52,41))
+);
+background: -moz-linear-gradient(
+    center bottom,
+    rgb(74,66,51) 10%,
+    rgb(100,90,78) 80%,
+    rgb(57,52,41) 97%
+);
+border-bottom-right-radius:0.5em;
+border-bottom-left-radius:0.5em;
+-moz-border-radius-bottomright:0.5em;
+-moz-border-radius-bottomleft:0.5em;
+-webkit-border-bottom-right-radius:0.5em;
+-webkit-border-bottom-left-radius:0.5em;
+}
+
+div.tabs > ul li h4 {
+padding:0.5em 0 0.25em 0;
+color:#EBE2CA;
+}
+
+div.tabs > ul li h4 a:hover {
+color:#c8503c;
+}
+
+div.tabs > ul li.ui-tabs-selected h4 a:hover {
+color:#EBE2CA;
+}
+
+#content-main-pod { margin-top: 0 }
+
+/* end the profile.css copy pasta. */

@@ -71,6 +71,16 @@ class GitHubIssues(GitHubApi):
 class GitHubBlob(GitHubApi):
     feature_url = 'blob/%s/%s/%s/%s/%s'
 
+    def __init__(self, branch=None, tag=None):
+        repo = GitHubRepo()
+        if tag:
+            sha = repo.tags()['tags'][tag]
+        elif branch:
+            sha = repo.branches()['branches'][branch]
+        else:
+            raise TypeError('must supply branch or tag')
+        self.sha = sha
+
     def make_url(self, what, sha, path):
         return self.base_url + self.feature_url % (what, self.user, self.repo, sha, path)
 
@@ -83,6 +93,9 @@ class GitHubMarkdownBlob(GitHubBlob):
     def encoded(self, sha, path):
         data = self.show(sha, path)['blob']['data']
         return markdown(data)
+
+    def read(self):
+        return self.encoded(self.sha, self.filename)
 
 
 ##
@@ -103,7 +116,10 @@ class TodoFile(GitHubMarkdownBlob):
 
 
 class ChangeLogFile(GitHubMarkdownBlob):
-    pass
+    filename = 'CHANGES.md'
+
+
+
 
 
 class SupportComposite(object):

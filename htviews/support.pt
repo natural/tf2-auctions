@@ -4,7 +4,82 @@
     </head>
     <body>
 	<metal:fill fill-slot="main" tal:define="slug 'support'">
-	    <div class="center" id="${slug}-content-pod">
+	    <div id="tabs" class="tabs">
+		<ul>
+		    <li><h4><a href="#contact">Contact</a></h4></li>
+		    <li><h4><a href="#issues">Issues</a></h4></li>
+		    <li><h4><a href="#faq">FAQ</a></h4></li>
+		    <li><h4><a href="#changelog">Change Log</a></h4></li>
+		    <li><h4><a href="#todo">Coming Soon</a></h4></li>
+		</ul>
+		<div id="contact">
+		    <h2 class="null loading">Loading...</h2>
+		    <div class="null">
+			<h1><span class="hilite">&nbsp;</span><span class="title">Contact &amp; Feedback</span></h1>
+			<div id="contact-complete" class="message null">
+			    <div class="information">Message Sent.  Thank you!</div>
+			</div>
+			<form id="contact-form" onsubmit="return false">
+			    <input type="hidden" id="contact-id64"
+				   name="contact-id64" value="" />
+			    <div class="mt1">
+				<label>Name:</label>
+				<input type="text" id="contact-name"
+				       name="contact-name" class="w100" value="" />
+			    </div>
+			    <div class="mt1">
+				<label>Email:</label>
+				<input type="text" id="contact-email"
+				       name="contact-email" class="w100" value="" />
+			    </div>
+			    <div class="mt1">
+				<label>Question, comments and/or feedback:</label>
+				<div>
+				    <textarea id="contact-message"
+					      style="height:10em"
+					      class="w100"></textarea>
+				</div>
+			    </div>
+			    <div class="mt1 w100 text-right">
+				<a class="button" href="#" onclick="return false"
+				   id="contact-form-submit">Submit</a>
+			    </div>
+			</form>
+		    </div>
+		</div>
+		<div id="issues">
+		    <div class="null">
+			<h1><span class="hilite">&nbsp;</span>Issues and Bugs</h1>
+		    </div>
+		</div>
+		<div id="faq">
+		    <h2 class="null loading">Loading...</h2>
+		    <div class="null">
+			<h1><span class="hilite">&nbsp;</span><span class="title">Ye Olde Frequently Asked Questions</span></h1>
+			<div class="null prototype category-seed">
+			    <h2></h2>
+			</div>
+			<div class="null prototype entry-seed">
+			    <div>Question: <div class="title"></div></div>
+			    <div>Answer:  <div class="entry"></div></div>
+			</div>
+			<div id="faq-content">
+			</div>
+		    </div>
+		</div>
+		<div id="changelog">
+		    <div class="null">
+			<h1><span class="hilite">&nbsp;</span>Recent Changes</h1>
+		    </div>
+		</div>
+		<div id="todo">
+		    <div class="null">
+			<h1><span class="hilite">&nbsp;</span>What's Coming Soon</h1>
+		    </div>
+		</div>
+	    </div>
+
+	    <div class="center null" id="${slug}-content-pod">
 		<h1><span class="hilite">&nbsp;</span>Support.  Like foundations and basements and stuff.</h1>
 	    </div>
 	</metal:fill>
