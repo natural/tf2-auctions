@@ -6,7 +6,6 @@ import yaml
 
 
 class features:
-    always_cache = False
     app_dir = os.path.abspath(os.path.join(os.path.split(__file__)[0], '../'))
     devel = os.environ.get('SERVER_SOFTWARE', '').startswith('Dev')
     subscriber_accounts = devel # True later when ready

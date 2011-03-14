@@ -38,7 +38,7 @@ def user_steam_id(user):
 	pass
 
 
-def cache(key, ttl=60, verbose=False):
+def cache(key, ttl=60, verbose=False, always=False):
     def deco(func):
 	def wrapper(*args, **kwds):
 	    mkey = key(*args, **kwds) if callable(key) else key
@@ -58,7 +58,7 @@ def cache(key, ttl=60, verbose=False):
 		if verbose:
 		    info('cache miss: %s; %2.2fs to compute', mkey, finish-start)
 	    return value
-	return wrapper if (features.always_cache or not features.devel) else func
+	return wrapper if (always or not features.devel) else func
     return deco
 
 

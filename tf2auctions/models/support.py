@@ -111,8 +111,8 @@ class Contact(object):
 
 
 
-class TodoFile(GitHubMarkdownBlob):
-    pass
+class ToDoFile(GitHubMarkdownBlob):
+    filename = 'TODO.md'
 
 
 class ChangeLogFile(GitHubMarkdownBlob):

@@ -16,6 +16,7 @@
 		    <h2 class="null loading">Loading...</h2>
 		    <div class="null">
 			<h1><span class="hilite">&nbsp;</span><span class="title">Contact &amp; Feedback</span></h1>
+			<div class="w50">
 			<div id="contact-complete" class="message null">
 			    <div class="information">Message Sent.  Thank you!</div>
 			</div>
@@ -45,6 +46,7 @@
 				   id="contact-form-submit">Submit</a>
 			    </div>
 			</form>
+			</div>
 		    </div>
 		</div>
 		<div id="issues">
@@ -68,13 +70,19 @@
 		    </div>
 		</div>
 		<div id="changelog">
+		    <h2 class="null loading">Loading...</h2>
 		    <div class="null">
-			<h1><span class="hilite">&nbsp;</span>Recent Changes</h1>
+			<h1><span class="hilite">&nbsp;</span><span class="title">Change Log</span></h1>
+			<div id="changelog-pod">
+			</div>
 		    </div>
 		</div>
 		<div id="todo">
+		    <h2 class="null loading">Loading...</h2>
 		    <div class="null">
-			<h1><span class="hilite">&nbsp;</span>What's Coming Soon</h1>
+			<h1><span class="hilite">&nbsp;</span><span class="title">What's Coming Soon...</span></h1>
+			<div id="todo-pod">
+			</div>
 		    </div>
 		</div>
 	    </div>

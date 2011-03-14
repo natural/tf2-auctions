@@ -2,7 +2,6 @@ var init = function() {
 
 oo.config({prefix: '#support-', auth: {settings: 0, complete: 0}})
 
-
 var FaqModel = oo.model.extend({
     loader: oo.data.loader({prefix: '/api/v1/public/faq'}),
     init: oo.model.initJoin
@@ -39,6 +38,38 @@ FaqView = oo.view.extend({
 	target.fadeIn()
     }
 }),
+
+
+ChangeLogModel = oo.model.extend({
+    init: oo.model.initJoin,
+    loader: oo.data.loader({
+        prefix: '/api/v1/public/changelog', dataType:'text'
+    })
+}),
+
+
+ChangeLogView = oo.view.extend({
+    join: function(model) {
+	$('#changelog-pod').html( model.data || '<em>Empty!</em>')
+	    .parent().fadeIn()
+    }
+}),
+
+ToDoModel = oo.model.extend({
+    init: oo.model.initJoin,
+    loader: oo.data.loader({
+        prefix: '/api/v1/public/todo', dataType:'text'
+    })
+}),
+
+
+ToDoView = oo.view.extend({
+    join: function(model) {
+	$('#todo-pod').html( model.data || '<em>Empty!</em>')
+	    .parent().fadeIn()
+    }
+}),
+
 
 
 ContactModel = oo.model.auth.extend({
@@ -94,11 +125,11 @@ SupportView = oo.view.extend({}),
 
 
 SubControllers = {
+    changelog: {model: ChangeLogModel, view:ChangeLogView},
     contact: {model: ContactModel, view: ContactView},
-    issues: {},
     faq: {model: FaqModel, view: FaqView},
-    changelog: {},
-    todo: {}
+    issues: {},
+    todo: {model: ToDoModel, view:ToDoView}
 },
 
 
