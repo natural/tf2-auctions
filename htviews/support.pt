@@ -12,48 +12,89 @@
 		    <li><h4><a href="#changelog">Change Log</a></h4></li>
 		    <li><h4><a href="#todo">Coming Soon</a></h4></li>
 		</ul>
+
+
 		<div id="contact">
 		    <h2 class="null loading">Loading...</h2>
 		    <div class="null">
 			<h1><span class="hilite">&nbsp;</span><span class="title">Contact &amp; Feedback</span></h1>
 			<div class="w50">
-			<div id="contact-complete" class="message null">
-			    <div class="information">Message Sent.  Thank you!</div>
-			</div>
-			<form id="contact-form" onsubmit="return false">
-			    <input type="hidden" id="contact-id64"
-				   name="contact-id64" value="" />
-			    <div class="mt1">
-				<label>Name:</label>
-				<input type="text" id="contact-name"
-				       name="contact-name" class="w100" value="" />
+			    <div id="contact-complete" class="message null">
+				<div class="information">Message Sent.  Thank you!</div>
 			    </div>
-			    <div class="mt1">
-				<label>Email:</label>
-				<input type="text" id="contact-email"
-				       name="contact-email" class="w100" value="" />
-			    </div>
-			    <div class="mt1">
-				<label>Question, comments and/or feedback:</label>
-				<div>
-				    <textarea id="contact-message"
-					      style="height:10em"
-					      class="w100"></textarea>
+			    <form id="contact-form" onsubmit="return false">
+				<input type="hidden" id="contact-id64"
+				       name="contact-id64" value="" />
+				<div class="mt1">
+				    <label>Your Name:</label>
+				    <input type="text" id="contact-name"
+					   name="contact-name" class="w100" value="" />
 				</div>
-			    </div>
-			    <div class="mt1 w100 text-right">
-				<a class="button" href="#" onclick="return false"
-				   id="contact-form-submit">Submit</a>
-			    </div>
-			</form>
+				<div class="mt1">
+				    <label>Your Email:</label>
+				    <input type="text" id="contact-email"
+					   name="contact-email" class="w100" value="" />
+				</div>
+				<div class="mt1">
+				    <label>
+					Question, comments, feedback,
+					bug report and/or other nice
+					things to say:
+				    </label>
+				    <div>
+					<textarea id="contact-message"></textarea>
+				    </div>
+				</div>
+				<div class="mt1 w100 text-right">
+				    <a class="button" href="#" onclick="return false"
+				       id="contact-form-submit">Submit</a>
+				</div>
+			    </form>
 			</div>
 		    </div>
 		</div>
+
+
 		<div id="issues">
+		    <h2 class="null loading">Loading...</h2>
 		    <div class="null">
-			<h1><span class="hilite">&nbsp;</span>Issues and Bugs</h1>
+			<h1><span class="hilite">&nbsp;</span><span class="title">Issues &amp; Bugs</span></h1>
+			<div class="help">
+			    Use the <a href="#contact" id="inner-contact">Contact Form</a> to report an issue or bug.
+			</div>
+
+			<div class="null prototype">
+			    <div class="issue">
+				<div class="w15 float-left build-font text-right bigger issue-num">#{0}</div>
+				<div class="w75 float-left body-seed">
+				    <div class="title build-font">{1}</div>
+				    <div class="body">
+				        <pre>{2}</pre>
+				    </div>
+				    <div class="tail help float-right">
+					<code>
+					votes: {3} | created: {4}
+					</code>
+				    </div>
+				</div>
+				<div class="clear"></div>
+			    </div>
+			</div>
+			<div id="issues-content" class="mt2 w50">
+			    <div class="w100 mb05 mt2">
+				Show these issues:
+				<input type="radio" name="issue-type" value="open" /> <span class="mr1">Open</span>
+				<input type="radio" name="issue-type" value="closed" /> <span class="mr1">Closed</span>
+				<input type="radio" name="issue-type" value="all" /> All
+
+				<div class="float-right help">sorted by rank</div>
+			    </div>
+			    <div id="issues-list" class="w100"></div>
+			</div>
 		    </div>
 		</div>
+
+
 		<div id="faq">
 		    <h2 class="null loading">Loading...</h2>
 		    <div class="null">
@@ -65,31 +106,30 @@
 			    <div>Question: <div class="title"></div></div>
 			    <div>Answer:  <div class="entry"></div></div>
 			</div>
-			<div id="faq-content">
-			</div>
+			<div id="faq-content"></div>
 		    </div>
 		</div>
+
+
 		<div id="changelog">
 		    <h2 class="null loading">Loading...</h2>
 		    <div class="null">
 			<h1><span class="hilite">&nbsp;</span><span class="title">Change Log</span></h1>
-			<div id="changelog-pod">
-			</div>
+			<div id="changelog-pod" class="mt1"></div>
 		    </div>
 		</div>
+
+
 		<div id="todo">
 		    <h2 class="null loading">Loading...</h2>
 		    <div class="null">
 			<h1><span class="hilite">&nbsp;</span><span class="title">What's Coming Soon...</span></h1>
-			<div id="todo-pod">
-			</div>
+			<div id="todo-pod" class="mt1">	</div>
 		    </div>
 		</div>
 	    </div>
 
-	    <div class="center null" id="${slug}-content-pod">
-		<h1><span class="hilite">&nbsp;</span>Support.  Like foundations and basements and stuff.</h1>
-	    </div>
+
 	</metal:fill>
     </body>
 </html>

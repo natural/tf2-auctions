@@ -19,7 +19,7 @@ Message:
 def send(name, email, id64, message):
     mail.send_mail(
 	sender='TF2Auctions.com Support <support@tf2auctions.com>',
-	to='TF2Auctions.com Support <support@tf2auctions.com>',
+	to='support@tf2auctions.com',
 	subject='Message from Site Visitor',
         body=body_template % locals(),
     )

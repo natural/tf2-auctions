@@ -9,14 +9,13 @@ Bug fixes:
 
 Improvements:
 
+  * hide "subscribe now" link for non-auth users
+  * added better login prompt for non-auth users
+  * reduced space needed for headers above listings on front
   * added consolidated "support center" which contains:
-
     * contact and feedback form
     * issues list (new)
     * faq
     * change log (new, this file)
     * todo list (new)
 
-   * hide "subscribe now" link for non-auth users
-   * added better login prompt for non-auth users
-   * reduced space needed for headers above listings on front

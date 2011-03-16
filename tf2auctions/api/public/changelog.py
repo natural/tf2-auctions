@@ -16,8 +16,15 @@ class ChangeLog(ApiHandler):
             branch = 'support-center'
         else:
             tag = features.version
-        log = ChangeLogFile(tag=tag, branch=branch)
-        return log.read()
+
+        if features.local_static_files:
+            from os import path
+            from tf2auctions.ext.markdown import markdown
+            logfile = open(path.join(features.app_dir, 'CHANGES.md'))
+            log = markdown(logfile.read())
+        else:
+            log = ChangeLogFile(tag=tag, branch=branch).read()
+        return log
 
 
 main = ApiHandler.make_main(ChangeLog)

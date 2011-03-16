@@ -54,7 +54,7 @@ class GitHubIssues(GitHubApi):
             url = self.make_url('list') + '/open'
             issues['open'].extend(json_loads(urlopen(url).read())['issues'])
         if closed:
-            url = self.make_url('list') + '/open'
+            url = self.make_url('list') + '/closed'
             issues['closed'].extend(json_loads(urlopen(url).read())['issues'])
         return issues
 
@@ -117,14 +117,3 @@ class ToDoFile(GitHubMarkdownBlob):
 
 class ChangeLogFile(GitHubMarkdownBlob):
     filename = 'CHANGES.md'
-
-
-
-
-
-class SupportComposite(object):
-    def __init__(self):
-        self.issues = Issues()
-        self.contact = Contact()
-        self.todo = TodoFile()
-        self.changelog = ChangeLogFile()

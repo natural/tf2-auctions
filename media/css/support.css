@@ -74,3 +74,51 @@ color:#EBE2CA;
 #content-main-pod { margin-top: 0 }
 
 /* end the profile.css copy pasta. */
+
+
+#contact textarea {
+padding:0.35em 1.5em 0.35em 0.25em;
+border:3px solid #847668;
+}
+
+#changelog ul li, #todo ol li {
+margin-left:1em;
+}
+
+#changelog p, #todo p {
+margin-top:1em;
+}
+
+
+#issues-list {
+padding:1em;
+background-color:#2e2b2a;
+border-radius:0.75em; -moz-border-radius:0.75em; -webkit-border-radius:0.75em;
+border:0.25em solid #2E2B2A;
+}
+
+.issue { margin-bottom:1em}
+
+
+.issue .body {
+padding:1em 0 1em 0;
+}
+
+.body-seed {
+padding-left:1em;
+margin-bottom:1em;
+}
+
+
+.issue-num {
+color:#ebe2ca;
+border:2px solid #ebe2ca;
+border-radius:10px; -moz-border-radius:10px; -webkit-border-radius:10px;
+padding:0.5em;
+text-align:center;
+}
+
+#contact-message {
+height:10em;
+width:100%;
+}
