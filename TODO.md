@@ -69,3 +69,5 @@ Minor Changes
 9.  Add script to round corners in IE.  IE sucks.
 
 10. Reduce proxy cache time for items feed (but not schema).
+
+11. Decrease the size of divs + images on min bid blocks.

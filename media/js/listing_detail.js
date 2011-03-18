@@ -1,34 +1,7 @@
-// DONE:  Owner controls.
-// 
-// DONE:  Add item bid.
-// DONE:  Update item bid.
-// DONE:  Cancel item bid.
-// 
-// DONE:  Add currency bid.
-// DONE:  Update currency bid.
-// DONE:  Cancel currency bid.
-// 
-// DONE:  Select winner.
-// 
-// DONE:  Add bidder feedback for lister.
 //
-// DONE:  On view w/ currency bids, sort + hilight max bid
-//  
-// DONE:  Add lister feedback for bidders.
-//
-// 
-// 
-// 
-// TODO:  Send winner notification.
-//
-// TODO:  ui cleanups.
-// 
-// 
-// 
-// 
 // SKIP:  Delete bidder feedback for lister.
 // SKIP:  Delete lister feedback for bidders.
-// 
+//
 // SKIP:  Update bidder feedback for lister.
 // SKIP:  Update lister feedback for bidders.
 //
@@ -158,7 +131,7 @@ var BidView = oo.view.extend({
 
     show: function(currency) {
 	var self = this,
-	    next = function() { 
+	    next = function() {
 		oo('place-bid-pod div.ov').first().fadeIn(function() { oo('place-bid-pod').scrollTopAni() })
 	    }
 	self.message('').fadeOut()
@@ -228,7 +201,7 @@ var BidView = oo.view.extend({
     putDefaults: function(callback) {
 	var self = this, update = self.isUpdate()
 	$.each(['bid-private-msg', 'bid-public-msg'], function(idx, value) {
-            if (!update) {
+	    if (!update) {
 		$('#listing-detail-{0}'.fs(value)).text(
 		    $('#listing-detail-{0}-default'.fs(value)).text()
 		)
@@ -247,14 +220,14 @@ var BidView = oo.view.extend({
 	// before the element is shown.  and again, we just add a slight
 	// delay before doing it.
 
-            var width = $('#bp-chooser-listing-detail-add-bid-item tbody').width() || 500
-            oo('add-bid-fields, bid-currency').width(width)
-            oo('add-bid-fields textarea').width(width).height(width/4).text()
+	    var width = $('#bp-chooser-listing-detail-add-bid-item tbody').width() || 500
+	    oo('add-bid-fields, bid-currency').width(width)
+	    oo('add-bid-fields textarea').width(width).height(width/4).text()
 	    oo('add-bid-terms-desc').parent().width(width)
 	    oo('bid-bp-intro-pod').addClass('center').animate({width:width})
 	    oo('add-bid-item-ch-intro-pod').addClass('center').animate({width:width})
 	if (callback) {
-	    callback()	    
+	    callback()
 	}
 
     },
@@ -306,10 +279,10 @@ var FeedbackModel = oo.model.status.extend({
 	}
 	return oo.model.status.init.apply(self, [view])
 	    .success(function(d) {
-                view.init(self)
-            })
+		view.init(self)
+	    })
     },
-						     
+
     saveFeedback: function(data, success, error) {
 	$.ajax({
 	    url: '/api/v1/auth/save-feedback',
@@ -340,7 +313,7 @@ var FeedbackView = oo.view.extend({
 	if (this.feedback) {
 	    this.putFeedback(this.feedback)
 	} else {
-	    $('.feedback-comment-seed', context).show()	    
+	    $('.feedback-comment-seed', context).show()
 	}
     },
 
@@ -354,7 +327,7 @@ var FeedbackView = oo.view.extend({
     },
 
     rating: function(v) {
-	return this.slider.slider('value')	
+	return this.slider.slider('value')
     },
 
     putFeedback: function(feedback) {
@@ -362,7 +335,7 @@ var FeedbackView = oo.view.extend({
 	$$('.feedback-comment-seed').slideUp()
 	if (feedback) {
 	    oo.view.setRating($$('.rating-badge'), feedback.rating)
-	    $$('.rating-text').text(feedback.text || feedback.comment)	    
+	    $$('.rating-text').text(feedback.text || feedback.comment)
 	}
 	$$('.feedback-view-seed').slideDown()
     },
@@ -483,7 +456,7 @@ var BidControllerDefn = {
 	    oo('add-bid-working').removeClass('null').text('Working...').fadeIn('fast')
 	    self.model.submit({
 		items: items,
-                currency_val: currency_val,
+		currency_val: currency_val,
 		public_msg: public_msg,
 		private_msg: private_msg,
 		update: self.view.isUpdate(),
@@ -567,6 +540,7 @@ var ListingView = oo.view.schema.extend({
 		   listing.bid_currency_top > listing.bid_currency_start ? 'top' : 'use')
 	      ).addClass('bigger')
 	    oo('min-bid-pod div.mbc').removeClass('null')
+	    oo('min-bid').hide() // the label for item min bid
 	    oo('currency-bid-currency-symbol').html( oo.util.listingCurrencySym(listing) )
 	    oo('currency-bid-currency-name').html('({0})'.fs(listing.bid_currency_type[1]))
 	} else if (listing.min_bid.length > 0) {
@@ -614,16 +588,16 @@ var ListingView = oo.view.schema.extend({
 	$.each(bids, function(idx, bid) {
 	    var clone = oo('bids .prototype').clone().removeClass('null prototype'),
 		fbs = bidfb(bid)
-            if (fbs.length) {
+	    if (fbs.length) {
 		var v = $.extend({context: $('.existing-feedback', clone)}, FeedbackView)
 		v.putFeedback(fbs[0])
 		$('.existing-feedback .feedback-view-seed', clone).removeClass('null')
 		clone.data('lister-feedback', fbs[0])
 	    }
-            if (listing.bid_currency_use && idx==bids.length-1) {
+	    if (listing.bid_currency_use && idx==bids.length-1) {
 		clone.addClass('hibid mb1 p05').removeClass('ov')
 	    }
-            if (listing.bid_currency_use) {
+	    if (listing.bid_currency_use) {
 		var v = '{1}{0}'.fs(bid.currency_val.formatMoney(), oo.util.listingCurrencySym(listing))
 		$('.bid-currency-val-amount', clone).html(v)
 		$('.bid-currency-seed', clone).removeClass('null')
@@ -675,9 +649,9 @@ var ListingView = oo.view.schema.extend({
 
 	// hide leave feedback links for any bids that have feedback
 	$('div.bid:not(.prototype)').each(function(idx, ele) {
-            var bdiv = $(ele)
-            if (bdiv.data('lister-feedback')) { $('.lister-feedback-link', bdiv).fadeOut() }
-        })
+	    var bdiv = $(ele)
+	    if (bdiv.data('lister-feedback')) { $('.lister-feedback-link', bdiv).fadeOut() }
+	})
     },
 
     putAuthTools: function() {
@@ -689,21 +663,21 @@ var ListingView = oo.view.schema.extend({
 		oo('existing-bid-cancel').text('Cancel It').data('cancel', true).parent().show()
 		// MARK
 		var b = {
-                        context: oo('auth-bid-feedback-pod'),
-                        bid: profileBid(),
-		        feedback: profileFeedback(),
-                        listing: pageListing()
+			context: oo('auth-bid-feedback-pod'),
+			bid: profileBid(),
+			feedback: profileFeedback(),
+			listing: pageListing()
 		    },
 		    m = $.extend({}, b, FeedbackModel),
 		    v = $.extend({}, b, FeedbackView),
 		    cdef = $.extend({}, FeedbackController),
 		    cont = this.bidderFeedbackController = oo.controller.extend({
-                        source: 'bidder',
-                        model: m,
-                        view: v,						    
-		        '#listing-detail-auth-bid-feedback-pod .cancel-button click' : cdef.cancel,
-		        '#listing-detail-auth-bid-feedback-pod .save-button click' : cdef.save
-                    })
+			source: 'bidder',
+			model: m,
+			view: v,
+			'#listing-detail-auth-bid-feedback-pod .cancel-button click' : cdef.cancel,
+			'#listing-detail-auth-bid-feedback-pod .save-button click' : cdef.save
+		    })
 		cont.init()
 		oo('auth-bid-feedback-pod').show()
 	    }
@@ -749,7 +723,7 @@ var ListingView = oo.view.schema.extend({
 	    oo.model.auth.init()
 		.success(function (p) {
 		    var m = ItemBidModel.extend(CurrencyBidModel, {profile: p, suffix: p.id64, listing: listing}),
-		        c = self.controller = $.extend({model: m, view: BidView}, BidControllerDefn, oo.controller)
+			c = self.controller = $.extend({model: m, view: BidView}, BidControllerDefn, oo.controller)
 		    c.init()
 		})
 	 } else {
@@ -797,7 +771,7 @@ var ListingView = oo.view.schema.extend({
 	    var listing = self.listing, profile = self.profile
 	    oo.model.auth.init()
 		.success(function (p) {
-                    var m = ItemBidModel.extend({profile: p, suffix:p.id64, listing:listing}),
+		    var m = ItemBidModel.extend({profile: p, suffix:p.id64, listing:listing}),
 			v = BidView.extend(),
 			c = oo.controller.extend({model:m, view:v}, BidControllerDefn)
 		    self.controller = c
@@ -816,42 +790,42 @@ var ListingView = oo.view.schema.extend({
 
     showSelectWinner: function(context) {
 	$('.main-buttons', context).fadeOut(function() {
-            $('.select-winner-confirm', context).fadeIn()
+	    $('.select-winner-confirm', context).fadeIn()
 	})
     },
 
     showListerFeedbackForm: function(context) {
 	if (!context.data('fbc')) {
 	    var bid = context.data('bid'),
-	        b = {
-                    context: context,
-                    bid: bid,
+		b = {
+		    context: context,
+		    bid: bid,
 		    feedback: null,
-                    listing: pageListing()
+		    listing: pageListing()
 		},
-	        m = $.extend({}, b, FeedbackModel),
-	        v = $.extend({}, b, FeedbackView),
-	        cdef = $.extend({}, FeedbackController),
-	        fbc = this.bidderFeedbackController = oo.controller.extend({
-                    source: 'lister', model: m, view: v
-                 }, cdef)
+		m = $.extend({}, b, FeedbackModel),
+		v = $.extend({}, b, FeedbackView),
+		cdef = $.extend({}, FeedbackController),
+		fbc = this.bidderFeedbackController = oo.controller.extend({
+		    source: 'lister', model: m, view: v
+		 }, cdef)
 	    $('.save-button', context).click(function(e) {
-                e.controller = fbc						 
+		e.controller = fbc
 		fbc.save(e)
 	    })
 	    context.data('fbc', fbc)
 	    fbc.init()
 	}
 	$('.main-buttons', context).fadeOut(function() {
-            $('.feedback-comment-seed', context).fadeIn()
-            $('.lister-feedback-form', context).fadeIn()
+	    $('.feedback-comment-seed', context).fadeIn()
+	    $('.lister-feedback-form', context).fadeIn()
 	})
     },
 
     hideListerFeedbackForm: function(context) {
 	$('.lister-feedback-form', context).fadeOut(function() {
 	    $('.main-buttons', context).fadeIn()
-        })
+	})
     }
 })
 
@@ -992,7 +966,7 @@ var ListingController = oo.controller.extend({
     },
 
     '#listing-detail-currency-bid-amount keyup' : function(e) {
-	e.target.value = e.target.value.replace(/[^0-9\.\,]/g,'');	
+	e.target.value = e.target.value.replace(/[^0-9\.\,]/g,'');
     },
 
     '.lister-feedback-link live:click' : function(e) {
@@ -1000,11 +974,10 @@ var ListingController = oo.controller.extend({
     },
 
     '.lister-tools-seed .cancel-button live:click' : function(e) {
-        e.controller.view.hideListerFeedbackForm($(e.target).parents('div.bid'))
+	e.controller.view.hideListerFeedbackForm($(e.target).parents('div.bid'))
     }
 
 })
 
 
 }
-

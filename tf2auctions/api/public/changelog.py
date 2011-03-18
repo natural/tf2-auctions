@@ -13,7 +13,7 @@ class ChangeLog(ApiHandler):
     def data(self):
         branch = tag = None
         if features.devel:
-            branch = 'support-center'
+            branch = 'master'
         else:
             tag = features.version
 

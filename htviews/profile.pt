@@ -154,7 +154,7 @@
 			    <metal:include
 				 tal:define="schema settings_schema; slug slug"
 				 metal:use-macro="context.form_parts.macros.schema_form" />
-			    <div class="null" id="${slug}-premium-signup-pod" tal:condition="features.subscriber_accounts">
+			    <div class="null" id="${slug}-premium-signup-pod">
 				<h2>Premium Subscription Features</h2>
 				<div class="field">
 				    <div class="field-container">
@@ -168,7 +168,7 @@
 				</div>
 
 			    </div>
-			    <div class="null" id="${slug}-premium-settings-pod" tal:condition="features.subscriber_accounts">
+			    <div class="null" id="${slug}-premium-settings-pod">
 				<h2>Premium Subscription Features</h2>
 				<div class="field">
 				    <div class="field-container">

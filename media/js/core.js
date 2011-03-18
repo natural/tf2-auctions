@@ -1021,6 +1021,7 @@ var oo = (function() {
 		$('tr.mb', context).empty()
 	    }
 	    $('.listing-view-link a', context).attr('href', '/listing/'+listing.id)
+	    $('.bid-count', context).text( $('.bid-count', context).text() + listing.bid_count )
 	    $('tr.pr div.pr', context).animate({opacity:0}, 0)
 	    $('span.expires', context)
 		.append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
@@ -1071,7 +1072,7 @@ var oo = (function() {
 	defaultUserAuthError: function() {
 	    var $$ = oo.prefix$('#content-')
 	    $$('login-link').attr('href', oo.util.profile.loginUrl())
-	    $$('search-link, quick-backpack, site-buttons, sub-buttons').fadeIn()
+	    $$('search-link, quick-backpack, site-buttons, login-prompt').fadeIn()
 	    ns.profile.defaultUserAuthError = oo.noop
 	},
 
@@ -1823,8 +1824,14 @@ var oo = (function() {
 var core = function() {
     // perform an initial auth if the module has indicated authentication
     if (oo.conf.auth) {
-	oo.model.auth.init()	
+	oo.model.auth.init()
     }
     // initialize each direct clone of the oo.controller object:
     $.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
+
+    if ($.browser.msie) {
+	$LAB.script("/media/js/jquery.corner.min.js").wait(
+	    function() {
+	    })
+    }
 }

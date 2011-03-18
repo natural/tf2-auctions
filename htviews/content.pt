@@ -56,9 +56,15 @@
 		    </a>
 		</div>
 		<div id="${slug}-site-buttons" class="null">
+
 		    <span class="null mr1" id="${slug}-sub-buttons">
 			<a id="${slug}-subscribe" class="hi2 build-font nice" href="/subscribe">Subscribe Now!</a>
 		    </span>
+
+		    <span class="null mr1" id="${slug}-login-prompt">
+			<span class="hi2 build-font">Membership is Instant + Free</span>
+		    </span>
+
 		    <span class="null" id="${slug}-user-buttons">
 			<span id="${slug}-avatar-pod"></span>
 			<a id="${slug}-player-profile-link" class="big-button" href="#">My Profile</a>

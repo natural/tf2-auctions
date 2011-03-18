@@ -240,7 +240,12 @@ span.hilite, .hi { color:#c8503c; }
 span.hilite:before { content:">>"; }
 
 .hi2 {
-color: #995040; 
+color: #995040;
+text-shadow: 2px 2px #000;
+}
+
+.hi3 {
+color: #c8503c;
 text-shadow: 2px 2px #000;
 }
 
@@ -797,6 +802,7 @@ new listing/bid swatch styling
 
 div.listing-seed {
 margin-bottom:0.75em;
+min-width:500px !important;
 }
 
 
@@ -1005,3 +1011,23 @@ opacity:0.65;
 
 
 
+
+
+#front-news-blog-pod {
+margin-right:560px;
+padding-right:1em;
+
+}
+
+#front-listings-pod {
+float:left;
+width:560px;
+margin-left:-560px;
+}
+
+
+
+#front-outer-wrapper {
+float:left;
+width:100%;
+}

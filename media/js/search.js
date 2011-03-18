@@ -4,6 +4,8 @@
 //      returns via the back button, the prev/next buttons do not get
 //      configured correctly.
 
+// BUG:  featured nav label showing with only 1 featured listing
+
 
 var init = function() {
 

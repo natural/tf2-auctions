@@ -4,7 +4,7 @@
     </head>
     <body>
 	<metal:fill fill-slot="main" tal:define="slug 'search'">
-	    <div id="${slug}-pod" class="w75 pt05 desc center">
+	    <div id="${slug}-pod" class="pt05 desc center">
 		<div id="${slug}-controls" class="null build-font float-left w15 controls">
 		    <h1><span class="hilite">&nbsp;</span><span id="${slug}-title">Search</span></h1>
 		    <div id="${slug}-controls-nav">

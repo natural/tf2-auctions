@@ -224,7 +224,7 @@
 			    <tr class="cb">
 				<!-- current bid header -->
 				<td>
-				    <div class="null pl05 text-center" style="width:5.15em !important;">
+				    <div class="null pl05 text-center pb05" style="width:5.15em !important;">
 					<h1 class="build-font hi2 value"></h1>
 				    </div>
 				</td>
@@ -232,7 +232,12 @@
 			    </tr>
 
 			    <tr class="bt">
-				<td colspan="2"><div class="mb05"><metal:slot define-slot="bottom" /></div></td>
+				<td width="75%">
+				    <div class="pl05">
+                                        <strong class="bid-count">Bids: </strong>
+				    </div>
+				</td>
+				<td><div class="mb05"><metal:slot define-slot="bottom" /></div></td>
 			    </tr>
 			</tbody>
 		    </table>

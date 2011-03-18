@@ -19,7 +19,17 @@
 		    </span>
 		</div>
 		<div id="${slug}-backpack-pod">
+
+		    <div class="w100">
+		    <div class="w50 float-left">
 		    <h1 class="mt1"><span id="${slug}-backpack-title"></span></h1>
+		    </div>
+		    <div class="w50 float-left text-right">
+		    <div class="null mt1 mb1" id="${slug}-profile-links"></div>
+		    </div>
+		    </div>
+		    <div class="clear"></div>
+
 		    <div class="mt05 center w100 null ov" id="${slug}-backpack-inner">
 			<h2 class="null" id="${slug}-backpack-none"></h2>
 			<metal:include

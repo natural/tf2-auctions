@@ -16,11 +16,11 @@ var playerSearch = function(o) {
 backpackModel = oo.model.schema.extend({
     findId: function(options) {
 	// using status lookup to find player name from id64
-        oo.data.status({suffix: options.id})
-            .success(function(status) {
+	oo.data.status({suffix: options.id})
+	    .success(function(status) {
 		options.success([{id: options.id, persona: status.name}]) }
 	    )
-            .error(options.error)
+	    .error(options.error)
     },
 
     findNames: function(options) {
@@ -37,7 +37,7 @@ backpackView = oo.view.schema.extend({
 	try {
 	    var data = $('option:selected', event.target).data('result')
 	} catch (e) {
-	    return 
+	    return
 	}
 	if (data.id_type != 'id64') {
 	    return
@@ -49,7 +49,7 @@ backpackView = oo.view.schema.extend({
 
     searchText: function(v) {
 	if (v) {
-            return oo('search-value').val(v)
+	    return oo('search-value').val(v)
 	} else {
 	    return oo('search-value').val()
 	}
@@ -58,18 +58,18 @@ backpackView = oo.view.schema.extend({
     showError: function(request, status, error) {
 	var self = this
 	self.reset()
-        self.message('Error.  Lame').delay(3000).fadeOut()
+	self.message('Error.  Lame').delay(3000).fadeOut()
     },
 
     showSearch: function(results) {
 	var self = this
 	self.reset()
-        oo.data.schema().success(function() {
-            self.message().hide()
-            if (results.length == 0) {
+	oo.data.schema().success(function() {
+	    self.message().hide()
+	    if (results.length == 0) {
 		oo('result-none')
 		    .text('Your search did not match any players.')
-            } else if (results.length == 1) {
+	    } else if (results.length == 1) {
 		var result = results[0], model = oo.model.backpack.extend({suffix: result.id})
 		self.message('Loading backpack...')
 		model.init().done(function() {self.ready(result.id, result.persona, model)})
@@ -83,24 +83,44 @@ backpackView = oo.view.schema.extend({
 		    chooser.append('<option>{0}</option>'.fs(result.persona))
 		    $('option:last', chooser).data('result', result)
 		})
-                oo('result-many').fadeIn()
+		oo('result-many').fadeIn()
 	    }
 	})
     },
 
     ready: function(id64, name, model) {
 	var self = this, items = model.backpack.result.items.item
-        window.location.hash = id64
-        if (!items.length || items[0]==null) {
+	window.location.hash = id64
+	if (!items.length || items[0]==null) {
 	    oo('backpack-title')
 		.html(self.hiliteSpan('Backpack is Private or Empty'))
 		.fadeIn()
-            self.clear()
+	    self.clear()
+	    oo('backpack-inner').fadeOut()
+	    self.profileMissing()
 	    self.message().fadeOut()
 	    return
-        }
+	}
 	oo('backpack-title').html(self.hiliteSpan('Backpack - {0}'.fs(name)))
 	self.put(model.backpack, model.listings, model.bids)
+        oo.data.loader({prefix: '/api/v1/public/profile/'})({suffix:id64})
+	    .success(self.profileFound)
+            .error(self.profileMissing)
+    },
+
+    profileFound: function(p) {
+	var pu = oo.util.profile.defaultUrl(p),
+            pl = '<a class="nice" href="{0}">{1}</a>'.fs(pu, p.personaname),
+            ll = '<a class="nice" href="{0}#1">listings</a>'.fs(pu),
+            bl = '<a class="nice" href="{0}#2">bids</a>'.fs(pu),
+            fl = '<a class="nice" href="{0}#0">feedback</a>'.fs(pu)
+	oo('profile-links').html(
+	    '{0} is a member!  see their {1} &middot; {2} &middot; {3}'.fs(pl, ll, bl, fl)
+        ).slideDown()
+    },
+
+    profileMissing: function(p) {
+	oo('profile-links').slideUp()
     },
 
     clear: function() {
@@ -117,32 +137,32 @@ backpackView = oo.view.schema.extend({
 
     put: function(backpack, listings, bids) {
 	var self = this,
-            bpTool = oo.backpack.itemTool({
-                 items: backpack.result.items.item,
-                 listingUids: oo.util.itemUids(listings),
-               	 bidUids: oo.util.itemUids(bids),
-                 slug: 'bv',
-                 navigator: true,
-                 toolTips: true,
-                 select: true,
-                 selectMulti: true,
-                 outlineHover: true,
-	         showAll: true,
-	         rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
-        })
-        oo.model.auth.init()
+	    bpTool = oo.backpack.itemTool({
+		 items: backpack.result.items.item,
+		 listingUids: oo.util.itemUids(listings),
+		 bidUids: oo.util.itemUids(bids),
+		 slug: 'bv',
+		 navigator: true,
+		 toolTips: true,
+		 select: true,
+		 selectMulti: true,
+		 outlineHover: true,
+		 showAll: true,
+		 rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
+	})
+	oo.model.auth.init()
 	    .success(function(profile) {
-	        bpTool.init(profile.settings) 
-	        if (profile.settings['backpack-expando']) {
+		bpTool.init(profile.settings)
+		if (profile.settings['backpack-expando']) {
 		    $('div.bp-nav span.all a').click()
 		}
-            })
+	    })
 	    .error(function() { bpTool.init(null) })
-        self.message().fadeOut()
-        if (!self.put.initOnce) {
+	self.message().fadeOut()
+	if (!self.put.initOnce) {
 	    oo('backpack-inner').fadeIn()
 	    self.put.initOnce = true
-        }
+	}
     }
 
 }),
@@ -167,29 +187,29 @@ backpackController = oo.controller.extend({
     },
 
     'ready' : function() {
-        this.view.searchText(this.defaultSearchText).select()
+	this.view.searchText(this.defaultSearchText).select()
 	var hash = this.hash()
 	if (hash) { this.search(hash) }
     },
 
     search: function(value) {
-        if (value == this.defaultSearchText) { return }
-        this.view.message('Searching...')
+	if (value == this.defaultSearchText) { return }
+	this.view.message('Searching...')
 	var self = this,
-            opts = {
+	    opts = {
 		debug: true,
 		success: function() { self.view.showSearch.apply(self.view, arguments) },
-	        error: function() { self.view.showError.apply(self.view, arguments) }
+		error: function() { self.view.showError.apply(self.view, arguments) }
 	    }
 	value = this.reformat(value)
 	if (value.match(/\d{17}/)) {
-            var find = this.model.findId
+	    var find = this.model.findId
 	    opts.id = value
 	} else {
 	    var find = this.model.findNames
 	    opts.name = value
-        }
-        find(opts)
+	}
+	find(opts)
     },
 
     reformat: function(v) {
@@ -205,7 +225,7 @@ backpackController = oo.controller.extend({
 	if (m) {
 	    return m[1].split('/')[0]
 	}
-        // steam://friends/add/76561198031408075
+	// steam://friends/add/76561198031408075
 	var m = v.match(/steam:\/\/friends\/add\/(\d{17})/)
 	if (m) {
 	    return m[1]
