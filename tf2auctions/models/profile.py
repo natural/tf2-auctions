@@ -77,7 +77,13 @@ class PlayerProfile(db.Expando):
 
     def owns_all(self, item_ids):
 	""" True if this profile owns all of the specified items. """
-	ids = [item['id'] for item in self.items()]
+        if not item_ids:
+            return True
+        items = self.items()
+        try:
+            ids = [item['id'] for item in items]
+        except (Exception, ), exc:
+            error('fail on ownership check:', items)
 	return all(item_id in ids for item_id in item_ids)
 
     def id64(self):
