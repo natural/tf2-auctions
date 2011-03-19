@@ -234,7 +234,7 @@
 			    <tr class="bt">
 				<td width="75%">
 				    <div class="pl05">
-                                        <strong class="bid-count">Bids: </strong>
+					<strong class="bid-count">Bids: </strong>
 				    </div>
 				</td>
 				<td><div class="mb05"><metal:slot define-slot="bottom" /></div></td>
@@ -402,7 +402,7 @@
 		<h2><span class="null" id="${slug}-is-you"></span></h2>
 		<a href="#"><img id="${slug}-avatar" class="m1 profile-status" /></a>
 		<div id="${slug}-badge-status" class=""></div>
-		
+
 	    </div>
 	    <div class="center ml1">
 		<div class="owner-links null" id="${slug}-owner-links">
@@ -411,17 +411,28 @@
 			    <img src="/media/img/iconGo.png" width="16" height="16" />
 			    <a href="#" id="${slug}-join-game">Join Game</a>
 			</li>
+
+			<li>
+			    <img src="/media/img/favicon.ico" height="16" width="16" />
+			    View
+			    <a href="#" target="_new" id="${slug}-owner-view-backpack">Backpack</a> &middot;
+			    <a href="#" target="_new" id="${slug}-owner-view-listings">Listings</a> &middot;
+			    <a href="#" target="_new" id="${slug}-owner-view-bids">Bids</a>
+			</li>
 			<li>
 			    <img src="/media/img/iconSteam.png" />
-			    <a href="#" target="_new" id="${slug}-owner-view-steam-profile">View Steam Profile</a>
+			    View
+			    <a href="#" target="_new" id="${slug}-owner-view-steam-profile">Steam Profile</a>
 			</li>
 			<li>
 			    <img src="/media/img/iconAddFriend.png" />
-			    <a href="#" id="${slug}-add-owner-friend">Add Steam Friend</a>
+			    Add
+			    <a href="#" id="${slug}-add-owner-friend">Steam Friend</a>
 			</li>
 			<li>
 			    <img src="/media/img/iconChat.png" />
-			    <a href="#" id="${slug}-chat-owner">Start Steam Chat</a>
+			    Start
+			    <a href="#" id="${slug}-chat-owner">Steam Chat</a>
 			</li>
 		    </ul>
 		</div>
@@ -491,7 +502,7 @@
 		    <option value="Yearly">Yearly : $${yp}.00USD per year</option>
 		</select>
 	    <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_subscribeCC_LG.gif"
-		   border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" 
+		   border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"
 		   class="valign-middle" />
 	    </div>
 

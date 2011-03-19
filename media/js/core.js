@@ -1121,7 +1121,8 @@ var oo = (function() {
 	putBadge: function(p) {
             var possum = p.rating[0], poscnt = p.rating[1], negsum = p.rating[2], negcnt = p.rating[3],
                 pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
-                neg = Math.round(negcnt > 0 ? negsum / negcnt : 0)
+                neg = Math.round(negcnt > 0 ? negsum / negcnt : 0),
+	        url = oo.util.profile.defaultUrl(p)
 	    oo('badge-title').text(p.personaname)
 	    oo('owner-view-steam-profile').attr('href', p.profileurl)
 	    oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(p.steamid))
@@ -1133,7 +1134,12 @@ var oo = (function() {
             oo('neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
             $('div.padding', oo('neg-bar').parent()).width('{0}%'.fs(100-neg) )
 	    if (p.avatarmedium) { oo('avatar').attr('src', p.avatarmedium)  }
-	    oo('avatar').parent().attr('href', oo.util.profile.defaultUrl(p))
+
+	    oo('avatar').parent().attr('href', url)
+	    oo('owner-view-backpack').attr('href', '{0}#3'.fs(url))
+	    oo('owner-view-listings').attr('href', '{0}#1'.fs(url))
+	    oo('owner-view-bids').attr('href', '{0}#2'.fs(url))
+
 	    oo.data.status({suffix: p.id64}).success(function(s) {
 	        var m = s.message_state
 		GM = m; GS = s

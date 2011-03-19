@@ -14,6 +14,8 @@ all:
 dist: $(dist_css) $(dist_js) $(dist_subscribe_js) prod_js
 	@mkdir -p $(dist_dir)
 	@cp *.yaml $(dist_dir)
+	@cp *.md $(dist_dir)
+	@cp github_token.nodist $(dist_dir)
 	@cp admin_key.nodist $(dist_dir)
 	@cp -r ext $(dist_dir)
 	@cp -r aetycoon $(dist_dir)
@@ -49,7 +51,7 @@ $(dist_subscribe_js):
 	@yuicompressor --type js $@ -o $(dist_dir)/media/js/subscribe/$(notdir $@)
 
 prod_js:
-	cd $(dist_dir)/media/js && cat ga.js jquery.json-2.2.js dateformat.js core.js > core.min.js
+	@cd $(dist_dir)/media/js && cat ga.js jquery.json-2.2.js dateformat.js core.js > core.min.js
 
 bump_version:
 	@python -c "import yaml; d=yaml.load(open('app.yaml')); print 'Old Version', d['version']"

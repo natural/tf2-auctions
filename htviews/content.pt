@@ -62,7 +62,7 @@
 		    </span>
 
 		    <span class="null mr1" id="${slug}-login-prompt">
-			<span class="hi2 build-font">Membership is Instant + Free</span>
+			<span class="hi build-font">Membership is Free &middot; No Signup Needed</span>
 		    </span>
 
 		    <span class="null" id="${slug}-user-buttons">
@@ -110,7 +110,7 @@
 		</div>
 		<div class="text-center m05 mb2">
 		    Powered by <a href="http://steampowered.com" class="nice">Steam</a> &middot;
-		    Created by <a href="/profile/76561197992805111">pnatural</a>
+		    Created by <a href="/profile/76561197992805111" class="nice">pnatural</a>
 		</div>
 	    </div>
 	</div>

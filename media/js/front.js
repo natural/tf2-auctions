@@ -63,7 +63,7 @@ var init = function() {
 
     searchModel = oo.model.extend({
 	loader: oo.data.search,
-	suffix: '?limit=5',
+	suffix: '?limit=10',
 
 	init: function(view) {
 	    var self = this
@@ -84,7 +84,7 @@ var init = function() {
     searchView = oo.view.extend({
 	authSuccess: function(profile) {
 	    oo('auth').slideDown()
-	    oo('auth > h1').text('Welcome, {0}!'.fs(profile.personaname))
+	    oo('auth h1.welcome').text('Yo, {0}!'.fs(profile.personaname))
 	    this.profile = profile
 	},
 
@@ -100,6 +100,7 @@ var init = function() {
 	    } else {
 		oo('no-listings').hide()
 		oo('some-listings').text('Latest Listings:').addClass('mt1').show()
+		oo('more-listings').show()
 	    }
 	    oo.util.listing.putFeatured(results)
 	    var displays = oo.util.listing.many({

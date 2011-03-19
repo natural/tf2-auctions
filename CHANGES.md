@@ -1,4 +1,4 @@
-v74 - 17 Mar 2011
+v74 - 18 Mar 2011
 -----------------
 
 Bug fixes:
@@ -15,10 +15,18 @@ Improvements:
   * added better login prompt for non-auth users
   * reduced space needed for headers above listings on front
   * added inter-site links for backpack viewer
+  * clear backpack viewer when selection is private
+  * increased number of listings displayed on front
+  * made prompts on front smaller
   * added consolidated "support center" which contains:
     * contact and feedback form
     * issues list (new)
     * faq
     * change log (new, this file)
     * todo list (new)
+
+
+Other:
+
+  * logging verbosity decreased in production
 

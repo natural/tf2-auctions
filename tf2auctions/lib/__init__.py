@@ -78,7 +78,7 @@ class TemplateLoader(BaseTemplateLoader):
 	key = (filename, format)
 	if key in self.cache and not features.devel:
 	    return self.cache[key]
-	info('DebugTemplateLoader(%s, %s)', filename, format)
+	##info('DebugTemplateLoader(%s, %s)', filename, format)
 	tmpl = self.cache[key] = super(TemplateLoader, self).load(filename, format)
 	return tmpl
 

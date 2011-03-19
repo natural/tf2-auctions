@@ -94,18 +94,19 @@ backpackView = oo.view.schema.extend({
 	if (!items.length || items[0]==null) {
 	    oo('backpack-title')
 		.html(self.hiliteSpan('Backpack is Private or Empty'))
-		.fadeIn()
+		.fadeOut().fadeIn()
 	    self.clear()
 	    oo('backpack-inner').fadeOut()
 	    self.profileMissing()
 	    self.message().fadeOut()
-	    return
+	} else {
+	    oo('backpack-title').html(self.hiliteSpan('Backpack - {0}'.fs(name)))
+	    self.put(model.backpack, model.listings, model.bids)
+	    oo('backpack-inner').fadeIn()
+            oo.data.loader({prefix: '/api/v1/public/profile/'})({suffix:id64})
+		.success(self.profileFound)
+		.error(self.profileMissing)
 	}
-	oo('backpack-title').html(self.hiliteSpan('Backpack - {0}'.fs(name)))
-	self.put(model.backpack, model.listings, model.bids)
-        oo.data.loader({prefix: '/api/v1/public/profile/'})({suffix:id64})
-	    .success(self.profileFound)
-            .error(self.profileMissing)
     },
 
     profileFound: function(p) {

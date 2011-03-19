@@ -46,7 +46,7 @@
 
 		<div id="${slug}-auth" class="null mb05">
 		    <div class="float-left">
-			<h1>Welcome!</h1>
+			<h1 class="welcome">Welcome!</h1>
 		    </div>
 		    <div class="float-left valign-middle ml1">
 			Now you can make listings and bid on stuff.
@@ -87,6 +87,9 @@
 				</div>
 			    </metal:fill>
 			</metal:include>
+		    </div>
+		    <div class="center text-center">
+			<h2 id="${slug}-more-listings" class="null"><a class="nice" href="./search">See More...</a></h2>
 		    </div>
 		</div>
 	    </div>

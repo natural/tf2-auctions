@@ -80,16 +80,16 @@
 				<div class="clear"></div>
 			    </div>
 			</div>
-			<div id="issues-content" class="mt2 w50">
+			<div id="issues-content" class="mt2 w75">
 			    <div class="w100 mb05 mt2">
 				Show these issues:
 				<input type="radio" name="issue-type" value="open" /> <span class="mr1">Open</span>
 				<input type="radio" name="issue-type" value="closed" /> <span class="mr1">Closed</span>
 				<input type="radio" name="issue-type" value="all" /> All
-
 				<div class="float-right help">sorted by rank</div>
 			    </div>
 			    <div id="issues-list" class="w100"></div>
+			    <span id="issues-none" class="null w100">Nothing found!</span>
 			</div>
 		    </div>
 		</div>

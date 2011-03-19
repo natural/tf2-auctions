@@ -145,6 +145,7 @@ IssuesModel = oo.model.extend({
 	    .success(function(issues) {
                 view.putIssues(issues)
                 view.showIssues(type)
+	        view.showEmpty()
             })
     }
 
@@ -165,7 +166,7 @@ IssuesView = oo.view.extend({
     putIssues: function(list) {
 	var self = this,
 	    build = function(idx, i) {
-	        if (self.seen[i.number]) { return self.seen[i.number] }
+	        if (self.seen[i.number]) { return }
 		var proto = $('#issues .prototype'),
                     clone = $(proto.clone()
 		              .removeClass('prototype')
@@ -182,14 +183,25 @@ IssuesView = oo.view.extend({
     },
 
     showIssues: function(type) {
+	var show = $(), hide = $()
 	if (type=='open') {
-	    $('.issue-open').slideDown()
-	    $('.issue-closed').slideUp()
+	    show = $('.issue-open')
+	    hide = $('.issue-closed')
 	} else if (type=='closed') {
-	    $('.issue-open').slideUp()
-	    $('.issue-closed').slideDown()
+	    show = $('.issue-closed')
+	    hide = $('.issue-open')
 	} else {
-	    $('.issue-open, .issue-closed').slideDown()
+	    show = $('.issue-open, .issue-closed')
+	}
+	$(show).slideDown().addClass('cvis')
+	$(hide).slideUp().removeClass('cvis')
+    },
+
+    showEmpty: function() {
+	if ($('.issue.cvis').length) {
+	    $('#issues-none').fadeOut()
+	} else {
+	    $('#issues-none').fadeIn()
 	}
     }
 
@@ -241,8 +253,8 @@ SupportController = oo.controller.extend({
 		$('#{0} h2.loading'.fs(n)).fadeIn()
 		oo.controller.extend(c).init().complete(function(m) {
 		    $('#{0} h2.loading'.fs(n)).slideUp(function() {
-			$('#{0} h1 span.title'.fs(n)).parent().fadeIn('slow', function() {
-			    $('#{0} div:first'.fs(n)).fadeIn('slow')
+			$('#{0} h1 span.title'.fs(n)).parent().fadeIn(function() {
+			    $('#{0} div:first'.fs(n)).fadeIn()
 			})
 		    })
 		})
