@@ -1,3 +1,20 @@
+v76 - 19 Mar 2011
+-----------------
+
+Bug fixes:
+
+  * changed add-bid server code to check for zero items on monitary
+    bid update
+
+
+v75 - 19 Mar 2011
+-----------------
+
+Bug fixes:
+
+  * removed unimplemented call to IE rounded corner script
+
+
 v74 - 18 Mar 2011
 -----------------
 
@@ -6,7 +23,7 @@ Bug fixes:
   * added bid count to listing summary displays
   * removed "minimum bid" label for money listings
   * added min-width property to listing summary displays
-  * hide previous backpack on private/missing backpack search.
+  * hide previous backpack on private/missing backpack search
 
 
 Improvements:

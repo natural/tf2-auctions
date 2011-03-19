@@ -2,7 +2,7 @@ Major Features
 --------------
 
 
-1.  Shops (target version 75)
+1.  Shops (target version 77)
     *  include quant sold
     *  prefer automatically determining kind of shop: "vintage hats",
         "metal", "keys", etc.
