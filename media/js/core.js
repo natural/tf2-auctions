@@ -1836,8 +1836,8 @@ var core = function() {
     $.each(oo.controller.clones, function(i, c) { c.init.apply(c) })
 
     if ($.browser.msie) {
-	$LAB.script("/media/js/jquery.corner.min.js").wait(
-	    function() {
-	    })
+	//	$LAB.script("/media/js/jquery.corner.min.js").wait(
+	//function() {
+	//	    })
     }
 }
