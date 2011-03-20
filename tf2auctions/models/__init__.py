@@ -252,14 +252,14 @@ class Listing(db.Model):
     def url(self):
 	return 'http://www.tf2auctions.com/listing/%s' % (self.key().id(), )
 
-    def encode_builtin(self, bids=False, items=True, currency_type_map=dict(currency_types())):
+    def encode_builtin(self, bids=False, items=True, feedback=True, currency_type_map=dict(currency_types())):
 	""" Encode this instance using only built-in types.
 
 	"""
 	key = self.key()
 	bids = self.bids() if bids else ()
 	wins = [b for b in bids if b.status == 'awarded']
-        bfb = Feedback.get_by_listing(self)
+        bfb = Feedback.get_by_listing(self) if feedback else ()
 	user = users.get_current_user()
 	private = False
 	if bids and user and user_steam_id(user) == self.owner:
@@ -271,7 +271,7 @@ class Listing(db.Model):
 	return {
 	    'id' : key.id(),
 	    'key': str(key),
-	    'owner' : PlayerProfile.get_by_user(self.owner).encode_builtin(),
+	    'owner' : PlayerProfile.get_by_user(self.owner).encode_builtin(subscription=False),
 	    'created' : js_datetime(self.created),
 	    'expires' : js_datetime(self.expires),
 	    'description' : self.description,

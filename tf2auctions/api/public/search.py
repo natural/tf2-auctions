@@ -56,7 +56,7 @@ class BasicSearch(ListingSearch):
 		limit = self.limit
 	    listings = q.fetch(limit)
 	    if encoded:
-		listings = [lst.encode_builtin() for lst in listings]
+		listings = [lst.encode_builtin(feedback=False) for lst in listings]
 	    return listings, self.next_qs(q, qs), self.more(q)
 
 	return inner_search()
