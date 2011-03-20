@@ -12,7 +12,7 @@ known_categories = [
     ('unusual', 'Unusual'),
     ('', ''),
     ('craft_token', 'Tokens'),
-    ('supply_crate', 'Crates'),
+#    ('supply_crate', 'Crates'),
     ('tool', 'Tools'),
 ]
 

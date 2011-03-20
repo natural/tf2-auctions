@@ -1,3 +1,12 @@
+v77 - 19 Mar 2011
+-----------------
+
+Bug fixes:
+
+  * removed listing index with 7 categories; index was causing
+    repeated errors.  updated known category map to exclude crates in
+    order to reduce the category count.
+
 v76 - 19 Mar 2011
 -----------------
 
