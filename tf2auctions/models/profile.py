@@ -84,6 +84,7 @@ class PlayerProfile(db.Expando):
             ids = [item['id'] for item in items]
         except (Exception, ), exc:
             error('fail on ownership check:', items)
+            item_ids = []
 	return all(item_id in ids for item_id in item_ids)
 
     def id64(self):
