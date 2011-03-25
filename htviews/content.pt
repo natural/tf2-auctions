@@ -62,7 +62,7 @@
 		    </span>
 
 		    <span class="null mr1" id="${slug}-login-prompt">
-			<span class="hi build-font">Membership is Free &middot; No Signup Needed</span>
+			<span class="hi build-font">Free Membership &middot; No Signup</span>
 		    </span>
 
 		    <span class="null" id="${slug}-user-buttons">

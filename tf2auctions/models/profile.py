@@ -81,10 +81,11 @@ class PlayerProfile(db.Expando):
             return True
         items = self.items()
         try:
-            ids = [item['id'] for item in items]
+            ids = [item['id'] for item in items['result']['items']['item']]
         except (Exception, ), exc:
-            error('fail on ownership check:', items)
-            item_ids = []
+            error('fail ownership check %s', exc)
+            ## fail open for now:
+            return True
 	return all(item_id in ids for item_id in item_ids)
 
     def id64(self):

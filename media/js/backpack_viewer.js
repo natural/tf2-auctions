@@ -111,13 +111,16 @@ backpackView = oo.view.schema.extend({
 
     profileFound: function(p) {
 	var pu = oo.util.profile.defaultUrl(p),
-            pl = '<a class="nice" href="{0}">{1}</a>'.fs(pu, p.personaname),
             ll = '<a class="nice" href="{0}#1">listings</a>'.fs(pu),
             bl = '<a class="nice" href="{0}#2">bids</a>'.fs(pu),
-            fl = '<a class="nice" href="{0}#0">feedback</a>'.fs(pu)
+            fl = '<a class="nice" href="{0}#0">feedback</a>'.fs(pu),
+	    im = oo.util.img({src:'/media/img/favicon.ico', width:16, height:16, klass:'valign-middle'}),
+            cx = oo('profile-small')
+	oo.util.profile.putAvatar(p, cx)
+	$('a', cx).addClass('nice')
 	oo('profile-links').html(
-	    '{0} is a member!  see their {1} &middot; {2} &middot; {3}'.fs(pl, ll, bl, fl)
-        ).slideDown()
+	    'is a member.   {0} check their {1} &middot; {2} &middot; {3}'.fs(im, ll, bl, fl)
+	).parent().slideDown()
     },
 
     profileMissing: function(p) {

@@ -112,7 +112,7 @@ class ReverifyItems(ApiHandler):
 	items = obj.items()
 	profile = PlayerProfile.get_by_user(user_steam_id(obj.owner))
 	profile.refresh()
-	warn('re-verify items: %s', [long(i.uniqueid) for i in items])
+	#warn('re-verify items: %s', [long(i.uniqueid) for i in items])
 	if profile.owns_all([long(i.uniqueid) for i in items]):
 	    return obj
 	else:

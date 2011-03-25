@@ -7,8 +7,8 @@ if (typeof console === 'undefined') {
 
 if (typeof Object.create !== 'function') {
     Object.create = function (proto) {
-        var obj = function() {}
-        obj.prototype = proto
+	var obj = function() {}
+	obj.prototype = proto
 	return new obj()
     }
 }
@@ -216,8 +216,8 @@ var oo = (function() {
 	    // set the level; this doesn't match the game behavior exactly, but it is nice.
 	    var level = playerItem['level'],
 	    levelType = schemaItem['item_type_name']
-	        .replace('TF_Wearable_Hat', 'Wearable Item')
-	        .replace('TF_LockedCrate', 'Crate')
+		.replace('TF_Wearable_Hat', 'Wearable Item')
+		.replace('TF_LockedCrate', 'Crate')
 	    $('#tooltip .level').text(level ? 'Level ' + level + ' ' + levelType : '')
 
 
@@ -253,7 +253,7 @@ var oo = (function() {
 			if (attrDef['description_string']=='unused') { return }
 			if (attrDef['attribute_class']=='set_employee_number') { return }
 			var etype = oo.tf2.effectTypeMap[attrDef['effect_type']],
-		        current = $('#tooltip .' + etype).html()
+			current = $('#tooltip .' + etype).html()
 			// particle effects defined in the schema, not the item:
 			if (attrDef['attribute_class'] == 'set_attached_particle') {
 			    var extra = formatSchemaAttr(attrDef, oo.tf2.itemEffects[schemaAttr['value']])
@@ -266,9 +266,9 @@ var oo = (function() {
 		    }
 	    if (schemaItem['item_description']) {
 		var current = $('#tooltip .alt').html(),
-	            ddesc = schemaItem['item_description']
+		    ddesc = schemaItem['item_description']
 		if (ddesc.indexOf('\n') > -1) {
-		    ddesc = ddesc.replace(/\n/g, '<br />')		    
+		    ddesc = ddesc.replace(/\n/g, '<br />')
 		} else {
 		    ddesc = ddesc.wordwrap(64)
 		}
@@ -363,20 +363,20 @@ var oo = (function() {
     var BackpackNavTool = function(options) {
 	var self = this,
 	    slug = options.slug,
-            itemTool = options.itemTool,
-            outerContext = $('#bp-{0}'.fs(slug)),
-            pagesContext = $('div.bp-pages', outerContext),
-            pageCount = $('table.bp-page-{0}'.fs(slug), pagesContext).length,
-            pageCurrent = 1,
-            nonPrev = $('#bp-nav-{0} .non:first'.fs(slug)),
-            navPrev = $('#bp-nav-{0} .nav:first'.fs(slug)),
-            nonNext = $('#bp-nav-{0} .non:last'.fs(slug)),
-            navNext = $('#bp-nav-{0} .nav:last'.fs(slug)),
-            initWidth = 0
+	    itemTool = options.itemTool,
+	    outerContext = $('#bp-{0}'.fs(slug)),
+	    pagesContext = $('div.bp-pages', outerContext),
+	    pageCount = $('table.bp-page-{0}'.fs(slug), pagesContext).length,
+	    pageCurrent = 1,
+	    nonPrev = $('#bp-nav-{0} .non:first'.fs(slug)),
+	    navPrev = $('#bp-nav-{0} .nav:first'.fs(slug)),
+	    nonNext = $('#bp-nav-{0} .non:last'.fs(slug)),
+	    navNext = $('#bp-nav-{0} .nav:last'.fs(slug)),
+	    initWidth = 0
 
 	self.init = function() {
 	    initWidth = $('body').width() // sucks, but it's better than 0
-            $('table.bp-page-{0}:gt(0)'.fs(slug), pagesContext).css('margin-left', initWidth)
+	    $('table.bp-page-{0}:gt(0)'.fs(slug), pagesContext).css('margin-left', initWidth)
 	    $('a', navPrev).unbind().click(function (event) { self.navigate(-1); return false })
 	    $('a', navNext).unbind().click(function (event) { self.navigate( 1); return false })
 	    self.updateButtons()
@@ -388,7 +388,7 @@ var oo = (function() {
 		$.each(itemFilterLabels, function(idx, val) {
 		    var opt = '<option value="{0}">{1}</option>'.fs(
 			val[0], val[1]
-                    )
+		    )
 		    $(opt).css('background-image', 'url(/media/img/{0}.png)'.fs(val[0]))
 		    select.append(opt)
 		})
@@ -404,9 +404,9 @@ var oo = (function() {
 		    $('#bp-nav-{0}'.fs(slug)).fadeOut()
 		})
 	    }
-            $('#bp-nav-{0}'.fs(slug)).show()
-            $('table.bp-page-{0}'.fs(slug), pagesContext).css('display', 'none')
-            $('table.bp-page-{0}:eq(0)'.fs(slug), pagesContext).css('margin-left', 0).show()
+	    $('#bp-nav-{0}'.fs(slug)).show()
+	    $('table.bp-page-{0}'.fs(slug), pagesContext).css('display', 'none')
+	    $('table.bp-page-{0}:eq(0)'.fs(slug), pagesContext).css('margin-left', 0).show()
 	}
 
 	self.applyFilter = function(event) {
@@ -453,7 +453,7 @@ var oo = (function() {
 		var newMargin = $('div.bp-pages', outerContext).width() * (offset>0 ? -1 : 1)
 		pageCurrent += offset
 		$('table.bp-{0}'.fs(prev), pagesContext)
-	            .animate({marginLeft:newMargin}, 200,
+		    .animate({marginLeft:newMargin}, 200,
 			     function() {
 				 $('td.selected', pagesContext).removeClass('selected')
 				 $('table.bp-{0}'.fs(prev), pagesContext).hide()
@@ -490,10 +490,10 @@ var oo = (function() {
     //
     var BackpackItemsTool = function(options) {
 	var self = this,
-        listingUids = options.listingUids || [],
-        bidUids = options.bidUids || [],
-        slug = options.slug,
-        cols = options.cols || 10
+	listingUids = options.listingUids || [],
+	bidUids = options.bidUids || [],
+	slug = options.slug,
+	cols = options.cols || 10
 
 	self.init = function(settings) {
 	    if (options.rowGroups) {
@@ -533,10 +533,10 @@ var oo = (function() {
 	    oo.data.schema()
 		.success(function(s) {
 		    var newIdx = -1,
-		        schema = oo.util.schema(s),
-		        toolDefs = schema.tools(),
-		        actionDefs = schema.actions(),
-		        uprefs = oo.util.settings(settings)
+			schema = oo.util.schema(s),
+			toolDefs = schema.tools(),
+			actionDefs = schema.actions(),
+			uprefs = oo.util.settings(settings)
 		    $.each(items, function(index, item) {
 			item.flag_active_listing = (item.id in listingUids)
 			item.flag_active_bid = (item.id in bidUids)
@@ -623,13 +623,13 @@ var oo = (function() {
 		    }
 		)
 	    }
-            var help = options.help || '', title = options.title || ''
+	    var help = options.help || '', title = options.title || ''
 	    if (help) {
 		$('#bp-{0} span.help:first'.fs(slug)).text(help)
 	    }
 	    if (title) {
 		$('#bp-{0} > div > div > h3:first'.fs(slug)).text(title)
-            }
+	    }
 	}
 
 	self.setEquipped = function(itemutil, image, defindex, settings) {
@@ -646,7 +646,7 @@ var oo = (function() {
 	}
 
 	self.setEffect = function(itemutil, element, settings) {
-            if (settings.showItemEffect && itemutil.effect()) {
+	    if (settings.showItemEffect && itemutil.effect()) {
 		element.parent()
 		    .addClass('effect-{0} effect-base'.fs(itemutil.effect()))
 	    }
@@ -658,7 +658,7 @@ var oo = (function() {
 		    .addClass('border-quality-{0}'.fs(item.quality))
 		if (!settings.showAngryLite) {
 		    element.parent()
-		        .addClass('background-quality-{0}'.fs(item.quality))
+			.addClass('background-quality-{0}'.fs(item.quality))
 		}
 	    }
 	    if (settings.showItemTags && itemutil.isNamed()) {
@@ -694,7 +694,7 @@ var oo = (function() {
 		    .addClass('border-quality-{0}'.fs(item.quality))
 		if (!settings.showAngryLite) {
 		    element.parent()
-		        .addClass('background-quality-{0}'.fs(item.quality))
+			.addClass('background-quality-{0}'.fs(item.quality))
 		}
 	    }
 	    // unplaced with a custom name or description?  i don't think so...
@@ -725,7 +725,7 @@ var oo = (function() {
 	$.each(source.attr('class').split(' '), function(idx, name) {
 	    if (name.match(expr)) { target.addClass(name); source.removeClass(name) }
 	})
-    }, 
+    },
     moveSalad = function(source, target) {
 	moveClasses(source, target, /(border|background)-quality/)
 	moveClasses(source, target, /effect-.*/)
@@ -741,15 +741,15 @@ var oo = (function() {
     //
     var BackpackChooserTool = function(options) {
 	var self = this,
-            title = options.title,
-            backpackHelp = options.backpackHelp,
-            backpackSlug = options.backpackSlug,
-            chooserSlug = options.chooserSlug
+	    title = options.title,
+	    backpackHelp = options.backpackHelp,
+	    backpackSlug = options.backpackSlug,
+	    chooserSlug = options.chooserSlug
 
 	self.init = function(settings) {
 	    self.initDrag()
 	    self.initOptional()
-            self.updateCount()
+	    self.updateCount()
 	}
 
 	self.initDrag = function() {
@@ -861,7 +861,7 @@ var oo = (function() {
 
 	    if (options.title) {
 		$('#bp-chooser-{0} > div > h3:first'.fs(chooserSlug)).prepend(options.title)
-            }
+	    }
 
 	    if (!options.counter) {
 		this.updateCount = function() {}
@@ -878,8 +878,8 @@ var oo = (function() {
 
 	self.moveToChooser = function(event) {
 	    var source = $(event.target),
-	        target = $('#bp-chooser-{0} td div:empty'.fs(chooserSlug)).first(),
-	        cell = source.parent().parent()
+		target = $('#bp-chooser-{0} td div:empty'.fs(chooserSlug)).first(),
+		cell = source.parent().parent()
 	    if ((cell.hasClass('cannot-trade')) || (!target.length)) { return }
 	    cell.removeClass('selected')
 	    source.data('original-cell', cell)
@@ -893,7 +893,7 @@ var oo = (function() {
 
 	self.moveToOriginal = function(event) {
 	    var source = $(event.target),
-	        target = $('div', source.data('original-cell'))
+		target = $('div', source.data('original-cell'))
 	    if (target.length==1) {
     		var others = $('span.equipped, span.quantity, span.jewel, span.tool-base', source.parent())
 		moveSalad(source.parent().parent(), target.parent())
@@ -983,8 +983,8 @@ var oo = (function() {
 	},
 
 	one: function(listing, context, options) {
-            context.removeClass('prototype').addClass('listing-seed')
-            if (listing.description) {
+	    context.removeClass('prototype').addClass('listing-seed')
+	    if (listing.description) {
 		$('.listing-description', context).text(listing.description)
 	    } else {
 		$('tr.ds', context).empty()
@@ -1026,7 +1026,7 @@ var oo = (function() {
 	    $('span.expires', context)
 		.append('<span class="mono float-right">Expires: {0}</span>'.fs(oo.util.dformat(listing.expires)))
 	    oo.util.profile.putAvatar(listing.owner, $('span.av', context))
-	        .success(function(s) { $('tr.pr div.pr', context).animate({opacity:100}, 9999) })
+		.success(function(s) { $('tr.pr div.pr', context).animate({opacity:100}, 9999) })
 	    return context
 //	$('.listing-status-seed', clone).text(listing.status)
 //	$('.listing-created-seed', clone).text(oo.util.dformat(listing.created))
@@ -1040,7 +1040,7 @@ var oo = (function() {
 		return
 	    }
 	    var $$ = oo.prefix$('#featured-'),
-	        displays = oo.util.listing.many({
+		displays = oo.util.listing.many({
 		    listings: featured,
 		    prototype: $$('listings div.prototype'),
 		})
@@ -1082,14 +1082,14 @@ var oo = (function() {
 	    $$('player-profile-link').attr('href', oo.util.profile.defaultUrl(p))
 	    $$('login-link').hide()
 	    $$('user-buttons, logout-link, site-buttons').show()
-            if (p.subscription.status != 'verified') {
+	    if (p.subscription.status != 'verified') {
 		$$('sub-buttons').show()
 	    }
 	    ns.profile.defaultUserAuthOkay = oo.noop
 	},
 
 	put: function(p, force) {
-            if (p.message_count || force) {
+	    if (p.message_count || force) {
 		var b = $('#content-player-profile-link')
 		if (!b.data('msg-count') || force) {
 		    b.text('My Profile ({0})'.fs(p.message_count))
@@ -1101,38 +1101,38 @@ var oo = (function() {
 		.show()
 	    oo.model.status.extend({suffix: p.id64}).init()
 		.success(function(status) {
-	            $('#content-avatar-pod img').addClass(status.online_state)
-	            $('#content-avatar-pod img').addClass('profile-status')
+		    $('#content-avatar-pod img').addClass(status.online_state)
+		    $('#content-avatar-pod img').addClass('profile-status')
 		})
 	},
 
 	putAvatar: function(p, c) {
 	    var lbl = $('span.av', c),
-	        img = $('img.av', c),
-                url = oo.util.profile.defaultUrl(p)
-            lbl.text(p.personaname).parent().attr('href', url)
+		img = $('img.av', c),
+		url = oo.util.profile.defaultUrl(p)
+	    lbl.text(p.personaname).parent().attr('href', url)
 	    img.attr('src', p.avatar).parent().attr('href', url)
 	    return oo.data.status({suffix: p.id64})
-	        .success(function(s) {
+		.success(function(s) {
 		    img.addClass('profile-status {0}'.fs(s.online_state))
 		})
 	},
 
 	putBadge: function(p) {
-            var possum = p.rating[0], poscnt = p.rating[1], negsum = p.rating[2], negcnt = p.rating[3],
-                pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
-                neg = Math.round(negcnt > 0 ? negsum / negcnt : 0),
-	        url = oo.util.profile.defaultUrl(p)
+	    var possum = p.rating[0], poscnt = p.rating[1], negsum = p.rating[2], negcnt = p.rating[3],
+		pos = Math.round(poscnt > 0 ? possum / poscnt : 0),
+		neg = Math.round(negcnt > 0 ? negsum / negcnt : 0),
+		url = oo.util.profile.defaultUrl(p)
 	    oo('badge-title').text(p.personaname)
 	    oo('owner-view-steam-profile').attr('href', p.profileurl)
 	    oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(p.steamid))
 	    oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(p.steamid))
-            oo('pos-label').text('{0}% Positive'.fs( pos ))
-            oo('pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
-            $('div.padding', oo('pos-bar').parent()).width('{0}%'.fs(100-pos) )
-            oo('neg-label').text('{0}% Negative'.fs( Math.abs(neg) ))
-            oo('neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
-            $('div.padding', oo('neg-bar').parent()).width('{0}%'.fs(100-neg) )
+	    oo('pos-label').text('{0}% Positive'.fs( pos ))
+	    oo('pos-bar').width('{0}%'.fs(pos ? pos : 1)).html('&nbsp;')
+	    $('div.padding', oo('pos-bar').parent()).width('{0}%'.fs(100-pos) )
+	    oo('neg-label').text('{0}% Negative'.fs( Math.abs(neg) ))
+	    oo('neg-bar').width('{0}%'.fs(neg ? neg : 1)).html('&nbsp;')
+	    $('div.padding', oo('neg-bar').parent()).width('{0}%'.fs(100-neg) )
 	    if (p.avatarmedium) { oo('avatar').attr('src', p.avatarmedium)  }
 
 	    oo('avatar').parent().attr('href', url)
@@ -1141,7 +1141,7 @@ var oo = (function() {
 	    oo('owner-view-bids').attr('href', '{0}#2'.fs(url))
 
 	    oo.data.status({suffix: p.id64}).success(function(s) {
-	        var m = s.message_state
+		var m = s.message_state
 		GM = m; GS = s
 		oo('avatar').addClass(s.online_state)
 		if (/In-Game.*?Team Fortress 2/.test(m)) {
@@ -1163,8 +1163,8 @@ var oo = (function() {
 	    showPainted: (valid ? s['badge-painted'] : true),
 	    showUseCount: (valid ? s['badge-usecount'] : true),
 	    showAngrySalad: (valid ? s['angry-fruit-salad'] : false),
-            showAngryLite: (valid ? (s['angry-fruit-salad'] && s['angry-fruit-salad-lite']) : false),
-            showItemEffect: (valid ? s['unusual-item-background'] : false),
+	    showAngryLite: (valid ? (s['angry-fruit-salad'] && s['angry-fruit-salad-lite']) : false),
+	    showItemEffect: (valid ? s['unusual-item-background'] : false),
 	    showItemTags: (valid ? s['badge-tags'] : false)
 	}
     }
@@ -1187,7 +1187,7 @@ var oo = (function() {
 	var height = '' + (options['height'] || 32)
 	var alt = options['alt'] || ''
 	var style = options['style'] || ''
-	var cls = options['class'] || ''
+	var cls = options['klass'] || ''
 	return '<img src="{0}" width="{1}" height="{2}" alt="{3}" style="{4}" class="{5}" />'.fs(
 	    src, width, height, alt, style, cls)
     }
@@ -1244,15 +1244,15 @@ var oo = (function() {
 	    // definition index replace" class with the url of the item
 	    // specified in the content.
 	    var itemImg = function(url) { return oo.util.img({src:url, width:64, height:64}) },
-	        toolDefs = self.tools(),
-	        actionDefs = self.actions(),
-	        settingV = oo.util.settings(settings),
-	        options = options || {fast:true},
-	        fast = options.fast,
-	        // specifically check for the absence of an image because
-	        // some pages (e.g., search) get bad overwrites when
-                // looking for just the .defindex-lazy class.
- 	        divs = $('.defindex-lazy'+( fast ? '' : ':not(:has(img))'), context) 
+		toolDefs = self.tools(),
+		actionDefs = self.actions(),
+		settingV = oo.util.settings(settings),
+		options = options || {fast:true},
+		fast = options.fast,
+		// specifically check for the absence of an image because
+		// some pages (e.g., search) get bad overwrites when
+		// looking for just the .defindex-lazy class.
+ 		divs = $('.defindex-lazy'+( fast ? '' : ':not(:has(img))'), context)
 
 	    divs.each(function(index, tag) {
 		try {
@@ -1300,13 +1300,13 @@ var oo = (function() {
 			    .addClass('background-quality-{0}'.fs( pitem.quality))
 		    }
 		}
-                if (settingV.showItemTags && iutil.isNamed()) {
+		if (settingV.showItemTags && iutil.isNamed()) {
 		    img.parent()
 		    .append('<span class="tool-base tool-{0}">&nbsp;</span>'.fs(
 				pitem.custom_name && pitem.custom_desc ? '5020-5044' : (pitem.custom_name ? '5020' : '5044')
 			    ))
 		}
-	        if (settingV.showItemEffect && iutil.effect()) {
+		if (settingV.showItemEffect && iutil.effect()) {
 		    img.parent().parent().addClass('effect-{0} effect-base'.fs(iutil.effect()))
 		}
 	    })
@@ -1314,7 +1314,7 @@ var oo = (function() {
 
 	self.select = function(key, match) {
 	    var res = {},
-	        matchf = (typeof(match) == typeof('')) ? function(v) { return v == match } : match
+		matchf = (typeof(match) == typeof('')) ? function(v) { return v == match } : match
 	    $.each(self.itemDefs(), function(idx, def) {
 		if (matchf(def[key])) {res[def.defindex] = def }})
 		return res
@@ -1391,7 +1391,7 @@ var oo = (function() {
 	if (typeof(schema) == 'undefined') {
 	    //oo.data.schema({success: self.load})
 	    oo.data.schema().success(self.load)
-	} else { 
+	} else {
 	    self.load(schema)
 	}
     }
@@ -1411,15 +1411,15 @@ var oo = (function() {
 //
 (function(ns) {
     var cache = {},
-        pending = {},
-        debug = true,
+	pending = {},
+	debug = true,
 
     loader = ns.loader = function(config) {
 	return function(options) {
 	    var options = options || {},
-	        url = config.prefix + (options.suffix || ''),
-	        dataType = (options.dataType || config.dataType || 'json'),
-                jsonpCallback = (options.jsonpCallback || config.jsonpCallback || null)
+		url = config.prefix + (options.suffix || ''),
+		dataType = (options.dataType || config.dataType || 'json'),
+		jsonpCallback = (options.jsonpCallback || config.jsonpCallback || null)
 
 	    if (cache[url]) {
 		if (debug) { oo.info('cache hit:', url) }
@@ -1435,7 +1435,7 @@ var oo = (function() {
 	    if (dataType == 'jsonp' && options.suffix) {
 		jsonpCallback += options.suffix
 	    }
-            return pending[url] = $.ajax({
+	    return pending[url] = $.ajax({
 		url: url,
 		async: true,
 		cache: true,
@@ -1479,10 +1479,10 @@ var oo = (function() {
 
     ns.auth = function(o) {
 	o = o || {}
-        if (oo.conf.auth) {
+	if (oo.conf.auth) {
 	    var s = (oo.conf.auth.settings ? 'settings=1' : '')
 	    s = s ? ('?' + s) : ''
-            var c = (oo.conf.auth.complete ? 'complete=1' : '')
+	    var c = (oo.conf.auth.complete ? 'complete=1' : '')
 	    s = s + (c ? '&'+c : '')
 	    o.suffix = s
 	}
@@ -1533,8 +1533,8 @@ var oo = (function() {
 	clones: [],
 
 	init: function() {
-            var self = this,
-	        eventNames = $.merge([], oo.keys($.attrFn))
+	    var self = this,
+		eventNames = $.merge([], oo.keys($.attrFn))
 	    $.merge(eventNames, oo.keys($.event.special))
 
 	    // initalize the model associated with this controller.  the
@@ -1544,21 +1544,21 @@ var oo = (function() {
 
 	    // initialize anything in the namespace that looks like an
 	    // event listener.
-            $.each(oo.keys(self), function(idx, key) {
+	    $.each(oo.keys(self), function(idx, key) {
 		var value = self[key]
 		if (typeof key == 'string' && (typeof value == 'function' || typeof value == 'object')) {
 		    var names = key.split(' '),
-	            name = names.pop()
+		    name = names.pop()
 		    if (name == 'ready') {
 			$(function() { value.apply(self, arguments) })
 		    } else if (name.indexOf('live:') == 0) {
 			var inner = name.split(':')
 			$(names.join(' ')).live(inner[1], function(e) { e.controller = self; value.apply(self, [e]) })
-	            } else if (name && eventNames.indexOf(name) > -1) {
+		    } else if (name && eventNames.indexOf(name) > -1) {
 			$(names.join(' ')).bind(name, function(e) { e.controller = self; value.apply(self, [e]) })
-                    }
+		    }
 		}
-            })
+	    })
 	    return m
 	},
 
@@ -1606,7 +1606,7 @@ var oo = (function() {
 	init: function(view) {
 	    var self = this
 	    return ns.model.init.apply(self, arguments)
-	        .success(function(data) {
+		.success(function(data) {
 		    var st = self.tool = oo.util.schema(data), tt = oo.backpack.itemHoverTool(st)
 		    $('div.ov td.item-view, #backpack-ac td, .backpack td')
 			.live('mouseover', function(e) { tt.show(e); $(this).addClass('outline')  })
@@ -1632,8 +1632,8 @@ var oo = (function() {
 	loader: oo.data.auth,
 	init: function(view) {
 	    return ns.model.init.apply(this, arguments)
-	        .success(function(p) { oo.util.profile.defaultUserAuthOkay(p) })
-	        .error(function() { oo.util.profile.defaultUserAuthError() })
+		.success(function(p) { oo.util.profile.defaultUserAuthOkay(p) })
+		.error(function() { oo.util.profile.defaultUserAuthError() })
 	}
     })
 
@@ -1688,7 +1688,7 @@ var oo = (function() {
 	    return false
 	},
 
-        showOpenMarketDialog: function(e) {
+	showOpenMarketDialog: function(e) {
 	    $.ajax({
 		url: '/openmarket-dialog',
 		cache: true,
@@ -1708,17 +1708,17 @@ var oo = (function() {
 
 	navFeatured: function(offset) {
 	    var prefix = '#featured-listings div.listing-seed',
-	        current = $('{0}.listing-seed:visible'.fs(prefix)),
-	        others = $('{0}.listing-seed:hidden'.fs(prefix)),
-	        all = $('{0}.listing-seed'.fs(prefix)),
-	        index = all.index(current),
-                count = all.length
+		current = $('{0}.listing-seed:visible'.fs(prefix)),
+		others = $('{0}.listing-seed:hidden'.fs(prefix)),
+		all = $('{0}.listing-seed'.fs(prefix)),
+		index = all.index(current),
+		count = all.length
 	    if (index > -1 && (index + offset) > -1 && ((index + offset) < count)) {
 		current.fadeOut(function () { $(all[index+offset]).fadeIn() })
 		var nonPrev = $('{0} div.navs span.nonav.prev'.fs(prefix)),
-                    navPrev = $('{0} div.navs span.nav.prev'.fs(prefix)),
-                    nonNext = $('{0} div.navs span.nonav.next'.fs(prefix)),
-                    navNext = $('{0} div.navs span.nav.next'.fs(prefix))
+		    navPrev = $('{0} div.navs span.nav.prev'.fs(prefix)),
+		    nonNext = $('{0} div.navs span.nonav.next'.fs(prefix)),
+		    navNext = $('{0} div.navs span.nav.next'.fs(prefix))
 		if (index+offset == 0) {
 		    nonPrev.show()
 		    navPrev.hide()
@@ -1749,7 +1749,7 @@ var oo = (function() {
 	},
 
 	formatRating: function(v) {
-            return '{0}{1}'.fs(v > 0 ? '+' : '', v)
+	    return '{0}{1}'.fs(v > 0 ? '+' : '', v)
 	},
 
 	setRating: function(e, v) {
@@ -1791,9 +1791,9 @@ var oo = (function() {
 
 	putItems: function(target, items, cols) {
 	    var col = 0,
-	        cols = cols || 10,
-	        makeCell = function(v) {
-                    return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v)
+		cols = cols || 10,
+		makeCell = function(v) {
+		    return '<td><div class="defindex-lazy">{0}</div></td>'.fs(v)
 		}
 	    $.each(items, function(idx, item) {
 		if (!(col % cols)) { target.append('<tr></tr>') }

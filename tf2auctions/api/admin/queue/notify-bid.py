@@ -41,7 +41,7 @@ class NotifyBid(ApiHandler):
 	try:
 	    key = self.request.get('bid')
 	    update = self.request.get('update')
-	    warn('notify bid: %s, %s', key, update)
+	    #warn('notify bid: %s, %s', key, update)
 	    bid = Bid.get(key)
 	    listing = bid.listing
 	    profile = listing.owner_profile()
