@@ -1,3 +1,25 @@
+v79 - 24 Mar 2011
+-----------------
+
+Changes:
+
+  * Reduced number of data store reads during search
+  * Changed login prompt on front page
+  * Made local profile links better on backpack viewer
+
+Bug fixes:
+
+  * Fixed item reverification to recognize v2 (full) schema structure.
+
+
+v78 - 19 Mar 2011
+-----------------
+
+Bug fixes:
+
+  * additional datastore index corrections.
+
+
 v77 - 19 Mar 2011
 -----------------
 
