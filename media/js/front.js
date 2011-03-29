@@ -1,4 +1,4 @@
-var init = function() {
+(function() {
     oo.config({prefix: '#front-', auth: {settings: 1, complete: 0}})
 
 
@@ -138,4 +138,4 @@ var init = function() {
     oo.controller.extend({model: blogModel, view: blogView})
     oo.controller.extend({model: statsModel, view: statsView})
     oo.controller.extend({model: newsModel, view: newsView})
-}
+})()

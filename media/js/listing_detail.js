@@ -7,7 +7,7 @@
 //
 //
 
-var init = function() {
+(function() {
 
 
 oo.config({prefix: '#listing-detail-', auth: {settings: 1, complete: 0}})
@@ -980,4 +980,4 @@ var ListingController = oo.controller.extend({
 })
 
 
-}
+})()

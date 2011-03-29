@@ -1,3 +1,13 @@
+v80 - 28 Mar 2011
+-----------------
+
+Bug fixes:
+
+  * Removed async script loading in favor of tried and true scripts
+    within &lt;head&gt;.
+
+
+
 v79 - 24 Mar 2011
 -----------------
 

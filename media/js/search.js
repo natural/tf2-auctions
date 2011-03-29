@@ -7,7 +7,7 @@
 // BUG:  featured nav label showing with only 1 featured listing
 
 
-var init = function() {
+(function() {
 
 
 oo.config({prefix: '#search-', auth: {settings: 1, complete: 0}})
@@ -400,4 +400,4 @@ searchController = oo.controller.extend({
 
 })
 
-}
+})()

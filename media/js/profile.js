@@ -1,4 +1,4 @@
-var init = function() {
+(function() {
 
 
 oo.config({prefix: '#profile-', auth: {settings: 1, complete: 1}})
@@ -645,4 +645,4 @@ var MainController = oo.controller.extend({
 })
 
 
-}
+})()

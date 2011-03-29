@@ -1,4 +1,4 @@
-var init = function() {
+(function() {
 
 
 oo.config({prefix: '#backpack-viewer-', auth: {settings: 1, complete: 0}})
@@ -237,4 +237,4 @@ backpackController = oo.controller.extend({
 	return v
     }
 })
-}
+})()

@@ -185,8 +185,13 @@ class View(LocalHandler):
 
     def iter_link_js(self, js_path=None):
 	prefix = self.media_js_path if js_path is None else js_path
+	devel, version = features.devel, features.version
 	for js in self.link_js:
 	    yield js if js.startswith('http:') else '%s/%s' % (prefix, js)
+        for js, wait in self.block_js + tuple((js, None) for js in self.related_js):
+            if not js.startswith('http:'):
+                js = '%s/%s?v=%s' % (prefix, js, int(time()) if devel else version)
+            yield js
 
     def iter_tag_js(self, js_path=None):
         calls = []

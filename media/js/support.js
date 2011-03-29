@@ -1,4 +1,4 @@
-var init = function() {
+(function() {
 
 
 oo.config({prefix: '#support-', auth: {settings: 0, complete: 0}})
@@ -281,4 +281,4 @@ SupportController = oo.controller.extend({
 
 })
 
-}
+})()

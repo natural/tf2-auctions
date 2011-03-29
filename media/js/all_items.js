@@ -1,4 +1,4 @@
-var init = function() {
+(function() {
     var model = oo.model.schema.extend({
 	init: function(view) {
 	    var self = this
@@ -44,4 +44,4 @@ var init = function() {
 	    oo.model.auth.init()
 	}
     })
-}
+})()

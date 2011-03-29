@@ -19,11 +19,6 @@
 	    <metal:assoc tal:repeat="link controller.iter_link_js()">
 		<script type="text/javascript" src="${link}"></script>
 	    </metal:assoc>
-	    <metal:assoc tal:repeat="block controller.iter_tag_js()">
-		<script type="text/javascript">
-		    ${block}
-		</script>
-	    </metal:assoc>
 	    <metal:slot define-slot="script" />
 	</metal:slot>
 	<metal:slot fill-slot="feed">

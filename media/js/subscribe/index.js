@@ -1,4 +1,4 @@
-var init = function() {
+(function() {
     oo.config({prefix:'#subscribe-', auth: {settings: 1, complete: 0}})
     oo.model.auth.init()
 	.success(function(p) {
@@ -16,4 +16,4 @@ var init = function() {
         .complete(function() {
             $('#content-sub-buttons').fadeOut()
         })
-}
+})()

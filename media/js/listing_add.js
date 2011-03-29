@@ -3,7 +3,7 @@
 //
 
 var pid = '#listing-add-'
-var init = function() {
+(function() {
 
 oo.config({prefix: pid, auth: {settings: 1, complete: 1}})
 
@@ -343,4 +343,4 @@ $(document).ready(function() {
     oo('min-bid-show a').click(showMinBid)
     oo('show-terms').click(oo.view.showTermsDialog)
 })
-}
+})()

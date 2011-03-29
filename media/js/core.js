@@ -1827,7 +1827,7 @@ var oo = (function() {
 })(jQuery);
 
 
-var core = function() {
+$(document).ready(function() {
     // perform an initial auth if the module has indicated authentication
     if (oo.conf.auth) {
 	oo.model.auth.init()
@@ -1840,4 +1840,4 @@ var core = function() {
 	//function() {
 	//	    })
     }
-}
+})
