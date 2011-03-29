@@ -1,3 +1,11 @@
+v81 - 28 Mar 2011
+-----------------
+
+Bug fixes:
+
+  * Stupid is as stupid does.
+
+
 v80 - 28 Mar 2011
 -----------------
 

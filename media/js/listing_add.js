@@ -2,7 +2,8 @@
 // NEW:  use full width backpack for player items.
 //
 
-var pid = '#listing-add-'
+var pid = '#listing-add-';
+
 (function() {
 
 oo.config({prefix: pid, auth: {settings: 1, complete: 1}})
