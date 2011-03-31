@@ -76,6 +76,15 @@ class QueueTool(object):
 	    params=params
 	)
 
+    def external_share(self, listing_key, transactional=False):
+	return taskqueue.add(
+	    url='/api/v1/admin/queue/external-share-listing',
+	    transactional=transactional,
+	    queue_name='listing-external-share',
+	    params=dict(listing_key=listing_key)
+	)
+
+
 queue_tool = QueueTool()
 
 

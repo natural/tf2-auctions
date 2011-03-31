@@ -145,6 +145,9 @@ class Listing(db.Model):
 
 	## 9. submit an item to the subscriber notification queue
 	queue_tool.notify_listing(subscription_key=None, listing_key=key, transactional=True)
+
+        ## 10. submit an item to the external share queue
+        queue_tool.external_share(listing_key=key, transactional=True)
 	return key
 
     @classmethod

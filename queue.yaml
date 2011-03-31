@@ -17,3 +17,10 @@ queue:
 - name: win-notify
   rate: 1/s
 
+- name: listing-external-share
+  rate: 10/m
+  max_concurrent_requests: 2
+  retry_parameters:
+    min_backoff_seconds: 60
+    max_backoff_seconds: 240
+    task_age_limit: 12h

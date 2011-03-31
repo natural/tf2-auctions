@@ -1,3 +1,12 @@
+v82 - 30 Mar 2011
+-----------------
+
+Changes:
+
+  * Added hook to new listing to place listings in an email queue for
+    external processing.
+
+
 v81 - 28 Mar 2011
 -----------------
 
