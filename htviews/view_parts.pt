@@ -177,7 +177,7 @@
 			    </tr>
 			    <tr>
 				<!-- items blocks and view link -->
-				<td width="75%">
+				<td width="80%">
 				    <div class="bi">
 					<metal:display use-macro="macros.items_view" />
 				    </div>
@@ -195,7 +195,7 @@
 			    </tr>
 			    <tr class="ds">
 				<!-- description text -->
-				<td width="75%"><div class="listing-description ds pl05"></div></td>
+				<td width="80%"><div class="listing-description ds pl05"></div></td>
 				<td></td>
 			    </tr>
 			    <tr class="mb">
@@ -205,7 +205,7 @@
 			    </tr>
 			    <tr class="mb">
 				<!-- min bid items -->
-				<td width="75%">
+				<td width="80%">
 				    <div class="${slug}-listing-view-min-bid null mb">
 					<metal:display tal:define="rows 2; cols 5" use-macro="macros.items_view" />
 				    </div>
@@ -232,12 +232,13 @@
 			    </tr>
 
 			    <tr class="bt">
-				<td width="75%">
-				    <div class="pl05">
+				<td width="100%" colspan="2">
+				    <div class="pl05 mt1 float-left w49">
 					<strong class="bid-count">Bids: </strong>
 				    </div>
+				    <div class="mb05 float-right w49"><metal:slot define-slot="bottom" /></div>
+				    <div class="clear"></div>
 				</td>
-				<td><div class="mb05"><metal:slot define-slot="bottom" /></div></td>
 			    </tr>
 			</tbody>
 		    </table>

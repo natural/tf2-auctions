@@ -14,7 +14,7 @@ import urllib2
 logging.basicConfig(level=logging.DEBUG)
 
 
-debug = True
+debug = False
 quality_prefix = {3: 'v. ', 5: 'Unusual ', 1: 'g. '}
 reddit_session_key = 'reddit_session'
 reddit_user_agent = 'tf2auctions bot'
@@ -179,7 +179,10 @@ def main():
     user, passwd = read_creds('reddit_cred.nodist')
 
     for msg in msgs:
-        listing_summary = json.loads(msg.get_payload(0).get_payload())
+        if debug:
+            listing_summary = json.loads(msg.get_payload(0).get_payload())
+        else:
+            listing_summary = json.loads(msg.get_payload())
         listing_details = fetch_listing_details(listing_summary['listing']['id'])
         logging.info('have listing details: %s', listing_details)
         title = reddit_listing_title(listing_details, schemamap)

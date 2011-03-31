@@ -1419,7 +1419,8 @@ var oo = (function() {
 	    var options = options || {},
 		url = config.prefix + (options.suffix || ''),
 		dataType = (options.dataType || config.dataType || 'json'),
-		jsonpCallback = (options.jsonpCallback || config.jsonpCallback || null)
+		jsonpCallback = (options.jsonpCallback || config.jsonpCallback || null),
+	        data = (options.data || config.data || {})
 
 	    if (cache[url]) {
 		if (debug) { oo.info('cache hit:', url) }
@@ -1439,6 +1440,7 @@ var oo = (function() {
 		url: url,
 		async: true,
 		cache: true,
+                data: data,
 		dataType: dataType,
 		jsonpCallback: jsonpCallback,
 		complete: function(v) { cache[url] = v; delete(pending[url]) }
@@ -1454,6 +1456,12 @@ var oo = (function() {
     }),
     bidsLoader = loader({prefix: '/api/v1/public/bids/'}),
     blogLoader = loader({prefix: '/api/v1/public/blog-entries'}),
+    blogLoader2 = loader({
+        prefix: 'http://tf2auctions.blogspot.com/feeds/posts/default',
+        dataType: 'jsonp',
+        jsonpCallback: 'blogFu',
+        data: {alt:"json-in-script"}
+    }),
     feedbackLoader = loader({prefix: '/api/v1/public/profile-feedback/'}),
     listingLoader = loader({prefix: '/api/v1/public/listing/'}),
     listingsLoader = loader({prefix: '/api/v1/public/listings/'}),
@@ -1491,6 +1499,7 @@ var oo = (function() {
     ns.backpack = function(o) { return backpackLoader(o) }
     ns.bids = function(o) { return bidsLoader(o) }
     ns.blog = function(o) { return blogLoader(o) }
+    ns.blog2 = function(o) { return blogLoader2(o) }
     ns.feedback = function(o) { return feedbackLoader(o) }
     ns.listing = function(o) { return listingLoader(o) }
     ns.listings = function(o) { return listingsLoader(o) }

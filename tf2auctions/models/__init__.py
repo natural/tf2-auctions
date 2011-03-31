@@ -147,7 +147,8 @@ class Listing(db.Model):
 	queue_tool.notify_listing(subscription_key=None, listing_key=key, transactional=True)
 
         ## 10. submit an item to the external share queue
-        queue_tool.external_share(listing_key=key, transactional=True)
+        if not features.devel:
+            queue_tool.external_share(listing_key=key, transactional=True)
 	return key
 
     @classmethod

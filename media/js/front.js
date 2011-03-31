@@ -39,21 +39,17 @@
     }),
 
 
-    blogModel = oo.model.extend({loader: oo.data.blog, init: oo.model.initJoin}),
+    blogModel = oo.model.extend({loader: oo.data.blog2, init: oo.model.initJoin}),
     blogView = oo.view.extend({
 	cloneClass: 'blog-seed',
 
 	join: function(model) {
-	    var entries = model.data, self = this
+	    var entries = model.data.feed.entry, self = this
 	    $.each(entries, function(idx, blogpost) {
 		var clone = self.proto()
-		$('.blog-title-seed', clone).text(blogpost.title)
-		if (blogpost.intro != '<p></p>') {
-		    $('.blog-intro-seed', clone).html(blogpost.intro)
-		} else {
-		    $('.blog-intro-seed', clone).remove()
-		}
-		$('.blog-encoded-seed', clone).html(blogpost.entry)
+		$('.blog-title-seed', clone).text(blogpost.title.$t)
+		$('.blog-intro-seed', clone).remove()
+		$('.blog-encoded-seed', clone).html(blogpost.content.$t)
 		oo('blog').append(clone)
 	    })
 	    if (entries.length) { oo('blog').slideDown() }
@@ -139,3 +135,4 @@
     oo.controller.extend({model: statsModel, view: statsView})
     oo.controller.extend({model: newsModel, view: newsView})
 })()
+
