@@ -185,6 +185,7 @@ def main():
             listing_summary = json.loads(msg.get_payload())
         listing_details = fetch_listing_details(listing_summary['listing']['id'])
         logging.info('have listing details: %s', listing_details)
+        ## IMPORTANT: skip if not active!
         title = reddit_listing_title(listing_details, schemamap)
         logging.info('computed title: %s', title)
         try:

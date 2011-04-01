@@ -129,7 +129,7 @@ class View(LocalHandler):
     jq_min = 'http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js'
     jq_ui = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/jquery-ui.min.js'
     media_js_path = '/media/js'
-    link_js = ('LAB.min.js', )
+    link_js = () #('LAB.min.js', )
     related_js = ()
     if features.devel:
         block_js = (

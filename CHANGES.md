@@ -1,3 +1,15 @@
+v83 - 31 Mar 2011
+-----------------
+
+Bug fixes:
+
+  * Fixed layout errors on front page.
+
+Changes:
+
+  * Moved to hosted blog at http://tf2auctions.blogspot.com/
+
+
 v82 - 30 Mar 2011
 -----------------
 

@@ -45,11 +45,23 @@
 
 	join: function(model) {
 	    var entries = model.data.feed.entry, self = this
-	    $.each(entries, function(idx, blogpost) {
-		var clone = self.proto()
-		$('.blog-title-seed', clone).text(blogpost.title.$t)
-		$('.blog-intro-seed', clone).remove()
-		$('.blog-encoded-seed', clone).html(blogpost.content.$t)
+	    $.each(entries, function(idx, p) {
+		var clone = self.proto(), $$ = oo.context$(clone)
+		$$('.blog-title-seed').text(p.title.$t)
+		$$('.blog-intro-seed').remove()
+		$$('.blog-encoded-seed').html(p.content.$t)
+                $$('.blog-author-seed').attr('href', p.author[0].uri.$t).text(p.author[0].name.$t)
+		var dt = new Date(p.published.$t)
+		try { dt = dt.format('isoDate')	} catch (x) {}
+                $$('.blog-posted-seed').html(dt)
+                try {
+                    $$('.blog-full-link-seed')
+			   .attr('href', $.grep(p.link, function(x) {return x.rel == 'alternate' && x.type == 'text/html'})[0].href)
+		} catch (x) {}
+		try {
+                    $$('.blog-comments-link-seed')
+			   .attr('href', $.grep(p.link, function(x) {return x.rel == 'replies' && x.type == 'text/html' })[0].href)
+		} catch (x) {}
 		oo('blog').append(clone)
 	    })
 	    if (entries.length) { oo('blog').slideDown() }
