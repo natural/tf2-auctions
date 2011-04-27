@@ -3,7 +3,13 @@
 //
 if (typeof console === 'undefined') {
     var console = {log: $.noop, error: $.noop, debug: $.noop, warn: $.noop}
+} else {
+    if (!console.debug) {
+	// thanks, ff4.
+	console.debug = console.log
+    }
 }
+
 
 if (typeof Object.create !== 'function') {
     Object.create = function (proto) {
