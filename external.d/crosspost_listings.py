@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 debug = False
-quality_prefix = {3: 'v. ', 5: 'Unusual ', 1: 'g. '}
+quality_prefix = {3: 'v. ', 5: 'Unusual ', 1: 'g. ', 11:'Strange '}
 reddit_session_key = 'reddit_session'
 reddit_user_agent = 'tf2auctions bot'
 

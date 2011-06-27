@@ -1,3 +1,36 @@
+v86 - 27 Jun 2011
+-----------------
+
+Bug fixes:
+
+  * Cropped feedback messages using css word-wrap property.
+
+Changes:
+
+  * Added help messages for listing/bid feedback.
+
+
+v85 - 27 Jun 2011
+-----------------
+
+Bug fixes:
+
+  * Fixed failing profile lookup on search page.
+
+Changes:
+
+  * Added craft number badges
+  * Added UI setting for craft number badges above 100
+  * Added styles and code for Strange weapons
+
+v84 - 02 Apr 2011
+-----------------
+
+Bug fixes:
+
+  * Fixed client script not behaving correctly under FF4.
+
+
 v83 - 31 Mar 2011
 -----------------
 

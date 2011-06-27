@@ -1168,6 +1168,7 @@ var oo = (function() {
 		url = oo.util.profile.defaultUrl(p)
 	    oo('badge-title').text(p.personaname)
 	    oo('owner-view-steam-profile').attr('href', p.profileurl)
+	    oo('owner-view-steam-rep').attr('href', 'http://www.steamrep.com/index.php?id={0}'.fs(p.steamid))
 	    oo('add-owner-friend').attr('href', 'steam://friends/add/{0}'.fs(p.steamid))
 	    oo('chat-owner').attr('href', 'steam://friends/message/{0}'.fs(p.steamid))
 	    oo('pos-label').text('{0}% Positive'.fs( pos ))

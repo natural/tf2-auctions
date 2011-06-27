@@ -183,6 +183,13 @@
 		    <div id="${slug}-auth-bid-feedback-pod" class="null">
 			<h1 class="mt1 mb05"><span class="hilite">&nbsp;</span>Your Feedback</h1>
 			<div class="ov w50">
+			    <p>Here you can rate the listing owner.
+				Provide a message and a numerical
+				score for the lister and/or the
+				auction.  Do not raise your score if
+				your bid wins, and do not lower your
+				score if your bid doesn't win.</p>
+
 			    <metal:macro use-macro="context.view_parts.macros.feedback_tool" />
 			</div>
 		    </div>

@@ -287,6 +287,12 @@
 					</div>
 					<div class="mb1">
 					    <div class="w75 ov outline null lister-feedback-form">
+
+			    <p>Here you can rate the bid owner.
+				Provide a message and a numerical
+				score for the bidder and/or the
+				bid.</p>
+
 						<metal:macro use-macro="macros.feedback_tool" />
 					    </div>
 					</div>
@@ -425,6 +431,13 @@
 			    View
 			    <a href="#" target="_new" id="${slug}-owner-view-steam-profile">Steam Profile</a>
 			</li>
+
+			<li>
+			    <img src="http://www.steamrep.com/favicon.ico" />
+			    View
+			    <a href="#" target="_new" id="${slug}-owner-view-steam-rep">SteamRep</a>
+			</li>
+
 			<li>
 			    <img src="/media/img/iconAddFriend.png" />
 			    Add
