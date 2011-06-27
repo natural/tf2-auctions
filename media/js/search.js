@@ -198,7 +198,6 @@ searchView = oo.view.extend({
 	    prototype: oo('listings div.prototype')
 	})
 	oo.util.listing.put(displays, oo('listings'))
-
 	if (results.more) {
 	    self.configNext(results)
 	    oo('next-link, bottom-next-link').show()
@@ -219,7 +218,7 @@ searchView = oo.view.extend({
 	oo.data.schema()
             .success(function(schema) {
 		var put = function(s) {
-		    oo.util.schema(schema).putImages(s, null, {fast:false}) 
+		    oo.util.schema(schema).putImages(s, null, {fast:false})
 		}
 	        oo.model.auth.extend({suffix: '?settings=1'}).init()
 	            .success(function(p) { put(p.settings) })

@@ -285,6 +285,13 @@ left:0.35em;
 top:0.35em;
 }
 
+span.crafted {
+font-family:arial;
+color:yellow;
+font-size:0.75em;
+}
+
+
 /*
 from the tf2 wiki:
 
@@ -295,6 +302,7 @@ FFD800 Unique
 70B04A Community
 A50F79 Developer
 874FAD Unusual
+CD9B1D Strange
 
 */
 .quality-0  { color:#B2B2B2; } /* normal */
@@ -307,6 +315,7 @@ A50F79 Developer
 .quality-8  { color:#A50F79; } /* developer */
 .quality-9  { color:#70B04A; } /* self-made */
 .quality-10 { color:#70B04A; } /* custom */
+.quality-11 { color:#CD9B1D; } /* strange */
 
 
 /*
@@ -321,48 +330,57 @@ A50F79 Developer
 .border-quality-0 { border-color:#B2B2B2 !important; } /* normal */
 .background-quality-0 { background-color:#706E6E !important; }
 
+
 .border-quality-1 { border-color:#4D7455 !important; } /* genuine */
 .background-quality-1 { background-color:#3A5840 !important; }
-/* inverse on hover */
-td.border-quality-1.outline  { border-color: #3A5840 !important; }
+td.border-quality-1.outline  { border-color: #3A5840 !important; } /* inverse on hover */
 td.background-quality-1.outline { background-color:#4D7455 !important; }
+
 
 .border-quality-2 { border-color:#B2B2B2 !important; } /* rare */
 .background-quality-2 { background-color:#706E6E !important; }
 
+
 .border-quality-3  { border-color:#476291 !important; } /* vintage */
 .background-quality-3 { background-color:#6279a1 !important; }
-/* inverse on hover */
-td.border-quality-3.outline  { border-color: #6279a1 !important; }
+td.border-quality-3.outline  { border-color: #6279a1 !important; } /* inverse on hover */
 td.background-quality-3.outline { background-color:#476291 !important; }
 
 
 .border-quality-5  { border-color:#874FAD !important; } /* unusual */
 .background-quality-5 { background-color:#5A3C6B !important; }
-/* inverse on hover */
-td.border-quality-5.outline  { border-color:#5A3C6B !important; }
+td.border-quality-5.outline  { border-color:#5A3C6B !important; } /* inverse on hover */
 td.background-quality-5.outline { background-color:#874FAD !important; }
-
 
 
 .border-quality-6  { border-color:#FFD800 !important; } /* unique */
 .background-quality-6 { background-color: #9D8617 !important; }
-/* inverse on hover */
-td.border-quality-6.outline {border-color: #9D8617 !important; }
+td.border-quality-6.outline {border-color: #9D8617 !important; } /* inverse on hover */
 td.background-quality-6.outline { background-color:#FFD800 !important;}
 
 
 .border-quality-7  { border-color:#70B04A !important; } /* community */
 .background-quality-7  { background-color:#4F6D3A  !important; }
 
+
 .border-quality-8  { border-color:#A50F79 !important; } /* developer */
 .background-quality-8  { background-color:#691C51 !important; }
+
 
 .border-quality-9  { border-color:#70B04A !important; } /* self-made */
 .background-quality-9  { background-color:#4F6D3A  !important; }
 
+
 .border-quality-10  { border-color:#70B04A !important; } /* custom */
 .background-quality-10  { background-color:#4F6D3A  !important; }
+
+
+.border-quality-11  { border-color:#CD9B1D !important; } /* strange */
+.background-quality-11  { background-color:#423618 !important; }
+td.border-quality-11.outline  { border-color:#423618 !important; } /* inverse on hover */
+td.background-quality-11.outline { background-color:#CD9B1D !important; }
+
+
 
 
 .message div {

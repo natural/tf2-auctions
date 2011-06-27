@@ -38,6 +38,7 @@
 		<div class="alt">alt text</div>
 		<div class="positive">positive text</div>
 		<div class="negative">negative text</div>
+		<div class="crafter"></div>
 	    </div>
 	</div>
 	<div id="${slug}-terms-dialog" class="null"></div>

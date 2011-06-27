@@ -71,6 +71,17 @@ class PlayerSettings(db.Expando, UserId64Mixin):
 		    """
 	    },
 	    {
+		'id':'badge-all-craftnum', 'type':bool, 'label':'Show All Craft Numbers',
+		'widget':'checkbox', 'default':False,
+		'help':"""
+		    When enabled, items with craft numbers above 100
+		    will be shown with an extra badge.  Craft numbers
+		    100 and below are always shown with an item, and
+		    all craft numbers are always shown on tooltips.
+
+		    """
+	    },
+	    {
 		'id':'badge-painted', 'type':bool, 'label':'Show Item Painted Color Splash',
 		'widget':'checkbox', 'default':True,
 		'help':"""

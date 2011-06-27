@@ -148,7 +148,8 @@ var oo = (function() {
 	5: 'unusual',
 	7: 'com',
 	8: 'dev',
-	9: 'self'
+	9: 'self',
+	11: 'strange'
     }
 })(oo.tf2 = {});
 
@@ -203,12 +204,14 @@ var oo = (function() {
 	    self.hide()
 	    var schemaItem = schema.itemDefs()[type]
 	    // set the main title and maybe adjust its style and prefix
-	    var h4 = $('#tooltip h4'), desc = playerItem['custom_name'] ? '"{0}"'.fs(playerItem['custom_name']) : schemaItem['item_name']
+	    var h4 = $('#tooltip h4'),
+                desc = playerItem['custom_name'] ? '"{0}"'.fs(playerItem['custom_name']) : schemaItem['item_name']
 	    h4.text(desc)
 	    h4.attr('class', 'quality-'+playerItem['quality'])
 	    if (playerItem['quality'] in oo.tf2.prefixCheckMap) {
 		h4.text(quals[playerItem['quality']] + ' ' + h4.text())
 	    }
+	    $('#tooltip .crafter').text('')
 
 	    $('#tooltip .ctrl').html(
 		event.ctrlKey ? '<pre>{0}</pre>'.fs(
@@ -221,10 +224,10 @@ var oo = (function() {
 
 	    // set the level; this doesn't match the game behavior exactly, but it is nice.
 	    var level = playerItem['level'],
-	    levelType = schemaItem['item_type_name']
+	        levelType = schemaItem['item_type_name']
 		.replace('TF_Wearable_Hat', 'Wearable Item')
 		.replace('TF_LockedCrate', 'Crate')
-	    $('#tooltip .level').text(level ? 'Level ' + level + ' ' + levelType : '')
+	    $('#tooltip .level').text( (level+1) ? 'Level ' + level + ' ' + levelType : '')
 
 
 	    // clear and set the extra text
@@ -238,11 +241,22 @@ var oo = (function() {
 			// 134:  set effect name
 			if (itemAttr['defindex'] == 134) {
 			    extra = formatSchemaAttr(attrDef, oo.tf2.itemEffects[itemAttr['float_value']])
-			} else
-			    // 142:  don't use 'i made this'
-			    if (itemAttr['defindex'] == 142) {
-				extra = ''
-			    }
+
+                        // 228: craft name
+                        } else if (itemAttr['defindex'] == 228) {
+			    var acc = calcs.value_is_account_id( itemAttr['value'] )
+			    $('#tooltip .crafter').text( 'Crafted by ' + acc )
+			    oo.data.status({suffix: acc})
+				.success(function(s) { $('#tooltip .crafter').text('Crafted by ' + s.name) })
+
+			// 229: craft number
+			} else if (itemAttr['defindex'] == 229) {
+			    h4.text( h4.text() + ' #' + itemAttr.value)
+
+			// 142:  don't use 'i made this'
+			} else if (itemAttr['defindex'] == 142) {
+			    extra = ''
+			}
 
 			var current = $('#tooltip .' + etype).html()
 			$('#tooltip .' + etype).html( current ? current + '<br />' + extra : extra)
@@ -558,6 +572,7 @@ var oo = (function() {
 			    }
 			    ele.append(iutil.img())
 			    var img = $('img', ele).data('node', item)
+			    self.setCraftNumber(iutil, img, uprefs)
 			    self.setEquipped(iutil, img, defindex, uprefs)
 			    self.setTradable(iutil, ele, item, uprefs)
 			    self.setPaintJewel(iutil, img, uprefs)
@@ -635,6 +650,13 @@ var oo = (function() {
 	    }
 	    if (title) {
 		$('#bp-{0} > div > div > h3:first'.fs(slug)).text(title)
+	    }
+	}
+
+        self.setCraftNumber = function(itemutil, image, settings) {
+	    var c = itemutil.crafted()
+	    if ((c > 1 && c < 101) || (c > 100 && settings.showHighCraftNumber)) {
+		image.after(itemutil.craftNumTag(c))
 	    }
 	}
 
@@ -931,6 +953,9 @@ var oo = (function() {
 	    canTrade: function() {
 		return !(item.flag_cannot_trade) && !(item.flag_active_listing) && !(item.flag_active_bid)
 	    },
+	    craftNumTag: function(i) {
+		return '<span class="badge quantity crafted">#{0}</span>'.fs(i)
+	    },
 	    equippedTag: function() {
 		return '<span class="badge equipped">Equipped</span>'
 	    },
@@ -956,13 +981,21 @@ var oo = (function() {
 	    pos:  function() {
 		return (item.pos) ? item.pos : item['inventory'] & 0xFFFF
 	    },
+	    crafted: function() {
+		var attrs = (item.attributes || {}).attribute || []
+		var craft = 0
+		$.each( $(attrs), function (idx, attr) {
+		    if (attr.defindex==229) { craft = attr.value }
+		})
+		return craft
+	    },
 	    painted: function () {
 		var attrs = (item.attributes || {}).attribute || []
 		var paint = 0
 		$.each( $(attrs), function (idx, attr) {
 		    if (attr.defindex==142) { paint = attr.float_value }
 		})
-		    return paint
+		return paint
 	    },
 	    effect: function() {
 		if (item.defindex == 143) { return 99 }  // notes for earbuds
@@ -1116,8 +1149,12 @@ var oo = (function() {
 	    var lbl = $('span.av', c),
 		img = $('img.av', c),
 		url = oo.util.profile.defaultUrl(p)
-	    lbl.text(p.personaname).parent().attr('href', url)
-	    img.attr('src', p.avatar).parent().attr('href', url)
+	    try {
+		lbl.text(p.personaname).parent().attr('href', url)
+		img.attr('src', p.avatar).parent().attr('href', url)
+	    } catch (x) {
+		oo.error('put avatar', x, p, c)
+	    }
 	    return oo.data.status({suffix: p.id64})
 		.success(function(s) {
 		    img.addClass('profile-status {0}'.fs(s.online_state))
@@ -1171,7 +1208,8 @@ var oo = (function() {
 	    showAngrySalad: (valid ? s['angry-fruit-salad'] : false),
 	    showAngryLite: (valid ? (s['angry-fruit-salad'] && s['angry-fruit-salad-lite']) : false),
 	    showItemEffect: (valid ? s['unusual-item-background'] : false),
-	    showItemTags: (valid ? s['badge-tags'] : false)
+	    showItemTags: (valid ? s['badge-tags'] : false),
+	    showHighCraftNumber: (valid ? s['badge-all-craftnum'] : false)
 	}
     }
 
