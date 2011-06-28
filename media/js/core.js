@@ -242,6 +242,33 @@ var oo = (function() {
 			if (itemAttr['defindex'] == 134) {
 			    extra = formatSchemaAttr(attrDef, oo.tf2.itemEffects[itemAttr['float_value']])
 
+			// 214:  kill eater
+			} else if (itemAttr['defindex'] == 214) {
+			    var kc = itemAttr['value'], kt = ''
+			    $('#tooltip .crafter').text('Kills: ' + kc)
+			    if ((0 <= kc) && (kc < 10)) { kt = 'Strange' }
+			    if ((10 <= kc) && (kc < 25)) { kt = 'Unremarkable' }
+			    if ((25 <= kc) && (kc < 45)) { kt = 'Scarcely Lethal' }
+			    if ((45 <= kc) && (kc < 70)) { kt = 'Mildly Menacing' }
+			    if ((70 <= kc) && (kc < 100)) { kt = 'Somewhat Threatening' }
+			    if ((100 <= kc) && (kc < 135)) { kt = 'Uncharitable' }
+			    if ((135 <= kc) && (kc < 175)) { kt = 'Notably Dangerous' }
+			    if ((175 <= kc) && (kc < 225)) { kt = 'Sufficiently Lethal' }
+			    if ((225 <= kc) && (kc < 275)) { kt = 'Truly Feared' }
+			    if ((275 <= kc) && (kc < 350)) { kt = 'Spectacularly Lethal' }
+			    if ((350 <= kc) && (kc < 500)) { kt = 'Gore-Spattered' }
+			    if ((500 <= kc) && (kc < 750)) { kt = 'Wicked Nasty' }
+			    if ((750 <= kc) && (kc < 999)) { kt = 'Positively Inhumane' }
+			    if ((999 <= kc) && (kc < 1000)) { kt = 'Totally Ordinary' }
+			    if ((1000 <= kc) && (kc < 1500)) { kt = 'Face-Melting' }
+			    if ((1500 <= kc) && (kc < 2500)) { kt = 'Rage-Inducing' }
+			    if ((2500 <= kc) && (kc < 5000)) { kt = 'Server-Clearing' }
+			    if ((5000 <= kc) && (kc < 7500)) { kt = 'Epic' }
+			    if ((7500 <= kc) && (kc < 7616)) { kt = 'Legendary' }
+			    if ((7616 <= kc) && (kc < 8500)) { kt = 'Australian' }
+			    if ((8500 <= kc) && (kc < 10000)) { kt = "Hale's Own" }
+			    h4.text( h4.text().replace('Strange', kt) )
+
                         // 228: craft name
                         } else if (itemAttr['defindex'] == 228) {
 			    var acc = calcs.value_is_account_id( itemAttr['value'] )
@@ -415,7 +442,7 @@ var oo = (function() {
 		    select.parent().show()
 	    }
 	    // maybe enable the button for showing all pages
-	    if (options.showAll) {
+	    if (options.showAll && (pageCount > 1)) {
 		$('#bp-{0} .bp-nav span.all'.fs(slug)).show().click(function() {
 		    $('#bp-{0} div.bp-placed table.bp-placed:gt(0)'.fs(slug)).addClass('mt2')
 		    $('#bp-{0} div.bp-placed table.bp-placed'.fs(slug))
@@ -486,6 +513,9 @@ var oo = (function() {
 	}
 
 	self.updateButtons = function () {
+	    if (pageCount == 1) {
+
+	    }
 	    $('#bp-count-' + slug).text(pageCurrent + '/' + pageCount)
 	    if (pageCurrent == 1) {
 		nonPrev.show()

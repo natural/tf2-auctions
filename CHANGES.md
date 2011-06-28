@@ -1,3 +1,14 @@
+v87 - 28 Jun 2011
+-----------------
+
+Changes:
+
+  * Added kill count to Strange quality weapons
+  * Added level names to Strange quality weapons
+  * Hide "Show All" backpack pages on backpacks with only one page
+  * Updated API proxy with new paint can images
+
+
 v86 - 27 Jun 2011
 -----------------
 
