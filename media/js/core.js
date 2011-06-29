@@ -1148,7 +1148,10 @@ var oo = (function() {
 	defaultUserAuthOkay: function(p) {
 	    oo.util.profile.put(p)
 	    var $$ = oo.prefix$('#content-')
+	    $$('player-listings-link').attr('href', oo.util.profile.defaultUrl(p) + '#1')
+	    $$('player-bids-link').attr('href', oo.util.profile.defaultUrl(p) + '#2')
 	    $$('player-profile-link').attr('href', oo.util.profile.defaultUrl(p))
+
 	    $$('login-link').hide()
 	    $$('user-buttons, logout-link, site-buttons').show()
 	    if (p.subscription.status != 'verified') {

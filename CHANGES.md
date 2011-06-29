@@ -1,3 +1,11 @@
+v89 -
+-----------------
+
+Changes:
+
+  * Added direct links to player bids and listings to player button bar.
+  * Added filters to all-attributes page.
+
 v88 - 29 Jun 2011
 -----------------
 

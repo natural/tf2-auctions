@@ -7,7 +7,26 @@
 	    <div id="${slug}-content-pod">
 		<h1 class="mb05"><span class="hilite">&nbsp;</span>All Attributes</h1>
 	    </div>
+
+
+<div id="filter-controls" class="null">
+Filter by effect:
+<select id="filter-effect">
+<option value="">All</option>
+<option value="">---</option>
+</select>
+
+&nbsp; and/or by type:
+<select id="filter-type">
+<option value="">All</option>
+<option value="">---</option>
+</select>
+</div>
+
+
+
 <div id="${slug}-pod" class="null ov mt1">
+    <div class="aw">
 	    <table class="aa">
 		<thead>
 		    <tr class="build-font">
@@ -22,6 +41,7 @@
 		    </tr>
 		    </thead>
 	    </table>
+    </div>
 </div>
 	</metal:fill>
     </body>

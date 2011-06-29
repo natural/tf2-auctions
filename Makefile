@@ -35,6 +35,7 @@ push:
 	appcfg.py set_default_version .
 	git commit -a -m "make dist."
 	git tag v$(shell python -c "import yaml;d=yaml.load(open('app.yaml')); print d['version']")
+	git push origin v$(shell python -c "import yaml;d=yaml.load(open('app.yaml')); print d['version']")
 
 
 $(dist_css):

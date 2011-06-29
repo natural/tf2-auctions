@@ -63,8 +63,10 @@
 
 		    <span class="null" id="${slug}-user-buttons">
 			<span id="${slug}-avatar-pod"></span>
+			<a id="${slug}-player-listings-link" class="big-button" href="#">My Listings</a>
+			<a id="${slug}-player-bids-link" class="big-button" href="#">My Bids</a>
 			<a id="${slug}-player-profile-link" class="big-button" href="#">My Profile</a>
-			<a id="${slug}-add-listing-link" class="big-button" href="/listing/add">Add Listing</a>
+			<a id="${slug}-add-listing-link" class="button" href="/listing/add">Add Listing</a>
 		    </span>
 		    <span class="" id="${slug}-main-buttons">
 			<a id="${slug}-quick-backpack" class="button" href="/backpack">Backpacks</a>
