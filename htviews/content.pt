@@ -92,9 +92,10 @@
 		<metal:slot define-slot="footer" />
 		<div class="text-center">
 		    More Stuff:
-		    <a href="/all-items" class="nice">All Items</a> &middot;
 		    <a href="/about" class="nice">About this Site</a> &middot;
-		    <a href="/terms" class="nice">Rules, Terms &amp; Privacy Policy</a>
+		    <a href="/terms" class="nice">Rules, Terms &amp; Privacy Policy</a> &middot;
+		    <a href="/all-items" class="nice">All Items</a> &middot;
+		    <a href="/all-attributes" class="nice">All Attributes</a>
 		</div>
 		<div class="text-center m05 mb2">
 		    Help and Support:

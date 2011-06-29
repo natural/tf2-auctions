@@ -1,3 +1,15 @@
+v88 - 29 Jun 2011
+-----------------
+
+Bug fixes:
+
+  * Changed feedback intro when feedback has no message.
+
+Changes:
+
+  * Added all-attributes page and updated footer to include link to it.
+
+
 v87 - 28 Jun 2011
 -----------------
 

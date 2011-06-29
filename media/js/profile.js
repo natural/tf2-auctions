@@ -70,7 +70,13 @@ var DetailsView = oo.view.extend({
 		$('.fb-message', clone).text(fb.comment)
 		oo.data.profile({suffix: fb.source})
 		    .success(function(p) { oo.util.profile.putAvatar(p, $('.source-seed', clone)) })
-                        .success(function(s) { $('a span.av', clone).after(' {0}:'.fs( fedback[Math.round(Math.random()*10) % 10] )) })
+                        .success(function(s) {
+		            if (fb.comment.length) {
+				$('a span.av', clone).after(' {0}:'.fs( fedback[Math.round(Math.random()*10) % 10] ))
+			    } else {
+				$('a span.av', clone).after(" didn't have anything to say, but left a rating.")
+			    }
+                        })
 	    })
 	} else {
 	    oo('feedback-pod h2.empty').fadeIn()

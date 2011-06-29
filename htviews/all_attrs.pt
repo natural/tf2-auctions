@@ -1,0 +1,28 @@
+<html metal:use-macro="context.content.macros.layout">
+    <head>
+	<title metal:fill-slot="title">TF2Auctions.com -- All Attributes</title>
+    </head>
+    <body>
+	<metal:fill fill-slot="main" tal:define="slug 'all-attrs'">
+	    <div id="${slug}-content-pod">
+		<h1 class="mb05"><span class="hilite">&nbsp;</span>All Attributes</h1>
+	    </div>
+<div id="${slug}-pod" class="null ov mt1">
+	    <table class="aa">
+		<thead>
+		    <tr class="build-font">
+			<th>Index</th>
+			<th>Name</th>
+			<th>Effect</th>
+			<th>Min</th>
+			<th>Max</th>
+			<th>Class</th>
+			<th>Type</th>
+			<th>Format String</th>
+		    </tr>
+		    </thead>
+	    </table>
+</div>
+	</metal:fill>
+    </body>
+</html>

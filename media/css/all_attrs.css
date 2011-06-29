@@ -1,0 +1,46 @@
+#all-attrs-pod {
+padding:0.5em 1em 0.5em 1em;
+}
+
+
+.aa {
+border-collapse:collapse;
+font-family:monospace;
+}
+
+.aa th {
+text-align:left;
+}
+
+.aa td:nth-child(1), .aa td:nth-child(4), .aa td:nth-child(5) {
+text-align:right;
+}
+
+
+.aa tr:hover {
+background-color:#393431;
+cursor:default;
+}
+
+.aa thead, .aa thead tr:hover {
+background-color:#2e2b2a;
+}
+
+
+.aa td, .aa th {
+padding:0.5em;
+margin:0;
+border-bottom:1px solid #393431;
+}
+
+.aa td.positive {
+color:#8dbceb;
+}
+.aa td.negative {
+color:#eb3b3b;
+}
+.aa td.neutral {
+color:#e4dbc4;
+}
+
+
