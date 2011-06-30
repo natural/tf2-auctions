@@ -1,10 +1,11 @@
-v89 -
+v89 - 30 Jun 2011
 -----------------
 
 Changes:
 
   * Added direct links to player bids and listings to player button bar.
   * Added filters to all-attributes page.
+  * Fixed crate series numbering on tooltips.
 
 v88 - 29 Jun 2011
 -----------------

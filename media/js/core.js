@@ -242,6 +242,10 @@ var oo = (function() {
 			if (itemAttr['defindex'] == 134) {
 			    extra = formatSchemaAttr(attrDef, oo.tf2.itemEffects[itemAttr['float_value']])
 
+			// 187:  crate series
+			} else if (itemAttr['defindex'] == 187) {
+			    extra = formatSchemaAttr(attrDef, itemAttr['float_value'])
+
 			// 214:  kill eater
 			} else if (itemAttr['defindex'] == 214) {
 			    var kc = itemAttr['value'], kt = ''
@@ -299,6 +303,7 @@ var oo = (function() {
 			if (attrDef['description_string']=='%s1% damage done') { return }
 			if (attrDef['description_string']=='unused') { return }
 			if (attrDef['attribute_class']=='set_employee_number') { return }
+			if (attrDef['attribute_class']=='supply_crate_series') { return }
 			var etype = oo.tf2.effectTypeMap[attrDef['effect_type']],
 			current = $('#tooltip .' + etype).html()
 			// particle effects defined in the schema, not the item:
