@@ -14,9 +14,12 @@
 		<div><span class="help"></span></div>
 	    </div>
 	    <div class="bp-view">
+
+
 		<metal:unplaced metal:use-macro="macros.unplaced" />
 		<div class="bp-placed p05" id="bp-placed-${slug}">
 		    <div class="bp-pages center">
+			<metal:hlt metal:use-macro="macros.hiliter" />
 			<metal:nav metal:use-macro="macros.navigator" />
 		    </div>
 		</div>
@@ -79,6 +82,31 @@
 		    </metal:loop>
 		</tbody>
 	    </table>
+	</div>
+    </metal:macro>
+
+
+    <!--
+
+    hiliter: controls for backpack slice and dice.
+
+    -->
+    <metal:macro metal:define-macro="hiliter">
+	<div class="bp-hilite-filter center mr05 null">
+
+	    <div class="float-right mb1">
+		<span class="help">Sort Items:</span>
+		<select class="bp-hilite-sorter build-font" id="bp-hilite-sorter-${slug}">
+		    <option value="">Default</option>
+		    <option value="">------</option>
+		</select>
+
+		<span class="help">Quality Filtery:</span>
+		<select class="bp-hilite-filter build-font" id="bp-hilite-filter-${slug}">
+		    <option value="">All</option>
+		    <option value="">------</option>
+		</select>
+	    </div>
 	</div>
     </metal:macro>
 
@@ -435,7 +463,7 @@
 			<li>
 			    <img src="http://www.steamrep.com/favicon.ico" />
 			    View
-			    <a href="#" target="_new" id="${slug}-owner-view-steam-rep">SteamRep</a>
+			    <a href="#" target="_new" id="${slug}-owner-view-steam-rep">Steam Rep</a>
 			</li>
 
 			<li>

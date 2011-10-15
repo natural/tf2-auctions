@@ -432,6 +432,7 @@ var oo = (function() {
 	    $('a', navPrev).unbind().click(function (event) { self.navigate(-1); return false })
 	    $('a', navNext).unbind().click(function (event) { self.navigate( 1); return false })
 	    self.updateButtons()
+	    self.showAll = function() {}
 
 	    // maybe enable a select element for filtering by class and
 	    // item type.
@@ -448,13 +449,14 @@ var oo = (function() {
 	    }
 	    // maybe enable the button for showing all pages
 	    if (options.showAll && (pageCount > 1)) {
-		$('#bp-{0} .bp-nav span.all'.fs(slug)).show().click(function() {
+		self.showAll = function() {
 		    $('#bp-{0} div.bp-placed table.bp-placed:gt(0)'.fs(slug)).addClass('mt2')
 		    $('#bp-{0} div.bp-placed table.bp-placed'.fs(slug))
 			.css('margin-left', 0)
 			.fadeIn()
 		    $('#bp-nav-{0}'.fs(slug)).fadeOut()
-		})
+		}
+		$('#bp-{0} .bp-nav span.all'.fs(slug)).show().click(self.showAll)
 	    }
 	    $('#bp-nav-{0}'.fs(slug)).show()
 	    $('table.bp-page-{0}'.fs(slug), pagesContext).css('display', 'none')
@@ -519,7 +521,6 @@ var oo = (function() {
 
 	self.updateButtons = function () {
 	    if (pageCount == 1) {
-
 	    }
 	    $('#bp-count-' + slug).text(pageCurrent + '/' + pageCount)
 	    if (pageCurrent == 1) {
@@ -625,8 +626,9 @@ var oo = (function() {
 			    self.setTradableUnplaced(iutil, img, item, uprefs)
 			    self.setUseCount(img, item, uprefs, toolDefs, actionDefs)
 			}
+                        self.setOther(iutil, ele, item, uprefs)
 		    })
-			$('#bp-placed-{0} label, #bp-unplaced-{1}'.fs(slug, slug)).toggle(newIdx > -1)
+                    $('#bp-placed-{0} label, #bp-unplaced-{1}'.fs(slug, slug)).toggle(newIdx > -1)
 		    $('#bp-{0} img'.fs(slug)).fadeIn()
 		})
 	}
@@ -642,6 +644,30 @@ var oo = (function() {
 		})
 	    }
 
+	    if (options.showHilite) {
+		oo.data.schema()
+		    .success(function(s) {
+		        var schema = oo.util.schema(s),
+			    hl = $('#bp-{0} div.bp-hilite-filter'.fs(slug)),
+		            qs = $('select.bp-hilite-filter', hl),
+		            ss = $('select.bp-hilite-sorter', hl)
+
+			    if ( $('option', qs).length < 3) {
+				$.each(schema.qualityMapSimple(), function(a, b) {
+				   qs.append('<option value="{0}">{1}</option>'.fs(a, b))
+				})
+				qs.change(self.hiliteQuality)
+			    }
+
+			    if ( $('option', ss).length < 3) {
+				$.each(self.sortTypes(schema), function(a, b) {
+				    ss.append('<option value="{0}">{1}</option>'.fs(a, b[0]))
+				})
+				ss.change(self.hiliteSort)
+			    }
+		            hl.show()
+		    })
+            }
 	    if (options.toolTips) {
 		oo.data.schema().success(function(s) {
 		var schema = oo.util.schema(s),
@@ -649,8 +675,6 @@ var oo = (function() {
 		$('div.bp td').hover(tipTool.show, tipTool.hide)
 		})
 	    }
-
-
 	    if (options.navigator) {
 		self.navigator = oo.backpack.navTool({
 		    slug: slug,
@@ -660,7 +684,6 @@ var oo = (function() {
 		})
 		self.navigator.init()
 	    }
-
 	    if (options.outlineHover) {
 		$('div.bp td').hover(
 		    function(e) {
@@ -688,6 +711,133 @@ var oo = (function() {
 	    }
 	}
 
+        self.sortTypes = function(s) {
+	    return {
+	    1 : ['Date - new to old', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     return bd.id - ad.id
+		 }],
+	    2 : ['Date - old to new', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     return ad.id - bd.id
+		 }],
+	    3 : ['Level - low to high', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     return ad.level - bd.level
+		 }],
+	    4 : ['Level - high to low', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     return bd.level - ad.level
+		 }],
+	    5 : ['Name - a to z', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     return s.all()[ad.defindex].item_name.localeCompare(
+			 s.all()[bd.defindex].item_name
+		     )
+		 }],
+	    6 : ['Name - z to a', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     return -1 * s.all()[ad.defindex].item_name.localeCompare(
+			 s.all()[bd.defindex].item_name
+		     )
+		 }],
+	    7 : ['Type - a to z', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     return s.all()[ad.defindex].item_type_name.localeCompare(
+			 s.all()[bd.defindex].item_type_name
+		     )
+		 }],
+	    8 : ['Type - z to a', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     return -1 * s.all()[ad.defindex].item_type_name.localeCompare(
+			 s.all()[bd.defindex].item_type_name
+		     )
+		 }],
+	    9 : ['Class', function(a, b) {
+		     var ad = $('img', a).data('node'), bd = $('img', b).data('node')
+		     if ((!ad) || (!bd)) { return 1 }
+		     try {
+		         //return s.all()[ad.defindex].used_by_classes.class[0]||'').localeCompare(    (s.all()[bd.defindex].used_by_classes.class[0]||'') )
+		     } catch (x) {
+			 return self.sortTypes(s)[7][1](a, b)
+		     }
+		 }]
+	    }
+	}
+
+	self.hiliteQuality = function(e) {
+	    var q = $('option:selected', e.target).val(),
+	        b = $('#bp-{0}'.fs(slug)),
+	        tds = $('td', b),
+                tde = tds.filter(function(x){return !$(tds[x]).hasClass('qf')})
+
+            if (q=='') {
+		$('.qf', b).animate({opacity:1}, 200)
+		tde.animate({opacity:1}, 200)
+	    } else {
+		tde.animate({opacity:0.07}, 50)
+		$('.qf', b).animate({opacity:0.07}, 50)
+		$('.qf-{0}'.fs(q), b).animate({opacity:1}, 200)
+	    }
+	}
+
+	self.hiliteSort = function(e) {
+	    oo.data.schema().success(function(s) {
+		var q = $('option:selected', e.target).val(),
+		    b = $('#bp-{0}'.fs(slug)),
+		    tds = $('td', b),
+		    st = oo.util.schema(s),
+		    sts = self.sortTypes(st),
+	            sort = q=='' ? null : sts[q][1]
+
+                // cheap and lame
+                if (!sort) { location.reload() }
+
+		self.navigator.showAll()
+                b.parent().slideUp(200, function() {
+		    tds.detach()
+		    if (!b.data('osort')) {
+		        b.data('osort', 1)
+			$.each(tds, function(i, td) { $(td).data('opos', i) })
+		    }
+		    var trg = $('tr:empty:first', b), col = 0, cols = 10
+		    if (!sort) {
+			// return to default
+			tds.sort(function(a, b) {return $(a).data('opos')-$(b).data('opos')})
+			$.each(tds, function(i, td) {
+		            if (!(col % cols)) {
+				trg = $('tr:empty:first', b)
+			    }
+			    trg.append(td)
+                            col += 1
+	                })
+		        tds.show()
+		    } else {
+	                tds.sort(sort)
+			var tdi = tds.filter(function(x){return $(tds[x]).hasClass('qf')}),
+			    tde = tds.filter(function(x){return !$(tds[x]).hasClass('qf')})
+			$.each(tdi, function(i, td) {
+			    if (!(col % cols)) {
+				trg = $('tr:empty:first', b)
+			    }
+			    trg.append(td)
+			    col += 1
+			})
+                        trg.append(tde.hide())
+	            }
+	            b.parent().slideDown(250)
+		})
+            })
+	}
+
         self.setCraftNumber = function(itemutil, image, settings) {
 	    var c = itemutil.crafted()
 	    if ((c > 1 && c < 101) || (c > 100 && settings.showHighCraftNumber)) {
@@ -713,6 +863,11 @@ var oo = (function() {
 		element.parent()
 		    .addClass('effect-{0} effect-base'.fs(itemutil.effect()))
 	    }
+	}
+
+        self.setOther = function(itemutil, element, item, settings) {
+	    element.parent()
+		.addClass('qf qf-{0}'.fs(item.quality))
 	}
 
 	self.setTradable = function(itemutil, element, item, settings) {
@@ -1444,7 +1599,16 @@ var oo = (function() {
 	self.qualityMap = function() {
 	    var map = {}, names = self.schema['qualityNames']
 	    $.each(self.schema['qualities'], function(name, key) { map[key] = names[name] })
-		return map
+	    return map
+	}
+
+	self.qualityMapSimple = function() {
+	    var map = {}, names = self.schema['qualityNames']
+	    $.each(self.schema['qualities'], function(name, key) {
+		       if ((key >= 5)||key==1||key==3) { map[key] = names[name] }
+		   })
+	    map[6] = 'Normal'
+	    return map
 	}
 
 	self.tradable = function(items) {
@@ -1513,9 +1677,9 @@ var oo = (function() {
 		if (debug) { oo.info('pending request hit:', url) }
 		return pending[url]
 	    }
-	    if (debug) {
-		oo.info('cache miss:', url)
-	    }
+//	    if (debug) {
+//		oo.info('cache miss:', url)
+//          }
 	    if (dataType == 'jsonp' && options.suffix) {
 		jsonpCallback += options.suffix
 	    }
@@ -1933,3 +2097,22 @@ $(document).ready(function() {
 	//	    })
     }
 })
+
+
+
+/*
+
+
+wikiloader = function(d) { }
+
+x = oo.data.loader({prefix:"http://wiki.teamfortress.com/w/api.php?action=parse&page=Soldier&format=json", dataType:'jsonp', jsonpCallback:'wikiloader'})
+t = s.parse.text['*']
+
+z = t.replace(/href="\/w/g, 'href="http://wiki.teamfortress.com/w').replace(/src="\/w/g, 'src="http://wiki.teamfortress.com/w')
+
+
+
+
+
+
+ */

@@ -3,6 +3,7 @@
 from logging import error, info
 from re import search
 from urllib import urlopen
+from zlib import compress as zcompress, decompress as zdecompress
 from google.appengine.api import memcache
 
 
@@ -27,9 +28,11 @@ class fetch:
 	url = cls.config.url_profile % id64
 	val = memcache.get(url)
 	if val:
+            val = zdecompress(val.encode('ISO-8859-1'))
 	    return True, val
 	try:
 	    val = urlopen(url).read()
+            val = unicode(zcompress(json_dumps(val, indent=4)), 'ISO-8859-1')
 	    memcache.set(url, val, ttl)
 	    info('fetch.profile local cache miss: %s', url)
 	    return False, val

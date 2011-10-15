@@ -152,6 +152,7 @@ backpackView = oo.view.schema.extend({
 		 selectMulti: true,
 		 outlineHover: true,
 		 showAll: true,
+                 showHilite: true,
 		 rowGroups: oo.backpack.pageGroup.full(backpack.result.num_backpack_slots)
 	})
 	oo.model.auth.init()
