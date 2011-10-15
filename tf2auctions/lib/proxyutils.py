@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from datetime import datetime, timedelta
 from logging import error, info
 from re import search
 from urllib import urlopen
-from zlib import compress as zcompress, decompress as zdecompress
 from google.appengine.api import memcache
+
+
+local_cache = {}
 
 
 class fetch:
@@ -28,12 +31,10 @@ class fetch:
 	url = cls.config.url_profile % id64
 	val = memcache.get(url)
 	if val:
-            val = zdecompress(val.encode('ISO-8859-1'))
 	    return True, val
 	try:
 	    val = urlopen(url).read()
-            val = unicode(zcompress(val), 'ISO-8859-1')
-	    memcache.set(url, val, ttl)
+	    #memcache.set(url, val, ttl)
 	    info('fetch.profile local cache miss: %s', url)
 	    return False, val
 	except (Exception, ), exc:
@@ -44,12 +45,14 @@ class fetch:
     def schema(cls, lang=None, ttl=60*60, default='{}'):
 	lang = '?lang=%s' % (lang, ) if lang else ''
 	url = cls.config.url_schema % lang
-	val = memcache.get(url)
-	if val:
-	    return val
+	#val = memcache.get(url)
+        when, val = local_cache.get(url, (None, None))
+	if val and not (when + timedelta(ttl) < datetime.now()):
+            return val
 	try:
 	    val = urlopen(url).read()
-	    memcache.set(url, val, ttl)
+	    #memcache.set(url, val, ttl)
+            local_cache[url] = (datetime.now(), val)
 	    info('fetch.schema local cache miss: %s', url)
 	    return val
 	except (Exception, ), exc:
