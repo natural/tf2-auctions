@@ -32,7 +32,7 @@ class fetch:
 	    return True, val
 	try:
 	    val = urlopen(url).read()
-            val = unicode(zcompress(json_dumps(val, indent=4)), 'ISO-8859-1')
+            val = unicode(zcompress(val), 'ISO-8859-1')
 	    memcache.set(url, val, ttl)
 	    info('fetch.profile local cache miss: %s', url)
 	    return False, val
