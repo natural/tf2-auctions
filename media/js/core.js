@@ -445,7 +445,7 @@ var oo = (function() {
 		    $(opt).css('background-image', 'url(/media/img/{0}.png)'.fs(val[0]))
 		    select.append(opt)
 		})
-		    select.parent().show()
+	/	    select.parent().show()
 	    }
 	    // maybe enable the button for showing all pages
 	    if (options.showAll && (pageCount > 1)) {
@@ -866,6 +866,7 @@ var oo = (function() {
 	}
 
         self.setOther = function(itemutil, element, item, settings) {
+	    if (!element) { return }
 	    element.parent()
 		.addClass('qf qf-{0}'.fs(item.quality))
 	}
@@ -1169,7 +1170,7 @@ var oo = (function() {
 		return (item.custom_name != undefined || item.custom_desc != undefined)
 	    },
 	    pos:  function() {
-		return (item.pos) ? item.pos : item['inventory'] & 0xFFFF
+		return (item.pos) ? item.pos : (item['inventory']==3221225475 ? 0 : (item['inventory'] & 0xFFFF))
 	    },
 	    crafted: function() {
 		var attrs = (item.attributes || {}).attribute || []
@@ -1677,9 +1678,9 @@ var oo = (function() {
 		if (debug) { oo.info('pending request hit:', url) }
 		return pending[url]
 	    }
-//	    if (debug) {
-//		oo.info('cache miss:', url)
-//          }
+	    if (debug) {
+		oo.info('cache miss:', url)
+           }
 	    if (dataType == 'jsonp' && options.suffix) {
 		jsonpCallback += options.suffix
 	    }
