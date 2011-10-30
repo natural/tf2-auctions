@@ -306,17 +306,17 @@ CD9B1D Strange
 
 */
 .quality-0  { color:#B2B2B2; } /* normal */
-.quality-1  { color:#4D7455; } /* genuine */
+.quality-1  { color:#4D7454; } /* genuine */
 .quality-2  { color:#B2B2B2; } /* rare */
-.quality-3  { color:#476291; } /* vintage */
+.quality-3  { color:#446090; } /* vintage */
 .quality-5  { color:#874FAD; } /* unusual */
 .quality-6  { color:#FFD800; } /* unique */
 .quality-7  { color:#70B04A; } /* community */
 .quality-8  { color:#A50F79; } /* developer */
 .quality-9  { color:#70B04A; } /* self-made */
 .quality-10 { color:#70B04A; } /* custom */
-.quality-11 { color:#CD9B1D; } /* strange */
-
+.quality-11 { color:#d06a2e; } /* strange */
+.quality-13 { color:#874FAD; } /* haunted */
 
 /*
     note that the background colors were manually selected from an
@@ -331,31 +331,35 @@ CD9B1D Strange
 .background-quality-0 { background-color:#706E6E !important; }
 
 
-.border-quality-1 { border-color:#4D7455 !important; } /* genuine */
-.background-quality-1 { background-color:#3A5840 !important; }
-td.border-quality-1.outline  { border-color: #3A5840 !important; } /* inverse on hover */
-td.background-quality-1.outline { background-color:#4D7455 !important; }
+.border-quality-1 { border-color:#4c7554 !important; } /* genuine */
+.background-quality-1 { background-color:#262e25 !important; }
+td.border-quality-1.outline  { border-color: #262e25 !important; } /* inverse on hover */
+td.background-quality-1.outline { background-color:#4c7554 !important; }
 
 
 .border-quality-2 { border-color:#B2B2B2 !important; } /* rare */
 .background-quality-2 { background-color:#706E6E !important; }
 
 
-.border-quality-3  { border-color:#476291 !important; } /* vintage */
-.background-quality-3 { background-color:#6279a1 !important; }
-td.border-quality-3.outline  { border-color: #6279a1 !important; } /* inverse on hover */
-td.background-quality-3.outline { background-color:#476291 !important; }
+.border-quality-3  { border-color:#446090 !important; } /* vintage */
+.background-quality-3 { background-color:#252934 !important; }
+td.border-quality-3.outline  { border-color: #252934 !important; } /* inverse on hover */
+td.background-quality-3.outline { background-color:#446090 !important; }
 
 
-.border-quality-5  { border-color:#874FAD !important; } /* unusual */
-.background-quality-5 { background-color:#5A3C6B !important; }
-td.border-quality-5.outline  { border-color:#5A3C6B !important; } /* inverse on hover */
-td.background-quality-5.outline { background-color:#874FAD !important; }
+.border-quality-5, .border-quality-13 {
+    border-color:#874fad !important; } /* unusual */
+.background-quality-5, .background-quality-13 {
+    background-color:#34253d !important; }
+td.border-quality-5.outline , td.border-quality-13.outline {
+    border-color:#34253d !important; } /* inverse on hover */
+td.background-quality-5.outline, td.background-quality-13.outline {
+    background-color:#874fad !important; }
 
 
 .border-quality-6  { border-color:#FFD800 !important; } /* unique */
-.background-quality-6 { background-color: #9D8617 !important; }
-td.border-quality-6.outline {border-color: #9D8617 !important; } /* inverse on hover */
+.background-quality-6 { background-color: #584c1b !important; }
+td.border-quality-6.outline {border-color: #584c1b !important; } /* inverse on hover */
 td.background-quality-6.outline { background-color:#FFD800 !important;}
 
 
@@ -375,12 +379,10 @@ td.background-quality-6.outline { background-color:#FFD800 !important;}
 .background-quality-10  { background-color:#4F6D3A  !important; }
 
 
-.border-quality-11  { border-color:#CD9B1D !important; } /* strange */
-.background-quality-11  { background-color:#423618 !important; }
-td.border-quality-11.outline  { border-color:#423618 !important; } /* inverse on hover */
-td.background-quality-11.outline { background-color:#CD9B1D !important; }
-
-
+.border-quality-11  { border-color:#d06a2e !important; } /* strange */
+.background-quality-11  { background-color:#4a2b1e !important; }
+td.border-quality-11.outline  { border-color:#4a2b1e !important; } /* inverse on hover */
+td.background-quality-11.outline { background-color:#d06a2e !important; }
 
 
 .message div {
